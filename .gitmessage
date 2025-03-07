@@ -1,0 +1,59 @@
+# Commit Title
+
+# <Type>(<Scope>): <Short summary>
+
+# Example: feat(auth): add JWT authentication
+
+# Description
+
+# Provide a more detailed explanation of the changes made. Explain _what_ and _why_ (not _how_). Wrap at 72 characters.
+
+#
+
+# Example:
+
+# - Added JWT authentication to the login flow to enhance security.
+
+# - Updated the auth middleware to validate tokens on every request.
+
+# - Refactored user model to include token expiration handling.
+
+# Additions
+
+# List files and sections added. You can use `git diff --stat` to generate this information.
+
+#
+
+# Example:
+
+# + src/auth/jwt.ts
+
+# + src/middleware/authMiddleware.ts
+
+# + src/models/user.ts
+
+# Deletions
+
+# List files and sections removed. You can use `git diff --stat` to generate this information.
+
+#
+
+# Example:
+
+# - src/auth/oldAuthMethod.ts
+
+# Metadata
+
+# Include any relevant metadata or links to issues, pull requests, or related tasks.
+
+#
+
+# Example:
+
+# Closes: #1234
+
+# Related: #5678
+
+# Co-authored-by: Name <email@example.com>
+
+# Note: Lines starting with '#' are comments and will be ignored by Git.
