@@ -1,46 +1,87 @@
 "use client";
-import { Menu, Plus, Search } from "lucide-react";
+
+import { Plus, Search } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { ModeToggle } from "@/components/mode-toggle";
-import CreateNewButton from "./createNewButton";
-import HeaderAvatar from "./headerAvatar";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
 
-interface HeaderProps {
-  toggleSidebar: () => void;
-}
+export function Header() {
+  const isMobile = useIsMobile();
 
-export function Header({ toggleSidebar }: HeaderProps) {
   return (
-    <header className="w-full h-28 bg-[#2D336B] text-white flex items-center justify-between px-8 py-2 z-10">
+    <header className="fixed top-0 left-0 right-0 w-full h-16 bg-[#2D336B] text-white flex items-center justify-between px-4 md:px-8 z-20">
       <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleSidebar}
-          className="text-white hover:bg-[#2D336B]"
-        >
-          <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle sidebar</span>
-        </Button>
-        <div className="font-bold">
-          <span className="text-3xl">Dianson </span>
-          <div className="text-2xl">Law Office</div>
+        <SidebarTrigger className="text-white hover:bg-[#1B1E4B] dark:hover:bg-gray-800" />
+        <div className="text-xl md:text-2xl font-bold">
+          {!isMobile && <div>Dianson Law Office</div>}
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="relative w-80">
-          <Input
-            placeholder="Search"
-            className="h-10 bg-white text-[#1B1E4B] pl-10 rounded-md"
-          />
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#1B1E4B]" />
-        </div>
+      <div className="flex items-center gap-2 md:gap-4">
+        {!isMobile && (
+          <div className="relative w-80">
+            <Input
+              placeholder="Search"
+              className="h-10 bg-white dark:bg-gray-800 text-[#1B1E4B] dark:text-white pl-10 rounded-md"
+            />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#1B1E4B] dark:text-gray-400" />
+          </div>
+        )}
 
-        <CreateNewButton />
+        {!isMobile && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="bg-[#1B1E4B] dark:bg-gray-700 text-white hover:bg-[#2D336B]/90 dark:hover:bg-gray-600 gap-2">
+                <Plus className="h-4 w-4" />
+                <span className="hidden md:inline">Create New</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>New Matter</DropdownMenuItem>
+              <DropdownMenuItem>New Task</DropdownMenuItem>
+              <DropdownMenuItem>New Document</DropdownMenuItem>
+              <DropdownMenuItem>New Event</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
         <ModeToggle />
-        <HeaderAvatar />
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-10 w-10 rounded-full p-0">
+              <Avatar>
+                <AvatarImage
+                  src="/placeholder.svg?height=40&width=40"
+                  alt={"User"}
+                />
+                <AvatarFallback className="text-black dark:text-white">
+                  {"U"}
+                </AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>{"User Email"}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Profile</DropdownMenuItem>
+            <DropdownMenuItem>Settings</DropdownMenuItem>
+            {isMobile && <DropdownMenuItem>Search</DropdownMenuItem>}
+            {isMobile && <DropdownMenuItem>Create New</DropdownMenuItem>}
+            <DropdownMenuItem>Sign out</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

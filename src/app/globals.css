@@ -30,14 +30,16 @@
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Updated sidebar theme variables to match the provided colors */
+  --sidebar: 240 30% 20%; /* #1B1E4B */
+  --sidebar-foreground: 0 0% 100%; /* white */
+  --sidebar-primary: 0 0% 100%; /* white */
+  --sidebar-primary-foreground: 240 30% 20%; /* #1B1E4B */
+  --sidebar-accent: 240 30% 25%; /* slightly lighter than sidebar */
+  --sidebar-accent-foreground: 0 0% 100%; /* white */
+  --sidebar-border: 240 30% 30%; /* slightly lighter for borders */
+  --sidebar-ring: 240 30% 40%; /* for focus rings */
 }
 
 .dark {
@@ -65,14 +67,16 @@
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+
+  /* Updated dark mode sidebar theme variables */
+  --sidebar: 240 15% 15%; /* darker gray with blue tint */
+  --sidebar-foreground: 0 0% 100%; /* white */
+  --sidebar-primary: 240 15% 30%; /* lighter accent color */
+  --sidebar-primary-foreground: 0 0% 100%; /* white */
+  --sidebar-accent: 240 15% 20%; /* slightly lighter than sidebar */
+  --sidebar-accent-foreground: 0 0% 100%; /* white */
+  --sidebar-border: 240 15% 25%; /* slightly lighter for borders */
+  --sidebar-ring: 240 15% 35%; /* for focus rings */
 }
 
 @theme inline {
@@ -198,17 +202,11 @@ body {
 }
 
 @layer base {
-  body {
-    font-family: "Aileron", sans-serif;
-  }
-}
-
-@layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-aileron, sans-serif);
+    font-family: "Aileron", var(--font-aileron, sans-serif);
   }
 }
