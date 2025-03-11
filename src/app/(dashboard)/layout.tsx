@@ -1,20 +1,19 @@
-"use client";
+import type React from 'react'
+// import { useRouter } from 'next/navigation'
+import { ThemeProvider } from '@/components/theme-provider'
+import { SidebarProvider } from '@/components/ui/sidebar'
+import { ToastProvider } from '@/components/toast-provider'
+import { DashboardContent } from '@/components/dashboard/dashboardContent'
+import '../globals.css'
+import { protectRoute } from '@/utils/supabase/server'
+// import { useEffect } from 'react'
 
-import type React from "react";
-import { useRouter } from "next/navigation";
-import { ThemeProvider } from "@/components/theme-provider";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { ToastProvider } from "@/components/toast-provider";
-import { DashboardContent } from "@/components/dashboard/dashboardContent";
-import "../globals.css";
-
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
-  const router = useRouter();
-
+  await protectRoute()
   return (
     <ThemeProvider
       attribute="class"
@@ -27,5 +26,5 @@ export default function DashboardLayout({
         <ToastProvider />
       </SidebarProvider>
     </ThemeProvider>
-  );
+  )
 }

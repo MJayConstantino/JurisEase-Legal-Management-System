@@ -1,13 +1,14 @@
-import type React from "react";
-import { useSidebar } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/sidebar/appSidebar";
-import { Header } from "@/components/header/header";
-import { useIsMobile } from "@/hooks/use-mobile";
+'use client'
+import type React from 'react'
+import { useSidebar } from '@/components/ui/sidebar'
+import { AppSidebar } from '@/components/sidebar/appSidebar'
+import { Header } from '@/components/header/header'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 export function DashboardContent({ children }: { children: React.ReactNode }) {
-  const { state } = useSidebar();
-  const isCollapsed = state === "collapsed";
-  const isMobile = useIsMobile();
+  const { state } = useSidebar()
+  const isCollapsed = state === 'collapsed'
+  const isMobile = useIsMobile()
 
   return (
     <div className="flex h-screen w-screen flex-col">
@@ -19,5 +20,5 @@ export function DashboardContent({ children }: { children: React.ReactNode }) {
         </main>
       </div>
     </div>
-  );
+  )
 }

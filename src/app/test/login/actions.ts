@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-import { createClient } from '@/utils/supabase/server'
+import { createSupabaseClient } from '@/utils/supabase/server'
 import { z } from 'zod'
 
 const userSchema = z.object({
@@ -14,7 +14,7 @@ const userSchema = z.object({
 export type User = z.infer<typeof userSchema>
 
 export async function login(formData: FormData) {
-  const supabase = await createClient()
+  const supabase = await createSupabaseClient()
   //{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email. change configuration settings soon
 
   // const data: User = {
@@ -34,11 +34,11 @@ export async function login(formData: FormData) {
   }
 
   revalidatePath('/', 'layout')
-  redirect('/test/login')
+  redirect('/documents')
 }
 
 export async function signup(formData: FormData) {
-  const supabase = await createClient()
+  const supabase = await createSupabaseClient()
 
   // type-casting here for convenience
   // in practice, you should validate your inputs
@@ -51,9 +51,27 @@ export async function signup(formData: FormData) {
 
   if (error) {
     // redirect('/error')
-    redirect('/test/login?message=Error signing in')
+    redirect('/test/login?message=Error signing up')
   }
 
   revalidatePath('/', 'layout')
-  redirect('/test/login')
+  redirect('/documents')
+}
+
+export async function signOutUser() {
+  const supabase = await createSupabaseClient()
+
+  try {
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      console.error('Error signing out:', error.message)
+      redirect('/test/login?message=error signing out')
+    }
+
+    revalidatePath('/', 'layout')
+    redirect('/test/login')
+  } catch (err) {
+    console.error('Unexpected error during sign-out:', err)
+    redirect('/test/login?message=error signing out')
+  }
 }

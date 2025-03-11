@@ -1,9 +1,9 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { Plus, Search } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react'
+import { Plus, Search } from 'lucide-react'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,23 +11,37 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { ModeToggle } from "@/components/mode-toggle";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { MobileNavMenu } from "@/components/sidebar/mobileNavMenu";
+} from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import { ModeToggle } from '@/components/mode-toggle'
+import { SidebarTrigger } from '@/components/ui/sidebar'
+import { useIsMobile } from '@/hooks/use-mobile'
+import { MobileNavMenu } from '@/components/sidebar/mobileNavMenu'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog'
+import { createSupabaseClient } from '@/utils/supabase/client'
+import { useRouter } from 'next/navigation'
 
 export function Header() {
-  const isMobile = useIsMobile();
-  const [searchOpen, setSearchOpen] = useState(false);
+  const isMobile = useIsMobile()
+  const [searchOpen, setSearchOpen] = useState(false)
+  const supabase = createSupabaseClient()
+  const router = useRouter()
+
+  // make a separate handling for sign up on client side
+  const handleSignOut = async () => {
+    try {
+      supabase.auth.signOut()
+      router.refresh()
+    } catch {
+      router.push('/documents?message= failed sign out')
+    }
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 w-full h-16 bg-[#2D336B] text-white flex items-center justify-between px-4 md:px-8 z-20">
@@ -113,16 +127,16 @@ export function Header() {
               <Avatar>
                 <AvatarImage
                   src="/placeholder.svg?height=40&width=40"
-                  alt={"User"}
+                  alt={'User'}
                 />
                 <AvatarFallback className="text-black dark:text-white">
-                  {"U"}
+                  {'U'}
                 </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>{"User Email"}</DropdownMenuLabel>
+            <DropdownMenuLabel>{'User Email'}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Profile</DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>
@@ -134,10 +148,12 @@ export function Header() {
                 </DropdownMenuItem>
               </>
             )}
-            <DropdownMenuItem>Sign out</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSignOut}>
+              Sign out
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
     </header>
-  );
+  )
 }
