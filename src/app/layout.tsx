@@ -1,20 +1,12 @@
+import type React from "react";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { ToastProvider } from "@/components/toast-provider";
 
 export const metadata: Metadata = {
-  title: "Dianson Law Firm Legal Management Software",
-  description: "A legal management software for Dianson Law Firm",
+  title: "Dianson Law Office",
+  description: "Legal case management system",
 };
 
 export default function RootLayout({
@@ -23,10 +15,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="en" suppressHydrationWarning>
+      <body className="font-sans">
+        <ToastProvider />
         {children}
       </body>
     </html>
