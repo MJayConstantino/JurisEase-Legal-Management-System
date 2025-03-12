@@ -1,6 +1,5 @@
 import type React from "react";
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import { ToastProvider } from "@/components/toast-provider";
 
