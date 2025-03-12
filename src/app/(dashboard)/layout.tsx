@@ -5,13 +5,16 @@ import { AppSidebar } from '@/components/sidebar/appSidebar'
 import { Header } from '@/components/header/header'
 import { ToastProvider } from '@/components/toast-provider'
 import { ActiveLinkScript } from '@/components/active-link-script'
+
 import '../globals.css'
+import { protectRoute } from '@/utils/supabase/server'
 
 export default async function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  await protectRoute()
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
