@@ -1,48 +1,59 @@
-"use client"
+'use client'
 
-import type React from "react"
+import type React from 'react'
 
-import Link from "next/link"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { InputField } from "@/components/ui/input-field"
-import { MailIcon, KeyIcon } from "lucide-react"
+import Link from 'next/link'
+import { useState, useTransition } from 'react'
+import { Button } from '@/components/ui/button'
+import { InputField } from '@/components/ui/input-field'
+import { MailIcon, KeyIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { signinAction } from '@/actions/users'
+import { createSupabaseClient } from '@/utils/supabase/client'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
+  const supabase = createSupabaseClient()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [isPending, startTransition] = useTransition()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
+  const handleSubmit = async (formData: FormData) => {
+    startTransition(async () => {
+      await signinAction(formData)
+    })
+  }
 
-    if (!email || !password) {
-      setError("Email and password are required")
-      return
-    }
-
-    // Here you would typically call an API to authenticate the user
-    // For now, we'll just log the data
-    console.log("Login data:", { email, password })
-    alert("Login successful!")
-    // Redirect to dashboard or show a success message
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: 'http://localhost:3007/auth/callback',
+      },
+    })
   }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4 font-aileron">
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-sm">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-[#2D336B] md:text-4xl">Welcome back!</h1>
-          <h2 className="text-2xl font-black tracking-tight text-[#1B1E4B] md:text-3xl">Dianson Law Office</h2>
-          <p className="mt-1 text-sm text-[#2a3563]">Log in to access your matters, documents, and legal tools.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-[#2D336B] md:text-4xl">
+            Welcome back!
+          </h1>
+          <h2 className="text-2xl font-black tracking-tight text-[#1B1E4B] md:text-3xl">
+            Dianson Law Office
+          </h2>
+          <p className="mt-1 text-sm text-[#2a3563]">
+            Log in to access your matters, documents, and legal tools.
+          </p>
         </div>
 
         <div className="rounded-lg bg-[#e1e5f2] p-6">
-          <form onSubmit={handleSubmit}>
+          <form action={handleSubmit}>
             <div className="mb-4">
               <InputField
                 id="email"
+                name="email"
                 type="email"
                 label="Email"
                 icon={MailIcon}
@@ -50,12 +61,14 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={isPending}
               />
             </div>
 
             <div className="mb-6">
               <InputField
                 id="password"
+                name="password"
                 type="password"
                 label="Password"
                 icon={KeyIcon}
@@ -63,9 +76,13 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={isPending}
               />
               <div className="mt-1 text-right text-sm">
-                <Link href="#" className="font-medium text-[#2a3563] hover:underline">
+                <Link
+                  href="#"
+                  className="font-medium text-[#2a3563] hover:underline"
+                >
                   Forgot password?
                 </Link>
               </div>
@@ -74,11 +91,20 @@ export default function LoginPage() {
             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
             <div className="flex flex-col space-y-4">
-              <Button type="submit" className="bg-[#2a3563] hover:bg-[#1e2547] text-white">
+              <Button
+                disabled={isPending}
+                type="submit"
+                className="bg-[#2a3563] hover:bg-[#1e2547] text-white"
+              >
                 Log in
               </Button>
 
-              <Button type="button" variant="outline" className="flex items-center justify-center gap-2 bg-white">
+              <Button
+                onClick={handleGoogleLogin}
+                type="button"
+                variant="outline"
+                className="flex items-center justify-center gap-2 bg-white"
+              >
                 <svg viewBox="0 0 24 24" width="20" height="20">
                   <path
                     fill="#4285F4"
@@ -105,7 +131,10 @@ export default function LoginPage() {
 
         <div className="mt-4 text-center text-sm">
           <span className="text-[#2a3563]">Don&apos;t have an account? </span>
-          <Link href="/signup" className="font-medium text-[#2a3563] hover:underline">
+          <Link
+            href="/signup"
+            className="font-medium text-[#2a3563] hover:underline"
+          >
             Sign Up
           </Link>
         </div>
@@ -113,4 +142,3 @@ export default function LoginPage() {
     </div>
   )
 }
-

@@ -31,13 +31,14 @@ export async function createSupabaseClient() {
 
 export async function getUser() {
   const supabase = createSupabaseClient()
-  const { user } = (await (await supabase).auth.getUser()).data
+  const user = (await (await supabase).auth.getUser()).data.user
   return user
 }
 
 export async function protectRoute() {
-  const user = await getUser()
+  const supabase = await createSupabaseClient()
+  const user = await (await supabase.auth.getUser()).data.user
   if (!user) {
-    redirect('/test/login')
+    redirect('/login')
   }
 }
