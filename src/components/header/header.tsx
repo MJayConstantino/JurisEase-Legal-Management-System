@@ -1,10 +1,10 @@
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { MobileNavMenu } from "@/components/sidebar/mobileNavMenu";
-import { ModeToggle } from "@/components/mode-toggle";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Search } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { SidebarTrigger } from '@/components/ui/sidebar'
+import { MobileNavMenu } from '@/components/sidebar/mobileNavMenu'
+import { ModeToggle } from '@/components/mode-toggle'
+import { Button } from '@/components/ui/button'
+import { Plus } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,9 +12,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Signout } from "./signout";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+} from '@/components/ui/dropdown-menu'
+import { Signout } from './signout'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export function Header() {
   return (
@@ -97,5 +97,5 @@ export function Header() {
         </DropdownMenu>
       </div>
     </header>
-  );
+  )
 }

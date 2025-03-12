@@ -1,11 +1,11 @@
-"use client";
+'use client'
 
-import { signout } from "@/app/test/login/actions";
+import { signOutAction } from '@/actions/users'
 
 export function Signout() {
   return (
-    <form action={signout}>
+    <form action={signOutAction}>
       <button type="submit">Sign out</button>
     </form>
-  );
+  )
 }
