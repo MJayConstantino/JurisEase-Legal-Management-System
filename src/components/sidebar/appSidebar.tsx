@@ -37,21 +37,25 @@ export function AppSidebar() {
     <Sidebar
       variant="sidebar"
       collapsible="icon"
-      className="h-[100vh] bg-[#1B1E4B] text-white border-r-0 z-0 pt-16 fixed left-0 hidden md:flex"
+      className="h-[100vh] bg-[#1B1E4B] text-white z-0 pt-16 fixed left-0 hidden md:flex w-64 transition-all duration-300 ease-in-out"
     >
       <SidebarContent className="px-2 py-6">
         <SidebarMenu>
           {navItems.map((item) => (
             <SidebarMenuItem key={item.href} className="mb-4">
-              <SidebarMenuButton asChild className="w-full">
+              <SidebarMenuButton asChild>
                 <Link
                   href={item.href}
-                  className={`flex items-center gap-4 py-6 rounded-tl-md rounded-bl-md transition-colors w-full
-                    group-data-[state=collapsed]:justify-center px-4
+                  className={`flex items-center gap-4 py-6 rounded-l-md transition-colors w-full px-4
+                    group-data-[state=collapsed]:justify-center
                     [&.active]:bg-white [&.active]:text-[#1B1E4B] dark:[&.active]:bg-gray-700 dark:[&.active]:text-white
                     text-white hover:text-[#A8B5DE]`}
                 >
-                  <item.icon className="h-12 w-12" />
+                  <item.icon
+                    size={40}
+                    className="h-16 w-16 max-w-[4rem] max-h-[4rem]"
+                    style={{ width: 25, height: 25 }}
+                  />
                   <span className="text-xl font-medium group-data-[state=collapsed]:hidden">
                     {item.title}
                   </span>
