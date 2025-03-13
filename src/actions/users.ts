@@ -15,16 +15,19 @@ export type User = z.infer<typeof userSchema>
 
 export async function signinAction(formData: FormData) {
   const supabase = await createSupabaseClient()
-
   const data = Object.fromEntries(formData.entries()) as User
   if (userSchema.safeParse(data).error) {
-    redirect('/login?message=invalid user credentials')
+    return {
+      error:
+        'Invalid data Inputted' + userSchema.safeParse(data).error?.message,
+    }
   }
   const { error } = await supabase.auth.signInWithPassword(data)
   if (error) {
-    redirect('/login?message=error logging in')
+    return { error: 'Failed to log in: ' + error.message }
   }
-  redirect('/documents')
+
+  return { error: null }
 }
 
 export async function signUpAction(formData: FormData) {
@@ -32,7 +35,7 @@ export async function signUpAction(formData: FormData) {
 
   const data = Object.fromEntries(formData.entries()) as User
   if (userSchema.safeParse(data).error) {
-    redirect('/signup?message=invalid user credentials')
+    return { error: 'Invalid data Inputted' }
   }
   const { error } = await supabase.auth.signUp({
     email: data.email,
@@ -44,9 +47,9 @@ export async function signUpAction(formData: FormData) {
     },
   })
   if (error) {
-    redirect('/signup?message=error signing up')
+    return { error: 'Failed to Sign Up: ' + error.message }
   }
-  redirect('/login?message=success')
+  return { error: null }
 }
 
 export async function signOutAction() {
@@ -57,7 +60,8 @@ export async function signOutAction() {
   if (session) {
     const { error } = await supabase.auth.signOut()
     if (error) {
-      redirect('/?message=error signing out')
+      return { error: 'Failed to Sign out' + error.message }
     }
   }
+  return { error: null }
 }

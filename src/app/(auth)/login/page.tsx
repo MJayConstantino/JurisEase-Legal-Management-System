@@ -7,7 +7,7 @@ import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { InputField } from '@/components/ui/input-field'
 import { MailIcon, KeyIcon } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+
 import { signinAction } from '@/actions/users'
 import { createSupabaseClient } from '@/utils/supabase/client'
 
@@ -25,11 +25,15 @@ export default function LoginPage() {
   }
 
   const handleGoogleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: 'http://localhost:3007/auth/callback',
-      },
+    startTransition(async () => {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${
+            process.env.SITE_URL || 'http://localhost:3007'
+          }/auth/callback`,
+        },
+      })
     })
   }
 
