@@ -11,6 +11,20 @@ import { MailIcon, KeyIcon } from 'lucide-react'
 import { signinAction } from '@/actions/users'
 import { createSupabaseClient } from '@/utils/supabase/client'
 
+interface LoginPageProps {
+  email: string
+  password: string
+  handleSubmit: (
+    formData: FormData,
+    onSuccess: () => void,
+    onError: (message: string) => void
+  ) => void
+  handleGoogleLogin: () => void
+  isPending?: boolean
+  onEmailChange: (value: string) => void
+  onPasswordChange: (value: string) => void
+}
+
 export default function LoginPage() {
   const supabase = createSupabaseClient()
   const [email, setEmail] = useState('')
