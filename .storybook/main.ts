@@ -1,4 +1,4 @@
-import type { StorybookConfig } from "@storybook/experimental-nextjs-vite";
+import type { StorybookConfig } from '@storybook/nextjs';
 
 const config: StorybookConfig = {
   "stories": [
@@ -12,7 +12,7 @@ const config: StorybookConfig = {
     "@storybook/experimental-addon-test"
   ],
   "framework": {
-    "name": "@storybook/experimental-nextjs-vite",
+    "name": "@storybook/nextjs",
     "options": {}
   },
   "staticDirs": [
