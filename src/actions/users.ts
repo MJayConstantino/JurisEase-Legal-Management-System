@@ -1,7 +1,6 @@
 'use server'
 
 import { createSupabaseClient } from '@/utils/supabase/server'
-import { redirect } from 'next/navigation'
 import { z } from 'zod'
 
 // user schema
@@ -42,7 +41,7 @@ export async function signUpAction(formData: FormData) {
     password: data.password,
     options: {
       data: {
-        name: data.name,
+        full_name: data.name,
       },
     },
   })
