@@ -1,6 +1,6 @@
-import type React from "react";
-import { AppSidebar } from "@/components/sidebar/appSidebar";
-import { Header } from "@/components/header/header";
+import type React from 'react'
+import { AppSidebar } from '@/components/sidebar/appSidebar'
+import { Header } from '@/components/header/header'
 
 export function DashboardContent({ children }: { children: React.ReactNode }) {
   return (
