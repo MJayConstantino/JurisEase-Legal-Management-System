@@ -1,23 +1,19 @@
 // utils/authHandlers.ts
 import { createSupabaseClient } from '@/utils/supabase/client'
 import { signinAction, signOutAction } from '@/actions/users'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 export const handleLoginSubmit = async (formData: FormData) => {
-  const router = useRouter()
   const { error } = await signinAction(formData)
   if (error) {
     console.error(error)
     return { error }
   }
 
-  router.push('/documents')
   return { error: null }
 }
 
 export const handleGoogleSignIn = async () => {
-  const router = useRouter()
   try {
     const supabase = createSupabaseClient()
     const { error } = await supabase.auth.signInWithOAuth({
