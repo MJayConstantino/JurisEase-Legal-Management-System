@@ -1,10 +1,20 @@
 // utils/authHandlers.ts
 import { createSupabaseClient } from '@/utils/supabase/client'
-import { signinAction, signOutAction } from '@/actions/users'
+import { signinAction, signOutAction, signUpAction } from '@/actions/users'
 import { toast } from 'sonner'
 
 export const handleLoginSubmit = async (formData: FormData) => {
   const { error } = await signinAction(formData)
+  if (error) {
+    console.error(error)
+    return { error }
+  }
+
+  return { error: null }
+}
+
+export const handleSignUpSubmit = async (formData: FormData) => {
+  const { error } = await signUpAction(formData)
   if (error) {
     console.error(error)
     return { error }

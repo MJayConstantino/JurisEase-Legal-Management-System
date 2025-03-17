@@ -17,7 +17,7 @@ const mockSignOutError = async () => {
 
 // Define meta for Storybook
 const meta: Meta<typeof Signout> = {
-  title: 'Components/Signout',
+  title: 'Header/Signout',
   component: Signout,
   parameters: {
     actions: { argTypesRegex: '^on.*' }, // Automatically capture "on*" props in Storybook actions
