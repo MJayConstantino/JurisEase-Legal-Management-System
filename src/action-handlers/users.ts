@@ -30,8 +30,8 @@ export const handleGoogleSignIn = async () => {
       provider: 'google',
       options: {
         redirectTo: `${
-          location.origin || 'http://localhost:3007'
-        }}/auth/callback`,
+          process.env.SITE_URL || 'http://localhost:3007'
+        }/auth/callback`,
       },
     })
 
