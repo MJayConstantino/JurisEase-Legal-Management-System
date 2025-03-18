@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Calendar, FileText, FolderClosed, ListTodo } from "lucide-react";
+import { Calendar, FileText, FolderClosed, ListTodo, Receipt } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -29,6 +29,11 @@ const navItems = [
     title: "Documents",
     icon: FileText,
     href: "/documents",
+  },
+  {
+    title: "Billings",
+    icon: Receipt,
+    href: "/billings",
   },
 ];
 
