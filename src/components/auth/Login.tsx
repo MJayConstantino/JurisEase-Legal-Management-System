@@ -90,6 +90,7 @@ export function LoginPage({
             <div className="mb-4">
               <InputField
                 id="email"
+                type="email"
                 name="email"
                 label="Email"
                 icon={MailIcon}
@@ -104,8 +105,8 @@ export function LoginPage({
             <div className="mb-6">
               <InputField
                 id="password"
-                name="password"
                 type="password"
+                name="password"
                 label="Password"
                 icon={KeyIcon}
                 placeholder="Enter Password"

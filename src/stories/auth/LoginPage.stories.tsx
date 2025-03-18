@@ -17,7 +17,7 @@ function validateLogin(formData: FormData) {
 }
 
 export default {
-  title: 'Components/LoginPage',
+  title: 'Auth/LoginPage',
   component: LoginPage,
   decorators: [
     (Story) => (
