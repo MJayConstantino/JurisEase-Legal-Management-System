@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { createSupabaseClient } from "@/utils/supabase/client";
 
 export default function UserInfo() {
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const supabase = createSupabaseClient();
 
@@ -13,7 +13,9 @@ export default function UserInfo() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      setUserEmail(user?.email || "User");
+      
+      const displayName = user?.user_metadata?.full_name;
+      setUserName(displayName || user?.email || "User");
       setIsLoading(false);
     };
 
@@ -26,7 +28,7 @@ export default function UserInfo() {
 
   return (
     <h2 className="text-xl font-semibold mb-4 text-[#1B1E4B]">
-      Welcome, {userEmail}
+      {userName}
     </h2>
   );
 }

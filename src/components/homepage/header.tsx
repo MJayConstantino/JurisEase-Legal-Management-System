@@ -12,7 +12,9 @@ interface HeaderProps {
   className?: string
   logoClassName?: string
   navClassName?: string
+  children?: React.ReactNode
 }
+
 
 export default function Header({
   logoText = "Dianson Law Office",

@@ -1,21 +1,26 @@
-'use client'
+"use client";
 
-import type React from 'react'
-import { useState, useTransition } from 'react'
-import { Button } from '@/components/ui/button'
-import { InputField } from '@/components/ui/input-field'
-import { MailIcon, KeyIcon } from 'lucide-react'
-import { toast } from 'sonner'
-import { handleGoogleSignIn, handleLoginSubmit } from '@/action-handlers/users'
+import type React from "react";
+import { useState, useTransition } from "react";
+import { Button } from "@/components/ui/button";
+import { InputField } from "@/components/ui/input-field";
+import { MailIcon, KeyIcon, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { handleGoogleSignIn, handleLoginSubmit } from "@/action-handlers/users";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { createSupabaseClient } from "@/utils/supabase/client"
+import { useSearchParams } from "next/navigation";
 
 export interface LoginPageProps {
   handleLoginSubmitfn?: (
     formData: FormData
-  ) => Promise<{ error: string } | { error: null }>
-  handleGoogleLoginfn?: () => Promise<{ error: string } | { error: null }>
-  onLoginSuccess: () => void
-  onGoogleLoginSuccess: () => void
-  isPending?: boolean
+  ) => Promise<{ error: string } | { error: null }>;
+  handleGoogleLoginfn?: () => Promise<{ error: string } | { error: null }>;
+  onLoginSuccess?: () => void;
+  onGoogleLoginSuccess?: () => void;
+  redirectPath?: string;
+  isPending?: boolean;
 }
 
 export function LoginPage({
@@ -23,52 +28,90 @@ export function LoginPage({
   handleGoogleLoginfn = handleGoogleSignIn,
   onLoginSuccess,
   onGoogleLoginSuccess,
+  redirectPath = "/test/userpage",
   isPending = false,
 }: LoginPageProps) {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isTransitioning, startTransition] = useTransition()
+  const router = useRouter();
+  const supabase = createSupabaseClient()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isTransitioning, startTransition] = useTransition();
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isClient, setIsClient] = useState(false)
+  const [error, setError] = useState('')
+  const searchParams = useSearchParams()
+
+
+
+  useEffect(() => {
+    setIsClient(true)
+    const errorMsg = searchParams.get("error")
+    if (errorMsg) {
+      setError(errorMsg)
+    }
+  }, [searchParams])
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      if (session) {
+        router.push("/test/userpage")
+      }
+    }
+
+    if (isClient) {
+      checkSession()
+    }
+  }, [router, supabase.auth, isClient])
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
 
     startTransition(async () => {
       try {
-        const { error } = await handleLoginSubmitfn(formData)
+        const { error } = await handleLoginSubmitfn(formData);
         if (error) {
-          toast.error(error)
-          setEmail('')
-          setPassword('')
+          toast.error(error);
+          setEmail("");
+          setPassword("");
         } else {
-          toast.success('Login Success')
-          onLoginSuccess?.()
+          toast.success("Login Success");
+          if (onLoginSuccess) {
+            onLoginSuccess();
+          } else {
+            router.push(redirectPath);
+          }
         }
       } catch (err: any) {
-        console.error('Error during login:', err)
-        toast.error('Error Logging in' + err)
+        console.error("Error during login:", err);
+        toast.error("Error Logging in" + err);
       }
-    })
-  }
+    });
+  };
 
   const handleGoogleLogin = () => {
+    setIsGoogleLoading(true);
+
     startTransition(async () => {
       try {
-        const { error } = await handleGoogleLoginfn()
-        if (error) {
-          toast.error(error)
-          setEmail('')
-          setPassword('')
-        } else {
-          toast.success('Google Login Success')
-          onGoogleLoginSuccess?.() // Trigger the success callback
+        // For Google login, we don't need to handle the redirect here
+        // as the OAuth flow will handle it via the callback
+        await handleGoogleLoginfn();
+
+        // This code will likely not run as the page will redirect to Google
+        if (onGoogleLoginSuccess) {
+          onGoogleLoginSuccess();
         }
       } catch (err) {
-        console.error('Error during Google login:', err)
-        toast.error('Error Logging in')
+        console.error("Error during Google login:", err);
+        toast.error("Error Logging in");
+        setIsGoogleLoading(false);
       }
-    })
-  }
+    });
+  };
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4 font-aileron">
@@ -92,18 +135,21 @@ export function LoginPage({
                 id="email"
                 type="email"
                 name="email"
+                type="email"
                 label="Email"
                 icon={MailIcon}
                 placeholder="Enter Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                disabled={isPending || isTransitioning}
+                disabled={isPending || isTransitioning || isGoogleLoading}
+                text=""
               />
             </div>
 
             <div className="mb-6">
               <InputField
+                text=""
                 id="password"
                 type="password"
                 name="password"
@@ -113,7 +159,7 @@ export function LoginPage({
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                disabled={isPending || isTransitioning}
+                disabled={isPending || isTransitioning || isGoogleLoading}
               />
               <div className="mt-1 text-right text-sm">
                 <a
@@ -127,11 +173,17 @@ export function LoginPage({
 
             <div className="flex flex-col space-y-4">
               <Button
-                disabled={isPending || isTransitioning}
+                disabled={isPending || isTransitioning || isGoogleLoading}
                 type="submit"
                 className="bg-[#2a3563] hover:bg-[#1e2547] text-white"
               >
-                {isPending || isTransitioning ? 'Logging in...' : 'Log in'}
+                {isPending || isTransitioning ? (
+                  <>
+                    Logging in...
+                  </>
+                ) : (
+                  "Log in"
+                )}
               </Button>
 
               <Button
@@ -139,27 +191,36 @@ export function LoginPage({
                 type="button"
                 variant="outline"
                 className="flex items-center justify-center gap-2 bg-white"
-                disabled={isPending || isTransitioning}
+                disabled={isPending || isTransitioning || isGoogleLoading}
               >
-                <svg viewBox="0 0 24 24" width="20" height="20">
-                  <path
-                    fill="#4285F4"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                  />
-                </svg>
-                <span>Sign in with Google</span>
+                {isGoogleLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Connecting to Google...
+                  </>
+                ) : (
+                  <>
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                      <path
+                        fill="#4285F4"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      />
+                      <path
+                        fill="#34A853"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      />
+                      <path
+                        fill="#FBBC05"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                      />
+                      <path
+                        fill="#EA4335"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                      />
+                    </svg>
+                    <span>Sign in with Google</span>
+                  </>
+                )}
               </Button>
             </div>
           </form>
@@ -176,5 +237,5 @@ export function LoginPage({
         </div>
       </div>
     </div>
-  )
+  );
 }
