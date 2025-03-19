@@ -1,6 +1,12 @@
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 
+const handleEditClick = () => {
+  console.log("Edit button clicked!");
+};
+const handleDeleteClick = () => {
+  console.log("Delete button clicked!");
+};
 
 function EditButton(){
     return(
