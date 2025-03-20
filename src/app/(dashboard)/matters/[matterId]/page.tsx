@@ -151,12 +151,11 @@ const sampleMatters = [
   },
 ];
 
-export async function generateMetadata({
-  params,
-}: {
+export async function generateMetadata(props: {
   params: { matterId: string };
 }) {
-  const matter = sampleMatters.find((m) => m.id === params.matterId);
+  const matterId = props.params.matterId;
+  const matter = sampleMatters.find((m) => m.id === matterId);
 
   if (!matter) {
     return {
@@ -170,12 +169,11 @@ export async function generateMetadata({
   };
 }
 
-export default function MatterDetailPage({
-  params,
-}: {
+export default async function MatterDetailPage(props: {
   params: { matterId: string };
 }) {
-  const matter = sampleMatters.find((m) => m.id === params.matterId);
+  const matterId = props.params.matterId;
+  const matter = sampleMatters.find((m) => m.id === matterId);
 
   if (!matter) {
     notFound();
