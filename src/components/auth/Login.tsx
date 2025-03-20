@@ -135,7 +135,6 @@ export function LoginPage({
                 id="email"
                 type="email"
                 name="email"
-                type="email"
                 label="Email"
                 icon={MailIcon}
                 placeholder="Enter Email"
