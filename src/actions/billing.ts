@@ -11,7 +11,7 @@ export async function addBill(name: string, amount: string, date: string) {
     {
       name,
       amount: `${amount} PHP`,
-      date: date,
+      date: formatDate(date),
     },
   ])
 
@@ -33,7 +33,7 @@ export async function editBill(id: number, name: string, amount: string, date: s
     .update({
       name,
       amount: `${amount} PHP`,
-      date: date,
+      date: formatDate(date),
     })
     .eq("id", id)
 
@@ -59,4 +59,18 @@ export async function deleteBill(id: number) {
 
   revalidatePath("/")
   return { success: true }
+}
+
+// Formats Date to MM/DD/YYYY format
+export function formatDate(dateString: string) {
+  if (!dateString) return ""
+  const [year, month, day] = dateString.split("-")
+  return `${month}/${day}/${year}`
+}
+
+// Formats Date to YYYY/MM/DD for supabase input
+export function convertToInputDateFormat(dateString: string) {
+  if (!dateString) return ""
+  const [month, day, year] = dateString.split("/")
+  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
 }
