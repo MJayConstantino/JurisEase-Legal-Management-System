@@ -17,9 +17,9 @@ interface Matter {
   client: string;
   type: string;
   status: string;
-  date: string;
+  date_opened: string;
   description: string;
-  caseNumber?: string;
+  case_number?: string;
 }
 
 interface MatterHeaderProps {
@@ -61,7 +61,7 @@ export function MatterHeader({ matter }: MatterHeaderProps) {
             <span className="hidden sm:inline">•</span>
             <span>
               Case Number:{" "}
-              {matter.caseNumber ||
+              {matter.case_number ||
                 `${matter.type.substring(0, 2).toUpperCase()}-${
                   matter.id.split("-")[1]
                 }`}

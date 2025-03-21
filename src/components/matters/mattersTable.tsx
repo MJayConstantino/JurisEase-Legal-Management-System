@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import type React from "react";
+
 import { useRouter } from "next/navigation";
 import {
   Table,
@@ -21,54 +22,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, FileEdit, Trash2, Eye } from "lucide-react";
+import { deleteMatter } from "@/actions/matters";
+import { Matter } from "@/types/matter.type";
+import { useState } from "react";
+import { toast } from "sonner";
 
-// Sample data - in a real app, this would come from an API or database
-const sampleMatters = [
-  {
-    id: "MAT-001",
-    name: "Johnson Divorce Settlement",
-    client: "Sarah Johnson",
-    type: "Family Law",
-    status: "open",
-    date: "2023-05-15",
-  },
-  {
-    id: "MAT-002",
-    name: "Smith vs. ABC Corp",
-    client: "John Smith",
-    type: "Litigation",
-    status: "pending",
-    date: "2023-06-22",
-  },
-  {
-    id: "MAT-003",
-    name: "Williams Estate Planning",
-    client: "Robert Williams",
-    type: "Estate Planning",
-    status: "closed",
-    date: "2023-04-10",
-  },
-  {
-    id: "MAT-004",
-    name: "Davis Criminal Defense",
-    client: "Michael Davis",
-    type: "Criminal Defense",
-    status: "open",
-    date: "2023-07-05",
-  },
-  {
-    id: "MAT-005",
-    name: "Thompson LLC Formation",
-    client: "Jennifer Thompson",
-    type: "Corporate",
-    status: "pending",
-    date: "2023-06-30",
-  },
-];
+interface MattersTableProps {
+  matters: Matter[];
+}
 
-export function MattersTable() {
+export function MattersTable({ matters }: MattersTableProps) {
   const router = useRouter();
-  const [matters] = useState(sampleMatters);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -85,6 +50,20 @@ export function MattersTable() {
 
   const handleRowClick = (matterId: string) => {
     router.push(`/matters/${matterId}`);
+  };
+
+  const handleDelete = async (matterId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDeletingId(matterId);
+
+    try {
+      await deleteMatter(matterId);
+      toast.success("The matter has been deleted successfully.");
+    } catch (error) {
+      toast.error("Failed to delete matter. Please try again.");
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -118,7 +97,6 @@ export function MattersTable() {
                 <TableCell className="font-medium">{matter.id}</TableCell>
                 <TableCell>{matter.name}</TableCell>
                 <TableCell>{matter.client}</TableCell>
-                <TableCell>{matter.type}</TableCell>
                 <TableCell>
                   <Badge
                     className={getStatusColor(matter.status)}
@@ -129,7 +107,7 @@ export function MattersTable() {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  {new Date(matter.date).toLocaleDateString()}
+                  {new Date(matter.dateOpened).toLocaleDateString()}
                 </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
@@ -159,11 +137,14 @@ export function MattersTable() {
                         Edit Matter
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => handleDelete(matter.id, e)}
+                        disabled={deletingId === matter.id}
                         className="text-red-600 focus:text-red-600"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Delete Matter
+                        {deletingId === matter.id
+                          ? "Deleting..."
+                          : "Delete Matter"}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

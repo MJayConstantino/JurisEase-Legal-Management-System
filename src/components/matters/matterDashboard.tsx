@@ -1,77 +1,42 @@
-import CaseDetailsCard from "./caseDetailsCard";
-import CourtDetailsCard from "./courtDetailsCard";
-import OpposingCouncilDetailsCard from "./opposingCouncilDetailsCard";
+"use client";
 
-interface Matter {
-  id: string;
-  name: string;
-  client: string;
-  type: string;
-  status: string;
-  date: string;
-  description: string;
-  caseNumber?: string;
-  clientPhone?: string;
-  clientEmail?: string;
-  clientAddress?: string;
-  assignedAttorney?: string;
-  assignedStaff?: string;
-  closeDate?: string | null;
-  opposingCouncil?: {
-    name: string;
-    phone: string;
-    email: string;
-    address: string;
-  };
-  court?: {
-    name: string;
-    phone: string;
-    email: string;
-    nextHearing: string | null;
-  };
-}
+import { useState } from "react";
+import { CaseDetailsCard } from "./caseDetailsCard";
+import { OpposingCouncilDetailsCard } from "./opposingCouncilDetailsCard";
+import { CourtDetailsCard } from "./courtDetailsCard";
+import { Matter } from "@/types/matter.type";
 
 interface MatterDashboardProps {
   matter: Matter;
 }
 
 export function MatterDashboard({ matter }: MatterDashboardProps) {
-  // Fallback values if props are missing.
-  const caseNumber = matter.caseNumber || "N/A";
-  const clientPhone = matter.clientPhone || "N/A";
-  const clientEmail = matter.clientEmail || "N/A";
-  const clientAddress = matter.clientAddress || "N/A";
-  const assignedAttorney = matter.assignedAttorney || "N/A";
-  const assignedStaff = matter.assignedStaff || "N/A";
+  const [currentMatter, setCurrentMatter] = useState(matter);
 
-  const opposingCouncil = matter.opposingCouncil || {
-    name: "N/A",
-    phone: "N/A",
-    email: "N/A",
-    address: "N/A",
-  };
-
-  const court = matter.court || {
-    name: "N/A",
-    phone: "N/A",
-    email: "N/A",
-    nextHearing: null,
+  const handleMatterUpdate = (updatedMatter: Matter) => {
+    setCurrentMatter(updatedMatter);
   };
 
   return (
     <div className="space-y-6">
-      <CaseDetailsCard
-        matter={matter}
-        caseNumber={caseNumber}
-        clientPhone={clientPhone}
-        clientEmail={clientEmail}
-        clientAddress={clientAddress}
-        assignedAttorney={assignedAttorney}
-        assignedStaff={assignedStaff}
-      />
-
-      <OpposingCouncilDetailsCard opposingCouncil={opposingCouncil} />
-      <CourtDetailsCard court={court} />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2">
+          <CaseDetailsCard
+            matter={currentMatter}
+            onUpdate={handleMatterUpdate}
+          />
+        </div>
+        <div className="space-y-6">
+          <OpposingCouncilDetailsCard
+            matter={currentMatter}
+            onUpdate={handleMatterUpdate}
+          />
+          <CourtDetailsCard
+            matter={currentMatter}
+            onUpdate={handleMatterUpdate}
+          />
+        </div>
+      </div>
     </div>
   );
 }
