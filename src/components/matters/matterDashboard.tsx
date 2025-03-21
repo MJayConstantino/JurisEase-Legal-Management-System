@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { CaseDetailsCard } from "./caseDetailsCard";
-import { OpposingCouncilDetailsCard } from "./opposingCouncilDetailsCard";
-import { CourtDetailsCard } from "./courtDetailsCard";
+import { CaseDetailsCard } from "./dashboardCards/caseDetailsCard";
+import { OpposingCouncilDetailsCard } from "./dashboardCards/opposingCouncilDetailsCard";
+import { CourtDetailsCard } from "./dashboardCards/courtDetailsCard";
 import { Matter } from "@/types/matter.type";
 
 interface MatterDashboardProps {

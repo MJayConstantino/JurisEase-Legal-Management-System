@@ -106,9 +106,7 @@ export function MattersTable({ matters }: MattersTableProps) {
                       matter.status.slice(1)}
                   </Badge>
                 </TableCell>
-                <TableCell>
-                  {new Date(matter.dateOpened).toLocaleDateString()}
-                </TableCell>
+                <TableCell>{matter.date_opened}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger

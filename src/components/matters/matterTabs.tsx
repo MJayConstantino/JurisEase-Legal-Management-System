@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+// import { useRouter, usePathname } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   LayoutDashboard,
@@ -19,8 +19,8 @@ interface MatterTabsProps {
 }
 
 export function MatterTabs({ children, matterId }: MatterTabsProps) {
-  const router = useRouter();
-  const pathname = usePathname();
+  // const router = useRouter();
+  // const pathname = usePathname();
   const [activeTab, setActiveTab] = useState("dashboard");
 
   const handleTabChange = (value: string) => {

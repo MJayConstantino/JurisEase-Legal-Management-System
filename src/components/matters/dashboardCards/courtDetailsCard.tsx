@@ -1,29 +1,31 @@
 "use client";
 
 import { useState } from "react";
-import { Phone, Mail, MapPin } from "lucide-react";
+import { Phone, Mail, Building } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { EditableCard } from "./editableCard";
+import { EditableCard } from "../editableCard";
 import { updateMatter } from "@/actions/matters";
 import { Matter } from "@/types/matter.type";
 import { toast } from "sonner";
 
-interface OpposingCouncilDetailsCardProps {
+interface CourtDetailsCardProps {
   matter: Matter;
   onUpdate?: (matter: Matter) => void;
 }
 
-export function OpposingCouncilDetailsCard({
-  matter,
-  onUpdate,
-}: OpposingCouncilDetailsCardProps) {
+export function CourtDetailsCard({ matter, onUpdate }: CourtDetailsCardProps) {
   const [editedMatter, setEditedMatter] = useState({ ...matter });
 
-  const handleNestedChange = (field: string, value: any) => {
+  const handleNestedChange = (
+    field: keyof NonNullable<Matter["court"]>,
+    value: string
+  ) => {
     setEditedMatter((prev) => ({
       ...prev,
-      opposing_council: {
-        ...(prev.opposing_council || {}),
+      court: {
+        name: prev.court?.name ?? "N/A",
+        phone: prev.court?.phone ?? "N/A",
+        email: prev.court?.email ?? "N/A",
         [field]: value,
       },
     }));
@@ -33,11 +35,9 @@ export function OpposingCouncilDetailsCard({
     try {
       const updatedMatter = await updateMatter(editedMatter);
       onUpdate?.(updatedMatter);
-      toast.success("Opposing council details have been updated successfully.");
+      toast.success("Court details have been updated successfully.");
     } catch (error) {
-      toast.error(
-        "Failed to update opposing council details. Please try again."
-      );
+      toast.error("Failed to update court details. Please try again.");
       setEditedMatter({ ...matter });
     }
   };
@@ -46,16 +46,15 @@ export function OpposingCouncilDetailsCard({
     setEditedMatter({ ...matter });
   };
 
-  const opposingCouncil = editedMatter.opposing_council || {
+  const court = editedMatter.court || {
     name: "N/A",
     phone: "N/A",
     email: "N/A",
-    address: "N/A",
   };
 
   return (
     <EditableCard
-      title="Opposing Council"
+      title="Court Details"
       onSave={handleSave}
       onCancel={handleCancel}
     >
@@ -63,16 +62,19 @@ export function OpposingCouncilDetailsCard({
         <div className="space-y-4">
           <div>
             <h4 className="text-sm font-medium text-muted-foreground mb-1">
-              Name
+              Court
             </h4>
-            {isEditing ? (
-              <Input
-                value={opposingCouncil.name}
-                onChange={(e) => handleNestedChange("name", e.target.value)}
-              />
-            ) : (
-              <p className="font-medium">{opposingCouncil.name}</p>
-            )}
+            <div className="flex items-start">
+              <Building className="h-4 w-4 mr-2 mt-1 text-muted-foreground" />
+              {isEditing ? (
+                <Input
+                  value={court.name}
+                  onChange={(e) => handleNestedChange("name", e.target.value)}
+                />
+              ) : (
+                <p className="font-medium">{court.name}</p>
+              )}
+            </div>
           </div>
 
           <div>
@@ -84,39 +86,26 @@ export function OpposingCouncilDetailsCard({
                 <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
                 {isEditing ? (
                   <Input
-                    value={opposingCouncil.phone}
+                    value={court.phone}
                     onChange={(e) =>
                       handleNestedChange("phone", e.target.value)
                     }
                   />
                 ) : (
-                  <p>{opposingCouncil.phone}</p>
+                  <p>{court.phone}</p>
                 )}
               </div>
               <div className="flex items-center">
                 <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
                 {isEditing ? (
                   <Input
-                    value={opposingCouncil.email}
+                    value={court.email}
                     onChange={(e) =>
                       handleNestedChange("email", e.target.value)
                     }
                   />
                 ) : (
-                  <p>{opposingCouncil.email}</p>
-                )}
-              </div>
-              <div className="flex items-start">
-                <MapPin className="h-4 w-4 mr-2 mt-1 text-muted-foreground" />
-                {isEditing ? (
-                  <Input
-                    value={opposingCouncil.address}
-                    onChange={(e) =>
-                      handleNestedChange("address", e.target.value)
-                    }
-                  />
-                ) : (
-                  <p>{opposingCouncil.address}</p>
+                  <p>{court.email}</p>
                 )}
               </div>
             </div>

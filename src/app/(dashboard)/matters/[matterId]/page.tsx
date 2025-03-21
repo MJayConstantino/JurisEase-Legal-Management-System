@@ -9,7 +9,9 @@ export async function generateMetadata({
 }: {
   params: { matterId: string };
 }) {
-  const matterId = params.matterId;
+  // Await the params object
+  const resolvedParams = await Promise.resolve(params);
+  const matterId = resolvedParams.matterId;
   const matter = await getMatterById(matterId);
 
   if (!matter) {

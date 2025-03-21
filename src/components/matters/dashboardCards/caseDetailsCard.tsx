@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { EditableCard } from "./editableCard";
+import { EditableCard } from "../editableCard";
 import { updateMatter } from "@/actions/matters";
 import { Matter } from "@/types/matter.type";
 import { toast } from "sonner";
