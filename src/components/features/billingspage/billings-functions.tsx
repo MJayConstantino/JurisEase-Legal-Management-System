@@ -49,6 +49,7 @@ async function addBill(formData: FormData) {
     revalidatePath("/")
 }
 
+
 function formatDate(dateString: string) {
     if (!dateString) return ""
     const [year, month, day] = dateString.split("-")

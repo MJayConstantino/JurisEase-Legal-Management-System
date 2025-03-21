@@ -10,7 +10,7 @@ const handleDeleteClick = () => {
 
 function EditButton(){
     return(
-        <button className="p-2 rounded-md text-[#2E2A5C] hover:bg-[#E8E4FF]">
+        <button onClick={handleEditClick} className="p-2 rounded-md text-[#2E2A5C] hover:bg-[#E8E4FF]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="20"
@@ -31,7 +31,7 @@ function EditButton(){
 
 function DeleteButton(){
     return(
-        <button className="p-2 rounded-md text-[#2E2A5C] hover:bg-[#E8E4FF]">
+        <button onClick={handleDeleteClick} className="p-2 rounded-md text-[#2E2A5C] hover:bg-[#E8E4FF]">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="20"

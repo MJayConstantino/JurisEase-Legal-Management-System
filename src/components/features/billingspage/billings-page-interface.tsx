@@ -18,22 +18,3 @@ export function BillingInterface() {
     </div>
   )
 }
-
-
-// export default function BillingInterface() {
-//   const bills = getBills()
-//   const totalRevenue = calculateTotalRevenue(bills)
-
-//   return (
-//     <div className="min-h-screen bg-[#FFF8F8]">
-//       <div className="container mx-auto p-4">
-//         <div className="rounded-md overflow-hidden">
-
-//           {/* New Bill Form */}
-//        
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   )
-// }

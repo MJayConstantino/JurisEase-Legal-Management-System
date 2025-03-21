@@ -1,6 +1,5 @@
 import { BillingInterface } from "@/components/features/billingspage/billings-page-interface";
 
-
 export default function BillingsPage() {
     return (
       <div className="flex flex-col gap-6 w-full h-full">
