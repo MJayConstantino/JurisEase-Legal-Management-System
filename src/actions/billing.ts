@@ -7,10 +7,12 @@ import { createServerClient } from "@supabase/ssr"
 export async function addBill(name: string, amount: string, date: string) {
   const supabase = createServerClient()
 
+  const formattedAmount = formatNumberWithCommas(amount)
+
   const { error } = await supabase.from("bills").insert([
     {
       name,
-      amount: `${amount} PHP`,
+      amount: `${formattedAmount} PHP`,
       date: formatDate(date),
     },
   ])
@@ -28,11 +30,13 @@ export async function addBill(name: string, amount: string, date: string) {
 export async function editBill(id: number, name: string, amount: string, date: string) {
   const supabase = createServerClient()
 
+  const formattedAmount = formatNumberWithCommas(amount)
+
   const { error } = await supabase
     .from("bills")
     .update({
       name,
-      amount: `${amount} PHP`,
+      amount: `${formattedAmount} PHP`,
       date: formatDate(date),
     })
     .eq("id", id)
@@ -73,4 +77,25 @@ export function convertToInputDateFormat(dateString: string) {
   if (!dateString) return ""
   const [month, day, year] = dateString.split("/")
   return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
+}
+
+// Adds commas to amounts i.e. 100000 => 100,000
+export function formatNumberWithCommas(value: string): string {
+  const cleanValue = value.replace(/,/g, "").replace(/[^\d.]/g, "")
+
+  const number = Number.parseFloat(cleanValue)
+  if (isNaN(number)) return "0"
+
+  return number.toLocaleString("en-US", {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 0,
+  })
+}
+
+export function formatBillAmount(amount: string): string {
+  const numericPart = amount.replace(/[^\d,]/g, "")
+  if (numericPart.includes(",")) return amount
+
+  const formatted = formatNumberWithCommas(numericPart)
+  return amount.replace(numericPart, formatted)
 }
