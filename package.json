@@ -27,7 +27,6 @@
     "@supabase/supabase-js": "latest",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "cmdk": "^1.0.0",
     "lucide-react": "^0.478.0",
     "next": "15.2.1",
     "next-themes": "^0.4.4",

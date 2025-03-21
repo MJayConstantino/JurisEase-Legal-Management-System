@@ -10,17 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-interface Matter {
-  id: string;
-  name: string;
-  client: string;
-  type: string;
-  status: string;
-  date_opened: string;
-  description: string;
-  case_number?: string;
-}
+import { Matter } from "@/types/matter.type";
 
 interface MatterHeaderProps {
   matter: Matter;
@@ -59,13 +49,7 @@ export function MatterHeader({ matter }: MatterHeaderProps) {
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground">
             <span>Matter ID: {matter.id}</span>
             <span className="hidden sm:inline">•</span>
-            <span>
-              Case Number:{" "}
-              {matter.case_number ||
-                `${matter.type.substring(0, 2).toUpperCase()}-${
-                  matter.id.split("-")[1]
-                }`}
-            </span>
+            <span>Case Number: {matter.case_number}</span>
             <span className="hidden sm:inline">•</span>
             <span>Client: {matter.client}</span>
           </div>

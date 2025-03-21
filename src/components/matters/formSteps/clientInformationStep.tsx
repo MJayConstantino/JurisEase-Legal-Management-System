@@ -35,7 +35,7 @@ export function ClientInformationStep({
             id="client-phone"
             placeholder="(555) 123-4567"
             value={data.client_phone}
-            onChange={(e) => onChange("clientPhone", e.target.value)}
+            onChange={(e) => onChange("client_phone", e.target.value)}
           />
         </div>
 
@@ -46,7 +46,7 @@ export function ClientInformationStep({
             type="email"
             placeholder="client@example.com"
             value={data.client_email}
-            onChange={(e) => onChange("clientEmail", e.target.value)}
+            onChange={(e) => onChange("client_email", e.target.value)}
           />
         </div>
 
@@ -56,7 +56,7 @@ export function ClientInformationStep({
             id="client-address"
             placeholder="123 Main St, Anytown, CA 94321"
             value={data.client_address}
-            onChange={(e) => onChange("clientAddress", e.target.value)}
+            onChange={(e) => onChange("client_address", e.target.value)}
           />
         </div>
       </div>

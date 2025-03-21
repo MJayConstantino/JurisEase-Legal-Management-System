@@ -43,7 +43,7 @@ export function BasicInformationStep({
             id="case-number"
             placeholder="e.g. CV-2023-001"
             value={data.case_number}
-            onChange={(e) => onChange("caseNumber", e.target.value)}
+            onChange={(e) => onChange("case_number", e.target.value)}
           />
         </div>
 
