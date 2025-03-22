@@ -64,3 +64,14 @@ export async function signOutAction() {
   }
   return { error: null }
 }
+
+export async function fetchUsersAction() {
+  const supabase = await createSupabaseClient();
+  const { data, error } = await supabase
+    .from("users")
+    .select("user_id, user_name, user_email");
+  if (error) {
+    throw new Error("Error fetching users: " + error.message);
+  }
+  return data;
+}
