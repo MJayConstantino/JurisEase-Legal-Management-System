@@ -5,29 +5,26 @@ const supUrl = Deno.env.get("_SUPABASE_URL") as string;
 const supKey = Deno.env.get("_SUPABASE_SERVICE_KEY") as string;
 const supabase = createClient(supUrl, supKey);
 
-// Cleanup function
-async function cleanupTestCases(
-  affectedIds: string[],
-  table: string = "users",
-) {
+// Dedicated Cleanup Function
+async function cleanupTestCases(affectedIds: string[], table: string) {
   try {
     const { error } = await supabase.from(table).delete().in(
       "user_id",
       affectedIds,
     );
     if (error) throw error;
-    console.log("Test cases cleaned up successfully.");
+    console.log(`Successfully cleaned up rows in table: ${table}`);
   } catch (error: any) {
-    console.error("Error cleaning up test cases:", error.message);
+    console.error(`Error cleaning up rows in table: ${table}`, error.message);
   }
 }
 
 console.log("Hello from user-table-api-tests!");
 
 Deno.serve(async (req) => {
-  const { action, data, user_id } = await req.json();
-  const table = "users";
-  const affectedIds: string[] = []; // For cleanup
+  const { action, data, user_id, table } = await req.json();
+
+  const defaultTable = "users"; // Default table
 
   // Verify Authorization Header
   const authHeader = req.headers.get("Authorization");
@@ -44,9 +41,42 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // CLEAN_UP action
+    if (action === "CLEAN_UP") {
+      console.log("Running cleanup action...");
+
+      if (!user_id || !Array.isArray(user_id)) {
+        return new Response(
+          JSON.stringify({
+            status: 400,
+            error: "Invalid or missing user_id array",
+          }),
+          { headers: { "Content-Type": "application/json" }, status: 400 },
+        );
+      }
+      if (!table) {
+        return new Response(
+          JSON.stringify({ status: 400, error: "Missing table name" }),
+          { headers: { "Content-Type": "application/json" }, status: 400 },
+        );
+      }
+
+      await cleanupTestCases(user_id, table);
+
+      return new Response(
+        JSON.stringify({
+          status: 200,
+          message: "Cleanup completed successfully",
+        }),
+        { headers: { "Content-Type": "application/json" }, status: 200 },
+      );
+    }
+
+    // GET_ALL action
     if (action === "GET_ALL") {
-      // GET all records
-      const { data: rows, error } = await supabase.from(table).select("*");
+      const { data: rows, error } = await supabase.from(defaultTable).select(
+        "*",
+      );
       if (error) throw new Error("Internal Server Error: " + error.message);
       if (!rows.length) {
         return new Response(
@@ -58,12 +88,12 @@ Deno.serve(async (req) => {
         JSON.stringify({ status: 200, data: rows }),
         { headers: { "Content-Type": "application/json" }, status: 200 },
       );
-    } else if (action === "GET_ONE") {
-      // GET a specific record by ID
-      const { data: row, error } = await supabase.from(table).select("*").eq(
-        "user_id",
-        user_id,
-      ).single();
+    }
+
+    // GET_ONE action
+    if (action === "GET_ONE") {
+      const { data: row, error } = await supabase.from(defaultTable).select("*")
+        .eq("user_id", user_id).single();
       if (error || !row) {
         return new Response(
           JSON.stringify({ status: 404, error: "Record not found" }),
@@ -74,22 +104,39 @@ Deno.serve(async (req) => {
         JSON.stringify({ status: 200, data: row }),
         { headers: { "Content-Type": "application/json" }, status: 200 },
       );
-    } else if (action === "POST") {
-      // INSERT a new record
-      const { data: inserted, error } = await supabase.from(table).insert(data)
+    }
+
+    // POST action
+    if (action === "POST") {
+      console.log("POST REQUEST");
+      const { data: inserted, error } = await supabase.from(defaultTable)
+        .insert(data)
         .select("user_id");
       if (error) throw new Error("Internal Server Error: " + error.message);
-      affectedIds.push(...inserted.map((row: any) => row.user_id));
+
       return new Response(
         JSON.stringify({ status: 201, data: inserted }),
         { headers: { "Content-Type": "application/json" }, status: 201 },
       );
-    } else if (action === "UPDATE_ONE") {
-      // UPDATE a specific record
-      const { data: updated, error } = await supabase.from(table).update(data)
-        .eq("user_id", user_id).select("*");
-      if (error) throw new Error("Internal Server Error: " + error.message);
+    }
+
+    // UPDATED UPDATE_ONE action
+    if (action === "UPDATE_ONE") {
+      console.log("UPDATE_ONE Request Data:", { user_id, data });
+
+      const { data: updated, error } = await supabase
+        .from(defaultTable)
+        .update(data)
+        .eq("user_id", user_id)
+        .select("*");
+
+      if (error) {
+        console.error("Supabase Error:", error.message);
+        throw new Error("Internal Server Error: " + error.message);
+      }
+
       if (!updated || updated.length === 0) {
+        console.log("No matching record found for user_id:", user_id);
         return new Response(
           JSON.stringify({
             status: 404,
@@ -98,17 +145,19 @@ Deno.serve(async (req) => {
           { headers: { "Content-Type": "application/json" }, status: 404 },
         );
       }
-      affectedIds.push(user_id); // Track updated user_id
+
+      console.log("UPDATE_ONE Success:", updated);
       return new Response(
         JSON.stringify({ status: 200, data: updated }),
         { headers: { "Content-Type": "application/json" } },
       );
-    } else if (action === "DELETE_ONE") {
-      // DELETE a specific record
-      const { data: deleted, error } = await supabase.from(table).delete().eq(
-        "user_id",
-        user_id,
-      ).select("*");
+    }
+
+    // DELETE_ONE action
+    if (action === "DELETE_ONE") {
+      const { data: deleted, error } = await supabase.from(defaultTable)
+        .delete()
+        .eq("user_id", user_id).select("*");
       if (error) throw new Error("Internal Server Error: " + error.message);
       if (!deleted || deleted.length === 0) {
         return new Response(
@@ -116,37 +165,42 @@ Deno.serve(async (req) => {
           { headers: { "Content-Type": "application/json" }, status: 404 },
         );
       }
-      affectedIds.push(user_id); // Track deleted user_id
       return new Response(
         JSON.stringify({ status: 200, data: deleted }),
         { headers: { "Content-Type": "application/json" } },
       );
-    } else if (action === "RUN_TESTS") {
-      // RUN automated test cases
+    }
+
+    // RUN_TESTS action
+    if (action === "RUN_TESTS") {
       console.log("Running test cases...");
 
-      // Insert test case
-      const { data: inserted, error: insertError } = await supabase.from(table)
+      const affectedIds: string[] = [];
+      const { data: inserted, error: insertError } = await supabase.from(
+        defaultTable,
+      )
         .insert({
-          user_id: "test-id-1e9c14776-0c63-4a74-bd76-1ee41b8eadcb",
+          user_id: "05fa6493-a26b-42eb-a935-e4909e2a2653",
           user_name: "Test User",
           user_email: "test@example.com",
         }).select("user_id");
       if (insertError) {
         throw new Error("Insert Test Error: " + insertError.message);
       }
-      const insertedId = inserted[0].user_id; // Capture inserted user_id
+
+      const insertedId = inserted[0].user_id;
       affectedIds.push(insertedId);
 
       // Test GET_ONE
-      const { error: selectOneError } = await supabase.from(table).select("*")
+      const { error: selectOneError } = await supabase.from(defaultTable)
+        .select("*")
         .eq("user_id", insertedId).single();
       if (selectOneError) {
         throw new Error("GET_ONE Test Error: " + selectOneError.message);
       }
 
       // Test UPDATE_ONE
-      const { error: updateError } = await supabase.from(table).update({
+      const { error: updateError } = await supabase.from(defaultTable).update({
         user_name: "Updated Test User",
         user_email: "updated@example.com",
       }).eq("user_id", insertedId);
@@ -155,29 +209,27 @@ Deno.serve(async (req) => {
       }
 
       // Test DELETE_ONE
-      const { error: deleteError } = await supabase.from(table).delete().eq(
-        "user_id",
-        insertedId,
-      );
+      const { error: deleteError } = await supabase.from(defaultTable).delete()
+        .eq("user_id", insertedId);
       if (deleteError) {
         throw new Error("DELETE_ONE Test Error: " + deleteError.message);
       }
 
-      // Clean up affected rows
-      await cleanupTestCases(affectedIds, table);
+      // Cleanup affected rows
+      await cleanupTestCases(affectedIds, defaultTable);
 
       return new Response(
         "All test cases executed and cleaned up successfully.",
       );
-    } else {
-      // Invalid action
-      return new Response(
-        JSON.stringify({ status: 400, error: "Invalid action provided" }),
-        { headers: { "Content-Type": "application/json" }, status: 400 },
-      );
     }
+
+    // Invalid action
+    return new Response(
+      JSON.stringify({ status: 400, error: "Invalid action provided" }),
+      { headers: { "Content-Type": "application/json" }, status: 400 },
+    );
   } catch (error: any) {
-    // General error handling
+    console.error("General Error:", error);
     return new Response(
       JSON.stringify({ status: 500, error: error.message }),
       { headers: { "Content-Type": "application/json" }, status: 500 },
