@@ -1,8 +1,54 @@
+import { EditButton, DeleteButton } from "./billings-buttons";
+import { mockBills } from "./mock-bills";
+
 export interface Bill{
     id: number
     name: string
     amount: string
     date: string
+}
+
+function BillingsHeader({ totalRevenueDisp }: { totalRevenueDisp: string }){
+  return( 
+    <div className="bg-[#2E2A5C] text-white p-4 flex justify-between items-center">
+      <div className="grid grid-cols-3 gap-4 w-3/5">
+        <div className="font-semibold text-lg">Bill Name</div>
+        <div className="font-semibold text-lg">Amount</div>
+        <div className="font-semibold text-lg">Date Billed</div>
+      </div>
+      <div className="w-2/5 text-right">
+        <div className="font-semibold text-lg">Total Revenue</div>
+        <div className="text-sm">
+          As of {new Date().toLocaleDateString()} at{" "}
+          {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+        </div>
+        <div className="text-3xl font-bold mt-1">{totalRevenueDisp}</div>
+      </div>
+    </div>
+  )
+ 
+}
+
+function BillingsBill(){
+   
+  return(
+      <div className="border-b border-[#2E2A5C]">
+      {mockBills.map((bill) => (
+        <div key={bill.id} className="flex items-center p-4 bg-[#FFF8F8]">
+          <div className="grid grid-cols-3 gap-4 w-3/5">
+            <div className="font-medium text-[#2E2A5C]">{bill.name}</div>
+            <div className="font-medium text-[#2E2A5C]">{bill.amount}</div>
+            <div className="font-medium text-[#2E2A5C]">{bill.date}</div>
+          </div>
+          <div className="w-2/5 flex justify-end space-x-2">
+            <EditButton/>
+            <DeleteButton/>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+  
 }
 
 function BillName(){
@@ -54,4 +100,4 @@ function BillDateBilled(){
     )
 }
 
-export{BillName, BillAmount, BillDateBilled}
+export{BillingsHeader, BillingsBill, BillName, BillAmount, BillDateBilled}
