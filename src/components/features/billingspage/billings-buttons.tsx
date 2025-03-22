@@ -48,6 +48,34 @@ function DeleteButton(){
 
 function NewBillButton(){
     return(
+      <div className="hidden md:flex justify-end p-4">
+        <button
+          onClick={() => router.push("/?action=add")}
+          className="bg-[#2E2A5C] hover:bg-[#3D3878] text-white px-4 py-2 rounded-md flex items-center gap-2"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12 5v14"></path>
+            <path d="M5 12h14"></path>
+          </svg>
+          New Bill
+        </button>
+      </div>
+    )
+}
+
+function NewBillButtonMobile(){
+  return(
+    <div>
       <button
         className="bg-[#2E2A5C] hover:bg-[#3D3878] text-white px-4 py-2 rounded-md flex items-center gap-2"
       >
@@ -67,7 +95,72 @@ function NewBillButton(){
         </svg>
         New Bill
       </button>
-    )
+
+
+      <button
+        onClick={() => router.push("/?action=add")}
+        className="md:hidden fixed bottom-6 right-6 bg-[#2E2A5C] hover:bg-[#3D3878] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12 5v14"></path>
+          <path d="M5 12h14"></path>
+        </svg>
+      </button>
+    </div>
+
+    
+  )
 }
 
-export {EditButton, DeleteButton, NewBillButton}
+function CloseButton(){
+  return(
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M18 6 6 18"></path>
+      <path d="m6 6 12 12"></path>
+    </svg>
+  )
+}
+function SaveButton({ saveIsLoading }: { saveIsLoading:(value: boolean) => boolean }){
+  return(
+    <button
+      type="submit"
+      disabled={saveIsLoading}
+      className="px-4 py-2 bg-[#2E2A5C] text-white rounded-md hover:bg-[#3D3878] disabled:opacity-50"
+    >
+      {saveIsLoading ? "Saving..." : "Save"}
+    </button>
+  )
+}
+function CancelButton({ showDialogStatus }: { showDialogStatus:(value: boolean) => void }){
+  return(
+    <button
+      type="button"
+      onClick={() => showDialogStatus(false)}
+      className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+    >
+      Cancel
+    </button>
+  )
+}
+
+export {EditButton, DeleteButton, NewBillButton, CloseButton, SaveButton, CancelButton}
