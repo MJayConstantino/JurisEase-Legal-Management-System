@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache"
 import { cookies } from "next/headers"
 import { mockBills } from "./mock-bills"
-import { Bill } from "./billings-bill-interface"
+import { Bill } from "./billings-bill-components"
 
 
 const getBills = async (): Promise<Bill[]> => {

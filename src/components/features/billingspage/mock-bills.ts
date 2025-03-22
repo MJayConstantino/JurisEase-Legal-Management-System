@@ -1,4 +1,4 @@
-import { Bill } from "./billings-bill-interface"
+import { Bill } from "./billings-bill-components"
 
 export const mockBills: Bill[] = [
   {

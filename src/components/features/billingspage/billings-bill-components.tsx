@@ -6,7 +6,7 @@ export interface Bill{
 }
 
 function BillName(){
-    return(
+    return( 
         <div className="grid gap-2">
                 <label htmlFor="name" className="text-sm font-medium">
                   Bill Name

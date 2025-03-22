@@ -1,5 +1,5 @@
 
-import { BillName, BillAmount, BillDateBilled } from "./billings-bill-interface";
+import { BillName, BillAmount, BillDateBilled } from "./billings-bill-components";
 import { NewBillButton } from "./billings-buttons";
 import { addBill } from "./billings-functions";
 
