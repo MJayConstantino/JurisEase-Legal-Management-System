@@ -1,6 +1,5 @@
 "use client";
 
-import type React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,11 +12,7 @@ import {
 import { createMatter } from "@/actions/matters";
 import { toast } from "sonner";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { BasicInformationStep } from "./formSteps/basicInformationStep";
-import { ClientInformationStep } from "./formSteps/clientInformationStep";
-import { AssignmentStep } from "./formSteps/assignmentStep";
-import { OpposingCouncilStep } from "./formSteps/opposingCouncilStep";
-import { CourtInformationStep } from "./formSteps/courtInformationStep";
+import { GetFormSteps } from "@/components/matters/formSteps/getFormSteps";
 
 interface AddMatterDialogProps {
   open: boolean;
@@ -67,10 +62,10 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const form = e.currentTarget as HTMLFormElement;
-    if (!form.checkValidity()) {
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const form = e?.currentTarget as HTMLFormElement;
+    if (form && !form.checkValidity()) {
       return;
     }
     setIsSubmitting(true);
@@ -114,68 +109,7 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
     }
   };
 
-  const formSteps = [
-    {
-      title: "Basic Information",
-      component: (
-        <BasicInformationStep
-          data={{
-            name: matterData.name,
-            case_number: matterData.case_number,
-            status: matterData.status,
-            description: matterData.description,
-          }}
-          onChange={handleChange}
-        />
-      ),
-    },
-    {
-      title: "Client Information",
-      component: (
-        <ClientInformationStep
-          data={{
-            client: matterData.client,
-            client_phone: matterData.client_phone,
-            client_email: matterData.client_email,
-            client_address: matterData.client_address,
-          }}
-          onChange={handleChange}
-        />
-      ),
-    },
-    {
-      title: "Assignment",
-      component: (
-        <AssignmentStep
-          data={{
-            assigned_attorney: matterData.assigned_attorney,
-            assigned_staff: matterData.assigned_staff,
-          }}
-          onChange={handleChange}
-        />
-      ),
-    },
-    {
-      title: "Opposing Council",
-      component: (
-        <OpposingCouncilStep
-          data={matterData.opposing_council}
-          onChange={(field, value) =>
-            handleNestedChange("opposing_council", field, value)
-          }
-        />
-      ),
-    },
-    {
-      title: "Court Information",
-      component: (
-        <CourtInformationStep
-          data={matterData.court}
-          onChange={(field, value) => handleNestedChange("court", field, value)}
-        />
-      ),
-    },
-  ];
+  const formSteps = GetFormSteps(matterData, handleChange, handleNestedChange);
 
   const nextStep = () => {
     if (currentStep < formSteps.length - 1) {
@@ -197,7 +131,6 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
       open={open}
       onOpenChange={(newOpen) => {
         if (!newOpen) {
-          // Reset to first step when dialog is closed
           setTimeout(() => setCurrentStep(0), 300);
         }
         onOpenChange(newOpen);
@@ -212,7 +145,6 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Step indicator */}
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-medium">
               {formSteps[currentStep].title}
@@ -222,12 +154,10 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
             </div>
           </div>
 
-          {/* Step content */}
           <div className="min-h-[300px]">
             {formSteps[currentStep].component}
           </div>
 
-          {/* Navigation buttons */}
           <div className="flex justify-between pt-4">
             <Button
               type="button"
@@ -249,7 +179,11 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
               </Button>
 
               {isLastStep ? (
-                <Button type="submit" disabled={isSubmitting}>
+                <Button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                >
                   {isSubmitting ? "Creating..." : "Create Matter"}
                 </Button>
               ) : (

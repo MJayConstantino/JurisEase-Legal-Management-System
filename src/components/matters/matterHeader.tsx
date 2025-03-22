@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, FileText, MoreHorizontal } from "lucide-react";
+import { ArrowLeft, Trash, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -11,25 +11,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Matter } from "@/types/matter.type";
+import { getStatusColor } from "@/utils/getStatusColor";
 
 interface MatterHeaderProps {
   matter: Matter;
 }
 
 export function MatterHeader({ matter }: MatterHeaderProps) {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "open":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
-      case "closed":
-        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
-      default:
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
-    }
-  };
-
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border shadow p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -56,14 +44,6 @@ export function MatterHeader({ matter }: MatterHeaderProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Calendar className="mr-2 h-4 w-4" />
-            Schedule
-          </Button>
-          <Button variant="outline" size="sm">
-            <FileText className="mr-2 h-4 w-4" />
-            Documents
-          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -73,10 +53,6 @@ export function MatterHeader({ matter }: MatterHeaderProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Edit Matter</DropdownMenuItem>
-              <DropdownMenuItem>Change Status</DropdownMenuItem>
-              <DropdownMenuItem>Print Details</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-red-600 focus:text-red-600">
                 Delete Matter
