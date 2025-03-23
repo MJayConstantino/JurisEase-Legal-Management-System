@@ -45,37 +45,37 @@ export default function UserLoggedIn() {
   return (
     <>
       <Header logoText="Dianson Law Office" navItems={navItems} />
-      <div className="container mx-auto py-10">
-        <div className="flex items-center justify-center mb-8 flex-col">
+      <div className="container mx-auto flex items-center justify-center flex-col mt-40">
+        <div className="flex items-center justify-center mb-8 flex-col text-center">
           <h1 className="text-4xl font-bold tracking-tight text-[#2D336B]">
-            Good to see you again at
+        Good to see you again at
           </h1>
           <h1 className="text-4xl font-black tracking-tight text-[#1B1E4B]">
-            Dianson Law Office
+        Dianson Law Office
           </h1>
         </div>
 
-        <div className="flex items-center justify-center flex-col shadow p-6">
+        <div className="flex items-center justify-center flex-col p-6 text-center">
           <div className="font-black text-2xl font-aileron items-center flex justify-center flex-col text-[#2D336B]">
-            Welcome, <UserInfo />
+        Welcome, <UserInfo />
           </div>
-          <div className="flex flex-row">
-            <Button
-              type="button"
-              variant="outline"
-              className="bg-[#2a3563] hover:bg-[#1e2547] text-white hover:text-white text-lg"
-              onClick={handleMatters}
-            >
-              Go to Dashboard
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="bg-[#2a3563] hover:bg-[#1e2547] text-white hover:text-white text-lg"
-              onClick={handleSignOut}
-            >
-              Sign out
-            </Button>
+          <div className="flex flex-row space-x-4 mt-4">
+        <Button
+          type="button"
+          variant="outline"
+          className="bg-[#2a3563] hover:bg-[#1e2547] text-white hover:text-white text-lg"
+          onClick={handleMatters}
+        >
+          Go to Dashboard
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          className="bg-[#2a3563] hover:bg-[#1e2547] text-white hover:text-white text-lg"
+          onClick={handleSignOut}
+        >
+          Sign out
+        </Button>
           </div>
         </div>
       </div>
