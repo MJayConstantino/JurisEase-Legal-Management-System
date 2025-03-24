@@ -9,10 +9,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import type { Task } from "@/app/(dashboard)/types";
+import type { Task } from "@/types/task.type";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
+import { getStatusColor } from "@/utils/getStatusColor";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+
 
 interface TaskListProps {
   tasks: Task[];
@@ -34,31 +36,6 @@ export default function TaskList({
   onDelete,
   onStatusChange,
 }: TaskListProps) {
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
-      case "medium":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
-      case "low":
-        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
-      case "pending":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
-      case "in-progress":
-        return "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
-    }
-  };
 
   const formatDate = (date: string | Date) => {
     try {
@@ -72,11 +49,11 @@ export default function TaskList({
   };
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[50px]"> </TableHead>
+            <TableHead className="w-[100px]"> </TableHead>
             <TableHead className="w-[150px]">Due Date</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Description</TableHead>
@@ -120,7 +97,7 @@ export default function TaskList({
                 <TableCell>
                   <Badge
                     variant="outline"
-                    className={getPriorityColor(task.priority)}
+                    className={getStatusColor(task.priority)}
                   >
                     {task.priority}
                   </Badge>

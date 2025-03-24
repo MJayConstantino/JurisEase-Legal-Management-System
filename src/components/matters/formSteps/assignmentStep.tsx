@@ -46,7 +46,10 @@ export function AssignmentStep({ data, onChange }: AssignmentStepProps) {
     data.assigned_attorney,
     users
   );
-  const selectedStaffName = getUserDisplayName(data.assigned_staff, users);
+  const selectedStaffName = getUserDisplayName(
+    data.assigned_staff, 
+    users
+  );
 
   return (
     <div className="space-y-4">

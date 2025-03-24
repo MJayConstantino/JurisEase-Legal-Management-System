@@ -17,4 +17,11 @@ export function generateId(): string {
   return Math.random().toString(36).substring(2, 9)
 }
 
+export function parseSupabaseDate(dateString: string | null): Date | null {
+  if (!dateString) {
+    return null;
+  }
+  return new Date(dateString);
+}
+
 
