@@ -3,7 +3,7 @@
 import { supabase } from "@/lib/supabase"
 import { revalidatePath } from "next/cache"
 import { Matter } from "@/types/matter.type"
-
+import { createSupabaseClient } from "@/utils/supabase/client"
 
 export async function getMatters() {
   const { data, error } = await supabase.from("matters").select("*").order("created_at", { ascending: false })
@@ -63,3 +63,14 @@ export async function deleteMatter(matterId: string) {
   return true
 }
 
+export async function fetchMattersAction() {
+  const supabase = createSupabaseClient()
+  const { data, error } = await supabase
+    .from("matters")
+    .select("id, name")
+
+  if (error) {
+    throw new Error("Failed to fetch matters: " + error.message)
+  }
+  return data
+}

@@ -17,8 +17,9 @@ export interface LoginPageProps {
     formData: FormData
   ) => Promise<{ error: string } | { error: null }>
   handleGoogleLoginfn?: () => Promise<{ error: string } | { error: null }>
-  onLoginSuccess: () => void
-  onGoogleLoginSuccess: () => void
+  onLoginSuccess?: () => void
+  onGoogleLoginSuccess?: () => void
+  redirectPath?: string
   isPending?: boolean
 }
 
@@ -27,6 +28,7 @@ export function LoginPage({
   handleGoogleLoginfn = handleGoogleSignIn,
   onLoginSuccess,
   onGoogleLoginSuccess,
+  redirectPath = '/test/userpage',
   isPending = false,
 }: LoginPageProps) {
   const [email, setEmail] = useState('')
@@ -47,7 +49,11 @@ export function LoginPage({
           setPassword('')
         } else {
           toast.success('Login Success')
-          onLoginSuccess?.()
+          if (onLoginSuccess) {
+            onLoginSuccess()
+          } else {
+            router.push(redirectPath)
+          }
         }
       } catch (err: any) {
         console.error('Error during login:', err)
@@ -58,6 +64,8 @@ export function LoginPage({
 
   // Handle Google Login
   const handleGoogleLogin = () => {
+    setIsGoogleLoading(true)
+
     startTransition(async () => {
       try {
         const { error } = await handleGoogleLoginfn()
@@ -72,6 +80,7 @@ export function LoginPage({
       } catch (err) {
         console.error('Error during Google login:', err)
         toast.error('Error Logging in')
+        setIsGoogleLoading(false)
       }
     })
   }

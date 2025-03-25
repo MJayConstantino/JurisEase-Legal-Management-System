@@ -12,6 +12,7 @@ import {
 import { Signout } from "./signout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import UserInfo from "@/app/test/userpage/user-info";
 
 interface AvatarDropdownMenuProps {
   isLoading?: boolean;
@@ -39,8 +40,8 @@ function AvatarDropdownMenu({
                 alt="User"
               />
               <AvatarFallback className="text-black dark:text-white">
-                U
-              </AvatarFallback>
+                {UserInfo.name.slice(0, 1).toUpperCase()}
+                </AvatarFallback>
             </Avatar>
           )}
         </Button>
@@ -50,7 +51,7 @@ function AvatarDropdownMenu({
         className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-md"
       >
         <DropdownMenuLabel className="px-3 py-2 text-sm text-black dark:text-white">
-          {isLoading ? <Skeleton className="w-24 h-4" /> : "User Email"}
+          {isLoading ? <Skeleton className="w-24 h-4" /> : <UserInfo/>}
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="border-gray-200 dark:border-gray-600" />
         <DropdownMenuItem className="px-3 py-2 text-black dark:text-white">
