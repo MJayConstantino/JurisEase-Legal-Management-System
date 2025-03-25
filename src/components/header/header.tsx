@@ -16,7 +16,7 @@ export function Header() {
           <span className="sr-only">Toggle sidebar</span>
         </SidebarTrigger>
         <div className="text-xl md:text-2xl font-bold truncate">
-          Dianson Law Office
+          JurisEase
         </div>
       </div>
 

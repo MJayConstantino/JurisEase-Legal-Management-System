@@ -1,68 +1,56 @@
 import Link from "next/link"
-import { cn } from "@/lib/utils"
 
-interface QuickLink {
-  label: string
-  href: string
-}
-
-interface SocialLink {
+interface FooterLink {
   label: string
   href: string
 }
 
 interface FooterProps {
-  companyName?: string
-  address?: string
-  phone?: string
-  quickLinks?: QuickLink[]
-  socialLinks?: SocialLink[]
-  className?: string
+  companyName: string
+  quickLinks: FooterLink[]
+  socialLinks: FooterLink[]
 }
 
-export default function Footer({
-  companyName = "Dianson Law Office",
-  address = "123 Legal Street, Cityville, State 12345",
-  phone = "(555) 123-4567",
-  quickLinks = [],
-  socialLinks = [],
-  className,
-}: FooterProps) {
+export default function Footer({ companyName, quickLinks, socialLinks }: FooterProps) {
   return (
-    <footer className={cn("bg-[#2a3563] text-white py-8", className)}>
+    <footer className="bg-[#1B1E4B] text-white py-12">
       <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h5 className="text-lg font-semibold mb-4">{companyName}</h5>
-            <p>{address}</p>
-            <p>Phone: {phone}</p>
+            <h3 className="text-xl font-bold mb-4">{companyName}</h3>
+            <p className="text-gray-300">Providing expert legal services with integrity and dedication.</p>
           </div>
+
           <div>
-            <h5 className="text-lg font-semibold mb-4">Quick Links</h5>
+            <h3 className="text-xl font-bold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              {quickLinks.map((link) => (
-                <li key={link.label}>
-                  <Link href={link.href} className="hover:text-gray-300">
+              {quickLinks.map((link, index) => (
+                <li key={index}>
+                  <Link href={link.href} className="text-gray-300 hover:text-white transition-colors">
                     {link.label}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
+
           <div>
-            <h5 className="text-lg font-semibold mb-4">Connect With Us</h5>
-            <div className="flex space-x-4">
-              {socialLinks.map((link) => (
-                <Link key={link.label} href={link.href} className="hover:text-gray-300">
-                  {link.label}
-                </Link>
+            <h3 className="text-xl font-bold mb-4">Connect With Us</h3>
+            <ul className="space-y-2">
+              {socialLinks.map((link, index) => (
+                <li key={index}>
+                  <Link href={link.href} className="text-gray-300 hover:text-white transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </div>
-        <div className="mt-8 text-center">
+
+        <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
           <p>
-            &copy; {new Date().getFullYear()} {companyName}. All rights reserved.
+            © {new Date().getFullYear()} {companyName}. All rights reserved.
           </p>
         </div>
       </div>

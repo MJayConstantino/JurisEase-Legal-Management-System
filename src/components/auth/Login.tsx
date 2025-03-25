@@ -28,7 +28,7 @@ export function LoginPage({
   handleGoogleLoginfn = handleGoogleSignIn,
   onLoginSuccess,
   onGoogleLoginSuccess,
-  redirectPath = "/test/userpage",
+  redirectPath = "/loggedIn",
   isPending = false,
 }: LoginPageProps) {
   const router = useRouter();
@@ -38,17 +38,12 @@ export function LoginPage({
   const [isTransitioning, startTransition] = useTransition();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isClient, setIsClient] = useState(false)
-  const [error, setError] = useState('')
   const searchParams = useSearchParams()
 
 
 
   useEffect(() => {
     setIsClient(true)
-    const errorMsg = searchParams.get("error")
-    if (errorMsg) {
-      setError(errorMsg)
-    }
   }, [searchParams])
 
   useEffect(() => {
@@ -57,7 +52,7 @@ export function LoginPage({
         data: { session },
       } = await supabase.auth.getSession()
       if (session) {
-        router.push("/test/userpage")
+        router.push("/loggedIn")
       }
     }
 
@@ -85,7 +80,7 @@ export function LoginPage({
             router.push(redirectPath);
           }
         }
-      } catch (err: any) {
+      } catch (err) {
         console.error("Error during login:", err);
         toast.error("Error Logging in" + err);
       }
@@ -114,14 +109,14 @@ export function LoginPage({
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4 font-aileron">
+    <div className="flex flex-col items-center justify-center bg-white font-aileron">
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-sm">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold tracking-tight text-[#2D336B] md:text-4xl">
             Welcome back!
           </h1>
           <h2 className="text-2xl font-black tracking-tight text-[#1B1E4B] md:text-3xl">
-            Dianson Law Office
+            JurisEase
           </h2>
           <p className="mt-1 text-sm text-[#2a3563]">
             Log in to access your matters, documents, and legal tools.
@@ -174,7 +169,7 @@ export function LoginPage({
               <Button
                 disabled={isPending || isTransitioning || isGoogleLoading}
                 type="submit"
-                className="bg-[#2a3563] hover:bg-[#1e2547] text-white"
+                className="bg-[#2a3563] hover:bg-[#1e2547] text-white hover:cursor-pointer"
               >
                 {isPending || isTransitioning ? (
                   <>
@@ -189,7 +184,7 @@ export function LoginPage({
                 onClick={handleGoogleLogin}
                 type="button"
                 variant="outline"
-                className="flex items-center justify-center gap-2 bg-white"
+                className="hover:cursor-pointer flex items-center justify-center gap-2 bg-white"
                 disabled={isPending || isTransitioning || isGoogleLoading}
               >
                 {isGoogleLoading ? (
