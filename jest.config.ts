@@ -3,7 +3,7 @@ import type { Config } from "jest";
 
 // Create a Jest configuration with Next.js-specific settings
 const createJestConfig = nextJest({
-  dir: "./", // Path to your Next.js app
+  dir: "./",
 });
 
 const customJestConfig: Config = {
@@ -13,26 +13,25 @@ const customJestConfig: Config = {
   projects: [
     {
       displayName: "frontend",
-      testEnvironment: "jsdom", // Simulate browser environment
+      testEnvironment: "jsdom",
       testMatch: ["<rootDir>/tests/frontend/**/*.test.{ts,tsx}"], // Match frontend test files
-      setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"], // React Testing Library setup
+      setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
       transform: {
-        "^.+\\.[tj]sx?$": "ts-jest", // Use ts-jest to transform TypeScript and JSX
+        "^.+\\.[tj]sx?$": "ts-jest",
       },
       moduleNameMapper: {
-        "^@/(.*)$": "<rootDir>/$1", // Resolve alias paths like `@/components/...`
+        "^@/(.*)$": "<rootDir>/$1",
       },
     },
     {
       displayName: "backend",
-      testEnvironment: "node", // Simulate Node.js environment for backend tests
+      testEnvironment: "node",
       testMatch: ["<rootDir>/tests/backend/**/*.test.{ts,tsx}"], // Match backend test files
       transform: {
-        "^.+\\.[tj]sx?$": "ts-jest", // Use ts-jest to transform TypeScript files
+        "^.+\\.[tj]sx?$": "ts-jest",
       },
     },
   ],
 };
 
-// Export the configuration
 export default createJestConfig(customJestConfig);
