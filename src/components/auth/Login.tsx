@@ -49,11 +49,7 @@ export function LoginPage({
           setPassword('')
         } else {
           toast.success('Login Success')
-          if (onLoginSuccess) {
-            onLoginSuccess()
-          } else {
-            router.push(redirectPath)
-          }
+          onLoginSuccess?.()
         }
       } catch (err: any) {
         console.error('Error during login:', err)
@@ -64,8 +60,6 @@ export function LoginPage({
 
   // Handle Google Login
   const handleGoogleLogin = () => {
-    setIsGoogleLoading(true)
-
     startTransition(async () => {
       try {
         const { error } = await handleGoogleLoginfn()
@@ -80,7 +74,6 @@ export function LoginPage({
       } catch (err) {
         console.error('Error during Google login:', err)
         toast.error('Error Logging in')
-        setIsGoogleLoading(false)
       }
     })
   }
