@@ -28,7 +28,6 @@ export function LoginPage({
   handleGoogleLoginfn = handleGoogleSignIn,
   onLoginSuccess,
   onGoogleLoginSuccess,
-  redirectPath = '/test/userpage',
   isPending = false,
 }: LoginPageProps) {
   const [email, setEmail] = useState('')
