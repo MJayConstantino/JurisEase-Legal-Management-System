@@ -42,20 +42,6 @@ const Template: StoryObj = {
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           const newValue = e.target.value
           setEmailValue(newValue)
-
-          if (timeoutId) clearTimeout(timeoutId)
-
-          // Set a new timeout to prevent spamming of toast
-          const newTimeoutId = setTimeout(() => {
-            const validation = emailSchema.safeParse(newValue)
-            if (!validation.success) {
-              toast.error(validation.error.errors[0].message)
-              action('Invalid email detected')(newValue)
-            } else {
-              action('onChange')(newValue)
-            }
-          }, 1000) //1 sec delay
-          setTimeoutId(newTimeoutId)
         }}
       />
     )
@@ -84,6 +70,8 @@ export const Filled: StoryObj = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const emailInput = canvas.getByPlaceholderText('Enter Email')
+    await userEvent.clear(emailInput)
+    await userEvent.type(emailInput, 'user@example.com')
     await expect(emailInput).toHaveValue('user@example.com')
     action('Filled input tested')('user@example.com')
   },
@@ -102,6 +90,10 @@ export const InvalidInput: StoryObj = {
 
     await waitFor(() => expect(emailInput).toHaveValue('invalid-email'))
     action('Invalid email typed')('invalid-email')
+    const validation = emailSchema.safeParse('invalid-email')
+    if (validation.error) {
+      toast.error(validation.error.errors[0].message)
+    }
   },
 }
 

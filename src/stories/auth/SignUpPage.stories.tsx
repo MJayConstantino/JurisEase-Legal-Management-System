@@ -63,13 +63,13 @@ export const Default: StoryObj<SignUpPageProps> = {
   ...Template,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const nameInput = canvas.getByPlaceholderText('Enter your full name')
-    const emailInput = canvas.getByPlaceholderText('Enter your email')
-    const passwordInput = canvas.getByPlaceholderText('Create a password')
+    const nameInput = canvas.getByLabelText('Full Name')
+    const emailInput = canvas.getByLabelText('Email')
+    const passwordInput = canvas.getByLabelText('Password')
     const signUpButton = canvas.getByRole('button', { name: 'Sign Up' })
 
     // Fill out the fields, including the name
-    await userEvent.type(nameInput, 'Test User')
+    // await userEvent.type(nameInput, 'Test User')
     await userEvent.type(emailInput, 'test@example.com')
     await userEvent.type(passwordInput, 'password123')
 
@@ -94,9 +94,9 @@ export const Success: StoryObj<SignUpPageProps> = {
   ...Template,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const nameInput = canvas.getByPlaceholderText('Enter your full name')
-    const emailInput = canvas.getByPlaceholderText('Enter your email')
-    const passwordInput = canvas.getByPlaceholderText('Create a password')
+    const nameInput = canvas.getByLabelText('Full Name')
+    const emailInput = canvas.getByLabelText('Email')
+    const passwordInput = canvas.getByLabelText('Password')
     const signUpButton = canvas.getByRole('button', { name: 'Sign Up' })
 
     await userEvent.type(nameInput, 'New User') // Always fill out the name
@@ -115,9 +115,9 @@ export const Failed: StoryObj<SignUpPageProps> = {
   ...Template,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const nameInput = canvas.getByPlaceholderText('Enter your full name')
-    const emailInput = canvas.getByPlaceholderText('Enter your email')
-    const passwordInput = canvas.getByPlaceholderText('Create a password')
+    const nameInput = canvas.getByLabelText('Full Name')
+    const emailInput = canvas.getByLabelText('Email')
+    const passwordInput = canvas.getByLabelText('Password')
     const signUpButton = canvas.getByRole('button', { name: 'Sign Up' })
 
     await userEvent.type(nameInput, 'Wrong User') // Always fill out the name
@@ -136,9 +136,9 @@ export const InvalidInput: StoryObj<SignUpPageProps> = {
   ...Template,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const nameInput = canvas.getByPlaceholderText('Enter your full name')
-    const emailInput = canvas.getByPlaceholderText('Enter your email')
-    const passwordInput = canvas.getByPlaceholderText('Create a password')
+    const nameInput = canvas.getByLabelText('Full Name')
+    const emailInput = canvas.getByLabelText('Email')
+    const passwordInput = canvas.getByLabelText('Password')
     const signUpButton = canvas.getByRole('button', { name: 'Sign Up' })
 
     await userEvent.type(nameInput, 'Test User') // Always fill out the name

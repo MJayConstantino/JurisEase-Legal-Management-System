@@ -19,12 +19,14 @@ export const EmailField: React.FC<EmailFieldProps> = ({
       type="email"
       name="email"
       label="Email"
+      aria-label="Email"
       icon={MailIcon}
       placeholder="Enter Email"
       value={value}
       onChange={onChange}
       required
       disabled={disabled}
+      text={''}
     />
   )
 }

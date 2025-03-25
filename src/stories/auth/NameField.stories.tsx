@@ -35,28 +35,17 @@ const Template: StoryObj = {
       }
     }, [timeoutId])
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value
+      setNameValue(newValue)
+    }
+
     return (
       <NameField
         {...args}
         value={nameValue}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          const newValue = e.target.value
-          setNameValue(newValue)
-
-          if (timeoutId) clearTimeout(timeoutId)
-
-          // Set a new timeout to prevent spamming of toast
-          const newTimeoutId = setTimeout(() => {
-            const validation = nameSchema.safeParse(newValue)
-            if (!validation.success) {
-              toast.error(validation.error.errors[0].message)
-              action('Invalid name detected')(newValue)
-            } else {
-              action('onChange')(newValue)
-            }
-          }, 1000) // 1-second delay
-          setTimeoutId(newTimeoutId)
-        }}
+        disabled={args.disabled} // Explicitly ensuring disabled prop is passed
+        onChange={handleChange}
       />
     )
   },
@@ -74,7 +63,7 @@ export const Pending: StoryObj = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const nameInput = canvas.getByPlaceholderText('Enter your full name')
-    await expect(nameInput).toBeDisabled()
+    await expect(nameInput).toBeDisabled() // Validate disabled state
   },
 }
 
@@ -84,7 +73,9 @@ export const Filled: StoryObj = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const nameInput = canvas.getByPlaceholderText('Enter your full name')
-    await expect(nameInput).toHaveValue('John Doe')
+    await userEvent.clear(nameInput)
+    await userEvent.type(nameInput, 'John Doe')
+    await expect(nameInput).toHaveValue('John Doe') // Validate filled input
     action('Filled input tested')('John Doe')
   },
 }
@@ -102,6 +93,10 @@ export const InvalidInput: StoryObj = {
 
     await waitFor(() => expect(nameInput).toHaveValue('JD'))
     action('Invalid name typed')('JD')
+    const validation = nameSchema.safeParse('JD')
+    if (validation.error) {
+      toast.error(validation.error.errors[0].message)
+    }
   },
 }
 

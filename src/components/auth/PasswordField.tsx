@@ -19,12 +19,14 @@ export const PasswordField: React.FC<PasswordFieldProps> = ({
       type="password"
       name="password"
       label="Password"
+      aria-label="Password"
       icon={KeyIcon}
       placeholder="Enter Password"
       value={value}
       onChange={onChange}
       required
       disabled={disabled}
+      text={''}
     />
   )
 }

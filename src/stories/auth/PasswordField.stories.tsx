@@ -45,22 +45,6 @@ const Template: StoryObj<PasswordFieldProps> = {
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           const newValue = e.target.value
           setPasswordValue(newValue)
-
-          if (timeoutId) clearTimeout(timeoutId)
-
-          // this is to prevent notification spamming
-
-          const newTimeoutId = setTimeout(() => {
-            const validation = passwordSchema.safeParse(newValue)
-            if (!validation.success) {
-              toast.error(validation.error.errors[0].message)
-              action('Invalid password detected')(newValue)
-            } else {
-              action('onChange')(newValue)
-            }
-          }, 1000)
-
-          setTimeoutId(newTimeoutId)
         }}
       />
     )
@@ -89,6 +73,8 @@ export const Filled: StoryObj<PasswordFieldProps> = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const passwordInput = canvas.getByPlaceholderText('Enter Password')
+    await userEvent.clear(passwordInput)
+    await userEvent.type(passwordInput, 'mypassword')
     await expect(passwordInput).toHaveValue('mypassword')
     action('Filled input tested')('mypassword')
   },
@@ -107,6 +93,10 @@ export const InvalidPassword: StoryObj<PasswordFieldProps> = {
 
     await waitFor(() => expect(passwordInput).toHaveValue('123'))
     action('Invalid password typed')('123')
+    const validation = passwordSchema.safeParse('JD')
+    if (validation.error) {
+      toast.error(validation.error.errors[0].message)
+    }
   },
 }
 

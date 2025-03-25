@@ -19,12 +19,14 @@ export const NameField: React.FC<NameFieldProps> = ({
       type="text"
       name="name"
       label="Full Name"
+      aria-label="Full Name"
       icon={UserIcon}
       placeholder="Enter your full name"
       value={value}
       onChange={onChange}
       required
       disabled={disabled}
+      text={''}
     />
   )
 }
