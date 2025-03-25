@@ -2,12 +2,12 @@
 
 import type React from "react"
 import { Button } from "@/components/ui/button"
-import UserInfo from "./user-info"
 import { createSupabaseClient } from "@/utils/supabase/client"
 import { useRouter } from "next/navigation"
 import Header from "@/components/homepage/header"
 import { Card, CardContent } from "@/components/ui/card"
 import { CalendarDays, LogOut, User } from "lucide-react"
+import UserInfo from "./user-info"
 
 export default function UserLoggedIn() {
   const supabase = createSupabaseClient()
@@ -46,7 +46,7 @@ export default function UserLoggedIn() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50">
-      <Header logoText="Dianson Law Office" navItems={navItems} />
+      <Header logoText="JurisEase" navItems={navItems} />
 
       <main className="flex-1 container mx-auto px-4 py-12 flex items-center justify-center">
         <Card className="w-full max-w-3xl shadow-lg border-0 bg-white/80 backdrop-blur-sm">
@@ -56,8 +56,8 @@ export default function UserLoggedIn() {
                 Welcome to <span className="text-[#1B1E4B] font-black">JurisEase</span>
               </h1>
               <div className="h-1 w-24 bg-[#2D336B] mx-auto my-4 rounded-full"></div>
-              <p className="text-gray-600 max-w-md mx-auto">
-                Your comprehensive legal management platform designed for modern law practices
+              <p className="text-gray-600 max-w-sm mx-auto">
+                Your comprehensive legal management platform designed for modern law practices.
               </p>
             </div>
 

@@ -44,7 +44,7 @@ export default function LandingPage() {
       <main className="flex-grow">
         <HeroSection
           title="Welcome to JurisEase"
-          subtitle="Expert legal services tailored to your needs"
+          subtitle="Expert legal services tailored to your needs."
           buttonText="Log In to Your Account"
         />
         <ServicesSection title="Our Services" services={services} />

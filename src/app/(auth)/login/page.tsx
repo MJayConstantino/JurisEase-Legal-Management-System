@@ -19,7 +19,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50">
 
-    <Header logoText="Dianson Law Office" navItems={navItems} />
+    <Header logoText="JurisEase" navItems={navItems} />
     <LoginPage
       onLoginSuccess={handleLoginSuccess}
       onGoogleLoginSuccess={handleLoginSuccess}
