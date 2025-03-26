@@ -8,7 +8,7 @@ export default function MatterNotFound() {
       <FileQuestion className="h-20 w-20 text-muted-foreground mb-6" />
       <h1 className="text-3xl font-bold mb-2">Matter Not Found</h1>
       <p className="text-muted-foreground mb-6">
-        The matter you're looking for doesn't exist or has been removed.
+        The matter you are looking for does not exist or has been removed.
       </p>
       <Button asChild>
         <Link href="/matters">Return to Matters</Link>
