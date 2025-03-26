@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/utils/supabase/server'
+import { createSupabaseClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
@@ -15,11 +15,11 @@ const AdvUserSchema = z.object({
 export type AdvUser = z.infer<typeof AdvUserSchema>
 
 export async function signup(formData: FormData) {
-  const supabase = await createClient()
+  const supabase = await createSupabaseClient()
 
   const {
     data: { user },
-    error: userError,
+    // error: userError,
   } = await supabase.auth.getUser()
 
   if (user) {
@@ -55,7 +55,7 @@ export async function signup(formData: FormData) {
 }
 
 export async function signout() {
-  const supabase = await createClient()
+  const supabase = await createSupabaseClient()
   const {
     data: { session },
   } = await supabase.auth.getSession()

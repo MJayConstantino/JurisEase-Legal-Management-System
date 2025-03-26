@@ -6,7 +6,7 @@ export default function Login() {
   const router = useRouter()
   // Handle successful login
   const handleLoginSuccess = () => {
-    router.push('/documents')
+    router.push('test/userpage')
   }
 
   return (
