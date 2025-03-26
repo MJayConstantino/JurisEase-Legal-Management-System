@@ -15,9 +15,7 @@ export function Header() {
         <SidebarTrigger className="text-white hover:bg-[#1B1E4B] dark:hover:bg-gray-800 h-10 w-10 hidden md:flex">
           <span className="sr-only">Toggle sidebar</span>
         </SidebarTrigger>
-        <div className="text-xl md:text-2xl font-bold truncate">
-          Dianson Law Office
-        </div>
+        <div className="text-xl md:text-2xl font-bold truncate">JurisEase</div>
       </div>
 
       <div className="flex items-center gap-2 md:gap-4">

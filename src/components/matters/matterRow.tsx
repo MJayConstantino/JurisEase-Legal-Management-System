@@ -15,10 +15,11 @@ import { Matter } from "@/types/matter.type";
 import { getUserDisplayName } from "@/utils/getUserDisplayName";
 import { getStatusColor } from "@/utils/getStatusColor";
 import { Skeleton } from "@/components/ui/skeleton";
+import { User } from "@/types/user.type";
 
 interface MatterRowProps {
   matter: Matter;
-  users: any[];
+  users: User[];
   isLoading: boolean;
   deletingId: string | null;
   onRowClick: (matterId: string) => void;
