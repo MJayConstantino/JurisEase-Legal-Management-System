@@ -1,10 +1,10 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-import { Calendar, Phone, Mail, MapPin, User, Briefcase } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { useState, useEffect } from 'react'
+import { Calendar, Phone, Mail, MapPin, User, Briefcase } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -13,63 +13,63 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { EditableCard } from "../editableCard";
-import { updateMatter } from "@/actions/matters";
-import { Matter } from "@/types/matter.type";
-import { toast } from "sonner";
-import { fetchUsersAction } from "@/actions/users";
-import { getUserDisplayName } from "@/utils/getUserDisplayName";
-import { getStatusColor } from "@/utils/getStatusColor";
-import { User as UserType } from "@/types/user.type";
-import { Skeleton } from "@/components/ui/skeleton";
+} from '@/components/ui/select'
+import { EditableCard } from '../editableCard'
+import { updateMatter } from '@/actions/matters'
+import { Matter } from '@/types/matter.type'
+import { toast } from 'sonner'
+import { fetchUsersAction } from '@/actions/users'
+import { getUserDisplayName } from '@/utils/getUserDisplayName'
+import { getStatusColor } from '@/utils/getStatusColor'
+import { User as UserType } from '@/types/user.type'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface CaseDetailsCardProps {
-  matter: Matter;
-  onUpdate?: (matter: Matter) => void;
+  matter: Matter
+  onUpdate?: (matter: Matter) => void
 }
 
 export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
-  const [editedMatter, setEditedMatter] = useState({ ...matter });
-  const [users, setUsers] = useState<UserType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [editedMatter, setEditedMatter] = useState({ ...matter })
+  const [users, setUsers] = useState<UserType[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     async function fetchUsers() {
       try {
-        setIsLoading(true);
-        const userData = await fetchUsersAction();
-        setUsers(userData);
+        setIsLoading(true)
+        const userData = await fetchUsersAction()
+        setUsers(userData)
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error('Error fetching users:', error)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
     }
-    fetchUsers();
-  }, []);
+    fetchUsers()
+  }, [])
 
   const handleChange = (field: string, value: any) => {
     setEditedMatter((prev) => ({
       ...prev,
       [field]: value,
-    }));
-  };
+    }))
+  }
 
   const handleSave = async () => {
     try {
-      const updatedMatter = await updateMatter(editedMatter);
-      onUpdate?.(updatedMatter);
-      toast.success("Case details have been updated successfully.");
+      const updatedMatter = await updateMatter(editedMatter)
+      onUpdate?.(updatedMatter)
+      toast.success('Case details have been updated successfully.')
     } catch (error) {
-      toast.error("Failed to update case details. Please try again.");
-      setEditedMatter({ ...matter });
+      toast.error('Failed to update case details. Please try again.')
+      setEditedMatter({ ...matter })
     }
-  };
+  }
 
   const handleCancel = () => {
-    setEditedMatter({ ...matter });
-  };
+    setEditedMatter({ ...matter })
+  }
 
   return (
     <EditableCard
@@ -104,7 +104,7 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
                 {isEditing ? (
                   <Input
                     value={editedMatter.name}
-                    onChange={(e) => handleChange("name", e.target.value)}
+                    onChange={(e) => handleChange('name', e.target.value)}
                   />
                 ) : (
                   <p className="font-medium">{editedMatter.name}</p>
@@ -118,13 +118,13 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
                   </h4>
                   {isEditing ? (
                     <Input
-                      value={editedMatter.case_number || ""}
+                      value={editedMatter.case_number || ''}
                       onChange={(e) =>
-                        handleChange("case_number", e.target.value)
+                        handleChange('case_number', e.target.value)
                       }
                     />
                   ) : (
-                    <p>{editedMatter.case_number || "N/A"}</p>
+                    <p>{editedMatter.case_number || 'N/A'}</p>
                   )}
                 </div>
 
@@ -135,7 +135,7 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
                   {isEditing ? (
                     <Select
                       value={editedMatter.status}
-                      onValueChange={(value) => handleChange("status", value)}
+                      onValueChange={(value) => handleChange('status', value)}
                     >
                       <SelectTrigger className="w-32">
                         <SelectValue placeholder="Status" />
@@ -166,7 +166,7 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
                   <Textarea
                     value={editedMatter.description}
                     onChange={(e) =>
-                      handleChange("description", e.target.value)
+                      handleChange('description', e.target.value)
                     }
                     rows={4}
                   />
@@ -185,9 +185,9 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
                     {isEditing ? (
                       <Input
                         type="date"
-                        value={editedMatter.date_opened.split("T")[0]}
+                        value={editedMatter.date_opened.split('T')[0]}
                         onChange={(e) =>
-                          handleChange("date_opened", e.target.value)
+                          handleChange('date_opened', e.target.value)
                         }
                         className="w-full"
                       />
@@ -211,11 +211,11 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
                         type="date"
                         value={
                           editedMatter.date_closed
-                            ? editedMatter.date_closed.split("T")[0]
-                            : ""
+                            ? editedMatter.date_closed.split('T')[0]
+                            : ''
                         }
                         onChange={(e) =>
-                          handleChange("date_closed", e.target.value || null)
+                          handleChange('date_closed', e.target.value || null)
                         }
                         className="w-full"
                       />
@@ -225,7 +225,7 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
                           ? new Date(
                               editedMatter.date_closed
                             ).toLocaleDateString()
-                          : "N/A"}
+                          : 'N/A'}
                       </p>
                     )}
                   </div>
@@ -242,7 +242,7 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
                 {isEditing ? (
                   <Input
                     value={editedMatter.client}
-                    onChange={(e) => handleChange("client", e.target.value)}
+                    onChange={(e) => handleChange('client', e.target.value)}
                   />
                 ) : (
                   <p className="font-medium">{editedMatter.client}</p>
@@ -258,39 +258,39 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
                     <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
                     {isEditing ? (
                       <Input
-                        value={editedMatter.client_phone || ""}
+                        value={editedMatter.client_phone || ''}
                         onChange={(e) =>
-                          handleChange("client_phone", e.target.value)
+                          handleChange('client_phone', e.target.value)
                         }
                       />
                     ) : (
-                      <p>{editedMatter.client_phone || "N/A"}</p>
+                      <p>{editedMatter.client_phone || 'N/A'}</p>
                     )}
                   </div>
                   <div className="flex items-center">
                     <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
                     {isEditing ? (
                       <Input
-                        value={editedMatter.client_email || ""}
+                        value={editedMatter.client_email || ''}
                         onChange={(e) =>
-                          handleChange("client_email", e.target.value)
+                          handleChange('client_email', e.target.value)
                         }
                       />
                     ) : (
-                      <p>{editedMatter.client_email || "N/A"}</p>
+                      <p>{editedMatter.client_email || 'N/A'}</p>
                     )}
                   </div>
                   <div className="flex items-start">
                     <MapPin className="h-4 w-4 mr-2 mt-1 text-muted-foreground" />
                     {isEditing ? (
                       <Input
-                        value={editedMatter.client_address || ""}
+                        value={editedMatter.client_address || ''}
                         onChange={(e) =>
-                          handleChange("client_address", e.target.value)
+                          handleChange('client_address', e.target.value)
                         }
                       />
                     ) : (
-                      <p>{editedMatter.client_address || "N/A"}</p>
+                      <p>{editedMatter.client_address || 'N/A'}</p>
                     )}
                   </div>
                 </div>
@@ -306,9 +306,9 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
                     <Briefcase className="h-4 w-4 mr-2 text-muted-foreground" />
                     {isEditing ? (
                       <Select
-                        value={editedMatter.assigned_attorney || ""}
+                        value={editedMatter.assigned_attorney || ''}
                         onValueChange={(value) =>
-                          handleChange("assigned_attorney", value)
+                          handleChange('assigned_attorney', value)
                         }
                       >
                         <SelectTrigger className="w-full">
@@ -337,7 +337,7 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
                     ) : (
                       <p>
                         {getUserDisplayName(
-                          editedMatter.assigned_attorney || "",
+                          editedMatter.assigned_attorney || '',
                           users
                         )}
                       </p>
@@ -353,9 +353,9 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
                     <User className="h-4 w-4 mr-2 text-muted-foreground" />
                     {isEditing ? (
                       <Select
-                        value={editedMatter.assigned_staff || ""}
+                        value={editedMatter.assigned_staff || ''}
                         onValueChange={(value) =>
-                          handleChange("assigned_staff", value)
+                          handleChange('assigned_staff', value)
                         }
                       >
                         <SelectTrigger className="w-full">
@@ -384,7 +384,7 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
                     ) : (
                       <p>
                         {getUserDisplayName(
-                          editedMatter.assigned_staff || "",
+                          editedMatter.assigned_staff || '',
                           users
                         )}
                       </p>
@@ -397,5 +397,5 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
         )
       }
     </EditableCard>
-  );
+  )
 }

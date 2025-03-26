@@ -1,11 +1,12 @@
 'use client'
 
-import type React from 'react'
-import { useState, useTransition } from 'react'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { InputField } from '@/components/ui/input-field'
-import { UserIcon, MailIcon, KeyIcon } from 'lucide-react'
+import React, { useState, useTransition } from 'react'
+import { NameField } from '@/components/auth/NameField'
+import { EmailField } from '@/components/auth/Emailfield'
+import { PasswordField } from '@/components/auth/PasswordField'
+import { SignUpButton } from '@/components/auth/SignupBtn'
+import { Header } from '@/components/auth/Header'
+import { Footer } from '@/components/auth/Footer'
 import { toast } from 'sonner'
 // import { signUpAction } from '@/actions/users'
 import { handleSignUpSubmit } from '@/action-handlers/users'
@@ -42,11 +43,12 @@ export function SignUpPage({
           setPassword('')
         } else {
           // Notify success
-          onSignUpSuccess?.() // Trigger callback on success
+          toast.success('Sign-up successful!')
+          onSignUpSuccess?.()
         }
       } catch (err) {
         console.error('Error during sign-up:', err)
-        toast.error('An unexpected error occurred during sign-up') // Notify unexpected errors
+        toast.error('An unexpected error occurred during sign-up')
       }
     })
   }
@@ -54,88 +56,58 @@ export function SignUpPage({
   return (
     <div className="flex flex-col items-center justify-center bg-white p-4 font-aileron">
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-sm">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-[#2D336B] md:text-4xl">
-            Create an Account
-          </h1>
-          <h2 className="text-2xl font-black tracking-tight text-[#1B1E4B] md:text-3xl">
-          JurisEase
-          </h2>
-          <p className="mt-2 text-sm text-[#2a3563]">
-            Sign up to access our legal services and resources.
-          </p>
-        </div>
+        {/* Header Section */}
+        <Header
+          title="Create an Account"
+          subtitle="Dianson Law Office"
+          description="Sign up to access our legal services and resources."
+        />
 
+        {/* Form Section */}
         <div className="rounded-lg bg-[#e1e5f2] p-6">
           <form onSubmit={handleSubmit}>
+            {/* Name Field */}
             <div className="mb-4">
-              <InputField
-                id="name"
-                name="name"
-                type="text"
-                label="Full Name"
-                icon={UserIcon}
-                placeholder="Enter your full name"
+              <NameField
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                required
                 disabled={isPending || isTransitioning}
               />
             </div>
 
+            {/* Email Field */}
             <div className="mb-4">
-              <InputField
-                text='email'
-                id="email"
-                name="email"
-                type="email"
-                label="Email"
-                icon={MailIcon}
-                placeholder="Enter your email"
+              <EmailField
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
                 disabled={isPending || isTransitioning}
               />
             </div>
 
+            {/* Password Field */}
             <div className="mb-6">
-              <InputField
-                text='password'
-                id="password"
-                name="password"
-                type="password"
-                label="Password"
-                icon={KeyIcon}
-                placeholder="Create a password"
+              <PasswordField
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
                 disabled={isPending || isTransitioning}
               />
             </div>
 
             <div className="flex flex-col space-y-4">
-              <Button
-                type="submit"
-                className="bg-[#2a3563] hover:bg-[#1e2547] hover:cursor-pointer text-white"
-                disabled={isPending || isTransitioning}
-              >
-                {isPending || isTransitioning ? 'Signing up...' : 'Sign Up'}
-              </Button>
+              <SignUpButton
+                isDisabled={isPending || isTransitioning}
+                isPending={isPending || isTransitioning}
+              />
             </div>
           </form>
         </div>
 
-        <div className="mt-4 text-center text-sm">
-          <span className="text-[#2a3563]">Already have an account? </span>
-          <Link
-            href="/login"
-            className="font-medium text-[#2a3563] hover:underline"
-          >
-            Log In
-          </Link>
-        </div>
+        {/* Footer Section */}
+        <Footer
+          text="Already have an account?"
+          linkHref="/login"
+          linkText="Log In"
+        />
       </div>
     </div>
   )
