@@ -166,4 +166,4 @@ function formatNumberWithCommas(value: string): string {
   })
 }
 
-export {getBills, useAddBill, useDeleteBill, useEditBill, useOpenEditDialog}
+export {getBills, useAddBill, useDeleteBill, useEditBill, useOpenEditDialog, calculateTotalRevenue}

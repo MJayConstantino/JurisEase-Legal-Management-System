@@ -25,7 +25,7 @@ function BillingsHeader({ totalRevenueDisplay }: { totalRevenueDisplay: string }
       <div className="bg-[#2E2A5C] text-white p-4 md:hidden">
           <div className="flex justify-between items-center mb-4">
             <div className="font-semibold text-lg">Total Revenue</div>
-            <div className="text-2xl font-bold">{totalRevenue}</div>
+            <div className="text-2xl font-bold">{totalRevenueDisplay}</div>
           </div>
           <div className="text-xs mb-6">
             As of {new Date().toLocaleDateString()} at{" "}

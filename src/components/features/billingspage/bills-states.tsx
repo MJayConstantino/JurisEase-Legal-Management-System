@@ -18,6 +18,7 @@ export function useBillsState() {
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [currentBill, setCurrentBill] = useState<Bill | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Form states for add/edit dialogs
   const [name, setName] = useState("")
@@ -69,6 +70,8 @@ export function useBillsState() {
     date,
     setDate,
     loading,
+    isSubmitting,
+    setIsSubmitting,
     setLoading,
     openAddDialog,
     closeAddDialog,
