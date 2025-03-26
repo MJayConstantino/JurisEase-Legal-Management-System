@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   eslint: {
     dirs: [
       "src/app",
-      "src/components",
+      "src/components"
     ],
   },
 };

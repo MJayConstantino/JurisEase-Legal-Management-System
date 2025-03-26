@@ -15,6 +15,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { fetchUsersAction } from "@/actions/users";
 import { MatterRow } from "./matterRow";
+import { User } from "@/types/user.type";
 
 interface MattersTableProps {
   matters: Matter[];
@@ -23,7 +24,7 @@ interface MattersTableProps {
 export function MattersTable({ matters }: MattersTableProps) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -52,6 +53,7 @@ export function MattersTable({ matters }: MattersTableProps) {
       await deleteMatter(matterId);
       toast.success("The matter has been deleted successfully.");
     } catch (error) {
+      console.error(error);
       toast.error("Failed to delete matter. Please try again.");
     } finally {
       setDeletingId(null);
