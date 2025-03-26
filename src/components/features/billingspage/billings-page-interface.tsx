@@ -1,4 +1,5 @@
 "use client"
+
 import { useEffect } from "react"
 import { BillAmount, BillDateBilled, BillingsHeader, BillName } from "./billings-bill-components"
 import { getBills, calculateTotalRevenue, useDeleteBill, useAddBill, useEditBill } from "./billings-functions"
@@ -6,10 +7,15 @@ import { useBillsState } from "./bills-states"
 import { CancelButton, CloseButton, DeleteButton, EditButton, NewBillButton, SaveButton } from "./billings-buttons"
 
 export function BillingInterface() {
-  const{bills, loading, name, setName, amount, setAmount, showEditDialog, setShowEditDialog, currentBill, date, setDate, openEditDialog, setShowAddDialog, showAddDialog, setBills, totalRevenue, setTotalRevenue} = useBillsState()
-  const deleteBill = useDeleteBill()
-  const addBill = useAddBill()
-  const editBill = useEditBill()
+  const{
+    bills, loading, name, setName, amount, setAmount, showEditDialog, setShowEditDialog, currentBill, date, 
+    setDate, openEditDialog, setShowAddDialog, showAddDialog, setBills, totalRevenue, setTotalRevenue
+  } = useBillsState()
+  
+  const handleDeleteBill = useDeleteBill()
+  const handleAddBill = useAddBill()
+  const handleEditBill = useEditBill()
+
   useEffect(() => {
     const fetchBills = async () => {
       try {
@@ -47,7 +53,7 @@ export function BillingInterface() {
                   </button>
 
                   <button
-                    onClick={() => deleteBill(bill.id)}
+                    onClick={() => handleDeleteBill(bill.id)}
                     className="p-2 rounded-md text-[#2E2A5C] hover:bg-[#E8E4FF]"
                   >
                     <DeleteButton/>
@@ -85,7 +91,7 @@ export function BillingInterface() {
             <div className="p-6">
               <h2 className="text-xl font-semibold text-[#2E2A5C] mb-4">Add New Bill</h2>
 
-              <form onSubmit={addBill} className="space-y-4">
+              <form onSubmit={handleAddBill} className="space-y-4">
                 <BillName nameDisplay={name} setNameDisplay={setName}/>
                 <BillAmount amountDisplay={amount} setAmountDisplay={setAmount}/>
                 <BillDateBilled dateDisplay={date} setDateDisplay={setDate}/>
@@ -115,15 +121,27 @@ export function BillingInterface() {
             <div className="p-6">
               <h2 className="text-xl font-semibold text-[#2E2A5C] mb-4">Edit Bill</h2>
 
-              <form onSubmit={editBill} className="space-y-4">
+              <form onSubmit={handleEditBill} className="space-y-4">
                 <BillName nameDisplay={name} setNameDisplay={setName}/>
                 <BillAmount amountDisplay={amount} setAmountDisplay={setAmount}/>
                 <BillDateBilled dateDisplay={date} setDateDisplay={setDate}/>
 
 
                 <div className="flex justify-end space-x-2 mt-6">
-                <CancelButton showDialogStatus={setShowEditDialog}/>
-                <SaveButton saveIsLoading={loading}/>
+                <button
+                    type="button"
+                    onClick={() => setShowAddDialog(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="px-4 py-2 bg-[#2E2A5C] text-white rounded-md hover:bg-[#3D3878] disabled:opacity-50"
+                  >
+                    {loading ? "Saving..." : "Save"}
+                  </button>
                 </div>
               </form>
             </div>

@@ -24,10 +24,8 @@ export default function BillingTable({ bills, totalRevenue }: { bills: Bill[]; t
 
   // Handle delete button click
   const handleDelete = async (id: number) => {
-    if (confirm("Are you sure you want to delete this bill?")) {
-      await deleteBill(id)
-      router.refresh()
-    }
+    await deleteBill(id)
+    router.refresh()
   }
 
   return (

@@ -8,7 +8,10 @@ import { BillName, BillAmount, BillDateBilled } from "./billings-bill-components
 
 export default function AddBillDialog() {
 
-   const {router, name, setName, amount, setAmount, date, setDate, setShowAddDialog, loading, setIsSubmitting} = useBillsState()
+   const {
+    router, name, setName, amount, setAmount, date,
+     setDate, setShowAddDialog, loading, setIsSubmitting
+    } = useBillsState()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

@@ -1,4 +1,4 @@
-import { Bill } from "./billings-bill-components"
+import { Bill } from "./bills-states";
 
 export const mockBills: Bill[] = [
   {

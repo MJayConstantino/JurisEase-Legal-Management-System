@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache"
 import { createServerClient } from "@supabase/ssr"
 
+
 // Add new bill
 export async function addBill(name: string, amount: string, date: string) {
   const supabase = createServerClient()

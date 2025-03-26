@@ -1,6 +1,5 @@
-
+// refactored
 import { BillingInterface } from "@/components/features/billingspage/billings-page-interface";
-
 
 export default function BillingsPage() {
     return (
