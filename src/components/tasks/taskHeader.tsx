@@ -13,8 +13,12 @@ export function TasksHeader() {
   const { filter, setFilter, setSearchQuery, addTask } = useTasks()
   const [isNewTaskOpen, setIsNewTaskOpen] = useState(false)
 
-  const handleSaveTask = async (task: Partial<Task>) => {
-    await addTask(task)
+  const handleSaveTask = async (task: Omit<Task, "id">) => {
+    try {
+      await addTask(task)
+    } catch (error) {
+      console.error("Error saving task:", error)
+    }
     setIsNewTaskOpen(false)
   }
 
@@ -27,7 +31,7 @@ export function TasksHeader() {
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 gap-4">
       <Button 
         onClick={() => setIsNewTaskOpen(true)} 
-        className="bg-indigo-900 hover:bg-indigo-800"
+        className="bg-indigo-900 hover:bg-indigo-800 hover:cursor-pointer"
       >
         <Plus className="mr-2 h-4 w-4" /> New Task
       </Button>

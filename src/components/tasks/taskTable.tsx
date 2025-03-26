@@ -22,19 +22,19 @@ export function TasksTable() {
 
   const handleStatusChange = (task: Task, checked: boolean) => {
     const newStatus: Status = checked ? "completed" : "pending"
-    updateTaskStatus(task.id, newStatus)
+    updateTaskStatus(task.task_id, newStatus)
   }
 
   const handleSaveTask = async (updatedTask: Partial<Task>) => {
     if (taskToEdit) {
-      await updateTaskItem(taskToEdit.id, updatedTask)
+      await updateTaskItem(taskToEdit.task_id, updatedTask)
       setTaskToEdit(null)
     }
   }
 
   const handleSaveAndCreateAnother = async (updatedTask: Partial<Task>) => {
     if (taskToEdit) {
-      await updateTaskItem(taskToEdit.id, updatedTask)
+      await updateTaskItem(taskToEdit.task_id, updatedTask)
       setTaskToEdit(null)
     }
   }
@@ -68,7 +68,7 @@ export function TasksTable() {
           </thead>
           <tbody>
             {tasks.map((task) => (
-              <tr key={task.id} className="border-b">
+              <tr key={task.task_id} className="border-b">
                 <td className="px-4 py-3">
                   <Checkbox
                     checked={task.status === "completed"}
@@ -105,7 +105,7 @@ export function TasksTable() {
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         className="text-destructive focus:text-destructive"
-                        onClick={() => removeTask(task.id)}
+                        onClick={() => removeTask(task.task_id)}
                       >
                         Delete
                       </DropdownMenuItem>

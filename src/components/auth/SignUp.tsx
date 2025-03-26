@@ -54,7 +54,7 @@ export function SignUpPage({
   }
 
   return (
-    <div className="flex flex-col items-center justify-center bg-white p-4 font-aileron">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4 font-aileron">
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-sm">
         {/* Header Section */}
         <Header

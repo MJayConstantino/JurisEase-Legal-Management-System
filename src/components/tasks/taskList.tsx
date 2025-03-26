@@ -71,7 +71,7 @@ export default function TaskList({
           ) : (
             tasks.map((task) => (
               <TableRow
-                key={task.id}
+                key={task.task_id}
                 className={task.status === "completed" ? "bg-gray-50" : ""}
               >
                 {" "}
@@ -79,7 +79,7 @@ export default function TaskList({
                   <Checkbox
                     checked={task.status === "completed"}
                     onCheckedChange={(checked) =>
-                      onStatusChange(task.id, checked as boolean)
+                      onStatusChange(task.task_id, checked as boolean)
                     }
                   />
                 </TableCell>
@@ -126,7 +126,7 @@ export default function TaskList({
                         </DropdownMenuItem>
                       )}
                       {onDelete && (
-                        <DropdownMenuItem onClick={() => onDelete(task.id)}>
+                        <DropdownMenuItem onClick={() => onDelete(task.task_id)}>
                           <Trash2 className="mr-2 h-4 w-4" />
                           Delete
                         </DropdownMenuItem>

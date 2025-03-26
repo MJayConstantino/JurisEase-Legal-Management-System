@@ -2,13 +2,13 @@ export type Priority = "low" | "medium" | "high"
 export type Status = "pending" | "completed"
 
 export interface Task {
-  id: string
+  task_id: string
   name: string
   description?: string
   dueDate?: Date
   priority: Priority
   status: Status
+  matter_id?: string
   matter: string;
-  recurring?: boolean
   createdAt?: Date
 }

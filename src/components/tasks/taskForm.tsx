@@ -34,14 +34,14 @@ interface TaskFormProps {
 
 export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }: TaskFormProps) {
   const [task, setTask] = useState<Task>({
-    id: "",
+    task_id: "",
     name: "",
     description: "",
     dueDate: undefined,
     priority: "low",
     status: "pending",
+    matter_id: "",
     matter: "",
-    recurring: false,
     createdAt: new Date(),
   })
 
@@ -74,38 +74,40 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
     if (createAnother) {
       onSaveAndCreateAnother(task)
     } else {
+
+      console.log("nag run ang on save")
       onSave(task)
     }
 
     // Reset form if creating another
     if (createAnother) {
       setTask({
-        id: "",
+        task_id: "",
         name: "",
         description: "",
         dueDate: undefined,
         priority: "low",
         status: "pending",
+        matter_id: "",
         matter: "",
-        recurring: false,
         createdAt: new Date(),
       })
     }
   }
 
-  const selectedMatterName =  getMattersDisplayName(task.matter, matters)
+  const selectedMatterName = getMattersDisplayName(task.matter, matters)
 
   return (
     <Dialog open={open} onOpenChange={(open) => onOpenChange(open)}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] w-full max-h-[90vh] overflow-y-auto p-4 md:p-6">
         <DialogHeader>
-          <DialogTitle>{task.id ? "Edit Task" : "New Task"}</DialogTitle>
+          <DialogTitle>{task.task_id ? "Edit Task" : "New Task"}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="space-y-2">
             <h3 className="text-sm font-medium">Details</h3>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="col-span-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="col-span-1 md:col-span-2">
                 <Label htmlFor="name">Name</Label>
                 <Input
                   id="name"
@@ -117,7 +119,7 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
               <div>
                 <Label htmlFor="priority">Priority</Label>
                 <Select value={task.priority} onValueChange={(value) => handleChange("priority", value)}>
-                  <SelectTrigger id="priority" className="mt-1">
+                  <SelectTrigger id="priority" className="mt-1 hover:cursor-pointer">
                     <SelectValue placeholder="Select priority" />
                   </SelectTrigger>
                   <SelectContent>
@@ -141,12 +143,12 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="assigned-matter">Assigned Matter</Label>
               <Select value={task.matter} onValueChange={(value) => handleChange("matter", value)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder={selectedMatterName ? "Select a matter":  selectedMatterName} />
+                <SelectTrigger className="w-full hover:cursor-pointer">
+                  <SelectValue placeholder={selectedMatterName ? "Select a matter" : selectedMatterName} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
@@ -157,7 +159,7 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
                       </SelectItem>
                     ) : matters.length > 0 ? (
                       matters.map((matter: Matter) => (
-                        <SelectItem key={matter.id} value={matter.id}>
+                        <SelectItem key={matter.name} value={matter.id}>
                           {matter.name}
                         </SelectItem>
                       ))
@@ -177,7 +179,7 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
                 value={task.status}
                 onValueChange={(value: "pending" | "completed") => handleChange("status", value)}
               >
-                <SelectTrigger id="taskStatus" className="mt-1">
+                <SelectTrigger id="taskStatus" className="mt-1 hover:cursor-pointer">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -194,7 +196,7 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
                   <Button
                     variant="outline"
                     className={cn(
-                      "mt-1 w-full justify-start text-left font-normal",
+                      "mt-1 w-full justify-start text-left font-normal hover:cursor-pointer",
                       !task.dueDate && "text-muted-foreground",
                     )}
                   >
@@ -214,18 +216,18 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
             </div>
           </div>
         </div>
-        <DialogFooter className="gap-2 sm:justify-between">
-          <div className="flex gap-2">
-            <Button type="submit" onClick={() => handleSubmit(false)}>
+        <DialogFooter className="flex-col space-y-2 sm:space-y-0 sm:flex-row sm:justify-between sm:space-x-2">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button type="submit" onClick={() => handleSubmit(false)} className="w-full sm:w-auto">
               Save task
             </Button>
-            <Button variant="outline" onClick={() => handleSubmit(true)}>
+            <Button variant="outline" onClick={() => handleSubmit(true)} className="w-full sm:w-auto">
               Save and create another
             </Button>
+            <Button variant="ghost" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
+              Cancel
+            </Button>
           </div>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
