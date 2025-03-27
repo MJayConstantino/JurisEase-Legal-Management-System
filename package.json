@@ -12,7 +12,7 @@
     "test:api": "cd ./tests/newman  && newman run auth.json --reporter-cli-no-console",
     "test:frontend": "jest --selectProjects frontend",
     "test:backend": "jest --selectProjects backend",
-    "test": "jest",
+    "test": "jest --detectOpenHandles --verbose",
     "test:watch": "jest --watch"
   },
   "dependencies": {
