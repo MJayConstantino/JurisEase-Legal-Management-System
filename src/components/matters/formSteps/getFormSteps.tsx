@@ -3,6 +3,7 @@ import { ClientInformationStep } from "@/components/matters//formSteps/clientInf
 import { AssignmentStep } from "@/components/matters//formSteps/assignmentStep";
 import { OpposingCouncilStep } from "@/components/matters//formSteps/opposingCouncilStep";
 import { CourtInformationStep } from "@/components/matters/formSteps/courtInformationStep";
+import { Matter } from "@/types/matter.type";
 
 export interface FormStep {
   title: string;
@@ -10,29 +11,30 @@ export interface FormStep {
 }
 
 export function GetFormSteps(
-  matterData: {
-    name: string;
-    case_number: string;
-    status: string;
-    description: string;
-    client: string;
-    client_phone: string;
-    client_email: string;
-    client_address: string;
-    assigned_attorney: string;
-    assigned_staff: string;
-    opposing_council: {
-      name: string;
-      phone: string;
-      email: string;
-      address: string;
-    };
-    court: {
-      name: string;
-      phone: string;
-      email: string;
-    };
-  },
+  matterData: Omit<Matter, "id">,
+  // {
+  //   name: string;
+  //   case_number: string;
+  //   status: string;
+  //   description: string;
+  //   client: string;
+  //   client_phone?: string;
+  //   client_email: string;
+  //   client_address: string;
+  //   assigned_attorney: string;
+  //   assigned_staff: string;
+  //   opposing_council: {
+  //     name: string;
+  //     phone: string;
+  //     email: string;
+  //     address: string;
+  //   };
+  //   court: {
+  //     name: string;
+  //     phone: string;
+  //     email: string;
+  //   };
+  // },
   handleChange: (field: string, value: string) => void,
   handleNestedChange: (parent: string, field: string, value: string) => void
 ): FormStep[] {
@@ -57,9 +59,9 @@ export function GetFormSteps(
         <ClientInformationStep
           data={{
             client: matterData.client,
-            client_phone: matterData.client_phone,
-            client_email: matterData.client_email,
-            client_address: matterData.client_address,
+            client_phone: matterData.client_phone || "N/A",
+            client_email: matterData.client_email || "N/A",
+            client_address: matterData.client_address || "N/A",
           }}
           onChange={handleChange}
         />
@@ -70,8 +72,8 @@ export function GetFormSteps(
       component: (
         <AssignmentStep
           data={{
-            assigned_attorney: matterData.assigned_attorney,
-            assigned_staff: matterData.assigned_staff,
+            assigned_attorney: matterData.assigned_attorney || "N/A",
+            assigned_staff: matterData.assigned_staff || "N/A",
           }}
           onChange={handleChange}
         />
@@ -81,7 +83,14 @@ export function GetFormSteps(
       title: "Opposing Council",
       component: (
         <OpposingCouncilStep
-          data={matterData.opposing_council}
+          data={
+            matterData.opposing_council || {
+              name: "N/A",
+              phone: "N/A",
+              email: "N/A",
+              address: "N/A",
+            }
+          }
           onChange={(field, value) =>
             handleNestedChange("opposing_council", field, value)
           }
@@ -92,7 +101,13 @@ export function GetFormSteps(
       title: "Court Information",
       component: (
         <CourtInformationStep
-          data={matterData.court}
+          data={
+            matterData.court || {
+              name: "N/A",
+              phone: "N/A",
+              email: "N/A",
+            }
+          }
           onChange={(field, value) => handleNestedChange("court", field, value)}
         />
       ),
