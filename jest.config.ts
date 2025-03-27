@@ -20,7 +20,7 @@ const customJestConfig: Config = {
         "^.+\\.[tj]sx?$": "ts-jest",
       },
       moduleNameMapper: {
-        "^@/(.*)$": "<rootDir>/$1",
+        "^@/(.*)$": "<rootDir>/src/$1",
       },
     },
     {

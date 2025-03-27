@@ -6,11 +6,7 @@ export interface HeaderProps {
   description: string
 }
 
-export const Header: React.FC<HeaderProps> = ({
-  title,
-  subtitle,
-  description,
-}) => {
+export const Header = ({ title, subtitle, description }: HeaderProps) => {
   return (
     <div className="mb-8 text-center">
       <h1 className="text-3xl font-bold tracking-tight text-[#2D336B] md:text-4xl">
