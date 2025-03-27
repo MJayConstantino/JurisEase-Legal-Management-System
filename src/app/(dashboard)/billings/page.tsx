@@ -1,5 +1,4 @@
-// refactored
-import { BillingInterface } from "@/components/features/billingspage/billings-page-interface";
+import { BillingInterface } from "@/components/billings/billingsPage"
 
 export default function BillingsPage() {
     return (

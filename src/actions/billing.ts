@@ -1,102 +1,49 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
-import { createServerClient } from "@supabase/ssr"
+import type { Bill } from "@/components/billings/billingsBillInterface"
+import { supabase } from "@/lib/supabase"
 
+// Bills table operations
+export async function fetchBills() {
+  const { data, error } = await supabase.from("bills").select("*").order("created_at", { ascending: false })
 
-// Add new bill
-export async function addBill(name: string, amount: string, date: string) {
-  const supabase = createServerClient()
+  if (error) {
+    console.error("Error fetching bills:", error)
+    return []
+  }
 
-  const formattedAmount = formatNumberWithCommas(amount)
+  return data as Bill[]
+}
 
-  const { error } = await supabase.from("bills").insert([
-    {
-      name,
-      amount: `${formattedAmount} PHP`,
-      date: formatDate(date),
-    },
-  ])
+export async function addBill(bill: Omit<Bill, "id">) {
+  const { data, error } = await supabase.from("bills").insert([bill]).select()
 
   if (error) {
     console.error("Error adding bill:", error)
-    return { success: false, message: error.message }
+    return null
   }
 
-  revalidatePath("/")
-  return { success: true }
+  return data?.[0] as Bill
 }
 
-// Edit bill
-export async function editBill(id: number, name: string, amount: string, date: string) {
-  const supabase = createServerClient()
-
-  const formattedAmount = formatNumberWithCommas(amount)
-
-  const { error } = await supabase
-    .from("bills")
-    .update({
-      name,
-      amount: `${formattedAmount} PHP`,
-      date: formatDate(date),
-    })
-    .eq("id", id)
+export async function updateBill(bill: Bill) {
+  const { data, error } = await supabase.from("bills").update(bill).eq("id", bill.id).select()
 
   if (error) {
     console.error("Error updating bill:", error)
-    return { success: false, message: error.message }
+    return null
   }
 
-  revalidatePath("/")
-  return { success: true }
+  return data?.[0] as Bill
 }
 
-// Delete Bill
-export async function deleteBill(id: number) {
-  const supabase = createServerClient()
-
+export async function deleteBill(id: string) {
   const { error } = await supabase.from("bills").delete().eq("id", id)
 
   if (error) {
     console.error("Error deleting bill:", error)
-    return { success: false, message: error.message }
+    return false
   }
 
-  revalidatePath("/")
-  return { success: true }
-}
-
-// Formats Date to MM/DD/YYYY format
-export function formatDate(dateString: string) {
-  if (!dateString) return ""
-  const [year, month, day] = dateString.split("-")
-  return `${month}/${day}/${year}`
-}
-
-// Formats Date to YYYY/MM/DD for supabase input
-export function convertToInputDateFormat(dateString: string) {
-  if (!dateString) return ""
-  const [month, day, year] = dateString.split("/")
-  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
-}
-
-// Adds commas to amounts i.e. 100000 => 100,000
-export function formatNumberWithCommas(value: string): string {
-  const cleanValue = value.replace(/,/g, "").replace(/[^\d.]/g, "")
-
-  const number = Number.parseFloat(cleanValue)
-  if (isNaN(number)) return "0"
-
-  return number.toLocaleString("en-US", {
-    maximumFractionDigits: 2,
-    minimumFractionDigits: 0,
-  })
-}
-
-export function formatBillAmount(amount: string): string {
-  const numericPart = amount.replace(/[^\d,]/g, "")
-  if (numericPart.includes(",")) return amount
-
-  const formatted = formatNumberWithCommas(numericPart)
-  return amount.replace(numericPart, formatted)
+  return true
 }
