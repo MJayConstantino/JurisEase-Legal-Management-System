@@ -9,6 +9,5 @@ export interface Task {
   priority: Priority
   status: Status
   matter_id?: string
-  matter: string;
   createdAt?: Date
 }

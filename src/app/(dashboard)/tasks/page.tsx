@@ -1,18 +1,19 @@
-import { TasksProvider } from "@/components/tasks/taskProvider"
-import { TasksHeader } from "@/components/tasks/taskHeader"
-import { TasksTable } from "@/components/tasks/taskTable"
+import { TaskList } from "@/components/tasks/taskList";
+import type { Metadata } from "next";
 
-export default function TasksPage() {
+export const metadata: Metadata = {
+  title: "Tasks | Dianson Law Office",
+  description: "Create and manage your legal tasks and assignments.",
+};
+
+export default function Task() {
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-6">Tasks</h1>
-      <TasksProvider>
-        <div className="bg-white rounded-lg border shadow-sm">
-          <TasksHeader />
-          <TasksTable />
-        </div>
-      </TasksProvider>
+    <div className="flex flex-col gap-6 h-full">
+      <h1 className="text-3xl font-bold">Tasks</h1>
+      <p className="text-muted-foreground">
+        Create and manage your legal tasks and assignments.
+      </p>
+      <TaskList />
     </div>
-  )
+  );
 }
-

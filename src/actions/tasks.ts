@@ -8,7 +8,7 @@ export async function getTasks() {
     const { data, error } = await supabase
       .from('tasks')
       .select('*')
-      .order('due_date', { ascending: true })
+      .order('dueDate', { ascending: true })
     
   if (error) {
     console.error("Error fetching task:", error)
