@@ -1,7 +1,6 @@
-import { useState } from "react"
-import { BillStatus, PaymentFrequency } from "./billingsBillInterface"
-import { Bill } from "./billingsBillInterface"
 
+import { useState } from "react"
+import { Bill, BillStatus, PaymentFrequency } from  "@/types/billing.type"
 
 
 export function BillingStates(){

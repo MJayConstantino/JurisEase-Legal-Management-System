@@ -1,4 +1,4 @@
-import type { Bill } from "./billingsBillInterface"
+import type { Bill } from  "@/types/billing.type"
 import { BillingsItem } from "@/components/billings/billingsItem"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 

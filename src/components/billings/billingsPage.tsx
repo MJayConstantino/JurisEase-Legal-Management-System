@@ -5,9 +5,9 @@ import { useEffect } from "react"
 import { BillingsHeader } from "@/components/billings/billingsHeader"
 import { BillingsList } from "@/components/billings/billingsList"
 import { BillingsAddDialog } from "@/components/billings/billingsAddDialog"
-import type { Bill } from "./billingsBillInterface"
+import type { Bill } from  "@/types/billing.type"
 import { BillingStates } from "./billingsStates"
-// import { fetchBills, addBill as addBillToDb, updateBill as updateBillInDb, deleteBill as deleteBillFromDb } from "@/lib/supabase"
+import { getBills, createBill as addBillToDb, updateBill as updateBillInDb, deleteBill as deleteBillFromDb } from "@/actions/billing"
 
 export function BillingInterface() {
   const {
@@ -18,18 +18,18 @@ export function BillingInterface() {
 
   // Gets bills from DB
   useEffect(() => {
-    // async function loadBills() {
-    //   setIsLoading(true)
-    //   try {
-    //     const data = await fetchBills()
-    //     setBills(data)
-    //   } catch (error) {
-    //     console.error('Failed to load bills:', error)
-    //   } finally {
-    //     setIsLoading(false)
-    //   }
-    // }
-    // loadBills()
+    async function loadBills() {
+      setIsLoading(true)
+      try {
+        const data = await getBills()
+        setBills(data)
+      } catch (error) {
+        console.error('Failed to load bills:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadBills()
   }, [])
 
   // Update current date and time (frequency: per minute)
@@ -65,60 +65,60 @@ export function BillingInterface() {
 
   // Add Bill
   const addBill = async (bill: Omit<Bill, "id">) => {
-    // setIsLoading(true)
-    // try {
-    //   const newBill = await addBillToDb(bill)
-    //   if (newBill) {
-    //     setBills(prev => [...prev, newBill])
-    //   }
-    // } catch (error) {
-    //   console.error('Failed to add bill:', error)
-    // } finally {
-    //   setIsLoading(false)
-    // }
+    setIsLoading(true)
+    try {
+      const newBill = await addBillToDb(bill)
+      if (newBill) {
+        setBills(prev => [...prev, newBill])
+      }
+    } catch (error) {
+      console.error('Failed to add bill:', error)
+    } finally {
+      setIsLoading(false)
+    }
 
     // // Local storage
-    const newBill = {
-      ...bill,
-      id: Date.now().toString(),
-    }
-    setBills((prev) => [...prev, newBill])
+    // const newBill = {
+    //   ...bill,
+    //   id: Date.now().toString(),
+    // }
+    // setBills((prev) => [...prev, newBill])
   }
 
   // Update/Edit Bill
   const updateBill = async (updatedBill: Bill) => {
-    // setIsLoading(true)
-    // try {
-    //   const result = await updateBillInDb(updatedBill)
-    //   if (result) {
-    //     setBills(prev => prev.map(bill => bill.id === updatedBill.id ? updatedBill : bill))
-    //   }
-    // } catch (error) {
-    //   console.error('Failed to update bill:', error)
-    // } finally {
-    //   setIsLoading(false)
-    // }
+    setIsLoading(true)
+    try {
+      const result = await updateBillInDb(updatedBill)
+      if (result) {
+        setBills(prev => prev.map(bill => bill.id === updatedBill.id ? updatedBill : bill))
+      }
+    } catch (error) {
+      console.error('Failed to update bill:', error)
+    } finally {
+      setIsLoading(false)
+    }
 
     // // Local storage
-    setBills((prev) => prev.map((bill) => (bill.id === updatedBill.id ? updatedBill : bill)))
+    // setBills((prev) => prev.map((bill) => (bill.id === updatedBill.id ? updatedBill : bill)))
   }
 
   // Delete Bill
   const deleteBill = async (id: string) => {
-    // setIsLoading(true)
-    // try {
-    //   const success = await deleteBillFromDb(id)
-    //   if (success) {
-    //     setBills(prev => prev.filter(bill => bill.id !== id))
-    //   }
-    // } catch (error) {
-    //   console.error('Failed to delete bill:', error)
-    // } finally {
-    //   setIsLoading(false)
-    // }
+    setIsLoading(true)
+    try {
+      const success = await deleteBillFromDb(id)
+      if (success) {
+        setBills(prev => prev.filter(bill => bill.id !== id))
+      }
+    } catch (error) {
+      console.error('Failed to delete bill:', error)
+    } finally {
+      setIsLoading(false)
+    }
 
     // // Local storage
-    setBills((prev) => prev.filter((bill) => bill.id !== id))
+    // setBills((prev) => prev.filter((bill) => bill.id !== id))
   }
 
   return (

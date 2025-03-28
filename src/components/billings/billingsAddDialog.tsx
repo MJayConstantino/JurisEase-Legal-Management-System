@@ -1,10 +1,9 @@
 "use client"
 
-import { useState } from "react"
 import { format } from "date-fns"
 import { CalendarIcon} from "lucide-react"
 
-import type { Bill, BillStatus, PaymentFrequency } from "./billingsBillInterface"
+import type { Bill, BillStatus, PaymentFrequency } from "@/types/billing.type"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"

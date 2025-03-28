@@ -2,10 +2,9 @@
 
 import { format } from "date-fns"
 
-import type { Bill } from "./billingsBillInterface"
+import type { Bill } from "@/types/billing.type"
 import { BillingsButtons } from "@/components/billings/billingsButtons"
 import { BillingsEditDialog } from "@/components/billings/billingsEditDialog"
-import { Badge } from "@/components/ui/badge"
 import { TableCell, TableRow } from "@/components/ui/table"
 import {
   AlertDialog,
