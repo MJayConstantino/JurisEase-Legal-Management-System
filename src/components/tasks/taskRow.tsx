@@ -1,50 +1,51 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import type { Task } from "@/types/task.type"
-import type { Matter } from "@/types/matter.type"
-import { format } from "date-fns"
-import { Check, Pencil, Trash2 } from "lucide-react"
-import { useState, useEffect } from "react"
-import { Badge } from "@/components/ui/badge"
-import { updateTask, deleteTask } from "@/actions/tasks"
-import { getMatters } from "@/actions/matters"
-import { getMattersDisplayName } from "@/utils/getMattersDisplayName"
-import { TaskForm } from "./taskForm"
-import { getStatusColor } from "@/utils/getStatusColor"
+import { Button } from "@/components/ui/button";
+import type { Task } from "@/types/task.type";
+import type { Matter } from "@/types/matter.type";
+import { format } from "date-fns";
+import { Check, Pencil, Trash2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Badge } from "@/components/ui/badge";
+import { updateTask, deleteTask } from "@/actions/tasks";
+import { getMatters } from "@/actions/matters";
+import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
+import { TaskForm } from "./taskForm";
+import { getStatusColor } from "@/utils/getStatusColor";
 interface TaskRowProps {
-  task: Task
+  task: Task;
 }
 
 export function TaskRow({ task }: TaskRowProps) {
-  const [isEditing, setIsEditing] = useState(false)
-  const [localTask, setLocalTask] = useState<Task>(task)
-  const [matters, setMatters] = useState<Matter[]>([])
-  const [isLoadingMatters, setIsLoadingMatters] = useState(true)
+  const [isEditing, setIsEditing] = useState(false);
+  const [localTask, setLocalTask] = useState<Task>(task);
+  const [matters, setMatters] = useState<Matter[]>([]);
+  const [isLoadingMatters, setIsLoadingMatters] = useState(true);
 
   useEffect(() => {
     async function fetchMatters() {
       try {
-        setIsLoadingMatters(true)
-        const matterData = await getMatters()
-        setMatters(matterData)
+        setIsLoadingMatters(true);
+        const matterData = await getMatters();
+        setMatters(matterData);
       } catch (error) {
-        console.error("Error fetching matters:", error)
+        console.error("Error fetching matters:", error);
       } finally {
-        setIsLoadingMatters(false)
+        setIsLoadingMatters(false);
       }
     }
-    fetchMatters()
-  }, [])
+    fetchMatters();
+  }, []);
 
   const formatDate = (date?: Date) => {
-    if (!date) return "No date"
+    if (!date) return "No date";
     try {
-      return format(date, "MMM dd, yyyy")
+      return format(date, "MMM dd, yyyy");
     } catch (error) {
-      return "Invalid date"
+      console.error(error);
+      return "Invalid date";
     }
-  }
+  };
 
   const handleComplete = async () => {
     try {
@@ -52,7 +53,7 @@ export function TaskRow({ task }: TaskRowProps) {
       setLocalTask({
         ...localTask,
         status: "completed",
-      })
+      });
 
       // Update on server
       await updateTask(
@@ -61,26 +62,26 @@ export function TaskRow({ task }: TaskRowProps) {
         {
           ...task,
           status: "completed",
-        },
-      )
+        }
+      );
     } catch (error) {
-      console.error("Error completing task:", error)
+      console.error("Error completing task:", error);
       // Revert optimistic update on error
-      setLocalTask(task)
+      setLocalTask(task);
     }
-  }
+  };
 
   const handleDelete = async () => {
     try {
-      await deleteTask(task.task_id)
+      await deleteTask(task.task_id);
     } catch (error) {
-      console.error("Error deleting task:", error)
+      console.error("Error deleting task:", error);
     }
-  }
+  };
 
   const handleEdit = () => {
-    setIsEditing(true)
-  }
+    setIsEditing(true);
+  };
 
   const handleSaveTask = async (updatedTask: Task) => {
     try {
@@ -88,31 +89,31 @@ export function TaskRow({ task }: TaskRowProps) {
       const optimisticTask = {
         ...localTask,
         ...updatedTask,
-      } as Task
+      } as Task;
 
       // Update local state immediately
-      setLocalTask(optimisticTask)
+      setLocalTask(optimisticTask);
 
       // Close the form immediately for better UX
-      setIsEditing(false)
+      setIsEditing(false);
 
       // Update the task on the server
-      await updateTask(task.task_id, { status: task.status }, optimisticTask)
+      await updateTask(task.task_id, { status: task.status }, optimisticTask);
     } catch (error) {
-      console.error("Error updating task:", error)
+      console.error("Error updating task:", error);
       // Revert optimistic update on error
-      setLocalTask(task)
+      setLocalTask(task);
     }
-  }
+  };
 
   const handleSaveAndCreateAnother = async (updatedTask: Task) => {
     // For editing, we don't need to implement "save and create another"
     // Just call the regular save function
-    await handleSaveTask(updatedTask)
-  }
+    await handleSaveTask(updatedTask);
+  };
 
   // Get matter name from matter ID
-  const matterName = getMattersDisplayName(localTask.matter_id || "", matters)
+  const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
 
   return (
     <>
@@ -121,27 +122,42 @@ export function TaskRow({ task }: TaskRowProps) {
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="font-medium truncate">{localTask.name}</h3>
             {localTask.priority && (
-              <Badge variant="outline" className={`text-xs ${getStatusColor(localTask.priority)}`}>
+              <Badge
+                variant="outline"
+                className={`text-xs ${getStatusColor(localTask.priority)}`}
+              >
                 {localTask.priority}
               </Badge>
             )}
           </div>
           <div className="text-xs sm:text-sm text-muted-foreground truncate">
-            {isLoadingMatters ? "Loading matter..." : matterName || "No matter assigned"}
+            {isLoadingMatters
+              ? "Loading matter..."
+              : matterName || "No matter assigned"}
           </div>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-          <div className="text-xs sm:text-sm hidden sm:block">{formatDate(localTask.dueDate)}</div>
+          <div className="text-xs sm:text-sm hidden sm:block">
+            {formatDate(localTask.dueDate)}
+          </div>
 
           <div className="w-16 sm:w-24">
-            <Badge variant="outline" className={`text-xs ${getStatusColor(localTask.status)}`}>
+            <Badge
+              variant="outline"
+              className={`text-xs ${getStatusColor(localTask.status)}`}
+            >
               {localTask.status}
             </Badge>
           </div>
 
           <div className="flex items-center">
-            <Button variant="ghost" size="icon" onClick={handleComplete} disabled={localTask.status === "completed"}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleComplete}
+              disabled={localTask.status === "completed"}
+            >
               <Check className="h-4 w-4" />
               <span className="sr-only">Complete</span>
             </Button>
@@ -171,6 +187,5 @@ export function TaskRow({ task }: TaskRowProps) {
         onSaveAndCreateAnother={handleSaveAndCreateAnother}
       />
     </>
-  )
+  );
 }
-
