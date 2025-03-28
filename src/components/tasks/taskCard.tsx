@@ -2,13 +2,17 @@
 
 import { Button } from "@/components/ui/button"
 import type { Task } from "@/types/task.type"
+import type { Matter } from "@/types/matter.type"
 import { format } from "date-fns"
 import { Calendar, Check, Pencil, Trash2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { updateTask, deleteTask } from "@/actions/tasks"
-import { useState } from "react"
+import { getMatters } from "@/actions/matters"
+import { getMattersDisplayName } from "@/utils/getMattersDisplayName"
+import { useState, useEffect } from "react"
 import { TaskForm } from "./taskForm"
 import { getStatusColor } from "@/utils/getStatusColor"
+
 interface TaskCardProps {
   task: Task
 }
@@ -16,6 +20,23 @@ interface TaskCardProps {
 export function TaskCard({ task }: TaskCardProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [localTask, setLocalTask] = useState<Task>(task)
+  const [matters, setMatters] = useState<Matter[]>([])
+  const [isLoadingMatters, setIsLoadingMatters] = useState(true)
+
+  useEffect(() => {
+    async function fetchMatters() {
+      try {
+        setIsLoadingMatters(true)
+        const matterData = await getMatters()
+        setMatters(matterData)
+      } catch (error) {
+        console.error("Error fetching matters:", error)
+      } finally {
+        setIsLoadingMatters(false)
+      }
+    }
+    fetchMatters()
+  }, [])
 
   const formatDate = (date?: Date) => {
     if (!date) return "No date"
@@ -91,6 +112,9 @@ export function TaskCard({ task }: TaskCardProps) {
     await handleSaveTask(updatedTask)
   }
 
+  // Get matter name from matter ID
+  const matterName = getMattersDisplayName(localTask.matter_id || "", matters)
+
   return (
     <>
       <div className="border rounded-lg p-3 sm:p-4 bg-white shadow-sm h-full flex flex-col">
@@ -108,7 +132,9 @@ export function TaskCard({ task }: TaskCardProps) {
         )}
 
         {localTask.matter_id && (
-          <div className="text-xs sm:text-sm font-medium mb-2 truncate">Matter: {localTask.matter_id}</div>
+          <div className="text-xs sm:text-sm font-medium mb-2 truncate">
+            Matter: {isLoadingMatters ? "Loading..." : matterName || "No matter assigned"}
+          </div>
         )}
 
         <div className="flex items-center text-xs sm:text-sm text-muted-foreground mb-4">

@@ -69,7 +69,7 @@ export function TaskList() {
   }
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="container mx-auto py-2">
       <TasksHeader
         onSearch={handleSearch}
         onStatusChange={handleStatusChange}

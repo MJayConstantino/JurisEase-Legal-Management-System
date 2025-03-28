@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function Task() {
   return (
-    <div className="flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-3 h-full">
       <h1 className="text-3xl font-bold">Tasks</h1>
       <p className="text-muted-foreground">
         Create and manage your legal tasks and assignments.
