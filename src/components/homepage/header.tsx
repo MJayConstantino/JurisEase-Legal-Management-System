@@ -1,5 +1,9 @@
+"use client"
+
+import { useState } from "react"
 import Link from "next/link"
-import { cn } from "@/lib/utils"
+import { Menu, X } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 interface NavItem {
   label: string
@@ -9,35 +13,61 @@ interface NavItem {
 interface HeaderProps {
   logoText: string
   navItems: NavItem[]
-  className?: string
-  logoClassName?: string
-  navClassName?: string
-  children?: React.ReactNode
 }
 
+export default function Header({ logoText, navItems }: HeaderProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-export default function Header({
-  logoText = "Dianson Law Office",
-  navItems = [],
-  className,
-  logoClassName,
-  navClassName,
-}: HeaderProps) {
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen)
+  }
+
   return (
-    <header className={cn("bg-[#2D336B] text-white", className)}>
-      <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-        <h1 className={cn("text-2xl font-bold", logoClassName)}>{logoText}</h1>
-        <nav>
-          <ul className={cn("flex lg:space-x-32 md:space-x-24 space-x-12 mr-2", navClassName)}>
-            {navItems.map((item) => (
-              <li key={item.label}>
-                <Link href={item.href} className="hover:text-gray-300">
+    <header className="bg-white shadow-sm">
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
+          <Link href="/" className="text-2xl font-bold text-[#2D336B]">
+            {logoText}
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            {navItems.map((item, index) => (
+              <Link
+                key={index}
+                href={item.href}
+                className="text-gray-700 hover:text-[#2D336B] font-medium transition-colors"
+              >
+                {item.label}
+              </Link>
+            ))}
+            <Button className="bg-[#2D336B] hover:bg-[#1B1E4B] text-white">Get Started</Button>
+          </nav>
+
+          {/* Mobile Menu Button */}
+          <button className="md:hidden text-gray-700" onClick={toggleMenu} aria-label="Toggle menu">
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <nav className="md:hidden mt-4 pb-4">
+            <div className="flex flex-col space-y-4">
+              {navItems.map((item, index) => (
+                <Link
+                  key={index}
+                  href={item.href}
+                  className="text-gray-700 hover:text-[#2D336B] font-medium transition-colors py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   {item.label}
                 </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+              ))}
+              <Button className="bg-[#2D336B] hover:bg-[#1B1E4B] text-white w-full">Get Started</Button>
+            </div>
+          </nav>
+        )}
       </div>
     </header>
   )

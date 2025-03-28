@@ -34,14 +34,13 @@ interface TaskFormProps {
 
 export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }: TaskFormProps) {
   const [task, setTask] = useState<Task>({
-    id: "",
+    task_id: "",
     name: "",
     description: "",
     dueDate: undefined,
     priority: "low",
     status: "pending",
-    matter: "",
-    recurring: false,
+    matter_id: "",
     createdAt: new Date(),
   })
 
@@ -80,32 +79,31 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
     // Reset form if creating another
     if (createAnother) {
       setTask({
-        id: "",
+        task_id: "",
         name: "",
         description: "",
         dueDate: undefined,
         priority: "low",
         status: "pending",
-        matter: "",
-        recurring: false,
+        matter_id: "",
         createdAt: new Date(),
       })
     }
   }
 
-  const selectedMatterName =  getMattersDisplayName(task.matter, matters)
+  const selectedMatterName = getMattersDisplayName(task.matter_id || "", matters)
 
   return (
     <Dialog open={open} onOpenChange={(open) => onOpenChange(open)}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{task.id ? "Edit Task" : "New Task"}</DialogTitle>
+          <DialogTitle>{task.task_id ? "Edit Task" : "New Task"}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="space-y-2">
             <h3 className="text-sm font-medium">Details</h3>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="col-span-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="sm:col-span-2">
                 <Label htmlFor="name">Name</Label>
                 <Input
                   id="name"
@@ -141,12 +139,12 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="assigned-matter">Assigned Matter</Label>
-              <Select value={task.matter} onValueChange={(value) => handleChange("matter", value)}>
+              <Select value={task.matter_id} onValueChange={(value) => handleChange("matter_id", value)}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder={selectedMatterName ? "Select a matter":  selectedMatterName} />
+                  <SelectValue placeholder={selectedMatterName || "Select a matter"} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
@@ -214,16 +212,16 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
             </div>
           </div>
         </div>
-        <DialogFooter className="gap-2 sm:justify-between">
-          <div className="flex gap-2">
-            <Button type="submit" onClick={() => handleSubmit(false)}>
+        <DialogFooter className="flex-col sm:flex-row gap-2 sm:justify-between">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button type="submit" className="w-full sm:w-auto" onClick={() => handleSubmit(false)}>
               Save task
             </Button>
-            <Button variant="outline" onClick={() => handleSubmit(true)}>
+            <Button variant="outline" className="w-full sm:w-auto" onClick={() => handleSubmit(true)}>
               Save and create another
             </Button>
           </div>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+          <Button variant="ghost" className="w-full sm:w-auto" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
         </DialogFooter>

@@ -13,7 +13,7 @@ export const SignUpButton: React.FC<SignUpButtonProps> = ({
   return (
     <Button
       type="submit"
-      className="bg-[#2a3563] hover:bg-[#1e2547] text-white"
+      className="bg-[#2a3563] hover:bg-[#1e2547] text-white hover: cursor-pointer"
       disabled={isDisabled}
     >
       {isPending ? 'Signing up...' : 'Sign Up'}
