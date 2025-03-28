@@ -1,9 +1,7 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
-// import { useRouter, usePathname } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   LayoutDashboard,
@@ -18,16 +16,11 @@ interface MatterTabsProps {
   matterId: string;
 }
 
-export function MatterTabs({ children, matterId }: MatterTabsProps) {
-  // const router = useRouter();
-  // const pathname = usePathname();
+export function MatterTabs({ children }: MatterTabsProps) {
   const [activeTab, setActiveTab] = useState("dashboard");
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-
-    // In a real app, you might want to navigate to different URLs for each tab
-    // router.push(`/matters/${matterId}/${value}`);
   };
 
   return (
