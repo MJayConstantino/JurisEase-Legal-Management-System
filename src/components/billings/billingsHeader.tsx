@@ -41,7 +41,8 @@ export function BillingsHeader({
         <div className="flex flex-col gap-4 md:hidden">
           <div className="flex items-center gap-2">
             <Button onClick={onNewBill} className="bg-indigo-900 hover:bg-indigo-800 text-white">
-              <Plus className="h-4 w-4 mr-1" /> New Bill
+              <Plus className="h-4 w-4" />
+              <span className="sr-only md:not-sr-only md:ml-1">New Bill</span>
             </Button>
 
             <Tabs value={activeTab} className="flex-1" onValueChange={onTabChange}>
@@ -70,7 +71,7 @@ export function BillingsHeader({
             />
           </div>
 
-          <div className="bg-indigo-900 text-white rounded-md w-full min-w-[250px] max-w-[350px]">
+          <div className="bg-indigo-900 text-white rounded-md w-full min-w-[250px] max-w-[350px] pl-1.5">
             <div className="p-3">
               <div className="font-medium">Total Revenue: {formatAmount(totalRevenue)}</div>
               <div className="text-sm text-indigo-200 mt-1">
@@ -81,9 +82,10 @@ export function BillingsHeader({
         </div>
 
         {/* Desktop layout - horizontal */}
-        <div className="hidden md:flex md:flex-row md:justify-between md:items-start">
+        <div className="hidden md:flex md:flex-row md:justify-between md:items-start w-full">
           <Button onClick={onNewBill} className="bg-indigo-900 hover:bg-indigo-800 text-white">
-            <Plus className="h-4 w-4 mr-1" /> New Bill
+            <Plus className="h-4 w-4" />
+            <span className="ml-1">New Bill</span>
           </Button>
 
           <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
@@ -107,7 +109,7 @@ export function BillingsHeader({
             </div>
           </div>
 
-          <div className="bg-indigo-900 text-white rounded-md min-w-[250px]">
+          <div className="bg-indigo-900 text-white rounded-md min-w-[250px] w-auto flex-grow max-w-[400px] pl-1.5">
             <div className="p-3">
               <div className="font-medium">Total Revenue: {formatAmount(totalRevenue)}</div>
               <div className="text-sm text-indigo-200 mt-1">

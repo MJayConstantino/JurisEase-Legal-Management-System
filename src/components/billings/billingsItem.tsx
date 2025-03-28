@@ -41,11 +41,17 @@ export function BillingsItem({ bill, onUpdate, onDelete }: BillingsItemProps) {
 
   return (
     <TableRow>
-      <TableCell className="font-medium break-words">{bill.name}</TableCell>
+      <TableCell className="font-medium break-words pl-8">{bill.name}</TableCell>
       <TableCell>{formatAmount(bill.amount)}</TableCell>
       <TableCell>{format(new Date(bill.dateBilled), "MMM d, yyyy")}</TableCell>
       <TableCell>
-        <Badge variant={bill.status === "Paid" ? "success" : "default"}>{bill.status}</Badge>
+        <span
+          className={`px-3 py-1 rounded-full text-sm font-medium ${
+            bill.status === "Paid" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+          }`}
+        >
+          {bill.status}
+        </span>
       </TableCell>
       <TableCell>{bill.frequency.type === "Other" ? bill.frequency.custom : bill.frequency.type}</TableCell>
       <TableCell className="text-right">

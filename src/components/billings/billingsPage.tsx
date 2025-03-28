@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 
 import { BillingsHeader } from "@/components/billings/billingsHeader"
 import { BillingsList } from "@/components/billings/billingsList"
