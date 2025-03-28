@@ -310,6 +310,6 @@ export function TasksHeader({ onSearch, onStatusChange, onViewChange, view, onTa
         />
       </div>
     </div>
-  )
+  );
 }
 
