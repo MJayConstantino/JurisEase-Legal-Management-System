@@ -41,6 +41,7 @@ export function OpposingCouncilDetailsCard({
       onUpdate?.(updatedMatter);
       toast.success("Opposing council details have been updated successfully.");
     } catch (error) {
+      console.error(error);
       toast.error(
         "Failed to update opposing council details. Please try again."
       );

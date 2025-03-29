@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-import { createClient } from '@/utils/supabase/server'
+import { createSupabaseClient } from '@/utils/supabase/server'
 import { z } from 'zod'
 
 const userSchema = z.object({
@@ -14,7 +14,7 @@ const userSchema = z.object({
 export type User = z.infer<typeof userSchema>
 
 export async function login(formData: FormData) {
-  const supabase = await createClient()
+  const supabase = await createSupabaseClient()
   //{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email. change configuration settings soon
 
   // const data: User = {
@@ -38,7 +38,7 @@ export async function login(formData: FormData) {
 }
 
 export async function signup(formData: FormData) {
-  const supabase = await createClient()
+  const supabase = await createSupabaseClient()
 
   // type-casting here for convenience
   // in practice, you should validate your inputs

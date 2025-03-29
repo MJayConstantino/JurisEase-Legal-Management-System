@@ -37,6 +37,7 @@ export function CourtDetailsCard({ matter, onUpdate }: CourtDetailsCardProps) {
       onUpdate?.(updatedMatter);
       toast.success("Court details have been updated successfully.");
     } catch (error) {
+      console.error(error);
       toast.error("Failed to update court details. Please try again.");
       setEditedMatter({ ...matter });
     }

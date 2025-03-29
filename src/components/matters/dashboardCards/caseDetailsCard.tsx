@@ -62,6 +62,7 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
       onUpdate?.(updatedMatter);
       toast.success("Case details have been updated successfully.");
     } catch (error) {
+      console.error(error);
       toast.error("Failed to update case details. Please try again.");
       setEditedMatter({ ...matter });
     }

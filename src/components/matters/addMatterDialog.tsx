@@ -1,56 +1,56 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { createMatter } from "@/actions/matters";
-import { toast } from "sonner";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { GetFormSteps } from "@/components/matters/formSteps/getFormSteps";
+} from '@/components/ui/dialog'
+import { createMatter } from '@/actions/matters'
+import { toast } from 'sonner'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { GetFormSteps } from '@/components/matters/formSteps/getFormSteps'
 
 interface AddMatterDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
 export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [currentStep, setCurrentStep] = useState(0)
   const [matterData, setMatterData] = useState({
-    name: "",
-    client: "",
-    status: "open",
-    description: "",
+    name: '',
+    client: '',
+    status: 'open',
+    description: '',
     created_at: new Date().toISOString(),
-    date_opened: new Date().toISOString().split("T")[0],
-    case_number: "",
-    client_phone: "",
-    client_email: "",
-    client_address: "",
-    assigned_attorney: "",
-    assigned_staff: "",
+    date_opened: new Date().toISOString().split('T')[0],
+    case_number: '',
+    client_phone: '',
+    client_email: '',
+    client_address: '',
+    assigned_attorney: '',
+    assigned_staff: '',
     opposing_council: {
-      name: "",
-      phone: "",
-      email: "",
-      address: "",
+      name: '',
+      phone: '',
+      email: '',
+      address: '',
     },
     court: {
-      name: "",
-      phone: "",
-      email: "",
+      name: '',
+      phone: '',
+      email: '',
     },
-  });
+  })
 
   const handleChange = (field: string, value: string) => {
-    setMatterData((prev) => ({ ...prev, [field]: value }));
-  };
+    setMatterData((prev) => ({ ...prev, [field]: value }))
+  }
 
   const handleNestedChange = (parent: string, field: string, value: string) => {
     setMatterData((prev) => ({
@@ -59,81 +59,81 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
         ...(prev[parent as keyof typeof prev] as any),
         [field]: value,
       },
-    }));
-  };
+    }))
+  }
 
   const handleSubmit = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    const form = e?.currentTarget as HTMLFormElement;
+    if (e) e.preventDefault()
+    const form = e?.currentTarget as HTMLFormElement
     if (form && !form.checkValidity()) {
-      return;
+      return
     }
-    setIsSubmitting(true);
+    setIsSubmitting(true)
 
     try {
-      await createMatter({ ...matterData });
-      toast.success("New matter has been created successfully.");
+      await createMatter({ ...matterData })
+      toast.success('New matter has been created successfully.')
 
       // Reset form
       setMatterData({
-        name: "",
-        client: "",
-        status: "open",
-        description: "",
+        name: '',
+        client: '',
+        status: 'open',
+        description: '',
         created_at: new Date().toISOString(),
-        date_opened: new Date().toISOString().split("T")[0],
-        case_number: "",
-        client_phone: "",
-        client_email: "",
-        client_address: "",
-        assigned_attorney: "",
-        assigned_staff: "",
+        date_opened: new Date().toISOString().split('T')[0],
+        case_number: '',
+        client_phone: '',
+        client_email: '',
+        client_address: '',
+        assigned_attorney: '',
+        assigned_staff: '',
         opposing_council: {
-          name: "",
-          phone: "",
-          email: "",
-          address: "",
+          name: '',
+          phone: '',
+          email: '',
+          address: '',
         },
         court: {
-          name: "",
-          phone: "",
-          email: "",
+          name: '',
+          phone: '',
+          email: '',
         },
-      });
-      setCurrentStep(0);
-      onOpenChange(false);
+      })
+      setCurrentStep(0)
+      onOpenChange(false)
     } catch (error) {
-      toast.error("Failed to create matter. Please try again.");
+      toast.error('Failed to create matter. Please try again.' + error)
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
-  const formSteps = GetFormSteps(matterData, handleChange, handleNestedChange);
+  const formSteps = GetFormSteps(matterData, handleChange, handleNestedChange)
 
   const nextStep = () => {
     if (currentStep < formSteps.length - 1) {
-      setCurrentStep(currentStep + 1);
+      setCurrentStep(currentStep + 1)
     }
-  };
+  }
 
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+      setCurrentStep(currentStep - 1)
     }
-  };
+  }
 
-  const isLastStep = currentStep === formSteps.length - 1;
-  const isFirstStep = currentStep === 0;
+  const isLastStep = currentStep === formSteps.length - 1
+  const isFirstStep = currentStep === 0
 
   return (
     <Dialog
       open={open}
       onOpenChange={(newOpen) => {
         if (!newOpen) {
-          setTimeout(() => setCurrentStep(0), 300);
+          setTimeout(() => setCurrentStep(0), 300)
         }
-        onOpenChange(newOpen);
+        onOpenChange(newOpen)
       }}
     >
       <DialogContent className="sm:max-w-[550px] max-h-[85vh] overflow-y-auto">
@@ -184,7 +184,7 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
                   onClick={handleSubmit}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Creating..." : "Create Matter"}
+                  {isSubmitting ? 'Creating...' : 'Create Matter'}
                 </Button>
               ) : (
                 <Button type="button" onClick={nextStep}>
@@ -197,5 +197,5 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

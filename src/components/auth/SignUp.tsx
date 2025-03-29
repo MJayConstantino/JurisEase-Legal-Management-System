@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useTransition } from 'react'
-import Link from 'next/link'
 import { NameField } from '@/components/auth/NameField'
 import { EmailField } from '@/components/auth/Emailfield'
 import { PasswordField } from '@/components/auth/PasswordField'
@@ -47,7 +46,7 @@ export function SignUpPage({
           toast.success('Sign-up successful!')
           onSignUpSuccess?.()
         }
-      } catch (err: any) {
+      } catch (err) {
         console.error('Error during sign-up:', err)
         toast.error('An unexpected error occurred during sign-up')
       }

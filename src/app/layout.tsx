@@ -4,7 +4,7 @@ import "./globals.css";
 import { ToastProvider } from "@/components/toast-provider";
 
 export const metadata: Metadata = {
-  title: "Dianson Law Office",
+  title: "JurisEase",
   description: "Legal case management system",
 };
 
