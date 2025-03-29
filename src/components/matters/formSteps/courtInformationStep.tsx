@@ -21,17 +21,17 @@ export function CourtInformationStep({
           <Label htmlFor="court-name">Court Name</Label>
           <Input
             id="court-name"
-            placeholder="Superior Court of California"
+            placeholder="Court Name"
             value={data.name}
             onChange={(e) => onChange("name", e.target.value)}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="court-phone">Phone</Label>
+          <Label htmlFor="court-phone">Contact Number / Phone</Label>
           <Input
             id="court-phone"
-            placeholder="(213) 555-1212"
+            placeholder="Contact Number / Phone"
             value={data.phone}
             onChange={(e) => onChange("phone", e.target.value)}
           />
@@ -42,7 +42,7 @@ export function CourtInformationStep({
           <Input
             id="court-email"
             type="email"
-            placeholder="clerk@court.gov"
+            placeholder="Court Email"
             value={data.email}
             onChange={(e) => onChange("email", e.target.value)}
           />

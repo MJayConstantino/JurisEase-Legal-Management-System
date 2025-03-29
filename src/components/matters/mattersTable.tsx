@@ -85,7 +85,7 @@ export function MattersTable({ matters }: MattersTableProps) {
           ) : (
             matters.map((matter) => (
               <MatterRow
-                key={matter.id}
+                key={matter.matter_id}
                 matter={matter}
                 users={users}
                 isLoading={isLoading}
