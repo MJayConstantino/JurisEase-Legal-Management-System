@@ -1,8 +1,10 @@
+// This is the bill column/table format for each bill and the bill deletion alert popup
+
 "use client"
 
 import { format } from "date-fns"
 
-import type { Bill } from "@/types/billing.type"
+import type { Bill, Client } from "@/types/billing.type"
 import { BillingsButtons } from "@/components/billings/billingsButtons"
 import { BillingsEditDialog } from "@/components/billings/billingsEditDialog"
 import { TableCell, TableRow } from "@/components/ui/table"
@@ -20,15 +22,13 @@ import { BillingStates } from "./billingsStates"
 
 interface BillingsItemProps {
   bill: Bill
+  client?: Client
   onUpdate: (bill: Bill) => void
   onDelete: (id: string) => void
 }
 
-export function BillingsItem({ bill, onUpdate, onDelete }: BillingsItemProps) {
-  const {
-    isEditDialogOpen, setIsEditDialogOpen, 
-    isDeleteDialogOpen, setIsDeleteDialogOpen
-  } = BillingStates()
+export function BillingsItem({ bill, client, onUpdate, onDelete }: BillingsItemProps) {
+  const {isEditDialogOpen, setIsEditDialogOpen, isDeleteDialogOpen, setIsDeleteDialogOpen,} = BillingStates()
 
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -39,13 +39,14 @@ export function BillingsItem({ bill, onUpdate, onDelete }: BillingsItemProps) {
   }
 
   return (
-    <TableRow>
-      <TableCell className="font-medium break-words pl-8">{bill.name}</TableCell>
+    <TableRow className="text-sm md:text-base">
+      <TableCell className="font-medium">{client?.name || "Unknown Client"}</TableCell>
+      <TableCell>{bill.name}</TableCell>
       <TableCell>{formatAmount(bill.amount)}</TableCell>
       <TableCell>{format(new Date(bill.dateBilled), "MMM d, yyyy")}</TableCell>
       <TableCell>
         <span
-          className={`px-3 py-1 rounded-full text-sm font-medium ${
+          className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium ${
             bill.status === "Paid" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
           }`}
         >
@@ -56,17 +57,27 @@ export function BillingsItem({ bill, onUpdate, onDelete }: BillingsItemProps) {
       <TableCell className="text-right">
         <BillingsButtons onEdit={() => setIsEditDialogOpen(true)} onDelete={() => setIsDeleteDialogOpen(true)} />
 
-        <BillingsEditDialog bill={bill} open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} onSave={onUpdate} />
+        <BillingsEditDialog
+          bill={bill}
+          clients={[client].filter(Boolean) as Client[]}
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          onSave={onUpdate}
+        />
 
         <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-          <AlertDialogContent>
+          <AlertDialogContent className="max-w-md">
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription>This will permanently delete the bill "{bill.name}".</AlertDialogDescription>
+              <AlertDialogTitle className="text-lg md:text-xl">Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription className="text-sm md:text-base">
+                This will permanently delete the bill "{bill.name}".
+              </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={() => onDelete(bill.id)}>Delete</AlertDialogAction>
+              <AlertDialogCancel className="text-sm md:text-base">Cancel</AlertDialogCancel>
+              <AlertDialogAction className="text-sm md:text-base" onClick={() => onDelete(bill.id)}>
+                Delete
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
