@@ -106,7 +106,7 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
             <Label htmlFor="case-number">Case Number</Label>
             <Input
               id="case-number"
-              placeholder="e.g. CV-2023-001"
+              placeholder="Case Number"
               value={matterData.case_number}
               onChange={(e) => handleChange("case_number", e.target.value)}
             />

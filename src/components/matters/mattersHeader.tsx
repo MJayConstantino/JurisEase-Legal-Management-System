@@ -15,13 +15,11 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AddMatterDialog } from "./addMatterDialog";
 
 interface MattersHeaderProps {
-  onSearch: (term: string) => void;
   onStatusChange: (status: string) => void;
   onSortChange: (sort: string) => void;
 }
 
 export function MattersHeader({
-  onSearch,
   onStatusChange,
   onSortChange,
 }: MattersHeaderProps) {
@@ -43,16 +41,6 @@ export function MattersHeader({
               <TabsTrigger value="closed">Closed</TabsTrigger>
             </TabsList>
           </Tabs>
-
-          <div className="relative md:ml-4 w-full md:w-64">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search matters..."
-              onChange={(e) => onSearch(e.target.value)}
-              className="pl-8 w-full"
-            />
-          </div>
         </div>
 
         <div className="flex items-center gap-2">

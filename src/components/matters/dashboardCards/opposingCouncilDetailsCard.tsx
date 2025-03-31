@@ -26,10 +26,7 @@ export function OpposingCouncilDetailsCard({
     setEditedMatter((prev) => ({
       ...prev,
       opposing_council: {
-        name: prev.opposing_council?.name ?? "N/A",
-        phone: prev.opposing_council?.phone ?? "N/A",
-        email: prev.opposing_council?.email ?? "N/A",
-        address: prev.opposing_council?.address ?? "N/A",
+        ...prev.opposing_council,
         [field]: value,
       },
     }));

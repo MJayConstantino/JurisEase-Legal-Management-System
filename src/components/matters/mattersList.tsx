@@ -34,17 +34,10 @@ export function MattersList() {
   const filteredMatters = matters
     .filter((matter) => {
       // Filter by search term
-      const matchesSearch =
-        searchTerm === "" ||
-        matter.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        matter.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        matter.matter_id.toLowerCase().includes(searchTerm.toLowerCase());
-
-      // Filter by status
       const matchesStatus =
         statusFilter === "all" || matter.status === statusFilter;
 
-      return matchesSearch && matchesStatus;
+      return matchesStatus;
     })
     .sort((a, b) => {
       // Sort by date
@@ -56,7 +49,6 @@ export function MattersList() {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border shadow">
       <MattersHeader
-        onSearch={setSearchTerm}
         onStatusChange={setStatusFilter}
         onSortChange={setSortOrder}
       />
