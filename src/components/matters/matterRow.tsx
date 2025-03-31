@@ -1,4 +1,5 @@
 "use client";
+import type React from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,6 +17,7 @@ import { getUserDisplayName } from "@/utils/getUserDisplayName";
 import { getStatusColor } from "@/utils/getStatusColor";
 import { Skeleton } from "@/components/ui/skeleton";
 import { User } from "@/types/user.type";
+import { formatDateForDisplay } from "@/utils/formatDateForDisplay";
 
 interface MatterRowProps {
   matter: Matter;
@@ -76,7 +78,7 @@ export function MatterRow({
         {isLoading ? (
           <Skeleton className="w-20 h-4" />
         ) : (
-          new Date(matter.date_opened).toLocaleDateString()
+          formatDateForDisplay(matter.date_opened)
         )}
       </TableCell>
       <TableCell className="text-right">

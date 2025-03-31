@@ -48,8 +48,8 @@ export function MattersList() {
     })
     .sort((a, b) => {
       // Sort by date
-      const dateA = new Date(a.date_opened).getTime();
-      const dateB = new Date(b.date_opened).getTime();
+      const dateA = new Date(a.date_opened!).getTime();
+      const dateB = new Date(b.date_opened!).getTime();
       return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
     });
 

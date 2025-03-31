@@ -1,5 +1,6 @@
 "use client";
 
+import type React from "react";
 import { useRouter } from "next/navigation";
 import {
   Table,
@@ -65,14 +66,14 @@ export function MattersTable({ matters }: MattersTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Case Number</TableHead>
-            <TableHead>Matter Name</TableHead>
-            <TableHead>Client</TableHead>
-            <TableHead>Assigned Attorney</TableHead>
-            <TableHead>Assigned Staff</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Date Opened</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="font-semibold">Case Number</TableHead>
+            <TableHead className="font-semibold">Matter Name</TableHead>
+            <TableHead className="font-semibold">Client</TableHead>
+            <TableHead className="font-semibold">Assigned Attorney</TableHead>
+            <TableHead className="font-semibold">Assigned Staff</TableHead>
+            <TableHead className="font-semibold">Status</TableHead>
+            <TableHead className="font-semibold">Date Opened</TableHead>
+            <TableHead className="text-right font-semibold">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
