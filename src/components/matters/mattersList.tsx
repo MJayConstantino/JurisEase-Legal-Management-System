@@ -10,7 +10,6 @@ import { Loader2 } from "lucide-react";
 export function MattersList() {
   const [matters, setMatters] = useState<Matter[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortOrder, setSortOrder] = useState("desc");
 

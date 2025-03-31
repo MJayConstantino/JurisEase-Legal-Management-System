@@ -74,6 +74,7 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
 
       onOpenChange(false);
     } catch (error) {
+      console.error(error);
       toast.error("Failed to create matter. Please try again.");
     } finally {
       setIsSubmitting(false);
