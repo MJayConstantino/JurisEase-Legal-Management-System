@@ -46,7 +46,7 @@ export function SignUpPage({
           toast.success('Sign-up successful!')
           onSignUpSuccess?.()
         }
-      } catch (err: any) {
+      } catch (err) {
         console.error('Error during sign-up:', err)
         toast.error('An unexpected error occurred during sign-up')
       }
