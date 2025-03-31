@@ -10,10 +10,10 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test:api": "cd ./tests/newman  && newman run auth.json --reporter-cli-no-console",
-    "test:frontend": "jest --selectProjects frontend",
-    "test:backend": "jest --selectProjects backend",
+    "test:frontend": "jest --selectProjects frontend --verbose",
+    "test:backend": "jest --selectProjects backend --verbose",
     "test": "jest --detectOpenHandles --verbose",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --detectOpenHandles --verbose --watchAll"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.6",
