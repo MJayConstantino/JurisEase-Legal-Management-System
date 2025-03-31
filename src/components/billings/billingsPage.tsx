@@ -266,7 +266,7 @@ export function BillingInterface() {
         />
 
         {/* Bills List with border and background */}
-        <div className="border rounded-md shadow-sm bg-white mt-4">
+        <div className="border dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 mt-4">
           {/* Bills List Header with New Bill Button and Status Tabs */}
           <BillingsListHeader
             onNewBill={() => setIsNewBillDialogOpen(true)}

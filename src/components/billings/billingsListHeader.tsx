@@ -35,11 +35,11 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
   }
 
   return (
-    <div className="flex justify-between rounded-tl-md rounded-tr-md items-center p-4 border-b bg-gray-50 w-full">
+    <div className="flex justify-between items-center p-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900 w-full">
       <div className="flex items-center w-[98%]">
         <Button
           onClick={onNewBill}
-          className="bg-indigo-900 hover:bg-indigo-800 text-white text-sm md:text-base py-2 px-3 md:py-4 md:px-4 mr-3 md:mr-6 whitespace-nowrap"
+          className="bg-indigo-900 hover:bg-indigo-800 dark:bg-indigo-700 dark:hover:bg-indigo-600 text-white text-sm md:text-base py-2 px-3 md:py-4 md:px-4 mr-3 md:mr-6 whitespace-nowrap"
         >
           <Plus className="h-4 w-4 md:mr-2" />
           <span className="hidden md:inline">New Bill</span>
@@ -62,18 +62,19 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
         <div className="md:hidden flex-grow">
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full justify-between">
+             <Button
+                variant="outline"
+                className="w-full justify-between dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
+              >
                 <span>{getStatusLabel(statusFilter)}</span>
                 <ChevronDown className="h-4 w-4 ml-2" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-full">
+            <DropdownMenuContent className="w-full dark:bg-gray-800 dark:border-gray-700">
               {statusOptions.map((option) => (
                 <DropdownMenuItem
                   key={option.value}
-                  className={
-                    statusFilter === (option.value as StatusFilter) ? "bg-indigo-100 text-indigo-900 font-medium" : ""
-                  }
+                  className={`${statusFilter === (option.value as StatusFilter) ? "bg-indigo-100 text-indigo-900 dark:bg-indigo-900 dark:text-indigo-100 font-medium" : "dark:text-gray-100"}`}
                   onClick={() => {
                     onStatusFilterChange(option.value as StatusFilter)
                     setIsDropdownOpen(false)
@@ -101,7 +102,9 @@ function TabButton({ isActive, onClick, children }: TabButtonProps) {
     <button
       onClick={onClick}
       className={`px-3 py-1.5 text-sm md:text-base rounded-md transition-colors ${
-        isActive ? "bg-indigo-100 text-indigo-900 font-medium" : "text-gray-600 hover:bg-gray-100"
+        isActive
+          ? "bg-indigo-100 text-indigo-900 dark:bg-indigo-900 dark:text-indigo-100 font-medium"
+          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
       }`}
     >
       {children}

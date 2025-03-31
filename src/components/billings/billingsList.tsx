@@ -35,10 +35,10 @@ export function BillingsList({
       <div className="flex items-center" onClick={() => onSortChange(field)}>
         {children}
         <ArrowUpDown
-          className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === field ? "text-indigo-900" : "text-gray-400"}`}
+         className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === field ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
         />
         {sortField === field && (
-          <span className="ml-1 text-xs md:text-sm text-indigo-900 font-bold">
+          <span className="ml-1 text-xs md:text-sm text-indigo-900 dark:text-indigo-300 font-bold">
             {sortDirection === "asc" ? "↑" : "↓"}
           </span>
         )}
@@ -49,7 +49,7 @@ export function BillingsList({
   return (
     <div className="overflow-x-auto dark:hover:bg-gray-800">
       <Table>
-        <TableHeader className="bg-gray-100">
+        <TableHeader className="bg-gray-100 dark:bg-gray-900">
           <TableRow className="text-sm md:text-base">
           <TableHead className="w-12 text-center text-sm md:text-base">#</TableHead>
             <SortableHeader field="clientName">Client Name</SortableHeader>

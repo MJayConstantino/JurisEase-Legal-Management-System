@@ -44,21 +44,21 @@ export function BillingsItem({ bill, client, onUpdate, onDelete, index }: Billin
   const getStatusStyles = (status: string) => {
     switch (status) {
       case "Active":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100"
       case "Paid":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
       case "Pending":
-        return "bg-yellow-100 text-yellow-800"
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100"
       case "Overdue":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100"
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100"
     }
   }
 
   return (
-    <TableRow className="text-sm md:text-base">
-      <TableCell className="text-center text-gray-500 font-medium w-12">{index}</TableCell>
+    <TableRow className="text-sm md:text-base dark:border-gray-700">
+      <TableCell className="text-center text-gray-500 dark:text-gray-400 font-medium w-12">{index}</TableCell>
       <TableCell className="font-medium">{client?.name || "Unknown Client"}</TableCell>
       <TableCell>{bill.name}</TableCell>
       <TableCell>{formatAmount(bill.amount)}</TableCell>
@@ -83,16 +83,21 @@ export function BillingsItem({ bill, client, onUpdate, onDelete, index }: Billin
         />
 
         <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-          <AlertDialogContent className="max-w-md">
+          <AlertDialogContent className="max-w-md dark:bg-gray-800 dark:border-gray-700">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-lg md:text-xl">Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription className="text-sm md:text-base">
+              <AlertDialogDescription className="text-sm md:text-base dark:text-gray-300">
                 This will permanently delete the bill "{bill.name}".
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="text-sm md:text-base">Cancel</AlertDialogCancel>
-              <AlertDialogAction className="text-sm md:text-base" onClick={() => onDelete(bill.id)}>
+            <AlertDialogCancel className="text-sm md:text-base dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600">
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                className="text-sm md:text-base bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600"
+                onClick={() => onDelete(bill.id)}
+              >
                 Delete
               </AlertDialogAction>
             </AlertDialogFooter>
