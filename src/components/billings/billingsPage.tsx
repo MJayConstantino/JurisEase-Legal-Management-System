@@ -5,12 +5,11 @@
 import { useEffect, useMemo } from "react"
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval } from "date-fns"
 
-import { BillingsHeader } from "@/components/billings/billingsHeader"
+import { BillingsRevenueHeader } from "@/components/billings/billingsRevenueHeader"
 import { BillingsList } from "@/components/billings/billingsList"
 import { BillingsAddDialog } from "@/components/billings/billingsAddDialog"
-import { TimeFilterHeader } from "@/components/billings/timeFilterHeader"
 import { BillingsListHeader } from "@/components/billings/billingsListHeader"
-import type { Bill, SortDirection, SortField, TimeFilter, StatusFilter } from "@/types/billing.type"
+import type { Bill, SortDirection, SortField, StatusFilter } from "@/types/billing.type"
 import { frequencyRank } from "@/types/billing.type"
 import { BillingStates } from "./billingsStates"
 // import { getBills, createBill as addBillToDb, updateBill as updateBillInDb, deleteBill as deleteBillFromDb } from "@/actions/billing"
@@ -253,26 +252,21 @@ export function BillingInterface() {
   }
 
   return (
-    <div className="py-4 md:py-8">
+    <div className="py-4 md:py-8 px-0">
       <div className="max-w-auto mx-auto">
-        {/* Main Total Revenue Header - Standalone */}
-        <BillingsHeader
+        {/* Combined Revenue Headers in a single row */}
+        <BillingsRevenueHeader
           totalRevenue={totalRevenue}
-          currentDateTime={currentDateTime}
-          onFilterChange={() => setTimeFilter("all")}
-        />
-
-        {/* Time-based Filter Headers - Standalone */}
-        <TimeFilterHeader
           todayRevenue={todayRevenue}
           weekRevenue={weekRevenue}
           monthRevenue={monthRevenue}
+          currentDateTime={currentDateTime}
           activeFilter={timeFilter}
           onFilterChange={setTimeFilter}
         />
 
         {/* Bills List with border and background */}
-        <div className="border rounded-md shadow-sm bg-white">
+        <div className="border rounded-md shadow-sm bg-white mt-4">
           {/* Bills List Header with New Bill Button and Status Tabs */}
           <BillingsListHeader
             onNewBill={() => setIsNewBillDialogOpen(true)}

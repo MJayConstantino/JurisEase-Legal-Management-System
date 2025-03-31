@@ -8,7 +8,6 @@ import { Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { StatusFilter } from "@/types/billing.type"
 import { useMediaQuery } from "@/hooks/use-media-query"
-import { useState } from "react"
 import { ChevronDown } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { BillingStates } from "./billingsStates"
@@ -36,7 +35,7 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
   }
 
   return (
-    <div className="flex justify-between items-center p-4 border-b bg-gray-50 w-full">
+    <div className="flex justify-between rounded-tl-md rounded-tr-md items-center p-4 border-b bg-gray-50 w-full">
       <div className="flex items-center w-[98%]">
         <Button
           onClick={onNewBill}

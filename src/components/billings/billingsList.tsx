@@ -47,7 +47,7 @@ export function BillingsList({
   )
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto dark:hover:bg-gray-800">
       <Table>
         <TableHeader className="bg-gray-100">
           <TableRow className="text-sm md:text-base">

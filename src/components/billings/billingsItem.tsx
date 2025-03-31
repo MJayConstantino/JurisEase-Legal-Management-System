@@ -1,6 +1,7 @@
+// Contains layout for the Bill item
+
 "use client"
 
-import { useState } from "react"
 import { format } from "date-fns"
 
 import type { Bill, Client } from "@/types/billing.type"
