@@ -1,4 +1,4 @@
-// Add bill dialog
+// Add Bill dialog box
 
 "use client"
 
@@ -26,10 +26,10 @@ interface BillingsAddDialogProps {
 }
 
 export function BillingsAddDialog({ open, onOpenChange, onSave, clients }: BillingsAddDialogProps) {
- const {
-  name, setName, clientId, setClientId, amount, setAmount, dateBilled, setDateBilled, 
-  status, setStatus, frequencyType, setFrequencyType, customFrequency, setCustomFrequency, 
- } = BillingStates()
+  const {
+    name, setName, clientId, setClientId, amount, setAmount, dateBilled, setDateBilled, 
+    status, setStatus, frequencyType, setFrequencyType, customFrequency, setCustomFrequency, 
+  }= BillingStates()
 
   const isDesktop = useMediaQuery("(min-width: 768px)")
 

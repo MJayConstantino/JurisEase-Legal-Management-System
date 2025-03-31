@@ -4,7 +4,6 @@
 
 import { format, startOfWeek, endOfWeek } from "date-fns"
 import type { TimeFilter } from "@/types/billing.type"
-
 interface TimeFilterHeaderProps {
   todayRevenue: number
   weekRevenue: number

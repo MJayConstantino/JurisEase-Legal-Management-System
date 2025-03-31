@@ -1,5 +1,3 @@
-// This Header is for the main Total Revenue on top of the screen.
-
 "use client"
 
 import { format } from "date-fns"

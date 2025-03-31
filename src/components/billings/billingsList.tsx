@@ -51,6 +51,7 @@ export function BillingsList({
       <Table>
         <TableHeader className="bg-gray-100">
           <TableRow className="text-sm md:text-base">
+          <TableHead className="w-12 text-center text-sm md:text-base">#</TableHead>
             <SortableHeader field="clientName">Client Name</SortableHeader>
             <SortableHeader field="name">Bill Name</SortableHeader>
             <SortableHeader field="amount">Amount</SortableHeader>
@@ -63,24 +64,25 @@ export function BillingsList({
         <TableBody>
           {isLoading ? (
             <TableRow>
-              <TableCell colSpan={7} className="text-center py-6 md:py-8 text-muted-foreground text-sm md:text-base">
+              <TableCell colSpan={8} className="text-center py-6 md:py-8 text-muted-foreground text-sm md:text-base">
                 Loading bills...
               </TableCell>
             </TableRow>
           ) : bills.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="text-center py-6 md:py-8 text-muted-foreground text-sm md:text-base">
+              <TableCell colSpan={8} className="text-center py-6 md:py-8 text-muted-foreground text-sm md:text-base">
                 No bills found. Add a new bill to get started.
               </TableCell>
             </TableRow>
           ) : (
-            bills.map((bill) => (
+            bills.map((bill, index) => (
               <BillingsItem
                 key={bill.id}
                 bill={bill}
                 client={clients.find((c) => c.id === bill.clientId)}
                 onUpdate={onUpdate}
                 onDelete={onDelete}
+                index={index + 1}
               />
             ))
           )}

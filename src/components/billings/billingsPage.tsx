@@ -10,10 +10,11 @@ import { BillingsList } from "@/components/billings/billingsList"
 import { BillingsAddDialog } from "@/components/billings/billingsAddDialog"
 import { TimeFilterHeader } from "@/components/billings/timeFilterHeader"
 import { BillingsListHeader } from "@/components/billings/billingsListHeader"
-import { Bill, frequencyRank, SortDirection, SortField, StatusFilter } from "@/types/billing.type"
+import type { Bill, SortDirection, SortField, TimeFilter, StatusFilter } from "@/types/billing.type"
+import { frequencyRank } from "@/types/billing.type"
 import { BillingStates } from "./billingsStates"
+// import { getBills, createBill as addBillToDb, updateBill as updateBillInDb, deleteBill as deleteBillFromDb } from "@/actions/billing"
 
-//import { getBills, getClientNames, createBill as addBillToDb, updateBill as updateBillInDb, deleteBill as deleteBillFromDb } from "@/actions/billing"
 
 export function BillingInterface() {
   const {
@@ -22,9 +23,8 @@ export function BillingInterface() {
     statusFilter, setStatusFilter
   } = BillingStates()
 
-  // Load bills from database on component mount
+  // Load bills from database
   useEffect(() => {
- 
     // async function loadBills() {
     //   setIsLoading(true)
     //   try {
@@ -36,20 +36,6 @@ export function BillingInterface() {
     //     setIsLoading(false)
     //   }
     // }
-
-    // async function loadClients() {
-    //   setIsLoading(true)
-    //   try {
-    //     const data = await getClientNames()
-    //     setClients(data)
-    //   } catch (error) {
-    //     console.error('Failed to load bills:', error)
-    //   } finally {
-    //     setIsLoading(false)
-    //   }
-    // }
-    
-    // loadClients()
     // loadBills()
 
   }, [])
@@ -62,10 +48,11 @@ export function BillingInterface() {
     return () => clearInterval(interval)
   }, [])
 
-  // Filter bills based on time filter
+  // Filter bills based on time filter and status filter
   useEffect(() => {
     let result = [...bills]
 
+    // Apply time filter
     if (timeFilter !== "all") {
       const today = new Date()
 
@@ -93,6 +80,7 @@ export function BillingInterface() {
       }
     }
 
+    // Apply status filter
     if (statusFilter !== "all") {
       const statusMap: Record<StatusFilter, string> = {
         all: "",
@@ -220,7 +208,7 @@ export function BillingInterface() {
     //   setIsLoading(false)
     // }
 
-    // For now, use local state only
+    // Local storage
     const newBill = {
       ...bill,
       id: Date.now().toString(),
@@ -242,7 +230,7 @@ export function BillingInterface() {
     //   setIsLoading(false)
     // }
 
-    // For now, use local state only
+    //Local Storage
     setBills((prev) => prev.map((bill) => (bill.id === updatedBill.id ? updatedBill : bill)))
   }
 
@@ -260,13 +248,13 @@ export function BillingInterface() {
     //   setIsLoading(false)
     // }
 
-    // For now, use local state only
+    // Local Storage
     setBills((prev) => prev.filter((bill) => bill.id !== id))
   }
 
   return (
-    <div className="py-4 md:py-8 px-4 md:px-10">
-      <div className="max-w-[1200px] mx-auto">
+    <div className="py-4 md:py-8">
+      <div className="max-w-auto mx-auto">
         {/* Main Total Revenue Header - Standalone */}
         <BillingsHeader
           totalRevenue={totalRevenue}
@@ -285,7 +273,7 @@ export function BillingInterface() {
 
         {/* Bills List with border and background */}
         <div className="border rounded-md shadow-sm bg-white">
-          {/* Bills List Header with New Bill Button */}
+          {/* Bills List Header with New Bill Button and Status Tabs */}
           <BillingsListHeader
             onNewBill={() => setIsNewBillDialogOpen(true)}
             statusFilter={statusFilter}

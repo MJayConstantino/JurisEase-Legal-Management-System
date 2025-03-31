@@ -26,6 +26,9 @@ export function BillingStates(){
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
+    // billing list header
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
     // billing page
     const [bills, setBills] = useState<Bill[]>([])
     const [clients, setClients] = useState<Client[]>(mockClients)
@@ -38,13 +41,14 @@ export function BillingStates(){
     const [sortField, setSortField] = useState<SortField | null>(null)
     const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
 
-
     // Spacing here is based on above orientation for easy identification
     return{
         name, setName, clientId, setClientId, amount, setAmount, dateBilled, setDateBilled, 
         status, setStatus, frequencyType, setFrequencyType, customFrequency, setCustomFrequency, 
         
         isEditDialogOpen, setIsEditDialogOpen, isDeleteDialogOpen, setIsDeleteDialogOpen,
+
+        isDropdownOpen, setIsDropdownOpen,
 
         bills, setBills, filteredBills, setFilteredBills, clients, setClients, currentDateTime, setCurrentDateTime, isNewBillDialogOpen, 
         setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, setTimeFilter, sortField, setSortField, sortDirection, setSortDirection,

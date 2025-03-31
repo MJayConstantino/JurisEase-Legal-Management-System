@@ -1,7 +1,6 @@
-// This is the bill column/table format for each bill and the bill deletion alert popup
-
 "use client"
 
+import { useState } from "react"
 import { format } from "date-fns"
 
 import type { Bill, Client } from "@/types/billing.type"
@@ -25,10 +24,13 @@ interface BillingsItemProps {
   client?: Client
   onUpdate: (bill: Bill) => void
   onDelete: (id: string) => void
+  index: number
 }
 
-export function BillingsItem({ bill, client, onUpdate, onDelete }: BillingsItemProps) {
-  const {isEditDialogOpen, setIsEditDialogOpen, isDeleteDialogOpen, setIsDeleteDialogOpen,} = BillingStates()
+export function BillingsItem({ bill, client, onUpdate, onDelete, index }: BillingsItemProps) {
+  const {
+    isEditDialogOpen, setIsEditDialogOpen, isDeleteDialogOpen, setIsDeleteDialogOpen
+  } = BillingStates()
 
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -37,6 +39,7 @@ export function BillingsItem({ bill, client, onUpdate, onDelete }: BillingsItemP
       maximumFractionDigits: 2,
     }).format(amount)
   }
+
   const getStatusStyles = (status: string) => {
     switch (status) {
       case "Active":
@@ -54,6 +57,7 @@ export function BillingsItem({ bill, client, onUpdate, onDelete }: BillingsItemP
 
   return (
     <TableRow className="text-sm md:text-base">
+      <TableCell className="text-center text-gray-500 font-medium w-12">{index}</TableCell>
       <TableCell className="font-medium">{client?.name || "Unknown Client"}</TableCell>
       <TableCell>{bill.name}</TableCell>
       <TableCell>{formatAmount(bill.amount)}</TableCell>
