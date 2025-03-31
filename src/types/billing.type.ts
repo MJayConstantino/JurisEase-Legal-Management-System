@@ -1,4 +1,4 @@
-export type BillStatus = "Paid" | "Active"
+export type BillStatus = "Active" | "Paid" | "Pending" | "Overdue"
 
 export type PaymentFrequency =
   | { type: "Monthly" }
@@ -28,6 +28,8 @@ export type SortDirection = "asc" | "desc"
 export type SortField = "clientName" | "name" | "amount" | "dateBilled" | "status" | "frequency"
 
 export type TimeFilter = "all" | "today" | "week" | "month"
+
+export type StatusFilter = "all" | "active" | "paid" | "pending" | "overdue"
 
 export const frequencyRank = {
   Monthly: 1,

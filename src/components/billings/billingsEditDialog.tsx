@@ -2,7 +2,6 @@
 
 "use client"
 
-import { useEffect } from "react"
 import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
@@ -19,15 +18,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 import { BillingStates } from "./billingsStates"
 
-interface BillingsEditDialogProps {
-  bill: Bill
-  clients: Client[]
+
+interface BillingsAddDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSave: (bill: Bill) => void
+  onSave: (bill: Omit<Bill, "id">) => void
+  clients: Client[]
 }
 
-export function BillingsEditDialog({ bill, clients, open, onOpenChange, onSave }: BillingsEditDialogProps) {
+export function BillingsEditDialog({ open, onOpenChange, onSave, clients }: BillingsAddDialogProps) {
   const {
     name, setName, clientId, setClientId, amount, setAmount, dateBilled, setDateBilled, 
     status, setStatus, frequencyType, setFrequencyType, customFrequency, setCustomFrequency, 
@@ -35,24 +34,10 @@ export function BillingsEditDialog({ bill, clients, open, onOpenChange, onSave }
 
   const isDesktop = useMediaQuery("(min-width: 768px)")
 
-  // Update form when bill changes
-  useEffect(() => {
-    if (open) {
-      setClientId(bill.clientId)
-      setName(bill.name)
-      setAmount(bill.amount.toString())
-      setDateBilled(new Date(bill.dateBilled))
-      setStatus(bill.status)
-      setFrequencyType(bill.frequency.type)
-      setCustomFrequency(bill.frequency.type === "Other" ? bill.frequency.custom : "")
-    }
-  }, [bill, open])
-
   const handleSave = () => {
     if (!name || !amount || !clientId) return
 
-    const updatedBill: Bill = {
-      ...bill,
+    const newBill: Omit<Bill, "id"> = {
       clientId,
       name,
       amount: Number.parseFloat(amount),
@@ -61,15 +46,26 @@ export function BillingsEditDialog({ bill, clients, open, onOpenChange, onSave }
       frequency: frequencyType === "Other" ? { type: "Other", custom: customFrequency } : { type: frequencyType },
     }
 
-    onSave(updatedBill)
+    onSave(newBill)
+    resetForm()
     onOpenChange(false)
+  }
+
+  const resetForm = () => {
+    setClientId("")
+    setName("")
+    setAmount("")
+    setDateBilled(new Date())
+    setStatus("Active")
+    setFrequencyType("Monthly")
+    setCustomFrequency("")
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={`${isDesktop ? "sm:max-w-[700px]" : "sm:max-w-[90vw]"} max-h-[90vh] overflow-y-auto`}>
         <DialogHeader>
-          <DialogTitle className="text-xl md:text-2xl">Edit Bill</DialogTitle>
+          <DialogTitle className="text-xl md:text-2xl">Add New Bill</DialogTitle>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
@@ -77,11 +73,11 @@ export function BillingsEditDialog({ bill, clients, open, onOpenChange, onSave }
             {/* Left Column */}
             <div className="space-y-4">
               <div className="grid gap-2">
-                <Label htmlFor="edit-client" className="text-base md:text-lg">
+                <Label htmlFor="client" className="text-base md:text-lg">
                   Client
                 </Label>
                 <Select value={clientId} onValueChange={setClientId}>
-                  <SelectTrigger id="edit-client" className="text-sm md:text-base">
+                  <SelectTrigger id="client" className="text-sm md:text-base">
                     <SelectValue placeholder="Select client" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[200px] overflow-y-auto">
@@ -95,38 +91,40 @@ export function BillingsEditDialog({ bill, clients, open, onOpenChange, onSave }
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="edit-name" className="text-base md:text-lg">
+                <Label htmlFor="name" className="text-base md:text-lg">
                   Bill Name
                 </Label>
                 <Input
-                  id="edit-name"
+                  id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter bill name"
                   className="text-sm md:text-base h-9 md:h-10"
                 />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="edit-amount" className="text-base md:text-lg">
+                <Label htmlFor="amount" className="text-base md:text-lg">
                   Amount
                 </Label>
                 <Input
-                  id="edit-amount"
+                  id="amount"
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
+                  placeholder="Enter amount"
                   className="text-sm md:text-base h-9 md:h-10"
                 />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="edit-date" className="text-base md:text-lg">
+                <Label htmlFor="date" className="text-base md:text-lg">
                   Date Billed
                 </Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
-                      id="edit-date"
+                      id="date"
                       variant="outline"
                       className={cn(
                         "w-full justify-start text-left font-normal text-sm md:text-base h-9 md:h-10",
@@ -154,20 +152,33 @@ export function BillingsEditDialog({ bill, clients, open, onOpenChange, onSave }
               <div className="grid gap-2">
                 <Label className="text-base md:text-lg">Status</Label>
                 <RadioGroup
+                  defaultValue="Active"
                   value={status}
                   onValueChange={(value) => setStatus(value as BillStatus)}
-                  className="flex gap-6"
+                  className="grid grid-cols-2 gap-2"
                 >
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Active" id="edit-active" className="h-3 w-3 md:h-4 md:w-4" />
-                    <Label htmlFor="edit-active" className="text-sm md:text-base">
+                    <RadioGroupItem value="Active" id="active" className="h-3 w-3 md:h-4 md:w-4" />
+                    <Label htmlFor="active" className="text-sm md:text-base">
                       Active
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Paid" id="edit-paid" className="h-3 w-3 md:h-4 md:w-4" />
-                    <Label htmlFor="edit-paid" className="text-sm md:text-base">
+                    <RadioGroupItem value="Paid" id="paid" className="h-3 w-3 md:h-4 md:w-4" />
+                    <Label htmlFor="paid" className="text-sm md:text-base">
                       Paid
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="Pending" id="pending" className="h-3 w-3 md:h-4 md:w-4" />
+                    <Label htmlFor="pending" className="text-sm md:text-base">
+                      Pending
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="Overdue" id="overdue" className="h-3 w-3 md:h-4 md:w-4" />
+                    <Label htmlFor="overdue" className="text-sm md:text-base">
+                      Overdue
                     </Label>
                   </div>
                 </RadioGroup>
@@ -181,32 +192,33 @@ export function BillingsEditDialog({ bill, clients, open, onOpenChange, onSave }
                   className="grid grid-cols-2 gap-2"
                 >
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Monthly" id="edit-monthly" className="h-3 w-3 md:h-4 md:w-4" />
-                    <Label htmlFor="edit-monthly" className="text-sm md:text-base">
+                    <RadioGroupItem value="Monthly" id="monthly" className="h-3 w-3 md:h-4 md:w-4" />
+                    <Label htmlFor="monthly" className="text-sm md:text-base">
                       Monthly
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Annually" id="edit-annually" className="h-3 w-3 md:h-4 md:w-4" />
-                    <Label htmlFor="edit-annually" className="text-sm md:text-base">
+                    <RadioGroupItem value="Annually" id="annually" className="h-3 w-3 md:h-4 md:w-4" />
+                    <Label htmlFor="annually" className="text-sm md:text-base">
                       Annually
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Semi-Annually" id="edit-semi-annually" className="h-3 w-3 md:h-4 md:w-4" />
-                    <Label htmlFor="edit-semi-annually" className="text-sm md:text-base">
+                    <RadioGroupItem value="Semi-Annually" id="semi-annually" className="h-3 w-3 md:h-4 md:w-4" />
+                    <Label htmlFor="semi-annually" className="text-sm md:text-base">
                       Semi-Annually
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Quarterly" id="edit-quarterly" className="h-3 w-3 md:h-4 md:w-4" />
-                    <Label htmlFor="edit-quarterly" className="text-sm md:text-base">
+                    <RadioGroupItem value="Quarterly" id="quarterly" className="h-3 w-3 md:h-4 md:w-4" />
+                    <Label htmlFor="quarterly" className="h-3 w-3 md:h-4 md:w-4" />
+                    <Label htmlFor="quarterly" className="text-sm md:text-base">
                       Quarterly
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Other" id="edit-other" className="h-3 w-3 md:h-4 md:w-4" />
-                    <Label htmlFor="edit-other" className="text-sm md:text-base">
+                    <RadioGroupItem value="Other" id="other" className="h-3 w-3 md:h-4 md:w-4" />
+                    <Label htmlFor="other" className="text-sm md:text-base">
                       Other
                     </Label>
                   </div>
@@ -239,4 +251,3 @@ export function BillingsEditDialog({ bill, clients, open, onOpenChange, onSave }
     </Dialog>
   )
 }
-

@@ -1,7 +1,7 @@
 // Compiled here are all the useState functions used in billings 
 
 import { useState } from "react"
-import { Bill, BillStatus, Client, PaymentFrequency, SortDirection, SortField, TimeFilter } from  "@/types/billing.type"
+import { Bill, BillStatus, Client, PaymentFrequency, SortDirection, SortField, StatusFilter, TimeFilter } from  "@/types/billing.type"
 
 // temporary
 const mockClients: Client[] = [
@@ -31,6 +31,7 @@ export function BillingStates(){
     const [clients, setClients] = useState<Client[]>(mockClients)
     const [filteredBills, setFilteredBills] = useState<Bill[]>([])
     const [timeFilter, setTimeFilter] = useState<TimeFilter>("all")
+    const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
     const [currentDateTime, setCurrentDateTime] = useState(new Date())
     const [isNewBillDialogOpen, setIsNewBillDialogOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
@@ -46,6 +47,7 @@ export function BillingStates(){
         isEditDialogOpen, setIsEditDialogOpen, isDeleteDialogOpen, setIsDeleteDialogOpen,
 
         bills, setBills, filteredBills, setFilteredBills, clients, setClients, currentDateTime, setCurrentDateTime, isNewBillDialogOpen, 
-        setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, setTimeFilter, sortField, setSortField, sortDirection, setSortDirection
+        setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, setTimeFilter, sortField, setSortField, sortDirection, setSortDirection,
+        statusFilter, setStatusFilter
     }
 }

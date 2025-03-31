@@ -154,7 +154,7 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, clients }: Billi
                   defaultValue="Active"
                   value={status}
                   onValueChange={(value) => setStatus(value as BillStatus)}
-                  className="flex gap-6"
+                  className="grid grid-cols-2 gap-2"
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="Active" id="active" className="h-3 w-3 md:h-4 md:w-4" />
@@ -166,6 +166,18 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, clients }: Billi
                     <RadioGroupItem value="Paid" id="paid" className="h-3 w-3 md:h-4 md:w-4" />
                     <Label htmlFor="paid" className="text-sm md:text-base">
                       Paid
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="Pending" id="pending" className="h-3 w-3 md:h-4 md:w-4" />
+                    <Label htmlFor="pending" className="text-sm md:text-base">
+                      Pending
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="Overdue" id="overdue" className="h-3 w-3 md:h-4 md:w-4" />
+                    <Label htmlFor="overdue" className="text-sm md:text-base">
+                      Overdue
                     </Label>
                   </div>
                 </RadioGroup>
@@ -198,6 +210,7 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, clients }: Billi
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="Quarterly" id="quarterly" className="h-3 w-3 md:h-4 md:w-4" />
+                    <Label htmlFor="quarterly" className="h-3 w-3 md:h-4 md:w-4" />
                     <Label htmlFor="quarterly" className="text-sm md:text-base">
                       Quarterly
                     </Label>

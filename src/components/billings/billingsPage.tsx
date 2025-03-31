@@ -10,7 +10,7 @@ import { BillingsList } from "@/components/billings/billingsList"
 import { BillingsAddDialog } from "@/components/billings/billingsAddDialog"
 import { TimeFilterHeader } from "@/components/billings/timeFilterHeader"
 import { BillingsListHeader } from "@/components/billings/billingsListHeader"
-import { Bill, frequencyRank, SortDirection, SortField } from "@/types/billing.type"
+import { Bill, frequencyRank, SortDirection, SortField, StatusFilter } from "@/types/billing.type"
 import { BillingStates } from "./billingsStates"
 
 //import { getBills, getClientNames, createBill as addBillToDb, updateBill as updateBillInDb, deleteBill as deleteBillFromDb } from "@/actions/billing"
@@ -18,7 +18,8 @@ import { BillingStates } from "./billingsStates"
 export function BillingInterface() {
   const {
     bills, setBills, filteredBills, setFilteredBills, clients, setClients, currentDateTime, setCurrentDateTime, isNewBillDialogOpen, 
-    setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, setTimeFilter, sortField, setSortField, sortDirection, setSortDirection
+    setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, setTimeFilter, sortField, setSortField, sortDirection, setSortDirection,
+    statusFilter, setStatusFilter
   } = BillingStates()
 
   // Load bills from database on component mount
@@ -92,13 +93,28 @@ export function BillingInterface() {
       }
     }
 
+    if (statusFilter !== "all") {
+      const statusMap: Record<StatusFilter, string> = {
+        all: "",
+        active: "Active",
+        paid: "Paid",
+        pending: "Pending",
+        overdue: "Overdue",
+      }
+
+      const filterStatus = statusMap[statusFilter]
+      if (filterStatus) {
+        result = result.filter((bill) => bill.status === filterStatus)
+      }
+    }
+
     // Apply sorting if a sort field is selected
     if (sortField) {
       result = sortBills(result, sortField, sortDirection)
     }
 
     setFilteredBills(result)
-  }, [bills, timeFilter, sortField, sortDirection])
+  }, [bills, timeFilter, statusFilter, sortField, sortDirection])
 
   // Sort bills based on field and direction
   const sortBills = (billsToSort: Bill[], field: SortField, direction: SortDirection) => {
@@ -270,7 +286,11 @@ export function BillingInterface() {
         {/* Bills List with border and background */}
         <div className="border rounded-md shadow-sm bg-white">
           {/* Bills List Header with New Bill Button */}
-          <BillingsListHeader onNewBill={() => setIsNewBillDialogOpen(true)} />
+          <BillingsListHeader
+            onNewBill={() => setIsNewBillDialogOpen(true)}
+            statusFilter={statusFilter}
+            onStatusFilterChange={setStatusFilter}
+          />
 
           {/* Bills List with Sorting */}
           <div className="max-h-[600px] overflow-y-auto">
