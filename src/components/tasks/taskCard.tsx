@@ -12,19 +12,18 @@ import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
 import { useState, useEffect } from "react";
 import { TaskForm } from "./taskForm";
 import { getStatusColor } from "@/utils/getStatusColor";
-import { useRouter } from "next/navigation";
-
+import { toast } from "sonner";
 interface TaskCardProps {
   task: Task;
 }
 
 export function TaskCard({ task }: TaskCardProps) {
-  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [localTask, setLocalTask] = useState<Task>(task);
   const [matters, setMatters] = useState<Matter[]>([]);
   const [isLoadingMatters, setIsLoadingMatters] = useState(true);
-  
+  const [isProcessing, setIsProcessing] = useState(false);
+
   useEffect(() => {
     setLocalTask(task);
   }, [task]);
@@ -55,7 +54,10 @@ export function TaskCard({ task }: TaskCardProps) {
   };
 
   const handleComplete = async () => {
+    if (isProcessing) return;
+
     try {
+      setIsProcessing(true);
       setLocalTask({
         ...localTask,
         status: "completed",
@@ -69,20 +71,34 @@ export function TaskCard({ task }: TaskCardProps) {
           status: "completed",
         }
       );
-      router.refresh();
+
+      toast.success("Task marked as completed");
+
+      window.location.reload();
     } catch (error) {
       console.error("Error completing task:", error);
       setLocalTask(task);
+      toast.error("Failed to complete task");
+      setIsProcessing(false);
     }
   };
 
   const handleDelete = async () => {
+    if (isProcessing) return;
+
     try {
+      setIsProcessing(true);
       await deleteTask(task.task_id);
-      router.refresh();
-      
+
+      // Show success toast
+      toast.success("Task deleted successfully");
+
+      // Reload the window
+      window.location.reload();
     } catch (error) {
       console.error("Error deleting task:", error);
+      toast.error("Failed to delete task");
+      setIsProcessing(false);
     }
   };
 
@@ -94,17 +110,19 @@ export function TaskCard({ task }: TaskCardProps) {
     try {
       const optimisticTask = {
         ...updatedTask,
-        task_id: task.task_id, 
+        task_id: task.task_id,
       } as Task;
 
       setLocalTask(optimisticTask);
       setIsEditing(false);
       await updateTask(task.task_id, updatedTask, optimisticTask);
 
-      router.refresh();
+      // Reload the window
+      window.location.reload();
     } catch (error) {
       console.error("Error updating task:", error);
       setLocalTask(task);
+      toast.error("Failed to update task");
     }
   };
 
@@ -167,7 +185,7 @@ export function TaskCard({ task }: TaskCardProps) {
               size="sm"
               className="h-8 px-2 sm:px-3 text-xs"
               onClick={handleComplete}
-              disabled={localTask.status === "completed"}
+              disabled={localTask.status === "completed" || isProcessing}
             >
               <Check className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
               <span className="hidden sm:inline">Complete</span>
@@ -178,6 +196,7 @@ export function TaskCard({ task }: TaskCardProps) {
               size="sm"
               className="h-8 px-2 sm:px-3 text-xs"
               onClick={handleEdit}
+              disabled={isProcessing}
             >
               <Pencil className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
               <span className="hidden sm:inline">Edit</span>
@@ -188,6 +207,7 @@ export function TaskCard({ task }: TaskCardProps) {
               size="sm"
               className="h-8 px-2 sm:px-3 text-xs"
               onClick={handleDelete}
+              disabled={isProcessing}
             >
               <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
               <span className="hidden sm:inline">Delete</span>

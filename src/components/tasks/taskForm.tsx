@@ -1,15 +1,9 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import {
   Select,
   SelectContent,
@@ -18,40 +12,27 @@ import {
   SelectGroup,
   SelectLabel,
   SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
-import { getMatters } from "@/actions/matters";
-import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
-import type { Task } from "@/types/task.type";
-import type { Matter } from "@/types/matter.type";
-import { useRouter } from "next/navigation";
+} from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { useState, useEffect } from "react"
+import { getMatters } from "@/actions/matters"
+import { getMattersDisplayName } from "@/utils/getMattersDisplayName"
+import type { Task } from "@/types/task.type"
+import type { Matter } from "@/types/matter.type"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { format } from "date-fns"
 
 interface TaskFormProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSave: (task: Task) => void;
-  onSaveAndCreateAnother: (task: Task) => void;
-  initialTask?: Task | null;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSave: (task: Task) => void
+  onSaveAndCreateAnother: (task: Task) => void
+  initialTask?: Task | null
 }
 
-export function TaskForm({
-  open,
-  onOpenChange,
-  onSave,
-  onSaveAndCreateAnother,
-  initialTask,
-}: TaskFormProps) {
-  const router = useRouter();
+export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother, initialTask }: TaskFormProps) {
+  const router = useRouter()
   const [task, setTask] = useState<Task>({
     task_id: "",
     name: "",
@@ -61,29 +42,30 @@ export function TaskForm({
     status: "pending",
     matter_id: "",
     created_at: new Date(),
-  });
+  })
 
-  const [matters, setMatters] = useState<Matter[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [matters, setMatters] = useState<Matter[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     async function fetchMatters() {
       try {
-        setIsLoading(true);
-        const matterData = await getMatters();
+        setIsLoading(true)
+        const matterData = await getMatters()
         const uniqueMatters = matterData.filter(
-          (matter, index, self) =>
-            index === self.findIndex((m) => m.matter_id === matter.matter_id)
-        );
-        setMatters(uniqueMatters);
+          (matter, index, self) => index === self.findIndex((m) => m.matter_id === matter.matter_id),
+        )
+        setMatters(uniqueMatters)
       } catch (error) {
-        console.error("Error fetching matters:", error);
+        console.error("Error fetching matters:", error)
+        toast.error("Failed to load matters")
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
     }
-    fetchMatters();
-  }, []);
+    fetchMatters()
+  }, [])
 
   useEffect(() => {
     if (open) {
@@ -91,10 +73,8 @@ export function TaskForm({
         setTask({
           ...initialTask,
           task_id: initialTask.task_id || "",
-          due_date: initialTask.due_date
-            ? new Date(initialTask.due_date)
-            : undefined,
-        });
+          due_date: initialTask.due_date ? new Date(initialTask.due_date) : undefined,
+        })
       } else {
         setTask({
           task_id: "",
@@ -105,22 +85,34 @@ export function TaskForm({
           status: "pending",
           matter_id: "",
           created_at: new Date(),
-        });
+        })
       }
+      setIsSubmitting(false)
     }
-  }, [open, initialTask]);
+  }, [open, initialTask])
 
-  const handleChange = (
-    field: keyof Task,
-    value: string | Date | undefined
-  ) => {
+  const handleChange = (field: keyof Task, value: string | Date | undefined) => {
     setTask((prev) => ({
       ...prev,
       [field]: value,
-    }));
-  };
+    }))
+  }
 
-  const handleSubmit = (createAnother = false) => {
+  const validateForm = () => {
+    if (!task.name.trim()) {
+      toast.error("Task name is required")
+      return false
+    }
+    return true
+  }
+
+  const handleSubmit = async (createAnother = false) => {
+    if (isSubmitting) return
+
+    if (!validateForm()) return
+
+    setIsSubmitting(true)
+
     const taskToSave = {
       ...task,
       task_id: task.task_id,
@@ -131,37 +123,52 @@ export function TaskForm({
       status: task.status || "pending",
       matter_id: task.matter_id,
       created_at: task.created_at || new Date(),
-    };
-
-    if (createAnother) {
-      onSaveAndCreateAnother(taskToSave);
-      setTask({
-        task_id: "",
-        name: "",
-        description: "",
-        due_date: undefined,
-        priority: "low",
-        status: "pending",
-        matter_id: "",
-        created_at: new Date(),
-      });
-    } else {
-      onSave(taskToSave);
-      onOpenChange(false);
-
-      // Use Next.js router.refresh() instead of window.location.reload()
-      // This will trigger a soft refresh without a full page reload
-      router.refresh();
     }
-  };
 
-  const selectedMatterName = getMattersDisplayName(
-    task.matter_id || "",
-    matters
-  );
+    try {
+      if (createAnother) {
+        await onSaveAndCreateAnother(taskToSave)
+        toast.success(task.task_id ? "Task updated successfully" : "Task created successfully")
+        setTask({
+          task_id: "",
+          name: "",
+          description: "",
+          due_date: undefined,
+          priority: "low",
+          status: "pending",
+          matter_id: "",
+          created_at: new Date(),
+        })
+        setIsSubmitting(false)
+      } else {
+        await onSave(taskToSave)
+        toast.success(task.task_id ? "Task updated successfully" : "Task created successfully")
+        onOpenChange(false)
+
+        if (task.task_id) {
+          window.location.reload()
+        } else {
+          router.refresh()
+        }
+      }
+    } catch (error) {
+      console.error("Error saving task:", error)
+      toast.error("Failed to save task")
+      setIsSubmitting(false)
+    }
+  }
+
+  const selectedMatterName = getMattersDisplayName(task.matter_id || "", matters)
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(newOpen) => {
+        if (!isSubmitting) {
+          onOpenChange(newOpen)
+        }
+      }}
+    >
       <DialogContent className="sm:max-w-[500px] w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{task.task_id ? "Edit Task" : "New Task"}</DialogTitle>
@@ -181,10 +188,7 @@ export function TaskForm({
               </div>
               <div>
                 <Label htmlFor="priority">Priority</Label>
-                <Select
-                  value={task.priority}
-                  onValueChange={(value) => handleChange("priority", value)}
-                >
+                <Select value={task.priority} onValueChange={(value) => handleChange("priority", value)}>
                   <SelectTrigger id="priority" className="mt-1">
                     <SelectValue placeholder="Select priority" />
                   </SelectTrigger>
@@ -212,14 +216,9 @@ export function TaskForm({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="assigned-matter">Assigned Matter</Label>
-              <Select
-                value={task.matter_id || ""}
-                onValueChange={(value) => handleChange("matter_id", value)}
-              >
+              <Select value={task.matter_id || ""} onValueChange={(value) => handleChange("matter_id", value)}>
                 <SelectTrigger className="w-full">
-                  <SelectValue
-                    placeholder={selectedMatterName || "Select a matter"}
-                  />
+                  <SelectValue placeholder={selectedMatterName || "Select a matter"} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
@@ -230,10 +229,7 @@ export function TaskForm({
                       </SelectItem>
                     ) : matters.length > 0 ? (
                       matters.map((matter: Matter) => (
-                        <SelectItem
-                          key={matter.matter_id}
-                          value={matter.matter_id}
-                        >
+                        <SelectItem key={matter.matter_id} value={matter.matter_id}>
                           {matter.name}
                         </SelectItem>
                       ))
@@ -251,9 +247,7 @@ export function TaskForm({
               <Label htmlFor="taskStatus">Task status</Label>
               <Select
                 value={task.status}
-                onValueChange={(value: "pending" | "completed") =>
-                  handleChange("status", value)
-                }
+                onValueChange={(value: "pending" | "completed") => handleChange("status", value)}
               >
                 <SelectTrigger id="taskStatus" className="mt-1">
                   <SelectValue placeholder="Select status" />
@@ -267,28 +261,14 @@ export function TaskForm({
           </div>
 
           <div>
-            <Label>Due date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "mt-1 w-full justify-start text-left font-normal",
-                    !task.due_date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {task.due_date ? format(task.due_date, "PPP") : "Select date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={task.due_date}
-                  onSelect={(date) => handleChange("due_date", date)}
-                />
-              </PopoverContent>
-            </Popover>
+            <Label htmlFor="dueDate">Due date</Label>
+            <Input
+              id="dueDate"
+              type="date"
+              className="mt-1"
+              value={task.due_date ? format(task.due_date, "yyyy-MM-dd") : ""}
+              onChange={(e) => handleChange("due_date", e.target.value ? new Date(e.target.value) : undefined)}
+            />
           </div>
         </div>
         <DialogFooter className="flex-col sm:flex-row gap-2 sm:justify-between">
@@ -297,16 +277,18 @@ export function TaskForm({
               type="submit"
               className="w-full sm:w-auto"
               onClick={() => handleSubmit(false)}
+              disabled={isSubmitting}
             >
-              {task.task_id ? "Update task" : "Save task"}
+              {isSubmitting ? "Saving..." : task.task_id ? "Update task" : "Save task"}
             </Button>
             {!task.task_id && (
               <Button
                 variant="outline"
                 className="w-full sm:w-auto"
                 onClick={() => handleSubmit(true)}
+                disabled={isSubmitting}
               >
-                Save and create another
+                {isSubmitting ? "Saving..." : "Save and create another"}
               </Button>
             )}
           </div>
@@ -314,11 +296,13 @@ export function TaskForm({
             variant="ghost"
             className="w-full sm:w-auto"
             onClick={() => onOpenChange(false)}
+            disabled={isSubmitting}
           >
             Cancel
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
+

@@ -8,6 +8,7 @@ import { useState } from "react"
 import type { Task } from "@/types/task.type"
 import { createTask } from "@/actions/tasks"
 import { TaskForm } from "./taskForm"
+import { toast } from "sonner"
 
 interface TasksHeaderProps {
   onSearch: (term: string) => void
@@ -42,8 +43,12 @@ export function TasksHeader({ onSearch, onStatusChange, onViewChange, view, onTa
       if (createdTask && onTaskCreated) {
         onTaskCreated(createdTask)
       }
+
+      // Reload the window after creating a new task
+      window.location.reload()
     } catch (error) {
       console.error("Error creating task:", error)
+      toast.error("Failed to create task")
     }
   }
 
@@ -65,6 +70,7 @@ export function TasksHeader({ onSearch, onStatusChange, onViewChange, view, onTa
       }
     } catch (error) {
       console.error("Error creating task:", error)
+      toast.error("Failed to create task")
     }
   }
 
