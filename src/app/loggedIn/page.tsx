@@ -41,7 +41,7 @@ export default function UserLoggedIn() {
 
   const handleMatters = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    router.push("/calendar");
+    router.push("/matters");
   };
 
   return (

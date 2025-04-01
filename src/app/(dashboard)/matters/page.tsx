@@ -8,8 +8,7 @@ export const metadata: Metadata = {
 
 export default function MattersPage() {
   return (
-    <div className="flex flex-col gap-3 h-full font-aileron">
-      <h1 className="text-3xl font-bold">Matters</h1>
+    <div className="flex flex-col gap-6 h-full">
       <MattersList />
     </div>
   );

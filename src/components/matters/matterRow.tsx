@@ -1,4 +1,6 @@
 "use client";
+
+import type React from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -10,12 +12,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, FileEdit, Trash2, Eye } from "lucide-react";
-import { Matter } from "@/types/matter.type";
+import { MoreHorizontal, Trash2, Eye } from "lucide-react";
+import type { Matter } from "@/types/matter.type";
 import { getUserDisplayName } from "@/utils/getUserDisplayName";
 import { getStatusColor } from "@/utils/getStatusColor";
+import { formatDateForDisplay } from "@/utils/formatDateForDisplay";
 import { Skeleton } from "@/components/ui/skeleton";
-import { User } from "@/types/user.type";
+import type { User } from "@/types/user.type";
 
 interface MatterRowProps {
   matter: Matter;
@@ -76,7 +79,7 @@ export function MatterRow({
         {isLoading ? (
           <Skeleton className="w-20 h-4" />
         ) : (
-          new Date(matter.date_opened).toLocaleDateString()
+          formatDateForDisplay(matter.date_opened)
         )}
       </TableCell>
       <TableCell className="text-right">
@@ -98,10 +101,6 @@ export function MatterRow({
             >
               <Eye className="mr-2 h-4 w-4" />
               View Details
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-              <FileEdit className="mr-2 h-4 w-4" />
-              Edit Matter
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={(e) => onDelete(matter.matter_id, e)}

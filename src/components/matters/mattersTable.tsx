@@ -1,5 +1,6 @@
 "use client";
 
+import type React from "react";
 import { useRouter } from "next/navigation";
 import {
   Table,
@@ -9,19 +10,29 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { deleteMatter } from "@/actions/matters";
-import { Matter } from "@/types/matter.type";
+import type { Matter, SortField, SortDirection } from "@/types/matter.type";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { fetchUsersAction } from "@/actions/users";
 import { MatterRow } from "./matterRow";
-import { User } from "@/types/user.type";
+import type { User } from "@/types/user.type";
 
 interface MattersTableProps {
   matters: Matter[];
+  onSort: (field: SortField) => void;
+  sortField: SortField;
+  sortDirection: SortDirection;
 }
 
-export function MattersTable({ matters }: MattersTableProps) {
+export function MattersTable({
+  matters,
+  onSort,
+  sortField,
+  sortDirection,
+}: MattersTableProps) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [users, setUsers] = useState<User[]>([]);
@@ -60,19 +71,48 @@ export function MattersTable({ matters }: MattersTableProps) {
     }
   };
 
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="ml-2 h-4 w-4" />;
+    }
+    return sortDirection === "asc" ? (
+      <ArrowUp className="ml-2 h-4 w-4" />
+    ) : (
+      <ArrowDown className="ml-2 h-4 w-4" />
+    );
+  };
+
+  const renderSortableHeader = (field: SortField, label: string) => (
+    <Button
+      variant="ghost"
+      onClick={() => onSort(field)}
+      className="p-0 h-auto font-semibold flex items-center hover:bg-transparent"
+    >
+      {label} {getSortIcon(field)}
+    </Button>
+  );
+
   return (
     <div className="overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Case Number</TableHead>
-            <TableHead>Matter Name</TableHead>
-            <TableHead>Client</TableHead>
-            <TableHead>Assigned Attorney</TableHead>
-            <TableHead>Assigned Staff</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Date Opened</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead>
+              {renderSortableHeader("case_number", "Case Number")}
+            </TableHead>
+            <TableHead>{renderSortableHeader("name", "Matter Name")}</TableHead>
+            <TableHead>{renderSortableHeader("client", "Client")}</TableHead>
+            <TableHead>
+              {renderSortableHeader("assigned_attorney", "Assigned Attorney")}
+            </TableHead>
+            <TableHead>
+              {renderSortableHeader("assigned_staff", "Assigned Staff")}
+            </TableHead>
+            <TableHead className="font-semibold">Status</TableHead>
+            <TableHead>
+              {renderSortableHeader("date_opened", "Date Opened")}
+            </TableHead>
+            <TableHead className="text-right font-semibold">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

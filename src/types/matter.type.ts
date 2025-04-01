@@ -28,3 +28,11 @@ export type Matter = {
   opposing_council?: OpposingCouncil;
   court?: Court;
 };
+export type SortField =
+  | "name"
+  | "client"
+  | "date_opened"
+  | "case_number"
+  | "assigned_attorney"
+  | "assigned_staff";
+export type SortDirection = "asc" | "desc";
