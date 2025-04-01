@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, FileEdit, Trash2, Eye } from "lucide-react";
+import { MoreHorizontal, Trash2, Eye } from "lucide-react";
 import type { Matter } from "@/types/matter.type";
 import { getUserDisplayName } from "@/utils/getUserDisplayName";
 import { getStatusColor } from "@/utils/getStatusColor";
