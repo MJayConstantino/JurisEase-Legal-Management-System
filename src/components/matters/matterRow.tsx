@@ -36,13 +36,19 @@ export function MatterRow({
 }: MatterRowProps) {
   return (
     <TableRow
-      key={matter.id}
+      key={matter.matter_id}
       className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
-      onClick={() => onRowClick(matter.id)}
+      onClick={() => onRowClick(matter.matter_id)}
     >
-      <TableCell className="font-medium">{matter.case_number}</TableCell>
-      <TableCell>{matter.name}</TableCell>
-      <TableCell>{matter.client}</TableCell>
+      <TableCell className="font-medium">
+        {isLoading ? <Skeleton className="w-24 h-4" /> : matter.case_number}
+      </TableCell>
+      <TableCell>
+        {isLoading ? <Skeleton className="w-32 h-4" /> : matter.name}
+      </TableCell>
+      <TableCell>
+        {isLoading ? <Skeleton className="w-32 h-4" /> : matter.client}
+      </TableCell>
       <TableCell>
         {isLoading ? (
           <Skeleton className="w-24 h-4" />
@@ -59,7 +65,7 @@ export function MatterRow({
       </TableCell>
       <TableCell>
         {isLoading ? (
-          <Skeleton className="w-16 h-4" />
+          <Skeleton className="w-12 h-4" />
         ) : (
           <Badge className={getStatusColor(matter.status)} variant="outline">
             {matter.status.charAt(0).toUpperCase() + matter.status.slice(1)}
@@ -87,7 +93,7 @@ export function MatterRow({
             <DropdownMenuItem
               onClick={(e) => {
                 e.stopPropagation();
-                onRowClick(matter.id);
+                onRowClick(matter.matter_id);
               }}
             >
               <Eye className="mr-2 h-4 w-4" />
@@ -98,12 +104,14 @@ export function MatterRow({
               Edit Matter
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={(e) => onDelete(matter.id, e)}
-              disabled={deletingId === matter.id}
+              onClick={(e) => onDelete(matter.matter_id, e)}
+              disabled={deletingId === matter.matter_id}
               className="text-red-600 focus:text-red-600"
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              {deletingId === matter.id ? "Deleting..." : "Delete Matter"}
+              {deletingId === matter.matter_id
+                ? "Deleting..."
+                : "Delete Matter"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

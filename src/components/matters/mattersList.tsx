@@ -38,7 +38,7 @@ export function MattersList() {
         searchTerm === "" ||
         matter.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         matter.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        matter.id.toLowerCase().includes(searchTerm.toLowerCase());
+        matter.matter_id.toLowerCase().includes(searchTerm.toLowerCase());
 
       // Filter by status
       const matchesStatus =

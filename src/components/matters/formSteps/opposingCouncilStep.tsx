@@ -22,17 +22,17 @@ export function OpposingCouncilStep({
           <Label htmlFor="opposing-name">Name</Label>
           <Input
             id="opposing-name"
-            placeholder="Law firm or attorney name"
+            placeholder="Opposing Council Law firm or attorney name"
             value={data.name}
             onChange={(e) => onChange("name", e.target.value)}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="opposing-phone">Phone</Label>
+          <Label htmlFor="opposing-phone">Contact Number / Phone</Label>
           <Input
             id="opposing-phone"
-            placeholder="(555) 987-6543"
+            placeholder="Contact Number / Phone"
             value={data.phone}
             onChange={(e) => onChange("phone", e.target.value)}
           />
@@ -43,7 +43,7 @@ export function OpposingCouncilStep({
           <Input
             id="opposing-email"
             type="email"
-            placeholder="contact@example.com"
+            placeholder="Opposing Council Email"
             value={data.email}
             onChange={(e) => onChange("email", e.target.value)}
           />
@@ -53,7 +53,7 @@ export function OpposingCouncilStep({
           <Label htmlFor="opposing-address">Address</Label>
           <Input
             id="opposing-address"
-            placeholder="456 Oak Ave, Othertown, CA 94322"
+            placeholder="Oppsing Council Address"
             value={data.address}
             onChange={(e) => onChange("address", e.target.value)}
           />

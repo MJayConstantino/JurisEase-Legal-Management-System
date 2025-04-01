@@ -12,29 +12,6 @@ export interface FormStep {
 
 export function GetFormSteps(
   matterData: Omit<Matter, "id">,
-  // {
-  //   name: string;
-  //   case_number: string;
-  //   status: string;
-  //   description: string;
-  //   client: string;
-  //   client_phone?: string;
-  //   client_email: string;
-  //   client_address: string;
-  //   assigned_attorney: string;
-  //   assigned_staff: string;
-  //   opposing_council: {
-  //     name: string;
-  //     phone: string;
-  //     email: string;
-  //     address: string;
-  //   };
-  //   court: {
-  //     name: string;
-  //     phone: string;
-  //     email: string;
-  //   };
-  // },
   handleChange: (field: string, value: string) => void,
   handleNestedChange: (parent: string, field: string, value: string) => void
 ): FormStep[] {

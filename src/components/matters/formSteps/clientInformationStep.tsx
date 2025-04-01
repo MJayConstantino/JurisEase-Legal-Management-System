@@ -22,7 +22,7 @@ export function ClientInformationStep({
           <Label htmlFor="client-name">Client Name</Label>
           <Input
             id="client-name"
-            placeholder="Full name"
+            placeholder="Client Full Name"
             value={data.client}
             onChange={(e) => onChange("client", e.target.value)}
             required
@@ -30,10 +30,10 @@ export function ClientInformationStep({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="client-phone">Phone</Label>
+          <Label htmlFor="client-phone">Contact Number / Phone</Label>
           <Input
             id="client-phone"
-            placeholder="(555) 123-4567"
+            placeholder="Contact Number / Phone"
             value={data.client_phone}
             onChange={(e) => onChange("client_phone", e.target.value)}
           />
@@ -44,7 +44,7 @@ export function ClientInformationStep({
           <Input
             id="client-email"
             type="email"
-            placeholder="client@example.com"
+            placeholder="Client Email"
             value={data.client_email}
             onChange={(e) => onChange("client_email", e.target.value)}
           />
@@ -54,7 +54,7 @@ export function ClientInformationStep({
           <Label htmlFor="client-address">Address</Label>
           <Input
             id="client-address"
-            placeholder="123 Main St, Anytown, CA 94321"
+            placeholder="Client Address"
             value={data.client_address}
             onChange={(e) => onChange("client_address", e.target.value)}
           />

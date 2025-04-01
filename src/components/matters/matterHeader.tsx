@@ -35,7 +35,7 @@ export function MatterHeader({ matter }: MatterHeaderProps) {
             </Badge>
           </div>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground">
-            <span>Matter ID: {matter.id}</span>
+            <span>Matter ID: {matter.matter_id}</span>
             <span className="hidden sm:inline">•</span>
             <span>Case Number: {matter.case_number}</span>
             <span className="hidden sm:inline">•</span>

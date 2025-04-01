@@ -21,7 +21,7 @@ export async function generateMetadata({
 
     return {
       title: `${matter.name} | JurisEase`,
-      description: `Details for matter ${matter.id}: ${matter.name}`,
+      description: `Details for matter ${matter.matter_id}: ${matter.name}`,
     };
   } catch (error) {
     console.error("Error generating metadata:", error);
@@ -47,7 +47,7 @@ export default async function MatterDetailPage({
     return (
       <div className="flex flex-col gap-6 h-full">
         <MatterHeader matter={matter} />
-        <MatterTabs matterId={matter.id}>
+        <MatterTabs matterId={matter.matter_id}>
           <MatterDashboard matter={matter} />
         </MatterTabs>
       </div>

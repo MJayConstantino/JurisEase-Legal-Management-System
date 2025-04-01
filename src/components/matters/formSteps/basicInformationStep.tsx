@@ -30,7 +30,7 @@ export function BasicInformationStep({
           <Label htmlFor="matter-name">Matter Name</Label>
           <Input
             id="matter-name"
-            placeholder="e.g. Smith Divorce Case"
+            placeholder="Matter Name"
             value={data.name}
             onChange={(e) => onChange("name", e.target.value)}
             required
@@ -41,7 +41,7 @@ export function BasicInformationStep({
           <Label htmlFor="case-number">Case Number</Label>
           <Input
             id="case-number"
-            placeholder="e.g. CV-2023-001"
+            placeholder="Case Number"
             value={data.case_number}
             onChange={(e) => onChange("case_number", e.target.value)}
           />
