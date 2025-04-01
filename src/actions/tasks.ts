@@ -48,7 +48,7 @@ export async function updateTask(id: string, p0: { status: Status }, task: Task)
     console.error("Error updating task:", error)
   }
 
-  revalidatePath(`/tasks/${task.task_id}`)
+  revalidatePath("/tasks")
   return data ? (data[0] as Task) : null
 }
 

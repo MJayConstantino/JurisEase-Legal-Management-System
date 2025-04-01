@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { format } from "date-fns";
-import { Calendar, Check, Pencil, Trash2 } from 'lucide-react';
+import { Calendar, Check, Pencil, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { updateTask, deleteTask } from "@/actions/tasks";
 import { getMatters } from "@/actions/matters";
@@ -12,16 +12,22 @@ import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
 import { useState, useEffect } from "react";
 import { TaskForm } from "./taskForm";
 import { getStatusColor } from "@/utils/getStatusColor";
+import { useRouter } from "next/navigation";
 
 interface TaskCardProps {
   task: Task;
 }
 
 export function TaskCard({ task }: TaskCardProps) {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [localTask, setLocalTask] = useState<Task>(task);
   const [matters, setMatters] = useState<Matter[]>([]);
   const [isLoadingMatters, setIsLoadingMatters] = useState(true);
+  
+  useEffect(() => {
+    setLocalTask(task);
+  }, [task]);
 
   useEffect(() => {
     async function fetchMatters() {
@@ -50,13 +56,11 @@ export function TaskCard({ task }: TaskCardProps) {
 
   const handleComplete = async () => {
     try {
-      // Update local state immediately for optimistic UI
       setLocalTask({
         ...localTask,
         status: "completed",
       });
 
-      // Update on server
       await updateTask(
         task.task_id,
         { status: "completed" },
@@ -65,9 +69,9 @@ export function TaskCard({ task }: TaskCardProps) {
           status: "completed",
         }
       );
+      router.refresh();
     } catch (error) {
       console.error("Error completing task:", error);
-      // Revert optimistic update on error
       setLocalTask(task);
     }
   };
@@ -75,6 +79,8 @@ export function TaskCard({ task }: TaskCardProps) {
   const handleDelete = async () => {
     try {
       await deleteTask(task.task_id);
+      router.refresh();
+      
     } catch (error) {
       console.error("Error deleting task:", error);
     }
@@ -86,34 +92,26 @@ export function TaskCard({ task }: TaskCardProps) {
 
   const handleSaveTask = async (updatedTask: Task) => {
     try {
-      // Create a merged task for optimistic UI update
       const optimisticTask = {
-        ...localTask,
         ...updatedTask,
+        task_id: task.task_id, 
       } as Task;
 
-      // Update local state immediately
       setLocalTask(optimisticTask);
-
-      // Close the form immediately for better UX
       setIsEditing(false);
+      await updateTask(task.task_id, updatedTask, optimisticTask);
 
-      // Update the task on the server
-      await updateTask(task.task_id, { status: task.status }, optimisticTask);
+      router.refresh();
     } catch (error) {
       console.error("Error updating task:", error);
-      // Revert optimistic update on error
       setLocalTask(task);
     }
   };
 
   const handleSaveAndCreateAnother = async (updatedTask: Task) => {
-    // For editing, we don't need to implement "save and create another"
-    // Just call the regular save function
     await handleSaveTask(updatedTask);
   };
 
-  // Get matter name from matter ID
   const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
 
   return (
@@ -136,7 +134,7 @@ export function TaskCard({ task }: TaskCardProps) {
         </div>
 
         {localTask.description && (
-          <p className="text-muted-foreground text-xs sm:text-sm mb-3 line-clamp-3 dark:text-gray-400">
+          <p className="text-muted-foreground text-xs sm:text-sm mb-3 line-clamp-3 dark:text-gray-400 overflow-y-auto">
             {localTask.description}
           </p>
         )}
@@ -203,6 +201,7 @@ export function TaskCard({ task }: TaskCardProps) {
         onOpenChange={setIsEditing}
         onSave={handleSaveTask}
         onSaveAndCreateAnother={handleSaveAndCreateAnother}
+        initialTask={localTask}
       />
     </>
   );
