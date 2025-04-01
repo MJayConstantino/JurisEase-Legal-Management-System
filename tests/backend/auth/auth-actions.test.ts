@@ -14,13 +14,13 @@ jest.mock("../../../src/utils/supabase/server", () => ({
             signInWithPassword: jest.fn((email, password) => {
                 console.log(email, password);
                 return { error: null };
-            }), // Ensure mock returns an object
-            signUp: jest.fn(() => ({ error: null })), // Ensure mock returns an object
-            signOut: jest.fn(() => ({ error: null })), // Ensure mock returns an object
-            getSession: jest.fn(() => ({ data: { session: null } })), // Mock session as null initially
+            }),
+            signUp: jest.fn(() => ({ error: null })),
+            signOut: jest.fn(() => ({ error: null })),
+            getSession: jest.fn(() => ({ data: { session: null } })),
         },
         from: jest.fn(() => ({
-            select: jest.fn(() => Promise.resolve({ data: null, error: null })), // Ensure mock returns an object
+            select: jest.fn(() => Promise.resolve({ data: null, error: null })),
         })),
     })),
 }));
