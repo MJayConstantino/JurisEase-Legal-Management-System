@@ -76,8 +76,9 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
       );
 
       toast.success("Task marked as completed");
-      window.location.reload();
+
       if (onTaskUpdated) onTaskUpdated();
+      
     } catch (error) {
       console.error("Error completing task:", error);
       setLocalTask(task);

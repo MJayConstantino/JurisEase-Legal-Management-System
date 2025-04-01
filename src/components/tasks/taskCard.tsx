@@ -57,7 +57,6 @@ export function TaskCard({ task }: TaskCardProps) {
     if (isProcessing) return;
 
     try {
-      setIsProcessing(true);
       setLocalTask({
         ...localTask,
         status: "completed",
@@ -74,7 +73,6 @@ export function TaskCard({ task }: TaskCardProps) {
 
       toast.success("Task marked as completed");
 
-      window.location.reload();
     } catch (error) {
       console.error("Error completing task:", error);
       setLocalTask(task);
@@ -90,10 +88,8 @@ export function TaskCard({ task }: TaskCardProps) {
       setIsProcessing(true);
       await deleteTask(task.task_id);
 
-      // Show success toast
       toast.success("Task deleted successfully");
 
-      // Reload the window
       window.location.reload();
     } catch (error) {
       console.error("Error deleting task:", error);
@@ -117,7 +113,6 @@ export function TaskCard({ task }: TaskCardProps) {
       setIsEditing(false);
       await updateTask(task.task_id, updatedTask, optimisticTask);
 
-      // Reload the window
       window.location.reload();
     } catch (error) {
       console.error("Error updating task:", error);

@@ -23,7 +23,6 @@ export function TasksHeader({ onSearch, onStatusChange, onViewChange, view, onTa
 
   const handleSaveTask = async (task: Task) => {
     try {
-      // Convert the task data to match the expected format for createTask
       const newTask = {
         name: task.name,
         description: task.description,
@@ -33,19 +32,14 @@ export function TasksHeader({ onSearch, onStatusChange, onViewChange, view, onTa
         matter_id: task.matter_id,
       } as Omit<Task, "id">
 
-      // Close the form immediately for better UX
       setIsAddTaskOpen(false)
 
-      // Create the task on the server
       const createdTask = await createTask(newTask)
 
-      // If the task was created successfully and we have a callback, call it
       if (createdTask && onTaskCreated) {
         onTaskCreated(createdTask)
       }
 
-      // Reload the window after creating a new task
-      window.location.reload()
     } catch (error) {
       console.error("Error creating task:", error)
       toast.error("Failed to create task")

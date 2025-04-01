@@ -146,8 +146,6 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother, i
         onOpenChange(false)
 
         if (task.task_id) {
-          window.location.reload()
-        } else {
           router.refresh()
         }
       }
