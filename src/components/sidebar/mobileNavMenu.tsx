@@ -9,15 +9,10 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { Calendar, FileText, FolderClosed, ListTodo } from "lucide-react";
+import { FolderClosed, ListTodo } from "lucide-react";
 
-// Navigation items
 const navItems = [
-  {
-    title: "Calendar",
-    icon: Calendar,
-    href: "/calendar",
-  },
+
   {
     title: "Matters",
     icon: FolderClosed,
@@ -27,11 +22,6 @@ const navItems = [
     title: "Tasks",
     icon: ListTodo,
     href: "/tasks",
-  },
-  {
-    title: "Documents",
-    icon: FileText,
-    href: "/documents",
   },
 ];
 
@@ -75,9 +65,6 @@ export function MobileNavMenu() {
               ))}
             </ul>
           </nav>
-          <div className="p-6 border-t border-white/10">
-            <p className="text-sm opacity-70">© 2023 Dianson Law Office</p>
-          </div>
         </div>
       </SheetContent>
     </Sheet>

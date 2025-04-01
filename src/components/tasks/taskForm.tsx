@@ -1,9 +1,15 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -12,27 +18,36 @@ import {
   SelectGroup,
   SelectLabel,
   SelectValue,
-} from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon } from "lucide-react"
-import { format } from "date-fns"
-import { useState, useEffect } from "react"
-import { cn } from "@/lib/utils"
-import { getMatters } from "@/actions/matters"
-import { getMattersDisplayName } from "@/utils/getMattersDisplayName"
-import type { Task } from "@/types/task.type"
-import type { Matter } from "@/types/matter.type"
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
+import { getMatters } from "@/actions/matters";
+import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
+import type { Task } from "@/types/task.type";
+import type { Matter } from "@/types/matter.type";
 
 interface TaskFormProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSave: (task: Task) => void
-  onSaveAndCreateAnother: (task: Task) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSave: (task: Task) => void;
+  onSaveAndCreateAnother: (task: Task) => void;
 }
 
-export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }: TaskFormProps) {
+export function TaskForm({
+  open,
+  onOpenChange,
+  onSave,
+  onSaveAndCreateAnother,
+}: TaskFormProps) {
   const [task, setTask] = useState<Task>({
     task_id: "",
     name: "",
@@ -42,38 +57,41 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
     status: "pending",
     matter_id: "",
     createdAt: new Date(),
-  })
+  });
 
-  const [matters, setMatters] = useState<Matter[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [matters, setMatters] = useState<Matter[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchMatters() {
       try {
-        setIsLoading(true)
-        const matterData = await getMatters()
-        setMatters(matterData)
+        setIsLoading(true);
+        const matterData = await getMatters();
+        setMatters(matterData);
       } catch (error) {
-        console.error("Error fetching matters:", error)
+        console.error("Error fetching matters:", error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     }
-    fetchMatters()
-  }, [])
+    fetchMatters();
+  }, []);
 
-  const handleChange = (field: keyof Task, value: string | Date | undefined) => {
+  const handleChange = (
+    field: keyof Task,
+    value: string | Date | undefined
+  ) => {
     setTask((prev) => ({
       ...prev,
       [field]: value,
-    }))
-  }
+    }));
+  };
 
   const handleSubmit = (createAnother = false) => {
     if (createAnother) {
-      onSaveAndCreateAnother(task)
+      onSaveAndCreateAnother(task);
     } else {
-      onSave(task)
+      onSave(task);
     }
 
     // Reset form if creating another
@@ -87,11 +105,14 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
         status: "pending",
         matter_id: "",
         createdAt: new Date(),
-      })
+      });
     }
-  }
+  };
 
-  const selectedMatterName = getMattersDisplayName(task.matter_id || "", matters)
+  const selectedMatterName = getMattersDisplayName(
+    task.matter_id || "",
+    matters
+  );
 
   return (
     <Dialog open={open} onOpenChange={(open) => onOpenChange(open)}>
@@ -114,7 +135,10 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
               </div>
               <div>
                 <Label htmlFor="priority">Priority</Label>
-                <Select value={task.priority} onValueChange={(value) => handleChange("priority", value)}>
+                <Select
+                  value={task.priority}
+                  onValueChange={(value) => handleChange("priority", value)}
+                >
                   <SelectTrigger id="priority" className="mt-1">
                     <SelectValue placeholder="Select priority" />
                   </SelectTrigger>
@@ -142,9 +166,14 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="assigned-matter">Assigned Matter</Label>
-              <Select value={task.matter_id} onValueChange={(value) => handleChange("matter_id", value)}>
+              <Select
+                value={task.matter_id}
+                onValueChange={(value) => handleChange("matter_id", value)}
+              >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder={selectedMatterName || "Select a matter"} />
+                  <SelectValue
+                    placeholder={selectedMatterName || "Select a matter"}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
@@ -155,7 +184,10 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
                       </SelectItem>
                     ) : matters.length > 0 ? (
                       matters.map((matter: Matter) => (
-                        <SelectItem key={matter.id} value={matter.id}>
+                        <SelectItem
+                          key={matter.matter_id}
+                          value={matter.matter_id}
+                        >
                           {matter.name}
                         </SelectItem>
                       ))
@@ -173,7 +205,9 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
               <Label htmlFor="taskStatus">Task status</Label>
               <Select
                 value={task.status}
-                onValueChange={(value: "pending" | "completed") => handleChange("status", value)}
+                onValueChange={(value: "pending" | "completed") =>
+                  handleChange("status", value)
+                }
               >
                 <SelectTrigger id="taskStatus" className="mt-1">
                   <SelectValue placeholder="Select status" />
@@ -193,7 +227,7 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
                     variant="outline"
                     className={cn(
                       "mt-1 w-full justify-start text-left font-normal",
-                      !task.dueDate && "text-muted-foreground",
+                      !task.dueDate && "text-muted-foreground"
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
@@ -214,19 +248,30 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
         </div>
         <DialogFooter className="flex-col sm:flex-row gap-2 sm:justify-between">
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-            <Button type="submit" className="w-full sm:w-auto" onClick={() => handleSubmit(false)}>
+            <Button
+              type="submit"
+              className="w-full sm:w-auto"
+              onClick={() => handleSubmit(false)}
+            >
               Save task
             </Button>
-            <Button variant="outline" className="w-full sm:w-auto" onClick={() => handleSubmit(true)}>
+            <Button
+              variant="outline"
+              className="w-full sm:w-auto"
+              onClick={() => handleSubmit(true)}
+            >
               Save and create another
             </Button>
           </div>
-          <Button variant="ghost" className="w-full sm:w-auto" onClick={() => onOpenChange(false)}>
+          <Button
+            variant="ghost"
+            className="w-full sm:w-auto"
+            onClick={() => onOpenChange(false)}
+          >
             Cancel
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-

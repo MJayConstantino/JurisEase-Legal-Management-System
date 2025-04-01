@@ -4,15 +4,15 @@ import { useState, useEffect } from "react";
 import { MattersHeader } from "./mattersHeader";
 import { MattersTable } from "./mattersTable";
 import { getMatters } from "@/actions/matters";
-import { Matter } from "@/types/matter.type";
+import type { Matter, SortField, SortDirection } from "@/types/matter.type";
 import { Loader2 } from "lucide-react";
 
 export function MattersList() {
   const [matters, setMatters] = useState<Matter[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortField, setSortField] = useState<SortField>("date_opened");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   useEffect(() => {
     const fetchMatters = async () => {
@@ -30,42 +30,71 @@ export function MattersList() {
     fetchMatters();
   }, []);
 
-  // Filter and sort matters based on search, status, and sort order
-  const filteredMatters = matters
-    .filter((matter) => {
-      // Filter by search term
-      const matchesSearch =
-        searchTerm === "" ||
-        matter.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        matter.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        matter.id.toLowerCase().includes(searchTerm.toLowerCase());
+  const handleSort = (field: SortField) => {
+    if (field === sortField) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("desc");
+    }
+  };
 
-      // Filter by status
-      const matchesStatus =
-        statusFilter === "all" || matter.status === statusFilter;
+  const filteredMatters = matters.filter((matter) => {
+    return statusFilter === "all" || matter.status === statusFilter;
+  });
 
-      return matchesSearch && matchesStatus;
-    })
-    .sort((a, b) => {
-      // Sort by date
-      const dateA = new Date(a.date_opened).getTime();
-      const dateB = new Date(b.date_opened).getTime();
-      return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
-    });
+  const sortedMatters = [...filteredMatters].sort((a, b) => {
+    const multiplier = sortDirection === "asc" ? 1 : -1;
+
+    switch (sortField) {
+      case "date_opened":
+        return (
+          multiplier *
+          (new Date(a.date_opened || a.created_at).getTime() -
+            new Date(b.date_opened || b.created_at).getTime())
+        );
+      case "name":
+        return multiplier * a.name.localeCompare(b.name);
+      case "client":
+        return multiplier * a.client.localeCompare(b.client);
+      case "case_number":
+        return (
+          multiplier * (a.case_number || "").localeCompare(b.case_number || "")
+        );
+      case "assigned_attorney":
+        return (
+          multiplier *
+          (a.assigned_attorney || "").localeCompare(b.assigned_attorney || "")
+        );
+      case "assigned_staff":
+        return (
+          multiplier *
+          (a.assigned_staff || "").localeCompare(b.assigned_staff || "")
+        );
+      default:
+        return 0;
+    }
+  });
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border shadow">
       <MattersHeader
-        onSearch={setSearchTerm}
         onStatusChange={setStatusFilter}
-        onSortChange={setSortOrder}
+        onSortChange={(direction) =>
+          setSortDirection(direction as SortDirection)
+        }
       />
       {isLoading ? (
         <div className="flex justify-center items-center p-12">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       ) : (
-        <MattersTable matters={filteredMatters} />
+        <MattersTable
+          matters={sortedMatters}
+          onSort={handleSort}
+          sortField={sortField}
+          sortDirection={sortDirection}
+        />
       )}
     </div>
   );
