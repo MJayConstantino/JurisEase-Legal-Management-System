@@ -6,15 +6,23 @@ import { createSupabaseClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Header from "@/components/homepage/header";
 import { Card, CardContent } from "@/components/ui/card";
+<<<<<<< HEAD
 import { CalendarDays, LogOut, User, Loader2 } from "lucide-react";
 import UserInfo from "./user-info";
 import { useState } from "react";
+=======
+import { CalendarDays, LogOut, User } from "lucide-react";
+import UserInfo from "./user-info";
+>>>>>>> main
 
 export default function UserLoggedIn() {
   const supabase = createSupabaseClient();
   const router = useRouter();
+<<<<<<< HEAD
   const [signOutLoading, setSignOutLoading] = useState(false);
   const [dashboardLoading, setDashboardLoading] = useState(false);
+=======
+>>>>>>> main
 
   const navItems = [
     { label: "Home", href: "#" },
@@ -23,11 +31,18 @@ export default function UserLoggedIn() {
   ];
 
   const handleSignOut = async (e: React.MouseEvent<HTMLButtonElement>) => {
+<<<<<<< HEAD
     e.preventDefault();
     setSignOutLoading(true);
 
     try {
       const { error } = await supabase.auth.signOut();
+=======
+    e.preventDefault(); // Prevent form submission
+
+    try {
+      const { error } = await supabase.auth.signOut(); // Wait for sign-out to complete
+>>>>>>> main
 
       if (error) {
         console.error("Error signing out:", error.message);
@@ -35,17 +50,25 @@ export default function UserLoggedIn() {
         return;
       }
 
+<<<<<<< HEAD
+=======
+      // Only redirect after successful sign-out
+>>>>>>> main
       router.push("/login");
     } catch (error) {
       console.error("Exception during sign out:", error);
       router.push("/documents?message=Failed to sign out");
+<<<<<<< HEAD
     } finally {
       setSignOutLoading(false);
+=======
+>>>>>>> main
     }
   };
 
   const handleMatters = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+<<<<<<< HEAD
     setDashboardLoading(true);
 
     try {
@@ -57,6 +80,10 @@ export default function UserLoggedIn() {
 
   // Either button is loading
   const isLoading = signOutLoading || dashboardLoading;
+=======
+    router.push("/matters");
+  };
+>>>>>>> main
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50">
