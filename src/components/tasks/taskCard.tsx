@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { format } from "date-fns";
-import { Calendar, Check, Pencil, Trash2 } from "lucide-react";
+import { Calendar, Check, Pencil, Trash2 } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { updateTask, deleteTask } from "@/actions/tasks";
 import { getMatters } from "@/actions/matters";
@@ -118,9 +118,9 @@ export function TaskCard({ task }: TaskCardProps) {
 
   return (
     <>
-      <div className="border rounded-lg p-3 sm:p-4 bg-white shadow-sm h-full flex flex-col">
+      <div className="border rounded-lg p-3 sm:p-4 bg-white dark:bg-gray-800 dark:border-gray-700 shadow-sm h-full flex flex-col">
         <div className="mb-2 flex justify-between items-start">
-          <h3 className="font-medium text-base sm:text-lg line-clamp-2">
+          <h3 className="font-medium text-base sm:text-lg line-clamp-2 dark:text-white">
             {localTask.name}
           </h3>
           {localTask.priority && (
@@ -136,13 +136,13 @@ export function TaskCard({ task }: TaskCardProps) {
         </div>
 
         {localTask.description && (
-          <p className="text-muted-foreground text-xs sm:text-sm mb-3 line-clamp-3">
+          <p className="text-muted-foreground text-xs sm:text-sm mb-3 line-clamp-3 dark:text-gray-400">
             {localTask.description}
           </p>
         )}
 
         {localTask.matter_id && (
-          <div className="text-xs sm:text-sm font-medium mb-2 truncate">
+          <div className="text-xs sm:text-sm font-medium mb-2 truncate dark:text-gray-300">
             Matter:{" "}
             {isLoadingMatters
               ? "Loading..."
@@ -150,12 +150,12 @@ export function TaskCard({ task }: TaskCardProps) {
           </div>
         )}
 
-        <div className="flex items-center text-xs sm:text-sm text-muted-foreground mb-4">
+        <div className="flex items-center text-xs sm:text-sm text-muted-foreground mb-4 dark:text-gray-400">
           <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-          <span>Due: {formatDate(localTask.dueDate)}</span>
+          <span>Due: {formatDate(localTask.due_date)}</span>
         </div>
 
-        <div className="flex items-center justify-between mt-auto pt-2 border-t">
+        <div className="flex items-center justify-between mt-auto pt-2 border-t dark:border-gray-700">
           <Badge
             variant="outline"
             className={`text-xs ${getStatusColor(localTask.status)}`}

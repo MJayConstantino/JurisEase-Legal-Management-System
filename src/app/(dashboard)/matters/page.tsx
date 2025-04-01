@@ -8,11 +8,8 @@ export const metadata: Metadata = {
 
 export default function MattersPage() {
   return (
-    <div className="flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-3 h-full font-aileron">
       <h1 className="text-3xl font-bold">Matters</h1>
-      <p className="text-muted-foreground">
-        View and manage your legal cases and client matters.
-      </p>
       <MattersList />
     </div>
   );

@@ -4,15 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectGroup,
-  SelectLabel,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -30,14 +22,15 @@ interface TaskFormProps {
   onOpenChange: (open: boolean) => void
   onSave: (task: Task) => void
   onSaveAndCreateAnother: (task: Task) => void
+  initialTask?: Task
 }
 
-export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }: TaskFormProps) {
+export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother, initialTask }: TaskFormProps) {
   const [task, setTask] = useState<Task>({
     task_id: "",
     name: "",
     description: "",
-    dueDate: undefined,
+    due_date: undefined,
     priority: "low",
     status: "pending",
     matter_id: "",
@@ -46,13 +39,18 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
 
   const [matters, setMatters] = useState<Matter[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [matterSearchQuery, setMatterSearchQuery] = useState("")
 
   useEffect(() => {
     async function fetchMatters() {
       try {
         setIsLoading(true)
         const matterData = await getMatters()
-        setMatters(matterData)
+        // Ensure matters have unique IDs to prevent duplicate entries
+        const uniqueMatters = matterData.filter(
+          (matter, index, self) => index === self.findIndex((m) => m.id === matter.id),
+        )
+        setMatters(uniqueMatters)
       } catch (error) {
         console.error("Error fetching matters:", error)
       } finally {
@@ -61,6 +59,12 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
     }
     fetchMatters()
   }, [])
+
+  useEffect(() => {
+    if (initialTask) {
+      setTask(initialTask)
+    }
+  }, [initialTask])
 
   const handleChange = (field: keyof Task, value: string | Date | undefined) => {
     setTask((prev) => ({
@@ -82,7 +86,7 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
         task_id: "",
         name: "",
         description: "",
-        dueDate: undefined,
+        due_date: undefined,
         priority: "low",
         status: "pending",
         matter_id: "",
@@ -92,6 +96,10 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
   }
 
   const selectedMatterName = getMattersDisplayName(task.matter_id || "", matters)
+
+  const filteredMatters = matters.filter((matter) =>
+    matter.name.toLowerCase().includes(matterSearchQuery.toLowerCase()),
+  )
 
   return (
     <Dialog open={open} onOpenChange={(open) => onOpenChange(open)}>
@@ -142,31 +150,44 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="assigned-matter">Assigned Matter</Label>
-              <Select value={task.matter_id} onValueChange={(value) => handleChange("matter_id", value)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder={selectedMatterName || "Select a matter"} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Matters</SelectLabel>
+              <div className="relative">
+                <Select
+                  value={task.matter_id}
+                  onValueChange={(value) => handleChange("matter_id", value)}
+                  disabled={isLoading}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue
+                      placeholder={isLoading ? "Loading matters..." : selectedMatterName || "Select a matter"}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <div className="px-2 py-1.5">
+                      <Input
+                        placeholder="Search matters..."
+                        value={matterSearchQuery}
+                        onChange={(e) => setMatterSearchQuery(e.target.value)}
+                        className="h-8"
+                      />
+                    </div>
                     {isLoading ? (
-                      <SelectItem value="loading" disabled>
+                      <SelectItem key="loading" value="loading" disabled>
                         Loading matters...
                       </SelectItem>
-                    ) : matters.length > 0 ? (
-                      matters.map((matter: Matter) => (
+                    ) : filteredMatters.length > 0 ? (
+                      filteredMatters.map((matter: Matter) => (
                         <SelectItem key={matter.id} value={matter.id}>
                           {matter.name}
                         </SelectItem>
                       ))
                     ) : (
-                      <SelectItem value="no-matters" disabled>
-                        No matters available
+                      <SelectItem key="no-matters" value="no-matters" disabled>
+                        {matterSearchQuery ? "No matching matters" : "No matters available"}
                       </SelectItem>
                     )}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div>
@@ -193,19 +214,18 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother }:
                     variant="outline"
                     className={cn(
                       "mt-1 w-full justify-start text-left font-normal",
-                      !task.dueDate && "text-muted-foreground",
+                      !task.due_date && "text-muted-foreground",
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {task.dueDate ? format(task.dueDate, "PPP") : "Select date"}
+                    {task.due_date ? format(task.due_date, "PPP") : "Select date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
-                    selected={task.dueDate}
-                    onSelect={(date) => handleChange("dueDate", date)}
-                    initialFocus
+                    selected={task.due_date}
+                    onSelect={(date) => handleChange("due_date", date)}
                   />
                 </PopoverContent>
               </Popover>

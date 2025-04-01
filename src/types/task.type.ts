@@ -5,7 +5,7 @@ export interface Task {
   task_id: string
   name: string
   description?: string
-  dueDate?: Date
+  due_date?: Date
   priority: Priority
   status: Status
   matter_id?: string

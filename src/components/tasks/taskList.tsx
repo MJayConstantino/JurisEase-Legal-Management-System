@@ -46,8 +46,8 @@ export function TaskList() {
       return matchesSearch && matchesStatus
     })
     .sort((a, b) => {
-      const dateA = a.dueDate ? new Date(a.dueDate).getTime() : 0
-      const dateB = b.dueDate ? new Date(b.dueDate).getTime() : 0
+      const dateA = a.due_date ? new Date(a.due_date).getTime() : 0
+      const dateB = b.due_date ? new Date(b.due_date).getTime() : 0
       return dateA - dateB
     })
 
@@ -63,7 +63,6 @@ export function TaskList() {
     setView(newView)
   }
 
-  // Function to add a new task to the local state
   const addTask = (task: Task) => {
     setTasks((prevTasks) => [task, ...prevTasks])
   }

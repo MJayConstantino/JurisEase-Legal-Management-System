@@ -59,7 +59,7 @@ export function SignUpPage({
         {/* Header Section */}
         <Header
           title="Create an Account"
-          subtitle="Dianson Law Office"
+          subtitle="JurisEase"
           description="Sign up to access our legal services and resources."
         />
 
