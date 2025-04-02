@@ -2,6 +2,7 @@ export type BillStatus = "Active" | "Paid" | "Pending" | "Overdue"
 
 export interface Bill {
   bill_id: string
+  matter_id: string
   name: string
   amount: number
   created_at: string
@@ -11,7 +12,7 @@ export interface Bill {
 
 export type SortDirection = "asc" | "desc"
 
-export type SortField = "name" | "amount" | "created_at" | "status" | "remarks"
+export type SortField = "matterName" | "name" | "amount" | "created_at" | "status" | "remarks" // Updated from clientName to matterName
 
 export type TimeFilter = "all" | "today" | "week" | "month"
 

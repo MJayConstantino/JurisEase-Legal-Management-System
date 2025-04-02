@@ -19,15 +19,18 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { BillingStates } from "./billingsStates"
+import { Matter } from "@/types/matter.type"
 
 interface BillingsItemProps {
   bill: Bill
+  matter?: Matter
+  matters: Matter[]
   onUpdate: (bill: Bill) => void
   onDelete: (id: string) => void
   index: number
 }
 
-export function BillingsItem({ bill, onUpdate, onDelete, index }: BillingsItemProps) {
+export function BillingsItem({ bill, matter, onUpdate, onDelete, index }: BillingsItemProps) {
   const {
     isEditDialogOpen, setIsEditDialogOpen, isDeleteDialogOpen, setIsDeleteDialogOpen
   } = BillingStates()
@@ -59,6 +62,12 @@ export function BillingsItem({ bill, onUpdate, onDelete, index }: BillingsItemPr
   return (
     <TableRow className="text-sm md:text-base dark:border-gray-700">
       <TableCell className="text-center text-gray-500 dark:text-gray-400 font-medium w-12">{index}</TableCell>
+      <TableCell
+        className="font-medium max-w-[150px] truncate"
+        title={matter ? `${matter.name} [${matter.case_number}]` : `Matter ID: ${bill.matter_id}`}
+      >
+        {matter ? `${matter.name} [${matter.case_number}]` : `Matter ID: ${bill.matter_id}`}
+      </TableCell>
       <TableCell className="font-medium max-w-[200px] truncate" title={bill.name}>
         {bill.name}
       </TableCell>
@@ -77,7 +86,7 @@ export function BillingsItem({ bill, onUpdate, onDelete, index }: BillingsItemPr
       <TableCell className="text-right">
         <BillingsButtons onEdit={() => setIsEditDialogOpen(true)} onDelete={() => setIsDeleteDialogOpen(true)} />
 
-        <BillingsEditDialog bill={bill} open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} onSave={onUpdate} />
+        <BillingsEditDialog bill={bill} open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} onSave={onUpdate} matters={[]} />
 
         <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <AlertDialogContent className="max-w-md dark:bg-gray-800 dark:border-gray-700">

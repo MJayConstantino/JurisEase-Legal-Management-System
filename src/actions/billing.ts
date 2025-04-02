@@ -7,13 +7,15 @@ import { revalidatePath } from "next/cache"
 
 function mapDbBillToAppBill(dbBill: any): Bill {
   return {
-    bill_id: dbBill.bill_id,
+    bill_id: dbBill.bill_id, 
     name: dbBill.name,
     amount: dbBill.amount,
     created_at: dbBill.created_at,
     status: dbBill.status,
     remarks: dbBill.remarks || "",
+    matter_id: dbBill.matter_id,
   }
+
 }
 
 // Helper function to convert from app format to DB format
@@ -24,6 +26,7 @@ function mapAppBillToDbBill(bill: Omit<Bill, "bill_id"> | Bill): any {
     created_at: bill.created_at,
     status: bill.status,
     remarks: bill.remarks,
+    matter_id: bill.matter_id,
   }
 
   // Only add ID if it exists (for updates)

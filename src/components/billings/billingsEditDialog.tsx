@@ -19,19 +19,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 import { BillingStates } from "./billingsStates"
 import { Textarea } from "../ui/textarea"
+import { Matter } from "@/types/matter.type"
 
 
   interface BillingsEditDialogProps {
     bill: Bill
+    matters: Matter[]
     open: boolean
     onOpenChange: (open: boolean) => void
     onSave: (bill: Bill) => void
   }
   
-  export function BillingsEditDialog({ bill, open, onOpenChange, onSave }: BillingsEditDialogProps) {
+  export function BillingsEditDialog({ bill, matters, open, onOpenChange, onSave }: BillingsEditDialogProps) {
     const {
       name, setName, amount, setAmount, created_at, setCreated_at, 
-      status, setStatus, remarks, setRemarks
+      status, setStatus, remarks, setRemarks, matter_id, setMatterId
     }= BillingStates()
   
     const isDesktop = useMediaQuery("(min-width: 768px)")
@@ -39,6 +41,7 @@ import { Textarea } from "../ui/textarea"
     // Update form when bill changes
     useEffect(() => {
       if (open) {
+        setMatterId(bill.matter_id)
         setName(bill.name)
         setAmount(bill.amount.toString())
         setCreated_at(new Date(bill.created_at))
@@ -48,10 +51,11 @@ import { Textarea } from "../ui/textarea"
     }, [bill, open])
   
     const handleSave = () => {
-      if (!name || !amount) return
+      if (!name || !amount || !matter_id) return
   
       const updatedBill: Bill = {
         ...bill,
+        matter_id,
         name,
         amount: Number.parseFloat(amount),
         created_at: created_at.toISOString(),
@@ -71,11 +75,31 @@ import { Textarea } from "../ui/textarea"
           <DialogHeader>
             <DialogTitle className="text-xl md:text-2xl">Edit Bill</DialogTitle>
           </DialogHeader>
+        
   
           <div className="grid gap-4 py-4">
+            
             <div className={`grid ${isDesktop ? "grid-cols-2" : "grid-cols-1"} gap-4`}>
               {/* Left Column */}
               <div className="space-y-4">
+
+              <div className="grid gap-2">
+                <Label htmlFor="matter" className="text-base md:text-lg">
+                  Select Matter
+                </Label>
+                <Select value={matter_id} onValueChange={setMatterId}>
+                  <SelectTrigger id="matter" className="text-sm md:text-base dark:bg-gray-700 dark:border-gray-600">
+                    <SelectValue placeholder="Select matter" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px] overflow-y-auto dark:bg-gray-700 dark:border-gray-600">
+                    {matters.map((matter) => (
+                      <SelectItem key={matter.matter_id} value={matter.matter_id} className="text-sm md:text-base">
+                        {matter.name} [{matter.case_number}]
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
                 <div className="grid gap-2">
                   <Label htmlFor="edit-name" className="text-base md:text-lg">
                     Bill Name

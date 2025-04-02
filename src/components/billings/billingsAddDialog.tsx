@@ -6,7 +6,7 @@ import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 
-import type { Bill, BillStatus } from "@/types/billing.type"
+import type { Bill, BillStatus} from "@/types/billing.type"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -18,26 +18,29 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 import { BillingStates } from "./billingsStates"
 import { Textarea } from "../ui/textarea"
+import { Matter } from "@/types/matter.type"
 
 
 interface BillingsAddDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSave: (bill: Omit<Bill, "bill_id">) => void
+  matters: Matter[]
 }
 
-export function BillingsAddDialog({ open, onOpenChange, onSave }: BillingsAddDialogProps) {
+export function BillingsAddDialog({ open, onOpenChange, onSave, matters }: BillingsAddDialogProps) {
    const {
         name, setName, amount, setAmount, created_at, setCreated_at, 
-        status, setStatus, remarks, setRemarks
+        status, setStatus, remarks, setRemarks, matter_id, setMatterId
       }= BillingStates()
   
   const isDesktop = useMediaQuery("(min-width: 768px)")
   
   const handleSave = () => {
-    if (!name || !amount) return
+    if (!name || !amount || !matter_id) return
     
     const newBill: Omit<Bill, "bill_id"> = {
+      matter_id,
       name,
       amount: Number.parseFloat(amount),
       created_at: created_at.toISOString(),
@@ -51,6 +54,7 @@ export function BillingsAddDialog({ open, onOpenChange, onSave }: BillingsAddDia
   }
 
   const resetForm = () => {
+    setMatterId("")
     setName("")
     setAmount("")
     setCreated_at(new Date())
@@ -71,6 +75,23 @@ export function BillingsAddDialog({ open, onOpenChange, onSave }: BillingsAddDia
           <div className={`grid ${isDesktop ? "grid-cols-2" : "grid-cols-1"} gap-4`}>
             {/* Left Column */}
             <div className="space-y-4">
+            <div className="grid gap-2">
+                <Label htmlFor="matter" className="text-base md:text-lg">
+                  Select Matter
+                </Label>
+                <Select value={matter_id} onValueChange={setMatterId}>
+                  <SelectTrigger id="matter" className="text-sm md:text-base dark:bg-gray-700 dark:border-gray-600">
+                    <SelectValue placeholder="Select matter" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px] overflow-y-auto dark:bg-gray-700 dark:border-gray-600">
+                    {matters.map((matter) => (
+                      <SelectItem key={matter.matter_id} value={matter.matter_id} className="text-sm md:text-base">
+                        {matter.name} [{matter.case_number}]
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="grid gap-2">
                 <Label htmlFor="name" className="text-base md:text-lg">
                   Bill Name

@@ -8,8 +8,11 @@ import { ArrowUpDown } from "lucide-react"
 import type { Bill, SortDirection, SortField } from "@/types/billing.type"
 import { BillingsItem } from "@/components/billings/billingsItem"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Matter } from "@/types/matter.type"
 
 interface BillingsListProps {
+  matters: Matter[]
+  matter?: Matter
   bills: Bill[]
   onUpdate: (bill: Bill) => void
   onDelete: (id: string) => void
@@ -21,7 +24,7 @@ interface BillingsListProps {
 
 export function BillingsList({
   bills,
-  // clients,
+  matters,
   onUpdate,
   onDelete,
   isLoading = false,
@@ -52,6 +55,19 @@ export function BillingsList({
           <TableRow className="text-sm md:text-base">
             <TableHead className="w-[5%] text-center text-sm md:text-base">#</TableHead>
             <TableHead className="w-[20%]">
+            <div className="flex items-center cursor-pointer" onClick={() => onSortChange("matterName")}>
+                Matter Name
+                <ArrowUpDown
+                  className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "matterName" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
+                />
+                {sortField === "matterName" && (
+                  <span className="ml-1 text-xs md:text-sm text-indigo-900 dark:text-indigo-300 font-bold">
+                    {sortDirection === "asc" ? "↑" : "↓"}
+                  </span>
+                )}
+              </div>
+            </TableHead>
+            <TableHead className="w-[15%]">
               <div className="flex items-center cursor-pointer" onClick={() => onSortChange("name")}>
                 Bill Name
                 <ArrowUpDown
@@ -64,7 +80,7 @@ export function BillingsList({
                 )}
               </div>
             </TableHead>
-            <TableHead className="w-[15%]">
+            <TableHead className="w-[10%]">
               <div className="flex items-center cursor-pointer" onClick={() => onSortChange("amount")}>
                 Amount
                 <ArrowUpDown
@@ -77,7 +93,7 @@ export function BillingsList({
                 )}
               </div>
             </TableHead>
-            <TableHead className="w-[15%]">
+            <TableHead className="w-[10%]">
               <div className="flex items-center cursor-pointer" onClick={() => onSortChange("created_at")}>
                 Created At
                 <ArrowUpDown
@@ -90,7 +106,7 @@ export function BillingsList({
                 )}
               </div>
             </TableHead>
-            <TableHead className="w-[15%]">
+            <TableHead className="w-[10%]">
               <div className="flex items-center cursor-pointer" onClick={() => onSortChange("status")}>
                 Status
                 <ArrowUpDown
@@ -103,7 +119,7 @@ export function BillingsList({
                 )}
               </div>
             </TableHead>
-            <TableHead className="w-[25%]">
+            <TableHead className="w-[15%]">
               <div className="flex items-center cursor-pointer" onClick={() => onSortChange("remarks")}>
                 Remarks
                 <ArrowUpDown
@@ -116,7 +132,7 @@ export function BillingsList({
                 )}
               </div>
             </TableHead>
-            <TableHead className="w-[15%] text-right">Actions</TableHead>
+            <TableHead className="w-[13%] text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -133,9 +149,20 @@ export function BillingsList({
               </TableCell>
             </TableRow>
           ) : (
-            bills.map((bill, index) => (
-              <BillingsItem key={bill.bill_id} bill={bill} onUpdate={onUpdate} onDelete={onDelete} index={index + 1} />
-            ))
+            bills.map((bill, index) => {
+              const currentMatter = matters.find((m) => m.matter_id === bill.matter_id)
+              return (
+                <BillingsItem
+                  key={bill.bill_id}
+                  bill={bill}
+                  matter={currentMatter}
+                  matters={matters}
+                  onUpdate={onUpdate}
+                  onDelete={onDelete}
+                  index={index + 1}
+              />
+              )
+            })
           )}
         </TableBody>
       </Table>

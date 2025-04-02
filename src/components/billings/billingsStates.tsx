@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Bill, BillStatus, SortDirection, SortField, StatusFilter, TimeFilter } from  "@/types/billing.type"
+import { Matter } from "@/types/matter.type"
 
 
 export function BillingStates(){
@@ -11,6 +12,7 @@ export function BillingStates(){
     const [created_at, setCreated_at] = useState<Date>(new Date())
     const [status, setStatus] = useState<BillStatus>("Active")
     const [remarks, setRemarks] = useState("")
+    const [matter_id, setMatterId] = useState("")
 
 
     // billing items
@@ -30,11 +32,12 @@ export function BillingStates(){
     const [isLoading, setIsLoading] = useState(false)
     const [sortField, setSortField] = useState<SortField | null>(null)
     const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
+    const [matters, setMatters] = useState<Matter[]>([])
 
     // Spacing here is based on above orientation for easy identification
     return{
         name, setName, remarks, setRemarks, amount, setAmount, created_at, setCreated_at, 
-        status, setStatus,
+        status, setStatus, matter_id, setMatterId,
         
         isEditDialogOpen, setIsEditDialogOpen, isDeleteDialogOpen, setIsDeleteDialogOpen,
 
@@ -42,6 +45,6 @@ export function BillingStates(){
 
         bills, setBills, filteredBills, setFilteredBills, currentDateTime, setCurrentDateTime, isNewBillDialogOpen, 
         setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, setTimeFilter, sortField, setSortField, sortDirection, setSortDirection,
-        statusFilter, setStatusFilter
+        statusFilter, setStatusFilter, matters, setMatters
     }
 }

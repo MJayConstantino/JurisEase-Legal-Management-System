@@ -11,7 +11,7 @@ import { BillingsAddDialog } from "@/components/billings/billingsAddDialog"
 import { BillingsListHeader } from "@/components/billings/billingsListHeader"
 import type { Bill, SortDirection, SortField, StatusFilter } from "@/types/billing.type"
 import { BillingStates } from "./billingsStates"
-
+import { getMatters } from "@/actions/matters"
 import { getBills, createBill as addBillToDb, updateBill as updateBillInDb, deleteBill as deleteBillFromDb } from "@/actions/billing"
 
 
@@ -19,23 +19,27 @@ export function BillingInterface() {
   const {
     bills, setBills, filteredBills, setFilteredBills, currentDateTime, setCurrentDateTime, isNewBillDialogOpen, 
     setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, setTimeFilter, sortField, setSortField, sortDirection, setSortDirection,
-    statusFilter, setStatusFilter
+    statusFilter, setStatusFilter, matters, setMatters
   } = BillingStates()
 
   // Load bills from database
   useEffect(() => {
-    async function loadBills() {
-      setIsLoading(true)
-      try {
-        const data = await getBills()
-        setBills(data)
-      } catch (error) {
-        console.error('Failed to load bills:', error)
-      } finally {
-        setIsLoading(false)
+    async function loadData() {
+        setIsLoading(true)
+        try {
+          const [billsData, mattersData] = await Promise.all([
+            getBills(),
+            getMatters()
+          ])
+          setBills(billsData)
+          setMatters(mattersData)
+        } catch (error) {
+          console.error('Failed to load data:', error)
+        } finally {
+          setIsLoading(false)
+        }
       }
-    }
-    loadBills()
+    loadData()
 
   }, [])
 
@@ -109,6 +113,11 @@ export function BillingInterface() {
       let comparison = 0
 
       switch (field) {
+        case "matterName":
+          const matterA = matters.find((m) => m.matter_id === a.matter_id)?.name || ""
+          const matterB = matters.find((m) => m.matter_id === b.matter_id)?.name || ""
+          comparison = matterA.localeCompare(matterB)
+          break
         case "name":
           comparison = a.name.localeCompare(b.name)
           break
@@ -260,6 +269,7 @@ export function BillingInterface() {
           <div className="max-h-[600px] overflow-y-auto">
             <BillingsList
               bills={filteredBills}
+              matters={matters}
               onUpdate={updateBill}
               onDelete={deleteBill}
               isLoading={isLoading}
@@ -273,6 +283,7 @@ export function BillingInterface() {
           open={isNewBillDialogOpen}
           onOpenChange={setIsNewBillDialogOpen}
           onSave={addBill}
+          matters={matters}
         />
       </div>
     </div>
