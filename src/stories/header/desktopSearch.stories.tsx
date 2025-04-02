@@ -1,9 +1,9 @@
-import { Meta, StoryObj } from "@storybook/react";
-import DesktopSearch from "@/components/header/desktopSearch";
-import { userEvent, within } from "@storybook/testing-library";
+import { Meta, StoryObj } from '@storybook/react'
+import DesktopSearch from '@/components/header/globalSearch/desktopSearch'
+import { userEvent, within } from '@storybook/testing-library'
 
 const meta: Meta<typeof DesktopSearch> = {
-  title: "Header/DesktopSearch",
+  title: 'Header/DesktopSearch',
   component: DesktopSearch,
   decorators: [
     (Story) => (
@@ -12,14 +12,14 @@ const meta: Meta<typeof DesktopSearch> = {
       </div>
     ),
   ],
-};
+}
 
-export default meta;
-type Story = StoryObj<typeof DesktopSearch>;
+export default meta
+type Story = StoryObj<typeof DesktopSearch>
 
 export const Default: Story = {
   render: () => <DesktopSearch />,
-};
+}
 
 export const DarkMode: Story = {
   render: () => (
@@ -27,16 +27,16 @@ export const DarkMode: Story = {
       <DesktopSearch />
     </div>
   ),
-};
+}
 
 export const Focused: Story = {
   render: () => <DesktopSearch />,
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const input = canvas.getByPlaceholderText("Search");
-    input.focus();
+    const canvas = within(canvasElement)
+    const input = canvas.getByPlaceholderText('Search')
+    input.focus()
   },
-};
+}
 
 export const FocusedDarkMode: Story = {
   render: () => (
@@ -45,20 +45,20 @@ export const FocusedDarkMode: Story = {
     </div>
   ),
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const input = canvas.getByPlaceholderText("Search");
-    input.focus();
+    const canvas = within(canvasElement)
+    const input = canvas.getByPlaceholderText('Search')
+    input.focus()
   },
-};
+}
 
 export const WithText: Story = {
   render: () => <DesktopSearch />,
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const input = canvas.getByPlaceholderText("Search");
-    await userEvent.type(input, "Hello World", { delay: 100 });
+    const canvas = within(canvasElement)
+    const input = canvas.getByPlaceholderText('Search')
+    await userEvent.type(input, 'Hello World', { delay: 100 })
   },
-};
+}
 
 export const WithTextDarkMode: Story = {
   render: () => (
@@ -67,8 +67,8 @@ export const WithTextDarkMode: Story = {
     </div>
   ),
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const input = canvas.getByPlaceholderText("Search");
-    await userEvent.type(input, "Hello World", { delay: 100 });
+    const canvas = within(canvasElement)
+    const input = canvas.getByPlaceholderText('Search')
+    await userEvent.type(input, 'Hello World', { delay: 100 })
   },
-};
+}
