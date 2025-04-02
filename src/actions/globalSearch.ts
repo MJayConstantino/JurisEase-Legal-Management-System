@@ -24,7 +24,6 @@ interface Bill {
   invoice_number: string
   matters?: { name: string; client_name: string }
 }
-
 interface SearchResult {
   id: string
   type: 'Matter' | 'Task' | 'Bill'
