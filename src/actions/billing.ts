@@ -1,115 +1,88 @@
 "use server"
 
-import type { Bill, Client } from  "@/types/billing.type"
+import type { Bill } from  "@/types/billing.type"
 import { supabase } from "@/lib/supabase"
 import { revalidatePath } from "next/cache"
 
 
 function mapDbBillToAppBill(dbBill: any): Bill {
   return {
-    id: dbBill.bill_id,
-    clientId: dbBill.matter_id,
+    bill_id: dbBill.bill_id,
     name: dbBill.name,
-    amount: parseFloat(dbBill.amount),
-    dateBilled: dbBill.created_at,
+    amount: dbBill.amount,
+    created_at: dbBill.created_at,
     status: dbBill.status,
-    frequency: dbBill.frequency,
+    remarks: dbBill.remarks || "",
   }
 }
 
-function mapAppBillToDbBill(bill: Omit<Bill, "id"> | Bill): any {
+// Helper function to convert from app format to DB format
+function mapAppBillToDbBill(bill: Omit<Bill, "bill_id"> | Bill): any {
   const dbBill: any = {
     name: bill.name,
-    amount: bill.amount.toString(),
-    created_at: bill.dateBilled,
+    amount: bill.amount,
+    created_at: bill.created_at,
     status: bill.status,
-    frequency: bill.frequency,
-    matter_id: bill.clientId
+    remarks: bill.remarks,
   }
 
   // Only add ID if it exists (for updates)
-  if ("id" in bill) {
-    dbBill.bill_id = bill.id
+  if ("bill_id" in bill) {
+    dbBill.bill_id = bill.bill_id
   }
 
   return dbBill
 }
 
-// Billings table operations
+// Bills table operations
 export async function getBills() {
   const { data, error } = await supabase
     .from("billings")
     .select("*")
-    .order("created_at", { ascending: false })
 
   if (error) {
-    console.error("Error fetching billings:", error)
+    console.error("Error fetching bills:", error)
     return []
   }
 
+  // Map database column names to our app's property names
   return data.map(mapDbBillToAppBill) as Bill[]
 }
 
-export async function getClientNames() {
-  const { data, error } = await supabase
-    .from("matters")
-    .select("name")
-    .order("created_at", { ascending: false })
-
-  if (error) {
-    console.error("Error fetching clients:", error)
-    return []
-  }
-
-  return data as Client[]
-}
-
-
-// export async function getBillsById(billId: string) {
-//   const { data, error } = await supabase.from("billings").select("*").eq("id", billId).single()
-
-//   if (error) {
-//     console.error("Error fetching bills:", error)
-//     return null
-//   }
-
-//   return data as Bill
-// }
-
-export async function createBill(bill: Omit<Bill, "id">) {
-  const dbBill = mapAppBillToDbBill(bill)
+export async function createBill(bill: Omit<Bill, "bill_id">) {
 
   const { data, error } = await supabase
     .from("billings")
-    .insert([dbBill])
-    .select("bill_id, matter_id, client_name, name, amount, created_at, status, frequency")
+    .insert([bill])
+    .select()
 
-    if (error) {
+  if (error) {
     console.error("Error adding bill:", error)
-    throw new Error("Failed to create bill")
+    return null
   }
 
+  
   revalidatePath("/billings")
 
   return mapDbBillToAppBill(data[0]) as Bill
 }
 
 export async function updateBill(bill: Bill) {
-  const dbBill = mapAppBillToDbBill(bill)
 
   const { data, error } = await supabase
     .from("billings")
-    .update(dbBill)
-    .eq("bill_id", bill.id)
-    .select("bill_id, matter_id, client_name, name, amount, created_at, status, frequency")
+    .update(bill)
+    .eq("bill_id", bill.bill_id)
+    .select()
 
   if (error) {
     console.error("Error updating bill:", error)
-    throw new Error("Failed to update bill")
+    return null
   }
 
-
+  
   revalidatePath("/billings")
+
   return mapDbBillToAppBill(data[0]) as Bill
 }
 
@@ -117,10 +90,12 @@ export async function deleteBill(id: string) {
   const { error } = await supabase.from("billings").delete().eq("bill_id", id)
 
   if (error) {
-      console.error("Error deleting bill:", error)
-      throw new Error("Failed to delete bill")
-    }
-    
-    revalidatePath("/billings")
+    console.error("Error deleting bill:", error)
+    return false
+  }
+
+  
+  revalidatePath("/billings")
+
   return true
 }

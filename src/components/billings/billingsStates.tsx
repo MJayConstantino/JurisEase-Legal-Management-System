@@ -1,25 +1,16 @@
 // Compiled here are all the useState functions used in billings 
 
 import { useState } from "react"
-import { Bill, BillStatus, Client, PaymentFrequency, SortDirection, SortField, StatusFilter, TimeFilter } from  "@/types/billing.type"
+import { Bill, BillStatus, SortDirection, SortField, StatusFilter, TimeFilter } from  "@/types/billing.type"
 
-// temporary
-const mockClients: Client[] = [
-  { id: "1", name: "Acme Corp" },
-  { id: "2", name: "Wayne Enterprises" },
-  { id: "3", name: "Stark Industries" },
-  { id: "4", name: "Umbrella Corporation" },
-]
 
 export function BillingStates(){
     // Add and Edit
-    const [clientId, setClientId] = useState("")
     const [name, setName] = useState("")
     const [amount, setAmount] = useState("")
-    const [dateBilled, setDateBilled] = useState<Date>(new Date())
+    const [created_at, setCreated_at] = useState<Date>(new Date())
     const [status, setStatus] = useState<BillStatus>("Active")
-    const [frequencyType, setFrequencyType] = useState<PaymentFrequency["type"]>("Monthly")
-    const [customFrequency, setCustomFrequency] = useState("")
+    const [remarks, setRemarks] = useState("")
 
 
     // billing items
@@ -31,7 +22,6 @@ export function BillingStates(){
 
     // billing page
     const [bills, setBills] = useState<Bill[]>([])
-    const [clients, setClients] = useState<Client[]>(mockClients)
     const [filteredBills, setFilteredBills] = useState<Bill[]>([])
     const [timeFilter, setTimeFilter] = useState<TimeFilter>("all")
     const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
@@ -43,14 +33,14 @@ export function BillingStates(){
 
     // Spacing here is based on above orientation for easy identification
     return{
-        name, setName, clientId, setClientId, amount, setAmount, dateBilled, setDateBilled, 
-        status, setStatus, frequencyType, setFrequencyType, customFrequency, setCustomFrequency, 
+        name, setName, remarks, setRemarks, amount, setAmount, created_at, setCreated_at, 
+        status, setStatus,
         
         isEditDialogOpen, setIsEditDialogOpen, isDeleteDialogOpen, setIsDeleteDialogOpen,
 
         isDropdownOpen, setIsDropdownOpen,
 
-        bills, setBills, filteredBills, setFilteredBills, clients, setClients, currentDateTime, setCurrentDateTime, isNewBillDialogOpen, 
+        bills, setBills, filteredBills, setFilteredBills, currentDateTime, setCurrentDateTime, isNewBillDialogOpen, 
         setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, setTimeFilter, sortField, setSortField, sortDirection, setSortDirection,
         statusFilter, setStatusFilter
     }

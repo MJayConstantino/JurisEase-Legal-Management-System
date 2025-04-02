@@ -6,7 +6,7 @@ import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 
-import type { Bill, BillStatus, Client, PaymentFrequency } from "@/types/billing.type"
+import type { Bill, BillStatus } from "@/types/billing.type"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -17,32 +17,32 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import { BillingStates } from "./billingsStates"
+import { Textarea } from "../ui/textarea"
+
 
 interface BillingsAddDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSave: (bill: Omit<Bill, "id">) => void
-  clients: Client[]
+  onSave: (bill: Omit<Bill, "bill_id">) => void
 }
 
-export function BillingsAddDialog({ open, onOpenChange, onSave, clients }: BillingsAddDialogProps) {
-  const {
-    name, setName, clientId, setClientId, amount, setAmount, dateBilled, setDateBilled, 
-    status, setStatus, frequencyType, setFrequencyType, customFrequency, setCustomFrequency, 
-  }= BillingStates()
-
+export function BillingsAddDialog({ open, onOpenChange, onSave }: BillingsAddDialogProps) {
+   const {
+        name, setName, amount, setAmount, created_at, setCreated_at, 
+        status, setStatus, remarks, setRemarks
+      }= BillingStates()
+  
   const isDesktop = useMediaQuery("(min-width: 768px)")
-
+  
   const handleSave = () => {
-    if (!name || !amount || !clientId) return
-
-    const newBill: Omit<Bill, "id"> = {
-      clientId,
+    if (!name || !amount) return
+    
+    const newBill: Omit<Bill, "bill_id"> = {
       name,
       amount: Number.parseFloat(amount),
-      dateBilled: dateBilled.toISOString(),
+      created_at: created_at.toISOString(),
       status,
-      frequency: frequencyType === "Other" ? { type: "Other", custom: customFrequency } : { type: frequencyType },
+      remarks,
     }
 
     onSave(newBill)
@@ -51,18 +51,18 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, clients }: Billi
   }
 
   const resetForm = () => {
-    setClientId("")
     setName("")
     setAmount("")
-    setDateBilled(new Date())
+    setCreated_at(new Date())
     setStatus("Active")
-    setFrequencyType("Monthly")
-    setCustomFrequency("")
+    setRemarks("")
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`${isDesktop ? "sm:max-w-[700px]" : "sm:max-w-[90vw]"} max-h-[90vh] overflow-y-auto`}>
+      <DialogContent
+        className={`${isDesktop ? "sm:max-w-[700px]" : "sm:max-w-[90vw]"} max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700`}
+      >
         <DialogHeader>
           <DialogTitle className="text-xl md:text-2xl">Add New Bill</DialogTitle>
         </DialogHeader>
@@ -72,24 +72,6 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, clients }: Billi
             {/* Left Column */}
             <div className="space-y-4">
               <div className="grid gap-2">
-                <Label htmlFor="client" className="text-base md:text-lg">
-                  Client
-                </Label>
-                <Select value={clientId} onValueChange={setClientId}>
-                  <SelectTrigger id="client" className="text-sm md:text-base">
-                    <SelectValue placeholder="Select client" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[200px] overflow-y-auto">
-                    {clients.map((client) => (
-                      <SelectItem key={client.id} value={client.id} className="text-sm md:text-base">
-                        {client.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid gap-2">
                 <Label htmlFor="name" className="text-base md:text-lg">
                   Bill Name
                 </Label>
@@ -98,7 +80,7 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, clients }: Billi
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter bill name"
-                  className="text-sm md:text-base h-9 md:h-10"
+                  className="text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:border-gray-600"
                 />
               </div>
 
@@ -112,13 +94,13 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, clients }: Billi
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="Enter amount"
-                  className="text-sm md:text-base h-9 md:h-10"
+                  className="text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:border-gray-600"
                 />
               </div>
 
               <div className="grid gap-2">
                 <Label htmlFor="date" className="text-base md:text-lg">
-                  Date Billed
+                  Created At
                 </Label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -126,20 +108,21 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, clients }: Billi
                       id="date"
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal text-sm md:text-base h-9 md:h-10",
-                        !dateBilled && "text-muted-foreground",
+                        "w-full justify-start text-left font-normal text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:border-gray-600",
+                        !created_at && "text-muted-foreground",
                       )}
                     >
                       <CalendarIcon className="mr-2 h-3 w-3 md:h-4 md:w-4" />
-                      {dateBilled ? format(dateBilled, "PPP") : "Select date"}
+                      {created_at ? format(created_at, "PPP") : "Select date"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
+                  <PopoverContent className="w-auto p-0 dark:bg-gray-700 dark:border-gray-600">
                     <Calendar
                       mode="single"
-                      selected={dateBilled}
-                      onSelect={(date) => date && setDateBilled(date)}
+                      selected={created_at}
+                      onSelect={(date) => date && setCreated_at(date)}
                       initialFocus
+                      className="dark:bg-gray-700"
                     />
                   </PopoverContent>
                 </Popover>
@@ -147,8 +130,8 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, clients }: Billi
             </div>
 
             {/* Right Column */}
-            <div className="space-y-4">
-              <div className="grid gap-2">
+            <div className="flex flex-col">
+              <div className="grid gap-2 mb-4">
                 <Label className="text-base md:text-lg">Status</Label>
                 <RadioGroup
                   defaultValue="Active"
@@ -183,66 +166,36 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, clients }: Billi
                 </RadioGroup>
               </div>
 
-              <div className="grid gap-2">
-                <Label className="text-base md:text-lg">Payment Frequency</Label>
-                <RadioGroup
-                  value={frequencyType}
-                  onValueChange={(value) => setFrequencyType(value as PaymentFrequency["type"])}
-                  className="grid grid-cols-2 gap-2"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Monthly" id="monthly" className="h-3 w-3 md:h-4 md:w-4" />
-                    <Label htmlFor="monthly" className="text-sm md:text-base">
-                      Monthly
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Annually" id="annually" className="h-3 w-3 md:h-4 md:w-4" />
-                    <Label htmlFor="annually" className="text-sm md:text-base">
-                      Annually
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Semi-Annually" id="semi-annually" className="h-3 w-3 md:h-4 md:w-4" />
-                    <Label htmlFor="semi-annually" className="text-sm md:text-base">
-                      Semi-Annually
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Quarterly" id="quarterly" className="h-3 w-3 md:h-4 md:w-4" />
-                    <Label htmlFor="quarterly" className="h-3 w-3 md:h-4 md:w-4" />
-                    <Label htmlFor="quarterly" className="text-sm md:text-base">
-                      Quarterly
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Other" id="other" className="h-3 w-3 md:h-4 md:w-4" />
-                    <Label htmlFor="other" className="text-sm md:text-base">
-                      Other
-                    </Label>
-                  </div>
-                </RadioGroup>
-
-                {frequencyType === "Other" && (
-                  <div className="mt-2">
-                    <Input
-                      value={customFrequency}
-                      onChange={(e) => setCustomFrequency(e.target.value)}
-                      placeholder="Specify frequency"
-                      className="text-sm md:text-base h-9 md:h-10"
-                    />
-                  </div>
-                )}
+              <div className="flex flex-col flex-grow">
+                <div className="flex items-center justify-between mb-0">
+                  <Label htmlFor="remarks" className="text-base md:text-lg">
+                    Remarks
+                  </Label>
+                </div>
+                <Textarea
+                  id="remarks"
+                  value={remarks}
+                  onChange={(e) => setRemarks(e.target.value)}
+                  placeholder="(optional)"
+                  className="mt-2 flex-grow min-h-[130px] overflow-y-auto resize-none text-sm md:text-base dark:bg-gray-700 dark:border-gray-600 placeholder:italic"
+                />
               </div>
             </div>
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} className="text-sm md:text-base h-9 md:h-10">
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+          >
             Cancel
           </Button>
-          <Button className="bg-indigo-900 hover:bg-indigo-800 text-sm md:text-base h-9 md:h-10" onClick={handleSave}>
+          <Button
+            className="bg-indigo-900 hover:bg-indigo-800 dark:bg-indigo-700 dark:hover:bg-indigo-600 text-sm md:text-base h-9 md:h-10"
+            onClick={handleSave}
+          >
             Save
           </Button>
         </DialogFooter>
@@ -250,4 +203,6 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, clients }: Billi
     </Dialog>
   )
 }
+
+
 

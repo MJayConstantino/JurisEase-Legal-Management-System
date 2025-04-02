@@ -4,7 +4,7 @@
 
 import { format } from "date-fns"
 
-import type { Bill, Client } from "@/types/billing.type"
+import type { Bill } from "@/types/billing.type"
 import { BillingsButtons } from "@/components/billings/billingsButtons"
 import { BillingsEditDialog } from "@/components/billings/billingsEditDialog"
 import { TableCell, TableRow } from "@/components/ui/table"
@@ -22,13 +22,12 @@ import { BillingStates } from "./billingsStates"
 
 interface BillingsItemProps {
   bill: Bill
-  client?: Client
   onUpdate: (bill: Bill) => void
   onDelete: (id: string) => void
   index: number
 }
 
-export function BillingsItem({ bill, client, onUpdate, onDelete, index }: BillingsItemProps) {
+export function BillingsItem({ bill, onUpdate, onDelete, index }: BillingsItemProps) {
   const {
     isEditDialogOpen, setIsEditDialogOpen, isDeleteDialogOpen, setIsDeleteDialogOpen
   } = BillingStates()
@@ -56,13 +55,15 @@ export function BillingsItem({ bill, client, onUpdate, onDelete, index }: Billin
     }
   }
 
+  
   return (
     <TableRow className="text-sm md:text-base dark:border-gray-700">
       <TableCell className="text-center text-gray-500 dark:text-gray-400 font-medium w-12">{index}</TableCell>
-      <TableCell className="font-medium">{client?.name || "Unknown Client"}</TableCell>
-      <TableCell>{bill.name}</TableCell>
+      <TableCell className="font-medium max-w-[200px] truncate" title={bill.name}>
+        {bill.name}
+      </TableCell>
       <TableCell>{formatAmount(bill.amount)}</TableCell>
-      <TableCell>{format(new Date(bill.dateBilled), "MMM d, yyyy")}</TableCell>
+      <TableCell>{format(new Date(bill.created_at), "MMM d, yyyy")}</TableCell>
       <TableCell>
         <span
           className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium ${getStatusStyles(bill.status)}`}
@@ -70,17 +71,13 @@ export function BillingsItem({ bill, client, onUpdate, onDelete, index }: Billin
           {bill.status}
         </span>
       </TableCell>
-      <TableCell>{bill.frequency.type === "Other" ? bill.frequency.custom : bill.frequency.type}</TableCell>
+      <TableCell className="max-w-[250px] truncate" title={bill.remarks || "-"}>
+        {bill.remarks || "-"}
+      </TableCell>
       <TableCell className="text-right">
         <BillingsButtons onEdit={() => setIsEditDialogOpen(true)} onDelete={() => setIsDeleteDialogOpen(true)} />
 
-        <BillingsEditDialog
-          bill={bill}
-          clients={[client].filter(Boolean) as Client[]}
-          open={isEditDialogOpen}
-          onOpenChange={setIsEditDialogOpen}
-          onSave={onUpdate}
-        />
+        <BillingsEditDialog bill={bill} open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} onSave={onUpdate} />
 
         <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <AlertDialogContent className="max-w-md dark:bg-gray-800 dark:border-gray-700">
@@ -91,12 +88,12 @@ export function BillingsItem({ bill, client, onUpdate, onDelete, index }: Billin
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-            <AlertDialogCancel className="text-sm md:text-base dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600">
+              <AlertDialogCancel className="text-sm md:text-base dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600">
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction
                 className="text-sm md:text-base bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600"
-                onClick={() => onDelete(bill.id)}
+                onClick={() => onDelete(bill.bill_id)}
               >
                 Delete
               </AlertDialogAction>

@@ -10,32 +10,32 @@ import { BillingsList } from "@/components/billings/billingsList"
 import { BillingsAddDialog } from "@/components/billings/billingsAddDialog"
 import { BillingsListHeader } from "@/components/billings/billingsListHeader"
 import type { Bill, SortDirection, SortField, StatusFilter } from "@/types/billing.type"
-import { frequencyRank } from "@/types/billing.type"
 import { BillingStates } from "./billingsStates"
-// import { getBills, createBill as addBillToDb, updateBill as updateBillInDb, deleteBill as deleteBillFromDb } from "@/actions/billing"
+
+import { getBills, createBill as addBillToDb, updateBill as updateBillInDb, deleteBill as deleteBillFromDb } from "@/actions/billing"
 
 
 export function BillingInterface() {
   const {
-    bills, setBills, filteredBills, setFilteredBills, clients, setClients, currentDateTime, setCurrentDateTime, isNewBillDialogOpen, 
+    bills, setBills, filteredBills, setFilteredBills, currentDateTime, setCurrentDateTime, isNewBillDialogOpen, 
     setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, setTimeFilter, sortField, setSortField, sortDirection, setSortDirection,
     statusFilter, setStatusFilter
   } = BillingStates()
 
   // Load bills from database
   useEffect(() => {
-    // async function loadBills() {
-    //   setIsLoading(true)
-    //   try {
-    //     const data = await getBills()
-    //     setBills(data)
-    //   } catch (error) {
-    //     console.error('Failed to load bills:', error)
-    //   } finally {
-    //     setIsLoading(false)
-    //   }
-    // }
-    // loadBills()
+    async function loadBills() {
+      setIsLoading(true)
+      try {
+        const data = await getBills()
+        setBills(data)
+      } catch (error) {
+        console.error('Failed to load bills:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadBills()
 
   }, [])
 
@@ -57,7 +57,7 @@ export function BillingInterface() {
 
       if (timeFilter === "today") {
         result = result.filter((bill) => {
-          const billDate = new Date(bill.dateBilled)
+          const billDate = new Date(bill.created_at)
           return format(billDate, "yyyy-MM-dd") === format(today, "yyyy-MM-dd")
         })
       } else if (timeFilter === "week") {
@@ -65,7 +65,7 @@ export function BillingInterface() {
         const weekEnd = endOfWeek(today)
 
         result = result.filter((bill) => {
-          const billDate = new Date(bill.dateBilled)
+          const billDate = new Date(bill.created_at)
           return isWithinInterval(billDate, { start: weekStart, end: weekEnd })
         })
       } else if (timeFilter === "month") {
@@ -73,7 +73,7 @@ export function BillingInterface() {
         const monthEnd = endOfMonth(today)
 
         result = result.filter((bill) => {
-          const billDate = new Date(bill.dateBilled)
+          const billDate = new Date(bill.created_at)
           return isWithinInterval(billDate, { start: monthStart, end: monthEnd })
         })
       }
@@ -109,27 +109,20 @@ export function BillingInterface() {
       let comparison = 0
 
       switch (field) {
-        case "clientName":
-          const clientA = clients.find((c) => c.id === a.clientId)?.name || ""
-          const clientB = clients.find((c) => c.id === b.clientId)?.name || ""
-          comparison = clientA.localeCompare(clientB)
-          break
         case "name":
           comparison = a.name.localeCompare(b.name)
           break
         case "amount":
           comparison = a.amount - b.amount
           break
-        case "dateBilled":
-          comparison = new Date(a.dateBilled).getTime() - new Date(b.dateBilled).getTime()
+        case "created_at":
+          comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
           break
         case "status":
           comparison = a.status.localeCompare(b.status)
           break
-        case "frequency":
-          const rankA = frequencyRank[a.frequency.type as keyof typeof frequencyRank]
-          const rankB = frequencyRank[b.frequency.type as keyof typeof frequencyRank]
-          comparison = rankA - rankB
+        case "remarks":
+          comparison = (a.remarks || "").localeCompare(b.remarks || "")
           break
       }
 
@@ -159,7 +152,7 @@ export function BillingInterface() {
     const today = new Date()
     return bills
       .filter((bill) => {
-        const billDate = new Date(bill.dateBilled)
+        const billDate = new Date(bill.created_at)
         return format(billDate, "yyyy-MM-dd") === format(today, "yyyy-MM-dd")
       })
       .reduce((sum, bill) => sum + bill.amount, 0)
@@ -173,7 +166,7 @@ export function BillingInterface() {
 
     return bills
       .filter((bill) => {
-        const billDate = new Date(bill.dateBilled)
+        const billDate = new Date(bill.created_at)
         return isWithinInterval(billDate, { start: weekStart, end: weekEnd })
       })
       .reduce((sum, bill) => sum + bill.amount, 0)
@@ -187,70 +180,59 @@ export function BillingInterface() {
 
     return bills
       .filter((bill) => {
-        const billDate = new Date(bill.dateBilled)
+        const billDate = new Date(bill.created_at)
         return isWithinInterval(billDate, { start: monthStart, end: monthEnd })
       })
       .reduce((sum, bill) => sum + bill.amount, 0)
   }, [bills])
 
   // Add a new bill
-  const addBill = async (bill: Omit<Bill, "id">) => {
-    // setIsLoading(true)
-    // try {
-    //   const newBill = await addBillToDb(bill)
-    //   if (newBill) {
-    //     setBills(prev => [...prev, newBill])
-    //   }
-    // } catch (error) {
-    //   console.error('Failed to add bill:', error)
-    // } finally {
-    //   setIsLoading(false)
-    // }
-
-    // Local storage
-    const newBill = {
-      ...bill,
-      id: Date.now().toString(),
+  const addBill = async (bill: Omit<Bill, "bill_id">) => {
+    setIsLoading(true)
+    try {
+      const newBill = await addBillToDb(bill)
+      if (newBill) {
+        setBills(prev => [...prev, newBill])
+      }
+    } catch (error) {
+      console.error('Failed to add bill:', error)
+    } finally {
+      setIsLoading(false)
     }
-    setBills((prev) => [...prev, newBill])
+
   }
 
   // Update an existing bill
   const updateBill = async (updatedBill: Bill) => {
-    // setIsLoading(true)
-    // try {
-    //   const result = await updateBillInDb(updatedBill)
-    //   if (result) {
-    //     setBills(prev => prev.map(bill => bill.id === updatedBill.id ? updatedBill : bill))
-    //   }
-    // } catch (error) {
-    //   console.error('Failed to update bill:', error)
-    // } finally {
-    //   setIsLoading(false)
-    // }
+    setIsLoading(true)
+    try {
+      const result = await updateBillInDb(updatedBill)
+      if (result) {
+        setBills(prev => prev.map(bill => bill.bill_id === updatedBill.bill_id ? updatedBill : bill))
+      }
+    } catch (error) {
+      console.error('Failed to update bill:', error)
+    } finally {
+      setIsLoading(false)
+    }
 
-    //Local Storage
-    setBills((prev) => prev.map((bill) => (bill.id === updatedBill.id ? updatedBill : bill)))
   }
 
   // Delete a bill
   const deleteBill = async (id: string) => {
-    // setIsLoading(true)
-    // try {
-    //   const success = await deleteBillFromDb(id)
-    //   if (success) {
-    //     setBills(prev => prev.filter(bill => bill.id !== id))
-    //   }
-    // } catch (error) {
-    //   console.error('Failed to delete bill:', error)
-    // } finally {
-    //   setIsLoading(false)
-    // }
-
-    // Local Storage
-    setBills((prev) => prev.filter((bill) => bill.id !== id))
+    setIsLoading(true)
+    try {
+      const success = await deleteBillFromDb(id)
+      if (success) {
+        setBills(prev => prev.filter(bill => bill.bill_id !== id))
+      }
+    } catch (error) {
+      console.error('Failed to delete bill:', error)
+    } finally {
+      setIsLoading(false)
+    }
+    
   }
-
   return (
     <div className="py-4 md:py-8 px-0">
       <div className="max-w-auto mx-auto">
@@ -278,14 +260,12 @@ export function BillingInterface() {
           <div className="max-h-[600px] overflow-y-auto">
             <BillingsList
               bills={filteredBills}
-              clients={clients}
               onUpdate={updateBill}
               onDelete={deleteBill}
               isLoading={isLoading}
               sortField={sortField}
               sortDirection={sortDirection}
-              onSortChange={handleSortChange}
-            />
+              onSortChange={handleSortChange}           />
           </div>
         </div>
 
@@ -293,7 +273,6 @@ export function BillingInterface() {
           open={isNewBillDialogOpen}
           onOpenChange={setIsNewBillDialogOpen}
           onSave={addBill}
-          clients={clients}
         />
       </div>
     </div>

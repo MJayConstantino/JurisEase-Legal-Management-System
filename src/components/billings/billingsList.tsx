@@ -5,13 +5,12 @@
 import type React from "react"
 
 import { ArrowUpDown } from "lucide-react"
-import type { Bill, Client, SortDirection, SortField } from "@/types/billing.type"
+import type { Bill, SortDirection, SortField } from "@/types/billing.type"
 import { BillingsItem } from "@/components/billings/billingsItem"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 interface BillingsListProps {
   bills: Bill[]
-  clients: Client[]
   onUpdate: (bill: Bill) => void
   onDelete: (id: string) => void
   isLoading?: boolean
@@ -22,7 +21,7 @@ interface BillingsListProps {
 
 export function BillingsList({
   bills,
-  clients,
+  // clients,
   onUpdate,
   onDelete,
   isLoading = false,
@@ -47,18 +46,77 @@ export function BillingsList({
   )
 
   return (
-    <div className="overflow-x-auto dark:hover:bg-gray-800">
-      <Table>
+    <div className="overflow-x-auto">
+      <Table className="w-full table-fixed">
         <TableHeader className="bg-gray-100 dark:bg-gray-900">
           <TableRow className="text-sm md:text-base">
-          <TableHead className="w-12 text-center text-sm md:text-base">#</TableHead>
-            <SortableHeader field="clientName">Client Name</SortableHeader>
-            <SortableHeader field="name">Bill Name</SortableHeader>
-            <SortableHeader field="amount">Amount</SortableHeader>
-            <SortableHeader field="dateBilled">Date Billed</SortableHeader>
-            <SortableHeader field="status">Status</SortableHeader>
-            <SortableHeader field="frequency">Frequency</SortableHeader>
-            <TableHead className="text-right text-sm md:text-base"></TableHead>
+            <TableHead className="w-[5%] text-center text-sm md:text-base">#</TableHead>
+            <TableHead className="w-[20%]">
+              <div className="flex items-center cursor-pointer" onClick={() => onSortChange("name")}>
+                Bill Name
+                <ArrowUpDown
+                  className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "name" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
+                />
+                {sortField === "name" && (
+                  <span className="ml-1 text-xs md:text-sm text-indigo-900 dark:text-indigo-300 font-bold">
+                    {sortDirection === "asc" ? "↑" : "↓"}
+                  </span>
+                )}
+              </div>
+            </TableHead>
+            <TableHead className="w-[15%]">
+              <div className="flex items-center cursor-pointer" onClick={() => onSortChange("amount")}>
+                Amount
+                <ArrowUpDown
+                  className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "amount" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
+                />
+                {sortField === "amount" && (
+                  <span className="ml-1 text-xs md:text-sm text-indigo-900 dark:text-indigo-300 font-bold">
+                    {sortDirection === "asc" ? "↑" : "↓"}
+                  </span>
+                )}
+              </div>
+            </TableHead>
+            <TableHead className="w-[15%]">
+              <div className="flex items-center cursor-pointer" onClick={() => onSortChange("created_at")}>
+                Created At
+                <ArrowUpDown
+                  className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "created_at" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
+                />
+                {sortField === "created_at" && (
+                  <span className="ml-1 text-xs md:text-sm text-indigo-900 dark:text-indigo-300 font-bold">
+                    {sortDirection === "asc" ? "↑" : "↓"}
+                  </span>
+                )}
+              </div>
+            </TableHead>
+            <TableHead className="w-[15%]">
+              <div className="flex items-center cursor-pointer" onClick={() => onSortChange("status")}>
+                Status
+                <ArrowUpDown
+                  className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "status" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
+                />
+                {sortField === "status" && (
+                  <span className="ml-1 text-xs md:text-sm text-indigo-900 dark:text-indigo-300 font-bold">
+                    {sortDirection === "asc" ? "↑" : "↓"}
+                  </span>
+                )}
+              </div>
+            </TableHead>
+            <TableHead className="w-[25%]">
+              <div className="flex items-center cursor-pointer" onClick={() => onSortChange("remarks")}>
+                Remarks
+                <ArrowUpDown
+                  className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "remarks" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
+                />
+                {sortField === "remarks" && (
+                  <span className="ml-1 text-xs md:text-sm text-indigo-900 dark:text-indigo-300 font-bold">
+                    {sortDirection === "asc" ? "↑" : "↓"}
+                  </span>
+                )}
+              </div>
+            </TableHead>
+            <TableHead className="w-[15%] text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -76,14 +134,7 @@ export function BillingsList({
             </TableRow>
           ) : (
             bills.map((bill, index) => (
-              <BillingsItem
-                key={bill.id}
-                bill={bill}
-                client={clients.find((c) => c.id === bill.clientId)}
-                onUpdate={onUpdate}
-                onDelete={onDelete}
-                index={index + 1}
-              />
+              <BillingsItem key={bill.bill_id} bill={bill} onUpdate={onUpdate} onDelete={onDelete} index={index + 1} />
             ))
           )}
         </TableBody>
