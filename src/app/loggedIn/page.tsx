@@ -47,15 +47,9 @@ export default function UserLoggedIn() {
   const handleMatters = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setDashboardLoading(true);
-
-    try {
-      router.push("/calendar");
-    } finally {
-      setDashboardLoading(false);
-    }
+    router.push("/matters");
   };
 
-  // Either button is loading
   const isLoading = signOutLoading || dashboardLoading;
 
   return (
