@@ -37,8 +37,9 @@ export type Database = {
       billings: {
         Row: {
           amount: string | null
-          bill_id: string
+          bill_id: string //this is a uuid
           created_at: string
+          matter_id: string | null // this is an FK UUID
           name: string | null
           remarks: string | null
           status: string | null
@@ -47,6 +48,7 @@ export type Database = {
           amount?: string | null
           bill_id?: string
           created_at?: string
+          matter_id?: string | null
           name?: string | null
           remarks?: string | null
           status?: string | null
@@ -55,11 +57,20 @@ export type Database = {
           amount?: string | null
           bill_id?: string
           created_at?: string
+          matter_id?: string | null
           name?: string | null
           remarks?: string | null
           status?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'billings_matter_id_fkey'
+            columns: ['matter_id']
+            isOneToOne: false
+            referencedRelation: 'matters'
+            referencedColumns: ['matter_id']
+          }
+        ]
       }
       matters: {
         Row: {
@@ -75,10 +86,10 @@ export type Database = {
           date_closed: string | null
           date_opened: string
           description: string
-          matter_id: string
+          matter_id: string //this is a uuid
           name: string
           opposing_council: Json | null
-          status: Database["public"]["Enums"]["matter_status_enum"]
+          status: Database['public']['Enums']['matter_status_enum']
         }
         Insert: {
           assigned_attorney?: string | null
@@ -96,7 +107,7 @@ export type Database = {
           matter_id?: string
           name: string
           opposing_council?: Json | null
-          status: Database["public"]["Enums"]["matter_status_enum"]
+          status: Database['public']['Enums']['matter_status_enum']
         }
         Update: {
           assigned_attorney?: string | null
@@ -114,7 +125,7 @@ export type Database = {
           matter_id?: string
           name?: string
           opposing_council?: Json | null
-          status?: Database["public"]["Enums"]["matter_status_enum"]
+          status?: Database['public']['Enums']['matter_status_enum']
         }
         Relationships: []
       }
@@ -123,11 +134,11 @@ export type Database = {
           created_at: string | null
           description: string | null
           due_date: string | null
-          matter_id: string | null
+          matter_id: string | null //this is an FK UUID
           name: string
-          priority: Database["public"]["Enums"]["task_priority_enum"]
-          status: Database["public"]["Enums"]["task_status_enum"]
-          task_id: string
+          priority: Database['public']['Enums']['task_priority_enum']
+          status: Database['public']['Enums']['task_status_enum']
+          task_id: string //this is a uuid
         }
         Insert: {
           created_at?: string | null
@@ -135,8 +146,8 @@ export type Database = {
           due_date?: string | null
           matter_id?: string | null
           name: string
-          priority: Database["public"]["Enums"]["task_priority_enum"]
-          status: Database["public"]["Enums"]["task_status_enum"]
+          priority: Database['public']['Enums']['task_priority_enum']
+          status: Database['public']['Enums']['task_status_enum']
           task_id?: string
         }
         Update: {
@@ -145,18 +156,18 @@ export type Database = {
           due_date?: string | null
           matter_id?: string | null
           name?: string
-          priority?: Database["public"]["Enums"]["task_priority_enum"]
-          status?: Database["public"]["Enums"]["task_status_enum"]
+          priority?: Database['public']['Enums']['task_priority_enum']
+          status?: Database['public']['Enums']['task_status_enum']
           task_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "tasks_matter_id_fkey"
-            columns: ["matter_id"]
+            foreignKeyName: 'tasks_matter_id_fkey'
+            columns: ['matter_id']
             isOneToOne: false
-            referencedRelation: "matters"
-            referencedColumns: ["matter_id"]
-          },
+            referencedRelation: 'matters'
+            referencedColumns: ['matter_id']
+          }
         ]
       }
       users: {
@@ -192,19 +203,19 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "users_matters_matter_id_fkey"
-            columns: ["matter_id"]
+            foreignKeyName: 'users_matters_matter_id_fkey'
+            columns: ['matter_id']
             isOneToOne: false
-            referencedRelation: "matters"
-            referencedColumns: ["matter_id"]
+            referencedRelation: 'matters'
+            referencedColumns: ['matter_id']
           },
           {
-            foreignKeyName: "users_matters_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'users_matters_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["user_id"]
-          },
+            referencedRelation: 'users'
+            referencedColumns: ['user_id']
+          }
         ]
       }
     }
@@ -215,9 +226,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      matter_status_enum: "open" | "closed" | "pending"
-      task_priority_enum: "low" | "medium" | "high"
-      task_status_enum: "pending" | "completed"
+      matter_status_enum: 'open' | 'closed' | 'pending'
+      task_priority_enum: 'low' | 'medium' | 'high'
+      task_status_enum: 'pending' | 'completed'
     }
     CompositeTypes: {
       [_ in never]: never
@@ -225,99 +236,99 @@ export type Database = {
   }
 }
 
-type PublicSchema = Database[Extract<keyof Database, "public">]
+type PublicSchema = Database[Extract<keyof Database, 'public'>]
 
 export type Tables<
   PublicTableNameOrOptions extends
-    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+    | keyof (PublicSchema['Tables'] & PublicSchema['Views'])
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-        Database[PublicTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    ? keyof (Database[PublicTableNameOrOptions['schema']]['Tables'] &
+        Database[PublicTableNameOrOptions['schema']]['Views'])
+    : never = never
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+  ? (Database[PublicTableNameOrOptions['schema']]['Tables'] &
+      Database[PublicTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
-        PublicSchema["Views"])
-    ? (PublicSchema["Tables"] &
-        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
+  : PublicTableNameOrOptions extends keyof (PublicSchema['Tables'] &
+      PublicSchema['Views'])
+  ? (PublicSchema['Tables'] &
+      PublicSchema['Views'])[PublicTableNameOrOptions] extends {
+      Row: infer R
+    }
+    ? R
     : never
+  : never
 
 export type TablesInsert<
   PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
+    | keyof PublicSchema['Tables']
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
+    : never = never
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
+  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
+  ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
+      Insert: infer I
+    }
+    ? I
     : never
+  : never
 
 export type TablesUpdate<
   PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
+    | keyof PublicSchema['Tables']
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
+    : never = never
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
+  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
+  ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
+      Update: infer U
+    }
+    ? U
     : never
+  : never
 
 export type Enums<
   PublicEnumNameOrOptions extends
-    | keyof PublicSchema["Enums"]
+    | keyof PublicSchema['Enums']
     | { schema: keyof Database },
   EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    ? keyof Database[PublicEnumNameOrOptions['schema']]['Enums']
+    : never = never
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
-    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
-    : never
+  ? Database[PublicEnumNameOrOptions['schema']]['Enums'][EnumName]
+  : PublicEnumNameOrOptions extends keyof PublicSchema['Enums']
+  ? PublicSchema['Enums'][PublicEnumNameOrOptions]
+  : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof PublicSchema["CompositeTypes"]
+    | keyof PublicSchema['CompositeTypes']
     | { schema: keyof Database },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof Database
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    ? keyof Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    : never = never
 > = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
-    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+  ? Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema['CompositeTypes']
+  ? PublicSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+  : never

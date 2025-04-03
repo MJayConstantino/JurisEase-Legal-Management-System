@@ -61,6 +61,7 @@ export type Billing = {
   name: string | null
   remarks: string | null
   status: string | null
+  matter_id: string
 }
 
 // Search result types

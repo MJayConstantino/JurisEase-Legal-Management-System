@@ -25,38 +25,6 @@ interface SearchDialogProps {
   onOpenChange: (open: boolean) => void
 }
 
-/**
- * SearchDialog Component
- *
- * The main search dialog component that integrates all search functionality.
- *
- * Key features:
- * - Manages search state and server action calls
- * - Coordinates between filter components and results
- * - Handles navigation when results are clicked
- * - Provides pagination for search results
- * - Maintains responsive layout across device sizes
- *
- * Component structure:
- * 1. Search input area: Input field with clear button
- * 2. Filter sections:
- *    - SearchByFilters: Allows filtering by different attributes
- *    - SearchInFilters: Allows filtering by content types
- * 3. Results section:
- *    - SearchResults: Displays search results with pagination
- *
- * Data flow:
- * 1. User enters search query and selects filters
- * 2. Component calls server action with query and filters
- * 3. Results are displayed and paginated
- * 4. Clicking a result navigates to the corresponding page
- *
- * Usage:
- * <SearchDialog
- *   open={dialogOpen}
- *   onOpenChange={setDialogOpen}
- * />
- */
 export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
   const router = useRouter()
   const inputRef = useRef<HTMLInputElement>(null)

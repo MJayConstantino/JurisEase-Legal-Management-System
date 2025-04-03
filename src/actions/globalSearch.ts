@@ -16,80 +16,24 @@ export async function search(
   const searchResults: SearchResult[] = []
 
   try {
-    // Search matters if included
+    // ✅ Case-Insensitive Matter Query
     if (contentTypes.includes('matters')) {
-      const filters = attributes.map((attr) => ({
-        column:
-          attr === 'caseName'
-            ? 'name'
-            : attr === 'clientName'
-            ? 'client'
-            : attr === 'attorney'
-            ? 'assigned_attorney'
-            : attr,
-        operator: 'ilike',
-        value: `%${query}%`,
-      }))
-
       let mattersQuery = supabase.from('matters').select('*')
 
-      // Exclude UUID fields from ilike filtering
-      const validFilters = filters.filter(
-        (f) =>
-          !['matter_id', 'assigned_attorney', 'assigned_staff'].includes(
-            f.column
-          )
+      mattersQuery = mattersQuery.or(
+        `name.ilike.%${query}%, client.ilike.%${query}%, case_number.ilike.%${query}%, court->>name.ilike.%${query}%, opposing_council->>name.ilike.%${query}%`
       )
-
-      if (validFilters.length > 0) {
-        mattersQuery = mattersQuery.or(
-          validFilters
-            .map((f) => `${f.column}.${f.operator}."${f.value}"`)
-            .join(',')
-        )
-      }
-
-      // Handle UUID filtering separately
-      if (query.match(/^[0-9a-fA-F-]{36}$/)) {
-        // Simple UUID validation
-        mattersQuery = mattersQuery.or(
-          `matter_id.eq.${query}, assigned_attorney.eq.${query}, assigned_staff.eq.${query}`
-        )
-      }
-
-      // Handle JSON fields separately
-      const jsonFilters: {
-        field: keyof Database['public']['Tables']['matters']['Row']
-        property: string
-      }[] = []
-
-      if (attributes.includes('opposingCouncil')) {
-        jsonFilters.push({ field: 'opposing_council', property: 'name' })
-      }
-
-      if (attributes.includes('court')) {
-        jsonFilters.push({ field: 'court', property: 'name' })
-      }
 
       const { data: matters, error } = await mattersQuery.limit(10)
 
+      console.log('🔍 Matters Query:', mattersQuery.toString())
+      console.log('✅ Matters Data:', matters)
+      console.log('❌ Matters Error:', error)
+
       if (error) throw new Error(error.message)
 
-      let filteredMatters = matters ?? []
-
-      if (jsonFilters.length > 0) {
-        filteredMatters = matters.filter((matter) =>
-          jsonFilters.some((jf) => {
-            const jsonField = matter[jf.field]
-            return jsonField?.[jf.property]
-              ?.toLowerCase()
-              .includes(query.toLowerCase())
-          })
-        )
-      }
-
       searchResults.push(
-        ...filteredMatters.map((matter) => ({
+        ...(matters ?? []).map((matter) => ({
           id: matter.matter_id,
           type: 'Matter' as const,
           title: matter.name,
@@ -100,20 +44,26 @@ export async function search(
       )
     }
 
-    // Search tasks if included
+    // ✅ Case-Insensitive Task Query
     if (contentTypes.includes('tasks')) {
-      let tasksQuery = supabase.from('tasks').select('*, matters!inner(*)')
+      let tasksQuery = supabase
+        .from('tasks')
+        .select('*, matters(name, matter_id)')
 
-      tasksQuery = tasksQuery
-        .filter('name', 'ilike', `%${query}%`)
-        .or(`description.ilike.%${query}%`)
+      tasksQuery = tasksQuery.or(
+        `name.ilike.%${query}%, description.ilike.%${query}%`
+      )
 
       const { data: tasks, error } = await tasksQuery.limit(10)
+
+      console.log('🔍 Tasks Query:', tasksQuery.toString())
+      console.log('✅ Tasks Data:', tasks)
+      console.log('❌ Tasks Error:', error)
 
       if (error) throw new Error(error.message)
 
       searchResults.push(
-        ...tasks.map((task) => ({
+        ...(tasks ?? []).map((task) => ({
           id: task.task_id,
           type: 'Task' as const,
           title: task.name,
@@ -130,24 +80,32 @@ export async function search(
       )
     }
 
-    // Search billings if included
+    // ✅ Case-Insensitive Billings Query
     if (contentTypes.includes('bills')) {
-      let billingsQuery = supabase.from('billings').select('*')
+      let billingsQuery = supabase
+        .from('billings')
+        .select('*, matters(name, matter_id)')
 
-      billingsQuery = billingsQuery
-        .filter('name', 'ilike', `%${query}%`)
-        .or(`remarks.ilike.%${query}%`)
+      billingsQuery = billingsQuery.or(
+        `name.ilike.%${query}%, remarks.ilike.%${query}%`
+      )
 
       const { data: billings, error } = await billingsQuery.limit(10)
+
+      console.log('🔍 Billings Query:', billingsQuery.toString())
+      console.log('✅ Billings Data:', billings)
+      console.log('❌ Billings Error:', error)
 
       if (error) throw new Error(error.message)
 
       searchResults.push(
-        ...billings.map((billing) => ({
+        ...(billings ?? []).map((billing) => ({
           id: billing.bill_id,
           type: 'Bill' as const,
           title: billing.name || `Invoice #${billing.bill_id}`,
-          subtitle: `Amount: $${billing.amount || '0.00'}`,
+          subtitle: `Matter: ${billing.matters?.name || 'Unknown'}, Amount: $${
+            billing.amount || '0.00'
+          }`,
           route: `/bills/${billing.bill_id}`,
         }))
       )
@@ -155,7 +113,7 @@ export async function search(
 
     return { results: searchResults }
   } catch (error) {
-    console.error('Search error:', error)
+    console.error('🚨 Search Error:', error)
     return { error: 'Failed to process search' }
   }
 }
