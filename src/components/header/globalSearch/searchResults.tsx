@@ -9,7 +9,12 @@ import { Button } from '@/components/ui/button'
 import { ChevronDown, ChevronRight, Search } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
-import type { SearchResult, MatterStatus, TaskStatus } from './types'
+import type {
+  SearchResult,
+  MatterStatus,
+  TaskStatus,
+  BillStatus,
+} from './types'
 
 interface SearchResultsProps {
   query: string
@@ -84,6 +89,8 @@ export function SearchResults({
     // Task status badges
     if (type === 'Task') {
       switch (status as TaskStatus) {
+        case 'overdue':
+          return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
         case 'pending':
           return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
         case 'completed':
@@ -92,7 +99,16 @@ export function SearchResults({
           return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
       }
     }
-
+    if (type === 'Bill') {
+      switch (status as BillStatus) {
+        case 'Active':
+          return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+        case 'Pending':
+          return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
+        default:
+          return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+      }
+    }
     return ''
   }
 
@@ -144,7 +160,7 @@ export function SearchResults({
                           <span className="font-medium text-foreground">
                             {result.title}
                           </span>
-                          {result.status && result.type !== 'Bill' && (
+                          {result.status && (
                             <span
                               className={cn(
                                 'text-xs px-2 py-0.5 rounded-full',
@@ -154,7 +170,7 @@ export function SearchResults({
                                 )
                               )}
                             >
-                              {result.status}
+                              {result.status.toLowerCase()}
                             </span>
                           )}
                         </div>

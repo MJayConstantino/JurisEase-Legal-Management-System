@@ -102,6 +102,7 @@ export async function search(
         ...(billings ?? []).map((billing) => ({
           id: billing.bill_id,
           type: 'Bill' as const,
+          status: billing.status,
           title: billing.name || `Invoice #${billing.bill_id}`,
           subtitle: `Matter: ${billing.matters?.name || 'Unknown'}, Amount: $${
             billing.amount || '0.00'
