@@ -6,12 +6,15 @@ import { createSupabaseClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Header from "@/components/homepage/header";
 import { Card, CardContent } from "@/components/ui/card";
-import { CalendarDays, LogOut, User } from "lucide-react";
+import { CalendarDays, LogOut, User, Loader2 } from "lucide-react";
 import UserInfo from "./user-info";
+import { useState } from "react";
 
 export default function UserLoggedIn() {
   const supabase = createSupabaseClient();
   const router = useRouter();
+  const [signOutLoading, setSignOutLoading] = useState(false);
+  const [dashboardLoading, setDashboardLoading] = useState(false);
 
   const navItems = [
     { label: "Home", href: "#" },
@@ -20,10 +23,11 @@ export default function UserLoggedIn() {
   ];
 
   const handleSignOut = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault(); // Prevent form submission
+    e.preventDefault();
+    setSignOutLoading(true);
 
     try {
-      const { error } = await supabase.auth.signOut(); // Wait for sign-out to complete
+      const { error } = await supabase.auth.signOut();
 
       if (error) {
         console.error("Error signing out:", error.message);
@@ -31,18 +35,22 @@ export default function UserLoggedIn() {
         return;
       }
 
-      // Only redirect after successful sign-out
       router.push("/login");
     } catch (error) {
       console.error("Exception during sign out:", error);
       router.push("/documents?message=Failed to sign out");
+    } finally {
+      setSignOutLoading(false);
     }
   };
 
   const handleMatters = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    setDashboardLoading(true);
     router.push("/matters");
   };
+
+  const isLoading = signOutLoading || dashboardLoading;
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50">
@@ -80,9 +88,19 @@ export default function UserLoggedIn() {
                 type="button"
                 className="bg-[#2a3563] hover:cursor-pointer hover:bg-[#1e2547] text-white py-6 rounded-lg flex items-center justify-center gap-2 transition-all"
                 onClick={handleMatters}
+                disabled={isLoading}
               >
-                <CalendarDays className="w-5 h-5" />
-                <span>Go to Dashboard</span>
+                {dashboardLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Loading Dashboard</span>
+                  </>
+                ) : (
+                  <>
+                    <CalendarDays className="w-5 h-5" />
+                    <span>Go to Dashboard</span>
+                  </>
+                )}
               </Button>
 
               <Button
@@ -90,9 +108,19 @@ export default function UserLoggedIn() {
                 variant="outline"
                 className="border-[#2a3563] hover:cursor-pointer text-[#2a3563] hover:bg-[#2a3563]/10 py-6 rounded-lg flex items-center justify-center gap-2 transition-all"
                 onClick={handleSignOut}
+                disabled={isLoading}
               >
-                <LogOut className="w-5 h-5" />
-                <span>Sign out</span>
+                {signOutLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Signing Out</span>
+                  </>
+                ) : (
+                  <>
+                    <LogOut className="w-5 h-5" />
+                    <span>Sign Out</span>
+                  </>
+                )}
               </Button>
             </div>
           </CardContent>
