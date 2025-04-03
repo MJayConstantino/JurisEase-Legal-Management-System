@@ -76,9 +76,7 @@ import { Matter } from "@/types/matter.type"
             <DialogTitle className="text-xl md:text-2xl">Edit Bill</DialogTitle>
           </DialogHeader>
         
-  
           <div className="grid gap-4 py-4">
-            
             <div className={`grid ${isDesktop ? "grid-cols-2" : "grid-cols-1"} gap-4`}>
               {/* Left Column */}
               <div className="space-y-4">
