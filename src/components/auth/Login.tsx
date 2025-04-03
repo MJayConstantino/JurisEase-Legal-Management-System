@@ -43,6 +43,7 @@ export function LoginPage({
       try {
         const { error } = await handleLoginSubmitfn(formData)
         if (error) {
+          console.error(Object.fromEntries(formData.entries()))
           toast.error(error)
           setEmail('')
           setPassword('')
@@ -51,6 +52,7 @@ export function LoginPage({
           onLoginSuccess?.()
         }
       } catch (err: any) {
+        console.error(Object.fromEntries(formData.entries()))
         console.error('Error during login:', err)
         toast.error('Error Logging in' + err)
       }
@@ -110,7 +112,6 @@ export function LoginPage({
 
             <div className="flex flex-col space-y-4">
               <SignInButton
-                onClick={() => {}}
                 disabled={isPending || isTransitioning}
                 isPending={isPending || isTransitioning}
               />
