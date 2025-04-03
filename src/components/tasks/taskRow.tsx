@@ -12,15 +12,23 @@ import { getMatters } from "@/actions/matters";
 import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
 import { TaskForm } from "./taskForm";
 import { getStatusColor } from "@/utils/getStatusColor";
+import { toast } from "sonner";
+
 interface TaskRowProps {
   task: Task;
+  onTaskUpdated?: () => void;
 }
 
-export function TaskRow({ task }: TaskRowProps) {
+export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [localTask, setLocalTask] = useState<Task>(task);
   const [matters, setMatters] = useState<Matter[]>([]);
   const [isLoadingMatters, setIsLoadingMatters] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    setLocalTask(task);
+  }, [task]);
 
   useEffect(() => {
     async function fetchMatters() {
@@ -48,14 +56,16 @@ export function TaskRow({ task }: TaskRowProps) {
   };
 
   const handleComplete = async () => {
+    if (isProcessing) return;
+
     try {
-      // Update local state immediately for optimistic UI
+      setIsProcessing(true);
+
       setLocalTask({
         ...localTask,
         status: "completed",
       });
 
-      // Update on server
       await updateTask(
         task.task_id,
         { status: "completed" },
@@ -64,18 +74,35 @@ export function TaskRow({ task }: TaskRowProps) {
           status: "completed",
         }
       );
+
+      toast.success("Task marked as completed");
+
+      if (onTaskUpdated) onTaskUpdated();
+      
     } catch (error) {
       console.error("Error completing task:", error);
-      // Revert optimistic update on error
       setLocalTask(task);
+      toast.error("Failed to complete task");
+      setIsProcessing(false);
     }
   };
 
   const handleDelete = async () => {
+    if (isProcessing) return;
+
     try {
+      setIsProcessing(true);
       await deleteTask(task.task_id);
+
+      toast.success("Task deleted successfully");
+
+      window.location.reload();
+
+      if (onTaskUpdated) onTaskUpdated();
     } catch (error) {
       console.error("Error deleting task:", error);
+      toast.error("Failed to delete task");
+      setIsProcessing(false);
     }
   };
 
@@ -85,34 +112,30 @@ export function TaskRow({ task }: TaskRowProps) {
 
   const handleSaveTask = async (updatedTask: Task) => {
     try {
-      // Create a merged task for optimistic UI update
       const optimisticTask = {
-        ...localTask,
         ...updatedTask,
+        task_id: task.task_id,
       } as Task;
 
-      // Update local state immediately
       setLocalTask(optimisticTask);
-
-      // Close the form immediately for better UX
       setIsEditing(false);
 
-      // Update the task on the server
-      await updateTask(task.task_id, { status: task.status }, optimisticTask);
+      await updateTask(task.task_id, updatedTask, optimisticTask);
+
+      window.location.reload();
+
+      if (onTaskUpdated) onTaskUpdated();
     } catch (error) {
       console.error("Error updating task:", error);
-      // Revert optimistic update on error
       setLocalTask(task);
+      toast.error("Failed to update task");
     }
   };
 
   const handleSaveAndCreateAnother = async (updatedTask: Task) => {
-    // For editing, we don't need to implement "save and create another"
-    // Just call the regular save function
     await handleSaveTask(updatedTask);
   };
 
-  // Get matter name from matter ID
   const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
 
   return (
@@ -139,7 +162,7 @@ export function TaskRow({ task }: TaskRowProps) {
 
         <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
           <div className="text-xs sm:text-sm hidden sm:block">
-            {formatDate(localTask.dueDate)}
+            {formatDate(localTask.due_date)}
           </div>
 
           <div className="w-16 sm:w-24">
@@ -156,13 +179,18 @@ export function TaskRow({ task }: TaskRowProps) {
               variant="ghost"
               size="icon"
               onClick={handleComplete}
-              disabled={localTask.status === "completed"}
+              disabled={localTask.status === "completed" || isProcessing}
             >
               <Check className="h-4 w-4" />
               <span className="sr-only">Complete</span>
             </Button>
 
-            <Button variant="ghost" size="icon" onClick={handleEdit}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleEdit}
+              disabled={isProcessing}
+            >
               <Pencil className="h-4 w-4" />
               <span className="sr-only">Edit</span>
             </Button>
@@ -172,6 +200,7 @@ export function TaskRow({ task }: TaskRowProps) {
               size="icon"
               onClick={handleDelete}
               className="text-destructive hover:text-destructive"
+              disabled={isProcessing}
             >
               <Trash2 className="h-4 w-4" />
               <span className="sr-only">Delete</span>
@@ -185,6 +214,7 @@ export function TaskRow({ task }: TaskRowProps) {
         onOpenChange={setIsEditing}
         onSave={handleSaveTask}
         onSaveAndCreateAnother={handleSaveAndCreateAnother}
+        initialTask={localTask}
       />
     </>
   );
