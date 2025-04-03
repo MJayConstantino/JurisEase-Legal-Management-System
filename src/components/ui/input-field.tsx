@@ -6,70 +6,54 @@ import { useState } from 'react'
 
 interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   id: string
+  name?: string // Added for FormData registration
   label: string
   placeholder?: string
   required?: boolean
   className?: string
+  value?: string // Now controlled by parent
   defaultValue?: string
   validateEmail?: boolean
   validatePassword?: boolean
   minPasswordLength?: number
-  text?: string // Made optional for flexibility
+  text?: string
   icon?: LucideIcon
-  disabled?: boolean // Ensures the disabled prop is supported
+  disabled?: boolean
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export function InputField({
   id,
+  name,
   label,
   placeholder,
   required = false,
-  defaultValue = '',
+  value, // Controlled input
+
   validateEmail = false,
   validatePassword = false,
   minPasswordLength = 8,
   icon: Icon,
   type = 'text',
-  disabled = false, // Default value added
+  disabled = false,
+  onChange,
 }: InputFieldProps) {
-  const [value, setValue] = useState(defaultValue)
   const [touched, setTouched] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const validate = (val: string) => {
-    if (required && !val) {
-      return 'This field is required'
-    }
-
-    if (validateEmail) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      if (!emailRegex.test(val)) {
-        return 'Invalid email address'
-      }
-    }
-
-    if (validatePassword) {
-      if (val.length < minPasswordLength) {
-        return `Password must be at least ${minPasswordLength} characters`
-      }
-    }
+    if (required && !val) return 'This field is required'
+    if (validateEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val))
+      return 'Invalid email address'
+    if (validatePassword && val.length < minPasswordLength)
+      return `Password must be at least ${minPasswordLength} characters`
     return null
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value
-    setValue(newValue)
-    if (touched) {
-      setError(validate(newValue))
-    }
   }
 
   const handleBlur = () => {
     setTouched(true)
-    setError(validate(value))
+    setError(validate(value || '')) // Validate the controlled value
   }
-
-  const isInvalid = touched && error !== null
 
   return (
     <div className="space-y-2">
@@ -82,19 +66,22 @@ export function InputField({
         )}
         <Input
           id={id}
+          name={name} // Passes the name for FormData
           type={type}
-          value={value}
-          onChange={handleChange}
+          value={value} // Uses the controlled value
+          onChange={onChange} // Calls the parent's handler
           onBlur={handleBlur}
           placeholder={placeholder}
-          disabled={disabled} // Ensure disabled property is passed
+          disabled={disabled}
           className={cn(
-            isInvalid
+            touched && error
               ? 'border-destructive focus-visible:ring-destructive/30 h-13 pl-10'
               : 'pl-10 bg-white border-0 h-13 rounded-md'
           )}
         />
-        {isInvalid && <p className="text-destructive text-sm">{error}</p>}
+        {touched && error && (
+          <p className="text-destructive text-sm">{error}</p>
+        )}
       </div>
     </div>
   )

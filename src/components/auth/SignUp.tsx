@@ -37,17 +37,19 @@ export function SignUpPage({
       try {
         const { error } = await signUpHandler(formData)
         if (error) {
+          console.log(Object.fromEntries(formData.entries()))
           toast.error(error) // Notify error
           setName('')
           setEmail('')
           setPassword('')
         } else {
           // Notify success
-          toast.success('Sign-up successful!')
+
           onSignUpSuccess?.()
         }
       } catch (err) {
         console.error('Error during sign-up:', err)
+        console.log(Object.fromEntries(formData.entries()))
         toast.error('An unexpected error occurred during sign-up')
       }
     })
