@@ -82,24 +82,6 @@ import { Matter } from "@/types/matter.type"
             <div className={`grid ${isDesktop ? "grid-cols-2" : "grid-cols-1"} gap-4`}>
               {/* Left Column */}
               <div className="space-y-4">
-
-              <div className="grid gap-2">
-                <Label htmlFor="matter" className="text-base md:text-lg">
-                  Select Matter
-                </Label>
-                <Select value={matter_id} onValueChange={setMatterId}>
-                  <SelectTrigger id="matter" className="text-sm md:text-base dark:bg-gray-700 dark:border-gray-600">
-                    <SelectValue placeholder="Select matter" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[200px] overflow-y-auto dark:bg-gray-700 dark:border-gray-600">
-                    {matters.map((matter) => (
-                      <SelectItem key={matter.matter_id} value={matter.matter_id} className="text-sm md:text-base">
-                        {matter.name} [{matter.case_number}]
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
                 <div className="grid gap-2">
                   <Label htmlFor="edit-name" className="text-base md:text-lg">
                     Bill Name
@@ -158,39 +140,24 @@ import { Matter } from "@/types/matter.type"
   
               {/* Right Column */}
               <div className="flex flex-col">
-                <div className="grid gap-2 mb-4">
-                  <Label className="text-base md:text-lg">Status</Label>
-                  <RadioGroup
-                    value={status}
-                    onValueChange={(value) => setStatus(value as BillStatus)}
-                    className="grid grid-cols-2 gap-2"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Active" id="edit-active" className="h-3 w-3 md:h-4 md:w-4" />
-                      <Label htmlFor="edit-active" className="text-sm md:text-base">
-                        Active
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Paid" id="edit-paid" className="h-3 w-3 md:h-4 md:w-4" />
-                      <Label htmlFor="edit-paid" className="text-sm md:text-base">
-                        Paid
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Pending" id="edit-pending" className="h-3 w-3 md:h-4 md:w-4" />
-                      <Label htmlFor="edit-pending" className="text-sm md:text-base">
-                        Pending
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Overdue" id="edit-overdue" className="h-3 w-3 md:h-4 md:w-4" />
-                      <Label htmlFor="edit-overdue" className="text-sm md:text-base">
-                        Overdue
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
+                <div className="grid gap-2 mb-4 space-y-2">
+                  <Label htmlFor="status">Status</Label>
+                    <Select
+                      defaultValue="Pending"
+                      value={status}
+                      onValueChange={(value) => setStatus(value as BillStatus)}
+                    >
+                      <SelectTrigger id="status" className="text-sm md:text-base dark:bg-gray-700 dark:border-gray-600">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[200px] overflow-y-auto dark:bg-gray-700 dark:border-gray-600">
+                        <SelectItem value="Active" className="text-sm md:text-base">Active</SelectItem>
+                        <SelectItem value="Paid" className="text-sm md:text-base">Paid</SelectItem>
+                        <SelectItem value="Pending" className="text-sm md:text-base">Pending</SelectItem>
+                        <SelectItem value="Overdue" className="text-sm md:text-base">Overdue</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
   
                 <div className="flex flex-col flex-grow">
                   <div className="flex items-center justify-between mb-0">

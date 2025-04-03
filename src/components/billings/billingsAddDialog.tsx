@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils"
 import { BillingStates } from "./billingsStates"
 import { Textarea } from "../ui/textarea"
 import { Matter } from "@/types/matter.type"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from "@radix-ui/react-dropdown-menu"
 
 
 interface BillingsAddDialogProps {
@@ -77,7 +78,7 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, matters }: Billi
             <div className="space-y-4">
             <div className="grid gap-2">
                 <Label htmlFor="matter" className="text-base md:text-lg">
-                  Select Matter
+                  Matter
                 </Label>
                 <Select value={matter_id} onValueChange={setMatterId}>
                   <SelectTrigger id="matter" className="text-sm md:text-base dark:bg-gray-700 dark:border-gray-600">
@@ -152,39 +153,23 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, matters }: Billi
 
             {/* Right Column */}
             <div className="flex flex-col">
-              <div className="grid gap-2 mb-4">
-                <Label className="text-base md:text-lg">Status</Label>
-                <RadioGroup
-                  defaultValue="Active"
-                  value={status}
-                  onValueChange={(value) => setStatus(value as BillStatus)}
-                  className="grid grid-cols-2 gap-2"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Active" id="active" className="h-3 w-3 md:h-4 md:w-4" />
-                    <Label htmlFor="active" className="text-sm md:text-base">
-                      Active
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Paid" id="paid" className="h-3 w-3 md:h-4 md:w-4" />
-                    <Label htmlFor="paid" className="text-sm md:text-base">
-                      Paid
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Pending" id="pending" className="h-3 w-3 md:h-4 md:w-4" />
-                    <Label htmlFor="pending" className="text-sm md:text-base">
-                      Pending
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Overdue" id="overdue" className="h-3 w-3 md:h-4 md:w-4" />
-                    <Label htmlFor="overdue" className="text-sm md:text-base">
-                      Overdue
-                    </Label>
-                  </div>
-                </RadioGroup>
+              <div className="grid gap-2 mb-4 space-y-2">
+                  <Label htmlFor="status">Status</Label>
+                  <Select
+                    defaultValue="Pending"
+                    value={status}
+                    onValueChange={(value) => setStatus(value as BillStatus)}
+                  >
+                    <SelectTrigger id="status" className="text-sm md:text-base dark:bg-gray-700 dark:border-gray-600">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px] overflow-y-auto dark:bg-gray-700 dark:border-gray-600">
+                      <SelectItem value="Active" className="text-sm md:text-base">Active</SelectItem>
+                      <SelectItem value="Paid" className="text-sm md:text-base">Paid</SelectItem>
+                      <SelectItem value="Pending" className="text-sm md:text-base">Pending</SelectItem>
+                      <SelectItem value="Overdue" className="text-sm md:text-base">Overdue</SelectItem>
+                    </SelectContent>
+                  </Select>
               </div>
 
               <div className="flex flex-col flex-grow">
