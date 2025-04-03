@@ -29,7 +29,7 @@ export function InputField({
   placeholder,
   required = false,
   value, // Controlled input
-  defaultValue = '',
+
   validateEmail = false,
   validatePassword = false,
   minPasswordLength = 8,
