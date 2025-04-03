@@ -9,25 +9,47 @@ import { Button } from '@/components/ui/button'
 import { ChevronDown, ChevronRight, Search } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
+import type { SearchResult, MatterStatus, TaskStatus } from './types'
 
 interface SearchResultsProps {
   query: string
-  results: any[]
+  results: SearchResult[]
   isSearching: boolean
   totalResults: number
   hasMore: boolean
-  onResultClick: (result: any) => void
+  onResultClick: (result: SearchResult) => void
   onLoadMore: () => void
 }
 
 /**
- * Collapsible component for search results with pagination
+ * SearchResults Component
  *
- * This component:
- * 1. Displays search results with proper status badges
- * 2. Shows loading state during searches
- * 3. Provides pagination with "Load more" button
- * 4. Shows appropriate empty states
+ * A collapsible component that displays search results with pagination.
+ *
+ * Key features:
+ * - Collapsible section with toggle functionality
+ * - Displays search results with proper status badges
+ * - Shows loading state during searches
+ * - Provides pagination with "Load more" button
+ * - Shows appropriate empty states for different scenarios
+ * - Handles result clicks for navigation
+ *
+ * States displayed:
+ * - Loading: Shows a spinner while searching
+ * - Empty query: Prompts user to enter a search term
+ * - No results: Shows a message when no results match the query
+ * - Results: Displays formatted results with status badges
+ *
+ * Usage:
+ * <SearchResults
+ *   query={searchQuery}
+ *   results={displayedResults}
+ *   isSearching={isSearching}
+ *   totalResults={allResults.length}
+ *   hasMore={hasMoreResults}
+ *   onResultClick={handleResultClick}
+ *   onLoadMore={handleLoadMore}
+ * />
  */
 export function SearchResults({
   query,
@@ -45,16 +67,30 @@ export function SearchResults({
   const getStatusBadgeClasses = (type: string, status?: string) => {
     if (!status) return ''
 
+    // Matter status badges
     if (type === 'Matter') {
-      return status === 'Assigned'
-        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-        : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+      switch (status as MatterStatus) {
+        case 'open':
+          return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+        case 'closed':
+          return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+        case 'pending':
+          return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
+        default:
+          return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+      }
     }
 
+    // Task status badges
     if (type === 'Task') {
-      return status === 'Pending'
-        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
-        : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+      switch (status as TaskStatus) {
+        case 'pending':
+          return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
+        case 'completed':
+          return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+        default:
+          return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+      }
     }
 
     return ''
@@ -62,6 +98,7 @@ export function SearchResults({
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
+      {/* Collapsible header/trigger with result count */}
       <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium text-foreground hover:bg-muted p-2 rounded-md">
         <div className="flex items-center justify-between w-full">
           <span>Results</span>

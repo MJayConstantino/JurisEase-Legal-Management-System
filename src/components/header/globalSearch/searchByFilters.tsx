@@ -10,35 +10,36 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
+import type { SearchByFilters as SearchByFiltersType } from './types'
 
 interface SearchByFiltersProps {
-  filters: {
-    clientName: boolean
-    attorney: boolean
-    caseName: boolean
-    opposingCouncil: boolean
-    court: boolean
-  }
-  setFilters: React.Dispatch<
-    React.SetStateAction<{
-      clientName: boolean
-      attorney: boolean
-      caseName: boolean
-      opposingCouncil: boolean
-      court: boolean
-    }>
-  >
+  filters: SearchByFiltersType
+  setFilters: React.Dispatch<React.SetStateAction<SearchByFiltersType>>
 }
 
 /**
- * Collapsible component for "Search by" filters
+ * SearchByFilters Component
  *
- * This component allows users to select which attributes to search by:
- * - Client Name
- * - Attorney
- * - Case Name
- * - Opposing Council
- * - Court
+ * A collapsible component that allows users to select which attributes to search by.
+ *
+ * Key features:
+ * - Collapsible section with toggle functionality
+ * - Checkbox options for different search attributes
+ * - Maintains state of selected filters
+ * - Updates parent component when filters change
+ *
+ * Available filters:
+ * - Client Name: Search by client name
+ * - Attorney: Search by assigned attorney
+ * - Case Name: Search by case/matter name
+ * - Opposing Council: Search by opposing council name
+ * - Court: Search by court name
+ *
+ * Usage:
+ * <SearchByFilters
+ *   filters={searchByFilters}
+ *   setFilters={setSearchByFilters}
+ * />
  */
 export function SearchByFilters({ filters, setFilters }: SearchByFiltersProps) {
   // State to track if section is open or closed
@@ -46,6 +47,7 @@ export function SearchByFilters({ filters, setFilters }: SearchByFiltersProps) {
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
+      {/* Collapsible header/trigger */}
       <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium text-foreground hover:bg-muted p-2 rounded-md">
         <span>Search by</span>
         {isOpen ? (
@@ -55,8 +57,10 @@ export function SearchByFilters({ filters, setFilters }: SearchByFiltersProps) {
         )}
       </CollapsibleTrigger>
 
+      {/* Collapsible content */}
       <CollapsibleContent className="pt-2 pb-1">
         <div className="space-y-2 pl-2">
+          {/* Client Name filter */}
           <div className="flex items-center space-x-2">
             <Checkbox
               id="clientName"
@@ -70,6 +74,7 @@ export function SearchByFilters({ filters, setFilters }: SearchByFiltersProps) {
             </label>
           </div>
 
+          {/* Attorney filter */}
           <div className="flex items-center space-x-2">
             <Checkbox
               id="attorney"
@@ -83,6 +88,7 @@ export function SearchByFilters({ filters, setFilters }: SearchByFiltersProps) {
             </label>
           </div>
 
+          {/* Case Name filter */}
           <div className="flex items-center space-x-2">
             <Checkbox
               id="caseName"
@@ -96,6 +102,7 @@ export function SearchByFilters({ filters, setFilters }: SearchByFiltersProps) {
             </label>
           </div>
 
+          {/* Opposing Council filter */}
           <div className="flex items-center space-x-2">
             <Checkbox
               id="opposingCouncil"
@@ -112,6 +119,7 @@ export function SearchByFilters({ filters, setFilters }: SearchByFiltersProps) {
             </label>
           </div>
 
+          {/* Court filter */}
           <div className="flex items-center space-x-2">
             <Checkbox
               id="court"

@@ -9,21 +9,24 @@ import { SearchDialog } from './searchDialog'
 /**
  * DesktopSearch Component
  *
- * A responsive search component that adapts to different screen sizes using Tailwind breakpoints:
- * - Shows an input field with search icon on medium and larger screens
- * - Shows just a search icon button on smaller screens
+ * A responsive search component that adapts to different screen sizes using Tailwind breakpoints.
  *
- * Required components:
- * - SearchDialog: The main search dialog with filters and results
+ * Key features:
+ * - Shows an input field with search icon on medium and larger screens (md:block)
+ * - Shows just a search icon button on smaller screens (block md:hidden)
+ * - Clicking either the input or icon opens the search dialog
+ * - Uses Tailwind's responsive classes instead of media queries
+ *
+ * Component structure:
+ * 1. Desktop/tablet view: Input field with search icon (hidden on mobile)
+ * 2. Mobile view: Search icon button (hidden on desktop/tablet)
+ * 3. Search dialog: Appears when clicking either the input or icon
  *
  * Usage:
- * 1. Import the component: import DesktopSearch from "@/components/search/desktop-search"
- * 2. Add it to your layout: <DesktopSearch />
- * 3. The component will handle responsive behavior automatically using Tailwind
- * 4. Clicking either the input or icon will open the search dialog
+ * <DesktopSearch />
  */
 function DesktopSearch() {
-  // State to control the search dialog
+  // State to control the search dialog visibility
   const [dialogOpen, setDialogOpen] = useState(false)
 
   // Handler to open the search dialog
@@ -51,8 +54,8 @@ function DesktopSearch() {
       {/* Mobile view - just the search icon button (hidden on desktop/tablet) */}
       <Button
         variant="ghost"
-        size="icon"
-        className="text-white hover:bg-[#1B1E4B]/50 dark:hover:bg-gray-800/50 flex items-center justify-center h-10 w-10 block md:hidden"
+        size="sm"
+        className="text-white hover:bg-[#1B1E4B]/50 dark:hover:bg-gray-800/50 flex items-center justify-center h-10 w-10 p-0 block md:hidden"
         onClick={handleOpenDialog}
         aria-label="Search"
       >

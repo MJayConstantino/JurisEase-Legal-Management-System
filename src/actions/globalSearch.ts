@@ -1,140 +1,161 @@
 'use server'
 
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
-
-// Define Supabase types for stricter checks
-interface Matter {
-  id: string
-  name: string
-  client_name: string
-  attorney?: string
-  opposing_council?: string
-  court?: string
-}
-
-interface Task {
-  id: string
-  title: string
-  status?: string
-  matters?: { name: string; client_name: string }
-}
-
-interface Bill {
-  id: string
-  invoice_number: string
-  matters?: { name: string; client_name: string }
-}
-interface SearchResult {
-  id: string
-  type: 'Matter' | 'Task' | 'Bill'
-  title: string
-  subtitle: string
-  status?: string
-  route: string
-}
-
-const supabase: SupabaseClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { createSupabaseClient } from '@/utils/supabase/server'
+import type { SearchResult } from '@/types/searchResult.type'
+import { MatterStatus } from '@/components/header/globalSearch/types'
+import { Database } from '@/types/supabase'
 
 export async function search(
   query: string,
   contentTypes: string[],
   attributes: string[]
 ): Promise<{ results: SearchResult[] } | { error: string }> {
-  if (!query.trim()) {
-    return { results: [] }
-  }
+  const supabase = await createSupabaseClient()
+  if (!query.trim()) return { results: [] }
 
   const searchResults: SearchResult[] = []
 
   try {
-    // Search matters
+    // Search matters if included
     if (contentTypes.includes('matters')) {
+      const filters = attributes.map((attr) => ({
+        column:
+          attr === 'caseName'
+            ? 'name'
+            : attr === 'clientName'
+            ? 'client'
+            : attr === 'attorney'
+            ? 'assigned_attorney'
+            : attr,
+        operator: 'ilike',
+        value: `%${query}%`,
+      }))
+
       let mattersQuery = supabase.from('matters').select('*')
 
-      if (attributes.includes('clientName')) {
-        mattersQuery = mattersQuery.ilike('client_name', `%${query}%`)
+      // Exclude UUID fields from ilike filtering
+      const validFilters = filters.filter(
+        (f) =>
+          !['matter_id', 'assigned_attorney', 'assigned_staff'].includes(
+            f.column
+          )
+      )
+
+      if (validFilters.length > 0) {
+        mattersQuery = mattersQuery.or(
+          validFilters
+            .map((f) => `${f.column}.${f.operator}."${f.value}"`)
+            .join(',')
+        )
       }
-      if (attributes.includes('attorney')) {
-        mattersQuery = mattersQuery.or(`attorney.ilike.%${query}%`)
+
+      // Handle UUID filtering separately
+      if (query.match(/^[0-9a-fA-F-]{36}$/)) {
+        // Simple UUID validation
+        mattersQuery = mattersQuery.or(
+          `matter_id.eq.${query}, assigned_attorney.eq.${query}, assigned_staff.eq.${query}`
+        )
       }
-      if (attributes.includes('caseName')) {
-        mattersQuery = mattersQuery.or(`name.ilike.%${query}%`)
-      }
+
+      // Handle JSON fields separately
+      const jsonFilters: {
+        field: keyof Database['public']['Tables']['matters']['Row']
+        property: string
+      }[] = []
+
       if (attributes.includes('opposingCouncil')) {
-        mattersQuery = mattersQuery.or(`opposing_council.ilike.%${query}%`)
+        jsonFilters.push({ field: 'opposing_council', property: 'name' })
       }
+
       if (attributes.includes('court')) {
-        mattersQuery = mattersQuery.or(`court.ilike.%${query}%`)
+        jsonFilters.push({ field: 'court', property: 'name' })
       }
 
       const { data: matters, error } = await mattersQuery.limit(10)
-      if (!error && matters) {
-        searchResults.push(
-          ...matters.map((matter) => ({
-            id: matter.id,
-            type: 'Matter' as const,
-            title: matter.name,
-            subtitle: `Client: ${matter.client_name}`,
-            status: matter.attorney ? 'Assigned' : 'Unassigned',
-            route: `/matters/${matter.id}`,
-          }))
+
+      if (error) throw new Error(error.message)
+
+      let filteredMatters = matters ?? []
+
+      if (jsonFilters.length > 0) {
+        filteredMatters = matters.filter((matter) =>
+          jsonFilters.some((jf) => {
+            const jsonField = matter[jf.field]
+            return jsonField?.[jf.property]
+              ?.toLowerCase()
+              .includes(query.toLowerCase())
+          })
         )
       }
+
+      searchResults.push(
+        ...filteredMatters.map((matter) => ({
+          id: matter.matter_id,
+          type: 'Matter' as const,
+          title: matter.name,
+          subtitle: `Client: ${matter.client}`,
+          status: matter.status as MatterStatus,
+          route: `/matters/${matter.matter_id}`,
+        }))
+      )
     }
 
-    // Search tasks
+    // Search tasks if included
     if (contentTypes.includes('tasks')) {
-      const { data: tasks, error } = await supabase
-        .from('tasks')
-        .select('*, matters(name, client_name)')
-        .ilike('title', `%${query}%`)
-        .limit(10)
+      let tasksQuery = supabase.from('tasks').select('*, matters!inner(*)')
 
-      if (!error && tasks) {
-        searchResults.push(
-          ...tasks.map((task) => ({
-            id: task.id,
-            type: 'Task' as const,
-            title: task.title,
-            subtitle: task.matters
-              ? `Matter: ${task.matters.name}`
-              : 'No matter assigned',
-            status: task.status,
-            route: `/tasks/${task.id}`,
-          }))
-        )
-      }
+      tasksQuery = tasksQuery
+        .filter('name', 'ilike', `%${query}%`)
+        .or(`description.ilike.%${query}%`)
+
+      const { data: tasks, error } = await tasksQuery.limit(10)
+
+      if (error) throw new Error(error.message)
+
+      searchResults.push(
+        ...tasks.map((task) => ({
+          id: task.task_id,
+          type: 'Task' as const,
+          title: task.name,
+          subtitle: task.matters
+            ? `Matter: ${task.matters.name}`
+            : `Due: ${
+                task.due_date
+                  ? new Date(task.due_date).toLocaleDateString()
+                  : 'No date'
+              }`,
+          status: task.status,
+          route: `/tasks/${task.task_id}`,
+        }))
+      )
     }
 
-    // Search bills
+    // Search billings if included
     if (contentTypes.includes('bills')) {
-      const { data: bills, error } = await supabase
-        .from('bills')
-        .select('*, matters(name, client_name)')
-        .ilike('invoice_number', `%${query}%`)
-        .limit(10)
+      let billingsQuery = supabase.from('billings').select('*')
 
-      if (!error && bills) {
-        searchResults.push(
-          ...bills.map((bill) => ({
-            id: bill.id,
-            type: 'Bill' as const,
-            title: `Invoice #${bill.invoice_number}`,
-            subtitle: bill.matters
-              ? `Matter: ${bill.matters.name}`
-              : 'No matter assigned',
-            route: `/bills/${bill.id}`,
-          }))
-        )
-      }
+      billingsQuery = billingsQuery
+        .filter('name', 'ilike', `%${query}%`)
+        .or(`remarks.ilike.%${query}%`)
+
+      const { data: billings, error } = await billingsQuery.limit(10)
+
+      if (error) throw new Error(error.message)
+
+      searchResults.push(
+        ...billings.map((billing) => ({
+          id: billing.bill_id,
+          type: 'Bill' as const,
+          title: billing.name || `Invoice #${billing.bill_id}`,
+          subtitle: `Amount: $${billing.amount || '0.00'}`,
+          route: `/bills/${billing.bill_id}`,
+        }))
+      )
     }
 
     return { results: searchResults }
   } catch (error) {
-    console.error('Error processing search:', error)
+    console.error('Search error:', error)
     return { error: 'Failed to process search' }
   }
 }
