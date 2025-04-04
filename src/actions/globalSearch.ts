@@ -3,7 +3,6 @@
 import { createSupabaseClient } from '@/utils/supabase/server'
 import type { SearchResult } from '@/types/searchResult.type'
 import { MatterStatus } from '@/components/header/globalSearch/types'
-import { Database } from '@/types/supabase'
 
 export async function search(
   query: string,
@@ -16,16 +15,49 @@ export async function search(
   const searchResults: SearchResult[] = []
 
   try {
-    // ✅ Case-Insensitive Matter Query
     if (contentTypes.includes('matters')) {
-      let mattersQuery = supabase.from('matters').select('*')
+      console.log(attributes)
+      let mattersQuery = supabase
+        .from('matters')
+        .select('*,assigned_attorney, users(user_name,user_id)')
+      // used bulider methods instead
+      if (attributes.length == 0) {
+        mattersQuery = mattersQuery.ilike('name', `%${query}%`)
+      } else {
+        attributes.forEach((attrb) => {
+          switch (attrb) {
+            case 'clientName':
+              mattersQuery = mattersQuery.ilike('client', `%${query}%`)
+              break
+            case 'attorney':
+              console.log('attorney caught')
+              break
+            case 'caseName':
+              mattersQuery = mattersQuery.ilike('name', `%${query}%`)
+              break
+            case 'opposingCouncil':
+              mattersQuery = mattersQuery.ilike(
+                'opposing_council->>name',
+                `%${query}%`
+              )
+              break
+            case 'court':
+              mattersQuery = mattersQuery.ilike('court->>name', `%${query}%`)
+              break
+            default:
+              console.error(attrb)
+          }
+        })
+      }
 
-      mattersQuery = mattersQuery.or(
-        `name.ilike.%${query}%, client.ilike.%${query}%, case_number.ilike.%${query}%, court->>name.ilike.%${query}%, opposing_council->>name.ilike.%${query}%`
-      )
-
-      const { data: matters, error } = await mattersQuery.limit(10)
-
+      let { data: matters, error } = await mattersQuery.limit(10)
+      if (attributes.includes('attorney')) {
+        matters = matters!.filter(
+          (matter) =>
+            matter.users &&
+            matter.users.user_name.toLowerCase().includes(query.toLowerCase())
+        )
+      }
       console.log('🔍 Matters Query:', mattersQuery.toString())
       console.log('✅ Matters Data:', matters)
       console.log('❌ Matters Error:', error)
