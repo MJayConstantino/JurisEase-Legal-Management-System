@@ -31,21 +31,6 @@ export function BillingsList({
   sortDirection,
   onSortChange,
 }: BillingsListProps) {
-  const SortableHeader = ({ field, children }: { field: SortField; children: React.ReactNode }) => (
-    <TableHead className="cursor-pointer text-sm md:text-base">
-      <div className="flex items-center" onClick={() => onSortChange(field)}>
-        {children}
-        <ArrowUpDown
-         className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === field ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
-        />
-        {sortField === field && (
-          <span className="ml-1 text-xs md:text-sm text-indigo-900 dark:text-indigo-300 font-bold">
-            {sortDirection === "asc" ? "↑" : "↓"}
-          </span>
-        )}
-      </div>
-    </TableHead>
-  )
 
   return (
     <div className="overflow-x-auto w-full">
@@ -60,11 +45,6 @@ export function BillingsList({
                   <ArrowUpDown
                     className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "matterName" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
                   />
-                  {sortField === "matterName" && (
-                    <span className="ml-1 text-xs md:text-sm text-indigo-900 dark:text-indigo-300 font-bold">
-                      {sortDirection === "asc" ? "↑" : "↓"}
-                    </span>
-                  )}
                 </div>
               </TableHead>
               <TableHead className="w-[15%]">
@@ -73,11 +53,7 @@ export function BillingsList({
                   <ArrowUpDown
                     className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "name" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
                   />
-                  {sortField === "name" && (
-                    <span className="ml-1 text-xs md:text-sm text-indigo-900 dark:text-indigo-300 font-bold">
-                      {sortDirection === "asc" ? "↑" : "↓"}
-                    </span>
-                  )}
+
                 </div>
               </TableHead>
               <TableHead className="w-[10%]">
@@ -86,11 +62,7 @@ export function BillingsList({
                   <ArrowUpDown
                     className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "amount" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
                   />
-                  {sortField === "amount" && (
-                    <span className="ml-1 text-xs md:text-sm text-indigo-900 dark:text-indigo-300 font-bold">
-                      {sortDirection === "asc" ? "↑" : "↓"}
-                    </span>
-                  )}
+                  
                 </div>
               </TableHead>
               <TableHead className="w-[10%]">
@@ -99,11 +71,7 @@ export function BillingsList({
                   <ArrowUpDown
                     className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "created_at" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
                   />
-                  {sortField === "created_at" && (
-                    <span className="ml-1 text-xs md:text-sm text-indigo-900 dark:text-indigo-300 font-bold">
-                      {sortDirection === "asc" ? "↑" : "↓"}
-                    </span>
-                  )}
+                 
                 </div>
               </TableHead>
               <TableHead className="w-[10%]">
@@ -112,11 +80,7 @@ export function BillingsList({
                   <ArrowUpDown
                     className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "status" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
                   />
-                  {sortField === "status" && (
-                    <span className="ml-1 text-xs md:text-sm text-indigo-900 dark:text-indigo-300 font-bold">
-                      {sortDirection === "asc" ? "↑" : "↓"}
-                    </span>
-                  )}
+                 
                 </div>
               </TableHead>
               <TableHead className="w-[15%]">
@@ -125,11 +89,7 @@ export function BillingsList({
                   <ArrowUpDown
                     className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "remarks" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
                   />
-                  {sortField === "remarks" && (
-                    <span className="ml-1 text-xs md:text-sm text-indigo-900 dark:text-indigo-300 font-bold">
-                      {sortDirection === "asc" ? "↑" : "↓"}
-                    </span>
-                  )}
+                  
                 </div>
               </TableHead>
               <TableHead className="w-[13%] text-right">Actions</TableHead>
