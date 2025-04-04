@@ -1,9 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
-import { format } from "date-fns";
+import { format, isBefore } from "date-fns";
 import { Check, Pencil, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +11,7 @@ import { getMatters } from "@/actions/matters";
 import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
 import { TaskForm } from "./taskForm";
 import { getStatusColor } from "@/utils/getStatusColor";
+import { Priority, Task } from "@/types/task.type";
 import { toast } from "sonner";
 
 interface TaskRowProps {
@@ -25,6 +25,33 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
   const [matters, setMatters] = useState<Matter[]>([]);
   const [isLoadingMatters, setIsLoadingMatters] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isOverdue, setIsOverdue] = useState(false);
+
+   const checkIsOverdue = (dueDate?: Date, status?: string) => {
+      if (!dueDate || status === "completed") return false;
+      return isBefore(new Date(dueDate), new Date());
+    };
+  
+    useEffect(() => {
+      const overdue = checkIsOverdue(localTask.due_date, localTask.status);
+      setIsOverdue(overdue);
+  
+      if (overdue && localTask.priority !== "overdue") {
+        const updatedTask = {
+          ...localTask,
+          priority: "overdue" as Priority,
+        };
+        setLocalTask(updatedTask);
+        updateTask(localTask.task_id, { status: localTask.status }, updatedTask)
+          .then(() => {
+            console.log("Priority updated to overdue in the database");
+          })
+          .catch((error) => {
+            console.error("Failed to update task priority in the database:", error);
+            setLocalTask(task);
+          });
+      }
+    }, [localTask, localTask.due_date, localTask.priority, localTask.status, task]);
 
   useEffect(() => {
     setLocalTask(task);
@@ -74,11 +101,10 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
           status: "completed",
         }
       );
-
       toast.success("Task marked as completed");
+      
 
       if (onTaskUpdated) onTaskUpdated();
-      
     } catch (error) {
       console.error("Error completing task:", error);
       setLocalTask(task);
@@ -140,17 +166,27 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
 
   return (
     <>
-      <div className="flex items-center justify-between p-3 sm:p-4 border-b hover:bg-muted/20">
-        <div className="flex-1 min-w-0 mr-2">
+      <div
+        className={`flex items-center my-2 rounded-lg justify-between p-3 sm:p-4 border hover:bg-muted/20 ${
+          isOverdue
+            ? "border-red-500 bg-red-50 dark:bg-red-950"
+            : "bg-white dark:bg-gray-800 dark:border-gray-700"
+        }`}
+      >
+        <div className="flex-1 min-w-0 mr-2 ">
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="font-medium truncate">{localTask.name}</h3>
             {localTask.priority && (
               <Badge
-                variant="outline"
-                className={`text-xs ${getStatusColor(localTask.priority)}`}
-              >
-                {localTask.priority}
-              </Badge>
+              variant="outline"
+              className={`ml-2 flex-shrink-0 text-xs ${
+                isOverdue
+                  ? "text-red-600 border-red-600"
+                  : getStatusColor(localTask.priority)
+              }`}
+            >
+              {isOverdue ? "overdue" : localTask.priority}
+            </Badge>
             )}
           </div>
           <div className="text-xs sm:text-sm text-muted-foreground truncate">
@@ -162,7 +198,9 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
 
         <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
           <div className="text-xs sm:text-sm hidden sm:block">
-            {formatDate(localTask.due_date)}
+            <span className={isOverdue ? "text-red-600" : ""}>
+              {formatDate(localTask.due_date)}
+            </span>
           </div>
 
           <div className="w-16 sm:w-24">
