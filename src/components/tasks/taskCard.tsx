@@ -12,7 +12,7 @@ import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
 import { useState, useEffect } from "react";
 import { TaskForm } from "./taskForm";
 import { getStatusColor } from "@/utils/getStatusColor";
-
+import { toast } from "sonner";
 interface TaskCardProps {
   task: Task;
 }
@@ -22,6 +22,11 @@ export function TaskCard({ task }: TaskCardProps) {
   const [localTask, setLocalTask] = useState<Task>(task);
   const [matters, setMatters] = useState<Matter[]>([]);
   const [isLoadingMatters, setIsLoadingMatters] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    setLocalTask(task);
+  }, [task]);
 
   useEffect(() => {
     async function fetchMatters() {
@@ -49,14 +54,14 @@ export function TaskCard({ task }: TaskCardProps) {
   };
 
   const handleComplete = async () => {
+    if (isProcessing) return;
+
     try {
-      // Update local state immediately for optimistic UI
       setLocalTask({
         ...localTask,
         status: "completed",
       });
 
-      // Update on server
       await updateTask(
         task.task_id,
         { status: "completed" },
@@ -65,18 +70,31 @@ export function TaskCard({ task }: TaskCardProps) {
           status: "completed",
         }
       );
+
+      toast.success("Task marked as completed");
+
     } catch (error) {
       console.error("Error completing task:", error);
-      // Revert optimistic update on error
       setLocalTask(task);
+      toast.error("Failed to complete task");
+      setIsProcessing(false);
     }
   };
 
   const handleDelete = async () => {
+    if (isProcessing) return;
+
     try {
+      setIsProcessing(true);
       await deleteTask(task.task_id);
+
+      toast.success("Task deleted successfully");
+
+      window.location.reload();
     } catch (error) {
       console.error("Error deleting task:", error);
+      toast.error("Failed to delete task");
+      setIsProcessing(false);
     }
   };
 
@@ -86,41 +104,34 @@ export function TaskCard({ task }: TaskCardProps) {
 
   const handleSaveTask = async (updatedTask: Task) => {
     try {
-      // Create a merged task for optimistic UI update
       const optimisticTask = {
-        ...localTask,
         ...updatedTask,
+        task_id: task.task_id,
       } as Task;
 
-      // Update local state immediately
       setLocalTask(optimisticTask);
-
-      // Close the form immediately for better UX
       setIsEditing(false);
+      await updateTask(task.task_id, updatedTask, optimisticTask);
 
-      // Update the task on the server
-      await updateTask(task.task_id, { status: task.status }, optimisticTask);
+      window.location.reload();
     } catch (error) {
       console.error("Error updating task:", error);
-      // Revert optimistic update on error
       setLocalTask(task);
+      toast.error("Failed to update task");
     }
   };
 
   const handleSaveAndCreateAnother = async (updatedTask: Task) => {
-    // For editing, we don't need to implement "save and create another"
-    // Just call the regular save function
     await handleSaveTask(updatedTask);
   };
 
-  // Get matter name from matter ID
   const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
 
   return (
     <>
-      <div className="border rounded-lg p-3 sm:p-4 bg-white shadow-sm h-full flex flex-col">
+      <div className="border rounded-lg p-3 sm:p-4 bg-white dark:bg-gray-800 dark:border-gray-700 shadow-sm h-full flex flex-col">
         <div className="mb-2 flex justify-between items-start">
-          <h3 className="font-medium text-base sm:text-lg line-clamp-2">
+          <h3 className="font-medium text-base sm:text-lg line-clamp-2 dark:text-white">
             {localTask.name}
           </h3>
           {localTask.priority && (
@@ -136,13 +147,13 @@ export function TaskCard({ task }: TaskCardProps) {
         </div>
 
         {localTask.description && (
-          <p className="text-muted-foreground text-xs sm:text-sm mb-3 line-clamp-3">
+          <p className="text-muted-foreground text-xs sm:text-sm mb-3 line-clamp-3 dark:text-gray-400 overflow-y-auto">
             {localTask.description}
           </p>
         )}
 
         {localTask.matter_id && (
-          <div className="text-xs sm:text-sm font-medium mb-2 truncate">
+          <div className="text-xs sm:text-sm font-medium mb-2 truncate dark:text-gray-300">
             Matter:{" "}
             {isLoadingMatters
               ? "Loading..."
@@ -150,12 +161,12 @@ export function TaskCard({ task }: TaskCardProps) {
           </div>
         )}
 
-        <div className="flex items-center text-xs sm:text-sm text-muted-foreground mb-4">
+        <div className="flex items-center text-xs sm:text-sm text-muted-foreground mb-4 dark:text-gray-400">
           <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-          <span>Due: {formatDate(localTask.dueDate)}</span>
+          <span>Due: {formatDate(localTask.due_date)}</span>
         </div>
 
-        <div className="flex items-center justify-between mt-auto pt-2 border-t">
+        <div className="flex items-center justify-between mt-auto pt-2 border-t dark:border-gray-700">
           <Badge
             variant="outline"
             className={`text-xs ${getStatusColor(localTask.status)}`}
@@ -169,7 +180,7 @@ export function TaskCard({ task }: TaskCardProps) {
               size="sm"
               className="h-8 px-2 sm:px-3 text-xs"
               onClick={handleComplete}
-              disabled={localTask.status === "completed"}
+              disabled={localTask.status === "completed" || isProcessing}
             >
               <Check className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
               <span className="hidden sm:inline">Complete</span>
@@ -180,6 +191,7 @@ export function TaskCard({ task }: TaskCardProps) {
               size="sm"
               className="h-8 px-2 sm:px-3 text-xs"
               onClick={handleEdit}
+              disabled={isProcessing}
             >
               <Pencil className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
               <span className="hidden sm:inline">Edit</span>
@@ -190,6 +202,7 @@ export function TaskCard({ task }: TaskCardProps) {
               size="sm"
               className="h-8 px-2 sm:px-3 text-xs"
               onClick={handleDelete}
+              disabled={isProcessing}
             >
               <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1" />
               <span className="hidden sm:inline">Delete</span>
@@ -203,6 +216,7 @@ export function TaskCard({ task }: TaskCardProps) {
         onOpenChange={setIsEditing}
         onSave={handleSaveTask}
         onSaveAndCreateAnother={handleSaveAndCreateAnother}
+        initialTask={localTask}
       />
     </>
   );

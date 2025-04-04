@@ -43,6 +43,7 @@ export function LoginPage({
       try {
         const { error } = await handleLoginSubmitfn(formData)
         if (error) {
+          console.error(Object.fromEntries(formData.entries()))
           toast.error(error)
           setEmail('')
           setPassword('')
@@ -51,6 +52,7 @@ export function LoginPage({
           onLoginSuccess?.()
         }
       } catch (err: any) {
+        console.error(Object.fromEntries(formData.entries()))
         console.error('Error during login:', err)
         toast.error('Error Logging in' + err)
       }
@@ -80,7 +82,7 @@ export function LoginPage({
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4 font-aileron">
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-sm">
-      {/* Header Section  */}
+        {/* Header Section  */}
         <Header
           title="Welcome back!"
           subtitle="JurisEase"
@@ -110,7 +112,6 @@ export function LoginPage({
 
             <div className="flex flex-col space-y-4">
               <SignInButton
-                onClick={() => {}}
                 disabled={isPending || isTransitioning}
                 isPending={isPending || isTransitioning}
               />

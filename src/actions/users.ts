@@ -30,6 +30,8 @@ export async function signinAction(formData: FormData) {
 }
 
 export async function signUpAction(formData: FormData) {
+  const supabaseStorageCDN =
+    'https://ysvesegmxbtcjgivpwkl.supabase.co/storage/v1/object/public/users/'
   const supabase = await createSupabaseClient()
 
   const data = Object.fromEntries(formData.entries()) as User
@@ -42,6 +44,7 @@ export async function signUpAction(formData: FormData) {
     options: {
       data: {
         full_name: data.name,
+        avatar_url: supabaseStorageCDN + 'anon/base_profile.jpg',
       },
     },
   })
@@ -66,12 +69,12 @@ export async function signOutAction() {
 }
 
 export async function fetchUsersAction() {
-  const supabase = await createSupabaseClient();
+  const supabase = await createSupabaseClient()
   const { data, error } = await supabase
-    .from("users")
-    .select("user_id, user_name, user_email");
+    .from('users')
+    .select('user_id, user_name, user_email')
   if (error) {
-    throw new Error("Error fetching users: " + error.message);
+    throw new Error('Error fetching users: ' + error.message)
   }
-  return data;
+  return data
 }
