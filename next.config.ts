@@ -1,13 +1,10 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   /* config options here */
   eslint: {
-    dirs: [
-      "src/app",
-      "src/components"
-    ],
+    dirs: ['src/app', 'src/components'],
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig
