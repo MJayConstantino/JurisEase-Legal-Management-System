@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom"; // Adds custom matchers for DOM testing
+import "@testing-library/jest-dom";
 
 jest.mock("next/router", () => ({
     useRouter: () => ({

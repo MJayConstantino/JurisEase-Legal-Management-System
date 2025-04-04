@@ -1,6 +1,6 @@
 'use server'
 
-import { createSupabaseClient } from '@/utils/supabase/server'
+import { createSupabaseClient } from '../../src/utils/supabase/server'
 import { z } from 'zod'
 
 // user schema
