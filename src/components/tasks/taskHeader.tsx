@@ -71,11 +71,11 @@ export function TasksHeader({ onSearch, onStatusChange, onViewChange, view, onTa
   return (
     <div className="w-full">
       {/* Top section with title and view toggle - stack on mobile, side by side on larger screens */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 sm:mb-6"></div>
+      <div className=" flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 sm:mb-6"></div>
 
       {/* Main controls section */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 border dark:border-gray-700">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+      <div className="bg-white shadow dark:bg-gray-800 rounded-lg p-1 sm:p-4 border dark:border-gray-700">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
           {/* Mobile view toggle */}
           <div className="flex sm:hidden justify-between items-center">
             <div className="bg-muted rounded-lg p-1 flex">

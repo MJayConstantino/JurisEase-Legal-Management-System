@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import type { Task } from "@/types/task.type";
+import type { Priority, Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
-import { format } from "date-fns";
+import { format, isBefore } from "date-fns";
 import { Calendar, Check, Pencil, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { updateTask, deleteTask } from "@/actions/tasks";
@@ -13,16 +13,46 @@ import { useState, useEffect } from "react";
 import { TaskForm } from "./taskForm";
 import { getStatusColor } from "@/utils/getStatusColor";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+
 interface TaskCardProps {
   task: Task;
 }
 
 export function TaskCard({ task }: TaskCardProps) {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [localTask, setLocalTask] = useState<Task>(task);
   const [matters, setMatters] = useState<Matter[]>([]);
   const [isLoadingMatters, setIsLoadingMatters] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isOverdue, setIsOverdue] = useState(false);
+
+  const checkIsOverdue = (dueDate?: Date, status?: string) => {
+    if (!dueDate || status === "completed") return false;
+    return isBefore(new Date(dueDate), new Date());
+  };
+
+  useEffect(() => {
+    const overdue = checkIsOverdue(localTask.due_date, localTask.status);
+    setIsOverdue(overdue);
+
+    if (overdue && localTask.priority !== "overdue") {
+      const updatedTask = {
+        ...localTask,
+        priority: "overdue" as Priority,
+      };
+      setLocalTask(updatedTask);
+      updateTask(localTask.task_id, { status: localTask.status }, updatedTask)
+        .then(() => {
+          console.log("Priority updated to overdue in the database");
+        })
+        .catch((error) => {
+          console.error("Failed to update task priority in the database:", error);
+          setLocalTask(task);
+        });
+    }
+  }, [localTask, localTask.due_date, localTask.priority, localTask.status, task]);
 
   useEffect(() => {
     setLocalTask(task);
@@ -70,9 +100,9 @@ export function TaskCard({ task }: TaskCardProps) {
           status: "completed",
         }
       );
-
+      router.refresh();
+      window.location.reload();
       toast.success("Task marked as completed");
-
     } catch (error) {
       console.error("Error completing task:", error);
       setLocalTask(task);
@@ -91,6 +121,7 @@ export function TaskCard({ task }: TaskCardProps) {
       toast.success("Task deleted successfully");
 
       window.location.reload();
+      router.refresh();
     } catch (error) {
       console.error("Error deleting task:", error);
       toast.error("Failed to delete task");
@@ -112,8 +143,6 @@ export function TaskCard({ task }: TaskCardProps) {
       setLocalTask(optimisticTask);
       setIsEditing(false);
       await updateTask(task.task_id, updatedTask, optimisticTask);
-
-      window.location.reload();
     } catch (error) {
       console.error("Error updating task:", error);
       setLocalTask(task);
@@ -129,7 +158,13 @@ export function TaskCard({ task }: TaskCardProps) {
 
   return (
     <>
-      <div className="border rounded-lg p-3 sm:p-4 bg-white dark:bg-gray-800 dark:border-gray-700 shadow-sm h-full flex flex-col">
+      <div
+        className={`border rounded-lg p-3 sm:p-4 shadow-sm h-full flex flex-col ${
+          isOverdue
+            ? "border-red-500 bg-red-50 dark:bg-red-950"
+            : "bg-white dark:bg-gray-800 dark:border-gray-700"
+        }`}
+      >
         <div className="mb-2 flex justify-between items-start">
           <h3 className="font-medium text-base sm:text-lg line-clamp-2 dark:text-white">
             {localTask.name}
@@ -137,17 +172,19 @@ export function TaskCard({ task }: TaskCardProps) {
           {localTask.priority && (
             <Badge
               variant="outline"
-              className={`ml-2 flex-shrink-0 text-xs ${getStatusColor(
-                localTask.priority
-              )}`}
+              className={`ml-2 flex-shrink-0 text- ${
+                isOverdue
+                  ? "text-red-600 border-red-600"
+                  : getStatusColor(localTask.priority)
+              }`}
             >
-              {localTask.priority}
+              {isOverdue ? "overdue" : localTask.priority}
             </Badge>
           )}
         </div>
 
         {localTask.description && (
-          <p className="text-muted-foreground text-xs sm:text-sm mb-3 line-clamp-3 dark:text-gray-400 overflow-y-auto">
+          <p className="text-xs sm:text-sm mb-3 line-clamp-3 overflow-y-auto text-muted-foreground dark:text-gray-400$">
             {localTask.description}
           </p>
         )}
@@ -162,8 +199,16 @@ export function TaskCard({ task }: TaskCardProps) {
         )}
 
         <div className="flex items-center text-xs sm:text-sm text-muted-foreground mb-4 dark:text-gray-400">
-          <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-          <span>Due: {formatDate(localTask.due_date)}</span>
+          <Calendar className="h-4 w-4 mr-2 flex-shrink-0" />
+          <span
+            className={`text-xs sm:text-sm line-clamp-3 overflow-y-auto ${
+              isOverdue
+                ? "text-red-600 font-medium dark:text-red-400"
+                : "text-muted-foreground dark:text-gray-400"
+            }`}
+          >
+            Due: {formatDate(localTask.due_date)}
+          </span>
         </div>
 
         <div className="flex items-center justify-between mt-auto pt-2 border-t dark:border-gray-700">

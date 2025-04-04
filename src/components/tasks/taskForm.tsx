@@ -31,7 +31,7 @@ interface TaskFormProps {
   initialTask?: Task | null
 }
 
-export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother, initialTask }: TaskFormProps) {
+export function TaskForm({ open, onOpenChange   , onSave, onSaveAndCreateAnother, initialTask }: TaskFormProps) {
   const router = useRouter()
   const [task, setTask] = useState<Task>({
     task_id: "",
@@ -39,7 +39,7 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother, i
     description: "",
     due_date: undefined,
     priority: "low",
-    status: "pending",
+    status: "in-progress",
     matter_id: "",
     created_at: new Date(),
   })
@@ -82,7 +82,7 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother, i
           description: "",
           due_date: undefined,
           priority: "low",
-          status: "pending",
+          status: "in-progress",
           matter_id: "",
           created_at: new Date(),
         })
@@ -120,7 +120,7 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother, i
       description: task.description?.trim() || "",
       due_date: task.due_date,
       priority: task.priority || "low",
-      status: task.status || "pending",
+      status: task.status || "in-progess",
       matter_id: task.matter_id,
       created_at: task.created_at || new Date(),
     }
@@ -135,7 +135,7 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother, i
           description: "",
           due_date: undefined,
           priority: "low",
-          status: "pending",
+          status: "in-progress",
           matter_id: "",
           created_at: new Date(),
         })
@@ -147,6 +147,7 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother, i
 
         if (task.task_id) {
           router.refresh()
+          window.location.reload()
         }
       }
     } catch (error) {
@@ -245,13 +246,13 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother, i
               <Label htmlFor="taskStatus">Task status</Label>
               <Select
                 value={task.status}
-                onValueChange={(value: "pending" | "completed") => handleChange("status", value)}
+                onValueChange={(value: "in-progess" | "completed") => handleChange("status", value)}
               >
                 <SelectTrigger id="taskStatus" className="mt-1">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="in-progress">In-Progress</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
                 </SelectContent>
               </Select>
