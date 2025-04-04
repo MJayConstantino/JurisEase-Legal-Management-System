@@ -24,7 +24,6 @@ interface BillingsListHeaderProps {
 }
 
 export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChange,  matters, selectedMatterId, onMatterFilterChange }: BillingsListHeaderProps) {
-  const isMobile = useMediaQuery("(max-width: 767px)")
   const {isDropdownOpen, setIsDropdownOpen}= BillingStates()
 
   const statusOptions = [
@@ -113,6 +112,7 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
     </div>
   )
 }
+
 
 interface TabButtonProps {
   isActive: boolean

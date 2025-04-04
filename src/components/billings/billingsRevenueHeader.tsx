@@ -2,7 +2,7 @@
 "use client"
 
 import { format, startOfWeek, endOfWeek } from "date-fns"
-import type { Bill, TimeFilter } from "@/types/billing.type"
+import type { TimeFilter } from "@/types/billing.type"
 
 interface CombinedRevenueHeaderProps {
   totalRevenue: number

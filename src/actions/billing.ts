@@ -32,19 +32,19 @@ export async function getBills() {
 }
 
 
-// export async function getBillsByMatterId(matterId: string) {
-//   const { data, error } = await supabase
-//     .from("billings")
-//     .select("*")
-//     .eq("matter_id", matterId)
+export async function getBillsByMatterId(matterId: string) {
+  const { data, error } = await supabase
+    .from("billings")
+    .select("*")
+    .eq("matter_id", matterId)
 
-//   if (error) {
-//     console.error("Error fetching bills:", error)
-//     return []
-//   }
+  if (error) {
+    console.error(`Error fetching bills for matter ${matterId}:`, error)
+    return []
+  }
 
-//   return data.map(mapDbBillToAppBill) as Bill[]
-// }
+  return data.map(mapDbBillToAppBill) as Bill[]
+}
 
 export async function createBill(bill: Omit<Bill, "bill_id">) {
 
