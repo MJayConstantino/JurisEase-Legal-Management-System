@@ -1,30 +1,36 @@
-import { cn } from "@/lib/utils"
-import LoginButton from "./login-btn"
+"use client"
+
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { useState } from "react"
+
 interface HeroSectionProps {
-  title?: string
-  subtitle?: string
-  buttonText?: string
-  buttonHref?: string
-  className?: string
-  titleClassName?: string
-  subtitleClassName?: string
+  title: string
+  subtitle: string
+  buttonText: string
 }
 
-export default function HeroSection({
-  title = "Welcome to Dianson Law Office",
-  subtitle = "Expert legal services tailored to your needs",
-  buttonText = "Log In to Your Account",
-  buttonHref = "/login",
-  className,
-  titleClassName,
-  subtitleClassName,
-}: HeroSectionProps) {
+export default function HeroSection({ title, subtitle, buttonText }: HeroSectionProps) {
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false)
+
+  const handleButtonClick = () => {
+    setIsButtonDisabled(true)
+  }
+
   return (
-    <section className={cn("bg-[#e1e5f2] py-20", className)}>
-      <div className="container mx-auto px-4 text-center">
-        <h2 className={cn("text-4xl font-bold text-[#2a3563] mb-4", titleClassName)}>{title}</h2>
-        <p className={cn("text-xl text-gray-700 mb-8", subtitleClassName)}>{subtitle}</p>
-        <LoginButton href={buttonHref} text={buttonText} />
+    <section className="bg-gradient-to-b from-gray-50 to-white py-20 md:py-32">
+      <div className="container mx-auto px-10 text-center">
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#2D336B] mb-6 leading-tight">{title}</h1>
+        <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-10">{subtitle}</p>
+        <Link href="/login">
+          <Button
+            className="bg-[#2D336B] hover:bg-[#1B1E4B] hover:cursor-pointer text-white text-xl font-aileron font-bold py-3 px-8 h-auto"
+            onClick={handleButtonClick}
+            disabled={isButtonDisabled}
+          >
+            {buttonText}
+          </Button>
+        </Link>
       </div>
     </section>
   )

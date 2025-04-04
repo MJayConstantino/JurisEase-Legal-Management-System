@@ -3,13 +3,7 @@
 import type React from "react";
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  LayoutDashboard,
-  CheckSquare,
-  Calendar,
-  FileText,
-  DollarSign,
-} from "lucide-react";
+import { LayoutDashboard, CheckSquare, DollarSign } from "lucide-react";
 
 interface MatterTabsProps {
   children: React.ReactNode;
@@ -47,20 +41,6 @@ export function MatterTabs({ children }: MatterTabsProps) {
             <span className="hidden sm:inline">Tasks</span>
           </TabsTrigger>
           <TabsTrigger
-            value="calendar"
-            className="flex items-center gap-2 py-3 px-4 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary"
-          >
-            <Calendar className="h-4 w-4" />
-            <span className="hidden sm:inline">Calendar</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value="documents"
-            className="flex items-center gap-2 py-3 px-4 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary"
-          >
-            <FileText className="h-4 w-4" />
-            <span className="hidden sm:inline">Documents</span>
-          </TabsTrigger>
-          <TabsTrigger
             value="billing"
             className="flex items-center gap-2 py-3 px-4 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary"
           >
@@ -77,22 +57,6 @@ export function MatterTabs({ children }: MatterTabsProps) {
           <div className="h-[400px] flex items-center justify-center border border-dashed rounded-lg">
             <p className="text-muted-foreground">
               Tasks content will be displayed here
-            </p>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="calendar" className="p-6 m-0">
-          <div className="h-[400px] flex items-center justify-center border border-dashed rounded-lg">
-            <p className="text-muted-foreground">
-              Calendar content will be displayed here
-            </p>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="documents" className="p-6 m-0">
-          <div className="h-[400px] flex items-center justify-center border border-dashed rounded-lg">
-            <p className="text-muted-foreground">
-              Documents content will be displayed here
             </p>
           </div>
         </TabsContent>

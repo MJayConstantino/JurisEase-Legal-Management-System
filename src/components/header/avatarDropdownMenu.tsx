@@ -12,8 +12,7 @@ import {
 import { Signout } from "./signout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import UserInfo from "@/app/test/userpage/user-info";
-
+import UserInfo from "@/app/loggedIn/user-info";
 interface AvatarDropdownMenuProps {
   isLoading?: boolean;
   defaultOpen?: boolean;

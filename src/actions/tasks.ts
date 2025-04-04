@@ -18,8 +18,8 @@ export async function getTasks() {
   return data as Task[]
 }
 
-export async function getTaskById(taskId: string) {
-  const { data, error } = await supabase.from("tasks").select("*").eq("id", taskId).single()
+export async function getTaskById(task_id: string) {
+  const { data, error } = await supabase.from("tasks").select("*").eq("task_id", task_id).single()
 
   if (error) {
     console.error("Error fetching tasks:", error)
@@ -30,35 +30,33 @@ export async function getTaskById(taskId: string) {
 }
 
 export async function createTask(task: Omit<Task, "id">) {
-  const { data, error } = await supabase.from("task").insert([task]).select()
+  const { data, error } = await supabase.from("tasks").insert([task]).select() 
 
   if (error) {
-    console.error("Error creating task:", error)
-    throw new Error("Failed to create task")
+    console.error("Error creating task:", error.message, error.details)
+    return null
   }
 
   revalidatePath("/tasks")
-  return data[0] as Task
+  return data ? (data[0] as Task) : null
 }
 
 export async function updateTask(id: string, p0: { status: Status }, task: Task) {
-  const { data, error } = await supabase.from("tasks").update(task).eq("id", task.id).select()
+  const { data, error } = await supabase.from("tasks").update(task).eq("task_id", task.task_id).select()
 
   if (error) {
     console.error("Error updating task:", error)
-    throw new Error("Failed to update task")
   }
 
-  revalidatePath(`/tasks/${task.id}`)
-  return data[0] as Task
+  revalidatePath("/tasks")
+  return data ? (data[0] as Task) : null
 }
 
-export async function deleteTask(taskId: string) {
-  const { error } = await supabase.from("task").delete().eq("id", taskId)
+export async function deleteTask(task_id: string) {
+  const { error } = await supabase.from("tasks").delete().eq("task_id", task_id)
 
   if (error) {
     console.error("Error deleting task:", error)
-    throw new Error("Failed to delete task")
   }
 
   revalidatePath("/tasks")

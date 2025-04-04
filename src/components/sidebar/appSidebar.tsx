@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Calendar, FileText, FolderClosed, ListTodo } from "lucide-react";
+import { FolderClosed, ListTodo } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -8,13 +8,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-// Navigation items
 const navItems = [
-  {
-    title: "Calendar",
-    icon: Calendar,
-    href: "/calendar",
-  },
   {
     title: "Matters",
     icon: FolderClosed,
@@ -24,12 +18,7 @@ const navItems = [
     title: "Tasks",
     icon: ListTodo,
     href: "/tasks",
-  },
-  {
-    title: "Documents",
-    icon: FileText,
-    href: "/documents",
-  },
+  }
 ];
 
 export function AppSidebar() {

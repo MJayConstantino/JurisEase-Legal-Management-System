@@ -23,6 +23,8 @@ import { getUserDisplayName } from "@/utils/getUserDisplayName";
 import { getStatusColor } from "@/utils/getStatusColor";
 import { User as UserType } from "@/types/user.type";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatDateForDisplay } from "@/utils/formatDateForDisplay";
+import { formatDateForInput } from "@/utils/formatDateForInput";
 
 interface CaseDetailsCardProps {
   matter: Matter;
@@ -50,10 +52,36 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
   }, []);
 
   const handleChange = (field: string, value: any) => {
-    setEditedMatter((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setEditedMatter((prev) => {
+      // If changing status to closed, update date_closed to today as a Date object
+      if (
+        field === "status" &&
+        value === "closed" &&
+        prev.status !== "closed"
+      ) {
+        return {
+          ...prev,
+          [field]: value,
+          date_closed: new Date(),
+        };
+      }
+      // If changing status from closed to something else, clear date_closed
+      else if (
+        field === "status" &&
+        value !== "closed" &&
+        prev.status === "closed"
+      ) {
+        return {
+          ...prev,
+          [field]: value,
+          date_closed: undefined,
+        };
+      }
+      return {
+        ...prev,
+        [field]: value,
+      };
+    });
   };
 
   const handleSave = async () => {
@@ -72,174 +100,210 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
     setEditedMatter({ ...matter });
   };
 
+  if (isLoading) {
+    return (
+      <EditableCard
+        title="Case Details"
+        onSave={handleSave}
+        onCancel={handleCancel}
+      >
+        <div className="space-y-6">
+          {/* Main info skeleton */}
+          <div className="space-y-4">
+            <Skeleton className="h-6 w-3/4" />
+            <div className="flex gap-4">
+              <Skeleton className="h-6 w-1/3" />
+              <Skeleton className="h-6 w-1/3" />
+            </div>
+            <Skeleton className="h-24 w-full" />
+            <div className="flex gap-4">
+              <Skeleton className="h-6 w-1/2" />
+              <Skeleton className="h-6 w-1/2" />
+            </div>
+          </div>
+
+          {/* Client info skeleton */}
+          <div className="space-y-4">
+            <Skeleton className="h-6 w-1/2" />
+            <div className="space-y-2">
+              <div className="flex items-center">
+                <Skeleton className="h-4 w-4 mr-2" />
+                <Skeleton className="h-6 flex-1" />
+              </div>
+              <div className="flex items-center">
+                <Skeleton className="h-4 w-4 mr-2" />
+                <Skeleton className="h-6 flex-1" />
+              </div>
+              <div className="flex items-center">
+                <Skeleton className="h-4 w-4 mr-2" />
+                <Skeleton className="h-6 flex-1" />
+              </div>
+            </div>
+          </div>
+
+          {/* Assignment skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-1/2" />
+              <div className="flex items-center">
+                <Skeleton className="h-4 w-4 mr-2" />
+                <Skeleton className="h-6 flex-1" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-1/2" />
+              <div className="flex items-center">
+                <Skeleton className="h-4 w-4 mr-2" />
+                <Skeleton className="h-6 flex-1" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </EditableCard>
+    );
+  }
+
   return (
     <EditableCard
       title="Case Details"
       onSave={handleSave}
       onCancel={handleCancel}
     >
-      {(isEditing) =>
-        isLoading ? (
-          <div className="animate-pulse grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-full" />
+      {(isEditing) => (
+        <div className="space-y-6">
+          {/* Main Case Information */}
+          <div className="space-y-4">
+            <div>
+              <h4 className="text-sm font-medium text-muted-foreground mb-1">
+                Case Title
+              </h4>
+              {isEditing ? (
+                <Input
+                  value={editedMatter.name}
+                  onChange={(e) => handleChange("name", e.target.value)}
+                />
+              ) : (
+                <p className="font-medium">{editedMatter.name}</p>
+              )}
             </div>
-            <div className="space-y-4">
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-full" />
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Left Side: Basic Case Info */}
-            <div className="space-y-4">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                  Case Title
+                  Case Number
                 </h4>
                 {isEditing ? (
                   <Input
-                    value={editedMatter.name}
-                    onChange={(e) => handleChange("name", e.target.value)}
+                    value={editedMatter.case_number || ""}
+                    onChange={(e) =>
+                      handleChange("case_number", e.target.value)
+                    }
                   />
                 ) : (
-                  <p className="font-medium">{editedMatter.name}</p>
+                  <p>{editedMatter.case_number || "N/A"}</p>
                 )}
-              </div>
-
-              <div className="flex flex-col md:flex-row md:gap-6">
-                <div className="mb-4 md:mb-0">
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                    Case Number
-                  </h4>
-                  {isEditing ? (
-                    <Input
-                      value={editedMatter.case_number || ""}
-                      onChange={(e) =>
-                        handleChange("case_number", e.target.value)
-                      }
-                    />
-                  ) : (
-                    <p>{editedMatter.case_number || "N/A"}</p>
-                  )}
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                    Status
-                  </h4>
-                  {isEditing ? (
-                    <Select
-                      value={editedMatter.status}
-                      onValueChange={(value) => handleChange("status", value)}
-                    >
-                      <SelectTrigger className="w-32">
-                        <SelectValue placeholder="Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="open">Open</SelectItem>
-                        <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="closed">Closed</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <Badge
-                      className={getStatusColor(editedMatter.status)}
-                      variant="outline"
-                    >
-                      {editedMatter.status.charAt(0).toUpperCase() +
-                        editedMatter.status.slice(1)}
-                    </Badge>
-                  )}
-                </div>
               </div>
 
               <div>
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                  Case Description
+                  Status
                 </h4>
                 {isEditing ? (
-                  <Textarea
-                    value={editedMatter.description}
-                    onChange={(e) =>
-                      handleChange("description", e.target.value)
-                    }
-                    rows={4}
-                  />
+                  <Select
+                    value={editedMatter.status}
+                    onValueChange={(value) => handleChange("status", value)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="open">Open</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="closed">Closed</SelectItem>
+                    </SelectContent>
+                  </Select>
                 ) : (
-                  <p>{editedMatter.description}</p>
+                  <Badge
+                    className={getStatusColor(editedMatter.status)}
+                    variant="outline"
+                  >
+                    {editedMatter.status.charAt(0).toUpperCase() +
+                      editedMatter.status.slice(1)}
+                  </Badge>
                 )}
-              </div>
-
-              <div className="flex flex-col md:flex-row md:gap-6">
-                <div className="mb-4 md:mb-0">
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                    Open Date
-                  </h4>
-                  <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                    {isEditing ? (
-                      <Input
-                        type="date"
-                        value={editedMatter.date_opened.split("T")[0]}
-                        onChange={(e) =>
-                          handleChange("date_opened", e.target.value)
-                        }
-                        className="w-full"
-                      />
-                    ) : (
-                      <p>
-                        {new Date(
-                          editedMatter.date_opened
-                        ).toLocaleDateString()}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                    Close Date
-                  </h4>
-                  <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                    {isEditing ? (
-                      <Input
-                        type="date"
-                        value={
-                          editedMatter.date_closed
-                            ? editedMatter.date_closed.split("T")[0]
-                            : ""
-                        }
-                        onChange={(e) =>
-                          handleChange("date_closed", e.target.value || null)
-                        }
-                        className="w-full"
-                      />
-                    ) : (
-                      <p>
-                        {editedMatter.date_closed
-                          ? new Date(
-                              editedMatter.date_closed
-                            ).toLocaleDateString()
-                          : "N/A"}
-                      </p>
-                    )}
-                  </div>
-                </div>
               </div>
             </div>
 
-            {/* Right Side: Client, Contact & Assignment */}
-            <div className="space-y-4">
+            <div>
+              <h4 className="text-sm font-medium text-muted-foreground mb-1">
+                Case Description
+              </h4>
+              {isEditing ? (
+                <Textarea
+                  value={editedMatter.description}
+                  onChange={(e) => handleChange("description", e.target.value)}
+                  rows={3}
+                />
+              ) : (
+                <p className="text-sm">{editedMatter.description || "N/A"}</p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                  Client
+                  Open Date
                 </h4>
+                <div className="flex items-center">
+                  <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                  {isEditing ? (
+                    <Input
+                      type="date"
+                      value={formatDateForInput(editedMatter.date_opened)}
+                      onChange={(e) =>
+                        handleChange("date_opened", e.target.value)
+                      }
+                      className="w-full"
+                    />
+                  ) : (
+                    <p>{formatDateForDisplay(editedMatter.date_opened)}</p>
+                  )}
+                </div>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-1">
+                  Close Date
+                </h4>
+                <div className="flex items-center">
+                  <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                  {isEditing ? (
+                    <Input
+                      type="date"
+                      value={formatDateForInput(editedMatter.date_closed)}
+                      onChange={(e) =>
+                        handleChange("date_closed", e.target.value || null)
+                      }
+                      className="w-full"
+                      disabled={editedMatter.status !== "closed"}
+                    />
+                  ) : (
+                    <p>{formatDateForDisplay(editedMatter.date_closed)}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Client Information */}
+          <div>
+            <h4 className="text-sm font-semibold text-muted-foreground mb-2">
+              Client Information
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h5 className="text-sm text-muted-foreground mb-1">
+                  Client Name
+                </h5>
                 {isEditing ? (
                   <Input
                     value={editedMatter.client}
@@ -250,153 +314,129 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
                 )}
               </div>
 
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                  Contact Information
-                </h4>
-                <div className="space-y-2">
-                  <div className="flex items-center">
-                    <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
-                    {isEditing ? (
-                      <Input
-                        value={editedMatter.client_phone || ""}
-                        onChange={(e) =>
-                          handleChange("client_phone", e.target.value)
-                        }
-                      />
-                    ) : (
-                      <p>{editedMatter.client_phone || "N/A"}</p>
-                    )}
-                  </div>
-                  <div className="flex items-center">
-                    <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
-                    {isEditing ? (
-                      <Input
-                        value={editedMatter.client_email || ""}
-                        onChange={(e) =>
-                          handleChange("client_email", e.target.value)
-                        }
-                      />
-                    ) : (
-                      <p>{editedMatter.client_email || "N/A"}</p>
-                    )}
-                  </div>
-                  <div className="flex items-start">
-                    <MapPin className="h-4 w-4 mr-2 mt-1 text-muted-foreground" />
-                    {isEditing ? (
-                      <Input
-                        value={editedMatter.client_address || ""}
-                        onChange={(e) =>
-                          handleChange("client_address", e.target.value)
-                        }
-                      />
-                    ) : (
-                      <p>{editedMatter.client_address || "N/A"}</p>
-                    )}
-                  </div>
+              <div className="space-y-2">
+                <h5 className="text-sm text-muted-foreground mb-1">
+                  Client Contact Information
+                </h5>
+                <div className="flex items-center">
+                  <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
+                  {isEditing ? (
+                    <Input
+                      value={editedMatter.client_phone || ""}
+                      onChange={(e) =>
+                        handleChange("client_phone", e.target.value)
+                      }
+                      placeholder="Phone"
+                    />
+                  ) : (
+                    <p>{editedMatter.client_phone || "N/A"}</p>
+                  )}
                 </div>
-              </div>
-
-              {/* Assignment Section */}
-              <div className="flex flex-col md:flex-row md:gap-6">
-                <div className="mb-4 md:mb-0">
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                    Assigned Attorney
-                  </h4>
-                  <div className="flex items-center">
-                    <Briefcase className="h-4 w-4 mr-2 text-muted-foreground" />
-                    {isEditing ? (
-                      <Select
-                        value={editedMatter.assigned_attorney || ""}
-                        onValueChange={(value) =>
-                          handleChange("assigned_attorney", value)
-                        }
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select attorney..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Users</SelectLabel>
-                            {users.length === 0 ? (
-                              <SelectItem value="loading" disabled>
-                                Loading users...
-                              </SelectItem>
-                            ) : (
-                              users.map((user) => (
-                                <SelectItem
-                                  key={user.user_id}
-                                  value={user.user_id}
-                                >
-                                  {user.user_name || user.user_email}
-                                </SelectItem>
-                              ))
-                            )}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      <p>
-                        {getUserDisplayName(
-                          editedMatter.assigned_attorney || "",
-                          users
-                        )}
-                      </p>
-                    )}
-                  </div>
+                <div className="flex items-center">
+                  <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
+                  {isEditing ? (
+                    <Input
+                      value={editedMatter.client_email || ""}
+                      onChange={(e) =>
+                        handleChange("client_email", e.target.value)
+                      }
+                      placeholder="Email"
+                    />
+                  ) : (
+                    <p>{editedMatter.client_email || "N/A"}</p>
+                  )}
                 </div>
-
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">
-                    Assigned Staff
-                  </h4>
-                  <div className="flex items-center">
-                    <User className="h-4 w-4 mr-2 text-muted-foreground" />
-                    {isEditing ? (
-                      <Select
-                        value={editedMatter.assigned_staff || ""}
-                        onValueChange={(value) =>
-                          handleChange("assigned_staff", value)
-                        }
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select staff member..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Users</SelectLabel>
-                            {users.length === 0 ? (
-                              <SelectItem value="loading" disabled>
-                                Loading users...
-                              </SelectItem>
-                            ) : (
-                              users.map((user) => (
-                                <SelectItem
-                                  key={user.user_id}
-                                  value={user.user_id}
-                                >
-                                  {user.user_name || user.user_email}
-                                </SelectItem>
-                              ))
-                            )}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      <p>
-                        {getUserDisplayName(
-                          editedMatter.assigned_staff || "",
-                          users
-                        )}
-                      </p>
-                    )}
-                  </div>
+                <div className="flex items-center">
+                  <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+                  {isEditing ? (
+                    <Input
+                      value={editedMatter.client_address || ""}
+                      onChange={(e) =>
+                        handleChange("client_address", e.target.value)
+                      }
+                      placeholder="Address"
+                      className="w-full"
+                    />
+                  ) : (
+                    <p>{editedMatter.client_address || "N/A"}</p>
+                  )}
                 </div>
               </div>
             </div>
           </div>
-        )
-      }
+
+          {/* Assignment Section - All in one row */}
+          <div>
+            <h4 className="text-sm font-semibold text-muted-foreground mb-2">
+              Case Assignment
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+  <h5 className="text-sm text-muted-foreground mb-1">Assigned Attorney</h5>
+  <div className="flex items-center">
+    <Briefcase className="h-4 w-4 mr-2 text-muted-foreground" />
+    {isEditing ? (
+      <Select
+        value={editedMatter.assigned_attorney || ""}
+        onValueChange={(value) => handleChange("assigned_attorney", value)}
+      >
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Select attorney..." />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Users</SelectLabel>
+            {users.map((user) => (
+              <SelectItem key={user.user_id} value={user.user_id}>
+                {user.user_name || user.user_email}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    ) : (
+      <p>
+        {getUserDisplayName(editedMatter.assigned_attorney || "", users) ||
+          "N/A"}
+      </p>
+    )}
+  </div>
+</div>
+
+              <div>
+  <h5 className="text-sm text-muted-foreground mb-1">Assigned Staff</h5>
+  <div className="flex items-center">
+    <User className="h-4 w-4 mr-2 text-muted-foreground" />
+    {isEditing ? (
+      <Select
+        value={editedMatter.assigned_staff || ""}
+        onValueChange={(value) => handleChange("assigned_staff", value)}
+      >
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Select staff member..." />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Users</SelectLabel>
+            {users.map((user) => (
+              <SelectItem key={user.user_id} value={user.user_id}>
+                {user.user_name || user.user_email}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    ) : (
+      <p>
+        {getUserDisplayName(editedMatter.assigned_staff || "", users) || "N/A"}
+      </p>
+    )}
+  </div>
+</div>
+            </div>
+          </div>
+        </div>
+      )}
     </EditableCard>
   );
 }
