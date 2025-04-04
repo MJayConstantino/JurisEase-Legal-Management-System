@@ -3,6 +3,7 @@ import { Header, HeaderProps } from '../../../src/components/auth/Header'
 import { Footer, FooterProps } from '../../../src/components/auth/Footer'
 
 import user from '@testing-library/user-event'
+import React from 'react'
 
 const headerMockProps: HeaderProps = {
   title: 'Mock Title',
