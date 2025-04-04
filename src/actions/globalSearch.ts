@@ -13,6 +13,13 @@ export async function search(
   if (!query.trim()) return { results: [] }
 
   const searchResults: SearchResult[] = []
+  //get users
+  const { data: users, error: userError } = await supabase
+    .from('users')
+    .select('user_id')
+    .ilike('user_name', `%${query}%`)
+  console.log(users)
+  if (userError) throw new Error(userError.message)
 
   try {
     if (contentTypes.includes('matters')) {
@@ -21,43 +28,43 @@ export async function search(
         .from('matters')
         .select('*,assigned_attorney, users(user_name,user_id)')
       // used bulider methods instead
-      if (attributes.length == 0) {
-        mattersQuery = mattersQuery.ilike('name', `%${query}%`)
-      } else {
-        attributes.forEach((attrb) => {
-          switch (attrb) {
-            case 'clientName':
-              mattersQuery = mattersQuery.ilike('client', `%${query}%`)
-              break
-            case 'attorney':
-              console.log('attorney caught')
-              break
-            case 'caseName':
-              mattersQuery = mattersQuery.ilike('name', `%${query}%`)
-              break
-            case 'opposingCouncil':
-              mattersQuery = mattersQuery.ilike(
-                'opposing_council->>name',
-                `%${query}%`
-              )
-              break
-            case 'court':
-              mattersQuery = mattersQuery.ilike('court->>name', `%${query}%`)
-              break
-            default:
-              console.error(attrb)
-          }
-        })
+      let Mfilter: string[] = []
+      mattersQuery = mattersQuery.or(
+        `name.ilike.%${query}%, client.ilike.%${query}%, court->>name.ilike.%${query}%, opposing_council->>name.ilike.%${query}%`
+      )
+
+      attributes.forEach((attrb) => {
+        switch (attrb) {
+          case 'clientName':
+            Mfilter.push(`client.ilike.%${query}%`)
+            break
+          case 'attorney':
+            console.log('attorney caught')
+            break
+          case 'caseName':
+            Mfilter.push(`name.ilike.%${query}%`)
+            break
+          case 'opposingCouncil':
+            Mfilter.push(`opposing_council->>name.ilike.%${query}%`)
+            break
+          case 'court':
+            Mfilter.push(`court->>name.ilike.%${query}%`)
+            break
+          default:
+            console.error(attrb)
+        }
+      })
+      if (attributes.length > 1) {
+        mattersQuery = mattersQuery.or(Mfilter.join(', '))
+      }
+      // fk handling
+      if (attributes.includes('attorney') && users.length > 0) {
+        const userIds = users.map((user) => user.user_id)
+        mattersQuery = mattersQuery.in('assigned_attorney', userIds)
       }
 
       let { data: matters, error } = await mattersQuery.limit(10)
-      if (attributes.includes('attorney')) {
-        matters = matters!.filter(
-          (matter) =>
-            matter.users &&
-            matter.users.user_name.toLowerCase().includes(query.toLowerCase())
-        )
-      }
+
       console.log('🔍 Matters Query:', mattersQuery.toString())
       console.log('✅ Matters Data:', matters)
       console.log('❌ Matters Error:', error)
