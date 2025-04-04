@@ -31,6 +31,21 @@ export async function getBills() {
   return data.map(mapDbBillToAppBill) as Bill[]
 }
 
+
+// export async function getBillsByMatterId(matterId: string) {
+//   const { data, error } = await supabase
+//     .from("billings")
+//     .select("*")
+//     .eq("matter_id", matterId)
+
+//   if (error) {
+//     console.error("Error fetching bills:", error)
+//     return []
+//   }
+
+//   return data.map(mapDbBillToAppBill) as Bill[]
+// }
+
 export async function createBill(bill: Omit<Bill, "bill_id">) {
 
   const { data, error } = await supabase

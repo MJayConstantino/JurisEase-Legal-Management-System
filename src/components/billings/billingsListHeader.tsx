@@ -12,6 +12,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { Matter } from "@/types/matter.type"
 import { BillingStates } from "./billingsStates"
+import { Label } from "@radix-ui/react-label"
 
 interface BillingsListHeaderProps {
   onNewBill: () => void
@@ -89,7 +90,10 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
           </DropdownMenu>
         </div>
       </div>
-      <div className="w-full md:w-auto">
+      <div className="w-full md:w-auto flex items-center space-x-4">
+        <Label htmlFor="matter" className="text-base md:text-lg">
+          Filter by Matter:
+        </Label>
         <Select value={selectedMatterId} onValueChange={(value) => onMatterFilterChange(value)}>
           <SelectTrigger className="w-full md:w-[220px] dark:bg-gray-800 dark:border-gray-700 text-sm md:text-base">
             <SelectValue placeholder="Filter by matter" />
