@@ -69,6 +69,7 @@ export type Billing = {
 export type SearchResultType = 'Matter' | 'Task' | 'Bill'
 
 export interface SearchResult {
+  matterid?: string
   id: string
   type: SearchResultType
   title: string

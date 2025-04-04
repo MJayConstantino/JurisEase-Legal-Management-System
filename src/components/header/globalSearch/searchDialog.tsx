@@ -137,9 +137,9 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
     if (result.type === 'Matter') {
       router.push(`/matters/${result.id}`)
     } else if (result.type === 'Task') {
-      router.push(`/tasks/${result.id}`)
+      router.push(`/matters/${result.matterid}`)
     } else if (result.type === 'Bill') {
-      router.push(`/bills/${result.id}`)
+      router.push(`/matters/${result.matterid}`)
     }
 
     onOpenChange(false) // Close dialog after navigation

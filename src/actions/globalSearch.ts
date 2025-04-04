@@ -65,6 +65,7 @@ export async function search(
       searchResults.push(
         ...(tasks ?? []).map((task) => ({
           id: task.task_id,
+          matterid: task.matter_id,
           type: 'Task' as const,
           title: task.name,
           subtitle: task.matters
@@ -101,6 +102,7 @@ export async function search(
       searchResults.push(
         ...(billings ?? []).map((billing) => ({
           id: billing.bill_id,
+          matterid: billing.matter_id,
           type: 'Bill' as const,
           status: billing.status,
           title: billing.name || `Invoice #${billing.bill_id}`,

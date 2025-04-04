@@ -39,7 +39,7 @@ export type Database = {
           amount: string | null
           bill_id: string //this is a uuid
           created_at: string
-          matter_id: string | null // this is an FK UUID
+          matter_id: string | null // this is an FK UUID of the Matters tables
           name: string | null
           remarks: string | null
           status: string | null
