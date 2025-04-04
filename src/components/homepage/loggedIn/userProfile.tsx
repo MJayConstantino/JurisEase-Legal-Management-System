@@ -1,4 +1,5 @@
 import { User, Loader2 } from "lucide-react";
+import Image from "next/image";
 
 interface UserData {
   full_name: string;
@@ -23,10 +24,12 @@ export default function UserProfile({
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="relative">
               {userData && userData.avatar_url ? (
-                <img
+                <Image
+                  height={64}
+                  width={64}
                   src={userData.avatar_url}
                   alt={userData.full_name}
-                  className="w-16 h-16 rounded-full object-cover border-2 border-[#2D336B] dark:border-[#8A91D9] transition-colors duration-200"
+                  className="rounded-full object-cover border-2 border-[#2D336B] dark:border-[#8A91D9] transition-colors duration-200"
                 />
               ) : (
                 <div className="w-16 h-16 rounded-full bg-[#2D336B]/10 dark:bg-[#8A91D9]/20 flex items-center justify-center transition-colors duration-200">
@@ -36,7 +39,7 @@ export default function UserProfile({
             </div>
             <div className="text-center sm:text-left mt-2 sm:mt-0">
               <p className="text-gray-500 dark:text-gray-400 text-sm transition-colors duration-200">
-                We're glad to see you again
+                We&apos;re glad to see you again
               </p>
               <div className="text-xl sm:text-2xl font-bold text-[#2D336B] dark:text-[#8A91D9] transition-colors duration-200">
                 {loadingUser ? "Loading..." : userData?.full_name || "User"}
