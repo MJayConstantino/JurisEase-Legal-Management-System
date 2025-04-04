@@ -1,4 +1,3 @@
-//Main page for the billing interface layout and functions
 
 "use client"
 
@@ -19,10 +18,9 @@ export function BillingInterface() {
   const {
     bills, setBills, filteredBills, setFilteredBills, currentDateTime, setCurrentDateTime, isNewBillDialogOpen, 
     setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, setTimeFilter, sortField, setSortField, sortDirection, setSortDirection,
-    statusFilter, setStatusFilter, matters, setMatters
+    statusFilter, setStatusFilter, matters, setMatters, selectedMatterId, setSelectedMatterId
   } = BillingStates()
 
-  // Load bills from database
   useEffect(() => {
     async function loadData() {
         setIsLoading(true)
@@ -43,7 +41,6 @@ export function BillingInterface() {
 
   }, [])
 
-  // Update current date and time every minute
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentDateTime(new Date())
@@ -51,11 +48,9 @@ export function BillingInterface() {
     return () => clearInterval(interval)
   }, [])
 
-  // Filter bills based on time filter and status filter
   useEffect(() => {
     let result = [...bills]
 
-    // Apply time filter
     if (timeFilter !== "all") {
       const today = new Date()
 
@@ -83,7 +78,6 @@ export function BillingInterface() {
       }
     }
 
-    // Apply status filter
     if (statusFilter !== "all") {
       const statusMap: Record<StatusFilter, string> = {
         all: "",
@@ -99,15 +93,17 @@ export function BillingInterface() {
       }
     }
 
-    // Apply sorting if a sort field is selected
+    if (selectedMatterId) {
+      result = result.filter((bill) => bill.matter_id === selectedMatterId)
+    }
+
     if (sortField) {
       result = sortBills(result, sortField, sortDirection)
     }
 
     setFilteredBills(result)
-  }, [bills, timeFilter, statusFilter, sortField, sortDirection])
+  }, [bills, timeFilter, statusFilter, sortField, sortDirection, selectedMatterId])
 
-  // Sort bills based on field and direction
   const sortBills = (billsToSort: Bill[], field: SortField, direction: SortDirection) => {
     return [...billsToSort].sort((a, b) => {
       let comparison = 0
@@ -139,24 +135,28 @@ export function BillingInterface() {
     })
   }
 
-  // Handle sort change
+
   const handleSortChange = (field: SortField) => {
     if (sortField === field) {
-      // Toggle direction if same field
+
       setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"))
     } else {
-      // Set new field and reset direction to asc
+
       setSortField(field)
       setSortDirection("asc")
     }
   }
 
-  // Calculate total revenue for all filtered bills
+  const handleMatterFilterChange = (matterId: string) => {
+    setSelectedMatterId(matterId === "all" ? null : matterId)
+  }
+
+
   const totalRevenue = useMemo(() => {
-    return filteredBills.reduce((sum, bill) => sum + bill.amount, 0)
+    return filteredBills.reduce((sum, bill) => sum +  Number(bill.amount), 0)
   }, [filteredBills])
 
-  // Calculate revenue for today
+
   const todayRevenue = useMemo(() => {
     const today = new Date()
     return bills
@@ -164,10 +164,10 @@ export function BillingInterface() {
         const billDate = new Date(bill.created_at)
         return format(billDate, "yyyy-MM-dd") === format(today, "yyyy-MM-dd")
       })
-      .reduce((sum, bill) => sum + bill.amount, 0)
+      .reduce((sum, bill) => sum +  Number(bill.amount), 0)
   }, [bills])
 
-  // Calculate revenue for this week
+
   const weekRevenue = useMemo(() => {
     const today = new Date()
     const weekStart = startOfWeek(today)
@@ -178,10 +178,10 @@ export function BillingInterface() {
         const billDate = new Date(bill.created_at)
         return isWithinInterval(billDate, { start: weekStart, end: weekEnd })
       })
-      .reduce((sum, bill) => sum + bill.amount, 0)
+      .reduce((sum, bill) => sum +  Number(bill.amount), 0)
   }, [bills])
 
-  // Calculate revenue for this month
+
   const monthRevenue = useMemo(() => {
     const today = new Date()
     const monthStart = startOfMonth(today)
@@ -192,10 +192,10 @@ export function BillingInterface() {
         const billDate = new Date(bill.created_at)
         return isWithinInterval(billDate, { start: monthStart, end: monthEnd })
       })
-      .reduce((sum, bill) => sum + bill.amount, 0)
+      .reduce((sum, bill) => sum +  Number(bill.amount), 0)
   }, [bills])
 
-  // Add a new bill
+
   const addBill = async (bill: Omit<Bill, "bill_id">) => {
     setIsLoading(true)
     try {
@@ -211,7 +211,6 @@ export function BillingInterface() {
 
   }
 
-  // Update an existing bill
   const updateBill = async (updatedBill: Bill) => {
     setIsLoading(true)
     try {
@@ -227,7 +226,6 @@ export function BillingInterface() {
 
   }
 
-  // Delete a bill
   const deleteBill = async (id: string) => {
     setIsLoading(true)
     try {
@@ -245,7 +243,7 @@ export function BillingInterface() {
   return (
     <div className="py-4 md:py-8 px-0">
       <div className="max-w-auto mx-auto">
-        {/* Combined Revenue Headers in a single row */}
+  
         <BillingsRevenueHeader
           totalRevenue={totalRevenue}
           todayRevenue={todayRevenue}
@@ -256,16 +254,18 @@ export function BillingInterface() {
           onFilterChange={setTimeFilter}
         />
 
-        {/* Bills List with border and background */}
+  
         <div className="border dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 mt-4">
-          {/* Bills List Header with New Bill Button and Status Tabs */}
+  
           <BillingsListHeader
             onNewBill={() => setIsNewBillDialogOpen(true)}
             statusFilter={statusFilter}
             onStatusFilterChange={setStatusFilter}
+            matters={matters}
+            selectedMatterId={selectedMatterId || "all"}
+            onMatterFilterChange={handleMatterFilterChange}
           />
 
-          {/* Bills List with Sorting */}
           <div className="max-h-[600px] overflow-y-auto">
             <BillingsList
               bills={filteredBills}
@@ -288,5 +288,4 @@ export function BillingInterface() {
       </div>
     </div>
   )
-}
-
+};

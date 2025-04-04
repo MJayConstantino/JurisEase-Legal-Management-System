@@ -1,4 +1,4 @@
-// Edit Bill dialog box
+
 
 "use client"
 
@@ -13,7 +13,6 @@ import { Calendar } from "@/components/ui/calendar"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
@@ -38,7 +37,6 @@ import { Matter } from "@/types/matter.type"
   
     const isDesktop = useMediaQuery("(min-width: 768px)")
   
-    // Update form when bill changes
     useEffect(() => {
       if (open) {
         setMatterId(bill.matter_id)
@@ -57,7 +55,7 @@ import { Matter } from "@/types/matter.type"
         ...bill,
         matter_id,
         name,
-        amount: Number.parseFloat(amount),
+        amount: Number(amount),
         created_at: created_at.toISOString(),
         status,
         remarks,
@@ -136,7 +134,6 @@ import { Matter } from "@/types/matter.type"
                 </div>
               </div>
   
-              {/* Right Column */}
               <div className="flex flex-col">
                 <div className="grid gap-2 mb-4 space-y-2">
                   <Label htmlFor="status">Status</Label>

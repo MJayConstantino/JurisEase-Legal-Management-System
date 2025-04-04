@@ -1,4 +1,3 @@
-// This is the header for the new bill button and sorting tabs ontop the bills list.
 
 "use client"
 
@@ -10,15 +9,20 @@ import type { StatusFilter } from "@/types/billing.type"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { ChevronDown } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import type { Matter } from "@/types/matter.type"
 import { BillingStates } from "./billingsStates"
 
 interface BillingsListHeaderProps {
   onNewBill: () => void
   statusFilter: StatusFilter
   onStatusFilterChange: (filter: StatusFilter) => void
+  matters: Matter[]
+  selectedMatterId: string
+  onMatterFilterChange: (matterId: string) => void
 }
 
-export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChange }: BillingsListHeaderProps) {
+export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChange,  matters, selectedMatterId, onMatterFilterChange }: BillingsListHeaderProps) {
   const isMobile = useMediaQuery("(max-width: 767px)")
   const {isDropdownOpen, setIsDropdownOpen}= BillingStates()
 
@@ -35,8 +39,8 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
   }
 
   return (
-    <div className="flex justify-between items-center p-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900 w-full">
-      <div className="flex items-center w-[98%]">
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900 w-full">
+      <div className="flex items-center w-full md:w-auto mb-3 md:mb-0">
         <Button
           onClick={onNewBill}
           className="bg-indigo-900 hover:bg-indigo-800 dark:bg-indigo-700 dark:hover:bg-indigo-600 text-white text-sm md:text-base py-2 px-3 md:py-4 md:px-4 mr-3 md:mr-6 whitespace-nowrap"
@@ -45,8 +49,7 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
           <span className="hidden md:inline">New Bill</span>
         </Button>
 
-        {/* Desktop Tabs */}
-        <div className="hidden md:flex space-x-2 overflow-x-auto flex-grow">
+        <div className="hidden md:flex space-x-2 overflow-x-auto">
           {statusOptions.map((option) => (
             <TabButton
               key={option.value}
@@ -58,7 +61,6 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
           ))}
         </div>
 
-        {/* Mobile Dropdown */}
         <div className="md:hidden flex-grow">
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
             <DropdownMenuTrigger asChild>
@@ -86,6 +88,23 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+      </div>
+      <div className="w-full md:w-auto">
+        <Select value={selectedMatterId} onValueChange={(value) => onMatterFilterChange(value)}>
+          <SelectTrigger className="w-full md:w-[220px] dark:bg-gray-800 dark:border-gray-700 text-sm md:text-base">
+            <SelectValue placeholder="Filter by matter" />
+          </SelectTrigger>
+          <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
+            <SelectItem value="all" className="text-sm md:text-base">
+              All
+            </SelectItem>
+            {matters.map((matter) => (
+              <SelectItem key={matter.matter_id} value={matter.matter_id} className="text-sm md:text-base">
+                {matter.name} [{matter.case_number}]
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   )

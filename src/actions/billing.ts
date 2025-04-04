@@ -18,26 +18,6 @@ function mapDbBillToAppBill(dbBill: any): Bill {
 
 }
 
-// Helper function to convert from app format to DB format
-function mapAppBillToDbBill(bill: Omit<Bill, "bill_id"> | Bill): any {
-  const dbBill: any = {
-    name: bill.name,
-    amount: bill.amount,
-    created_at: bill.created_at,
-    status: bill.status,
-    remarks: bill.remarks,
-    matter_id: bill.matter_id,
-  }
-
-  // Only add ID if it exists (for updates)
-  if ("bill_id" in bill) {
-    dbBill.bill_id = bill.bill_id
-  }
-
-  return dbBill
-}
-
-// Bills table operations
 export async function getBills() {
   const { data, error } = await supabase
     .from("billings")
@@ -48,7 +28,6 @@ export async function getBills() {
     return []
   }
 
-  // Map database column names to our app's property names
   return data.map(mapDbBillToAppBill) as Bill[]
 }
 

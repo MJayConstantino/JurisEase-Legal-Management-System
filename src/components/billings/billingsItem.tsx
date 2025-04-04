@@ -1,4 +1,3 @@
-// Contains layout for the Bill item
 
 "use client"
 

@@ -1,4 +1,3 @@
-// Compiled here are all the useState functions used in billings 
 
 import { useState } from "react"
 import { Bill, BillStatus, SortDirection, SortField, StatusFilter, TimeFilter } from  "@/types/billing.type"
@@ -33,6 +32,7 @@ export function BillingStates(){
     const [sortField, setSortField] = useState<SortField | null>(null)
     const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
     const [matters, setMatters] = useState<Matter[]>([])
+    const [selectedMatterId, setSelectedMatterId] = useState<string | null>(null)
 
     // Spacing here is based on above orientation for easy identification
     return{
@@ -45,6 +45,6 @@ export function BillingStates(){
 
         bills, setBills, filteredBills, setFilteredBills, currentDateTime, setCurrentDateTime, isNewBillDialogOpen, 
         setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, setTimeFilter, sortField, setSortField, sortDirection, setSortDirection,
-        statusFilter, setStatusFilter, matters, setMatters
+        statusFilter, setStatusFilter, matters, setMatters, selectedMatterId, setSelectedMatterId
     }
 }

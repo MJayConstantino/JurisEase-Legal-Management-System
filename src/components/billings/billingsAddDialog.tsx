@@ -1,4 +1,3 @@
-// Add Bill dialog box
 
 "use client"
 
@@ -12,15 +11,12 @@ import { Calendar } from "@/components/ui/calendar"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import { BillingStates } from "./billingsStates"
 import { Textarea } from "../ui/textarea"
 import { Matter } from "@/types/matter.type"
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from "@radix-ui/react-dropdown-menu"
-
 
 interface BillingsAddDialogProps {
   open: boolean
@@ -43,7 +39,7 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, matters }: Billi
     const newBill: Omit<Bill, "bill_id"> = {
       matter_id,
       name,
-      amount: Number.parseFloat(amount),
+      amount: Number(amount),
       created_at: created_at.toISOString(),
       status,
       remarks,
@@ -74,7 +70,7 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, matters }: Billi
 
         <div className="grid gap-4 py-4">
           <div className={`grid ${isDesktop ? "grid-cols-2" : "grid-cols-1"} gap-4`}>
-            {/* Left Column */}
+
             <div className="space-y-4">
             <div className="grid gap-2">
                 <Label htmlFor="matter" className="text-base md:text-lg">
@@ -151,7 +147,7 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, matters }: Billi
               </div>
             </div>
 
-            {/* Right Column */}
+       
             <div className="flex flex-col">
               <div className="grid gap-2 mb-4 space-y-2">
                   <Label htmlFor="status">Status</Label>

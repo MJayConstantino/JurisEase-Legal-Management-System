@@ -1,4 +1,3 @@
-// Edit and Delete button props for each bill
 
 "use client"
 
