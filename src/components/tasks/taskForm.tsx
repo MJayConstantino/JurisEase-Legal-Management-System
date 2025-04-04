@@ -31,7 +31,7 @@ interface TaskFormProps {
   initialTask?: Task | null
 }
 
-export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother, initialTask }: TaskFormProps) {
+export function TaskForm({ open, onOpenChange   , onSave, onSaveAndCreateAnother, initialTask }: TaskFormProps) {
   const router = useRouter()
   const [task, setTask] = useState<Task>({
     task_id: "",
@@ -147,6 +147,7 @@ export function TaskForm({ open, onOpenChange, onSave, onSaveAndCreateAnother, i
 
         if (task.task_id) {
           router.refresh()
+          window.location.reload()
         }
       }
     } catch (error) {
