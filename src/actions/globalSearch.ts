@@ -13,73 +13,40 @@ export async function search(
   if (!query.trim()) return { results: [] }
 
   const searchResults: SearchResult[] = []
-  //get users
-  const { data: users, error: userError } = await supabase
-    .from('users')
-    .select('user_id')
-    .ilike('user_name', `%${query}%`)
-  console.log(users)
-  if (userError) throw new Error(userError.message)
 
+  //problem with the join caused me to rely on raw SQL lol
   try {
     if (contentTypes.includes('matters')) {
       console.log(attributes)
-      let mattersQuery = supabase
-        .from('matters')
-        .select('*,assigned_attorney, users(user_name,user_id)')
-      // used bulider methods instead
-      let Mfilter: string[] = []
-      mattersQuery = mattersQuery.or(
-        `name.ilike.%${query}%, client.ilike.%${query}%, court->>name.ilike.%${query}%, opposing_council->>name.ilike.%${query}%`
-      )
-
-      attributes.forEach((attrb) => {
-        switch (attrb) {
-          case 'clientName':
-            Mfilter.push(`client.ilike.%${query}%`)
-            break
-          case 'attorney':
-            console.log('attorney caught')
-            break
-          case 'caseName':
-            Mfilter.push(`name.ilike.%${query}%`)
-            break
-          case 'opposingCouncil':
-            Mfilter.push(`opposing_council->>name.ilike.%${query}%`)
-            break
-          case 'court':
-            Mfilter.push(`court->>name.ilike.%${query}%`)
-            break
-          default:
-            console.error(attrb)
-        }
-      })
-      if (attributes.length > 1) {
-        mattersQuery = mattersQuery.or(Mfilter.join(', '))
-      }
-      // fk handling
-      if (attributes.includes('attorney') && users.length > 0) {
-        const userIds = users.map((user) => user.user_id)
-        mattersQuery = mattersQuery.in('assigned_attorney', userIds)
-      }
-
-      let { data: matters, error } = await mattersQuery.limit(10)
-
-      console.log('🔍 Matters Query:', mattersQuery.toString())
-      console.log('✅ Matters Data:', matters)
-      console.log('❌ Matters Error:', error)
+      let { data: matters, error } = await supabase
+        .rpc('search_matters', {
+          search_term: query,
+          include_attorney: attributes.includes('attorney'),
+          include_client: attributes.includes('clientName'),
+          include_case: attributes.includes('caseName'),
+          include_opposing: attributes.includes('opposingCouncil'),
+          include_court: attributes.includes('court'),
+        })
+        .limit(10)
 
       if (error) throw new Error(error.message)
 
       searchResults.push(
-        ...(matters ?? []).map((matter) => ({
-          id: matter.matter_id,
-          type: 'Matter' as const,
-          title: matter.name,
-          subtitle: `Client: ${matter.client}`,
-          status: matter.status as MatterStatus,
-          route: `/matters/${matter.matter_id}`,
-        }))
+        ...(matters ?? []).map(
+          (matter: {
+            matter_id: any
+            name: any
+            client: any
+            status: string
+          }) => ({
+            id: matter.matter_id,
+            type: 'Matter' as const,
+            title: matter.name,
+            subtitle: `Client: ${matter.client}`,
+            status: matter.status as MatterStatus,
+            route: `/matters/${matter.matter_id}`,
+          })
+        )
       )
     }
 
@@ -92,6 +59,7 @@ export async function search(
       tasksQuery = tasksQuery.or(
         `name.ilike.%${query}%, description.ilike.%${query}%`
       )
+      let taskFilters = []
 
       const { data: tasks, error } = await tasksQuery.limit(10)
 
