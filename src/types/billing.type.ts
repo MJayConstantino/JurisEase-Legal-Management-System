@@ -12,7 +12,7 @@ export interface Bill {
 
 export type SortDirection = "asc" | "desc"
 
-export type SortField = "matterName" | "name" | "amount" | "created_at" | "status" | "remarks" // Updated from clientName to matterName
+export type SortField = "matterName" | "name" | "amount" | "created_at" | "status" | "remarks"
 
 export type TimeFilter = "all" | "today" | "week" | "month"
 

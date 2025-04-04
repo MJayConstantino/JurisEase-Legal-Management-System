@@ -1,5 +1,3 @@
-
-
 "use client"
 
 import { useEffect } from "react"
@@ -29,7 +27,7 @@ import { Matter } from "@/types/matter.type"
     onSave: (bill: Bill) => void
   }
   
-  export function BillingsEditDialog({ bill, matters, open, onOpenChange, onSave }: BillingsEditDialogProps) {
+  export function BillingsEditDialog({ bill, open, onOpenChange, onSave }: BillingsEditDialogProps) {
     const {
       name, setName, amount, setAmount, created_at, setCreated_at, 
       status, setStatus, remarks, setRemarks, matter_id, setMatterId

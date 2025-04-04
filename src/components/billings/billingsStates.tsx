@@ -33,8 +33,8 @@ export function BillingStates(){
     const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
     const [matters, setMatters] = useState<Matter[]>([])
     const [selectedMatterId, setSelectedMatterId] = useState<string | null>(null)
+    const [currentMatter, setCurrentMatter] = useState<Matter | null>(null)
 
-    // Spacing here is based on above orientation for easy identification
     return{
         name, setName, remarks, setRemarks, amount, setAmount, created_at, setCreated_at, 
         status, setStatus, matter_id, setMatterId,
@@ -45,6 +45,6 @@ export function BillingStates(){
 
         bills, setBills, filteredBills, setFilteredBills, currentDateTime, setCurrentDateTime, isNewBillDialogOpen, 
         setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, setTimeFilter, sortField, setSortField, sortDirection, setSortDirection,
-        statusFilter, setStatusFilter, matters, setMatters, selectedMatterId, setSelectedMatterId
+        statusFilter, setStatusFilter, matters, setMatters, selectedMatterId, setSelectedMatterId, currentMatter, setCurrentMatter
     }
 }

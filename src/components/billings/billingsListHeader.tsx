@@ -1,4 +1,3 @@
-
 "use client"
 
 import type React from "react"
@@ -6,7 +5,6 @@ import type React from "react"
 import { Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { StatusFilter } from "@/types/billing.type"
-import { useMediaQuery } from "@/hooks/use-media-query"
 import { ChevronDown } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"

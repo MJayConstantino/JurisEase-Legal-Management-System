@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useEffect, useMemo } from "react"
@@ -275,7 +274,8 @@ export function BillingInterface() {
               isLoading={isLoading}
               sortField={sortField}
               sortDirection={sortDirection}
-              onSortChange={handleSortChange}           />
+              onSortChange={handleSortChange}          
+            />
           </div>
         </div>
 
