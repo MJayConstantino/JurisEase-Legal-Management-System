@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import type { Task } from "@/types/task.type";
+import type { Priority, Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { format, isBefore } from "date-fns";
 import { Calendar, Check, Pencil, Trash2 } from "lucide-react";
@@ -29,21 +29,30 @@ export function TaskCard({ task }: TaskCardProps) {
   const [isOverdue, setIsOverdue] = useState(false);
 
   const checkIsOverdue = (dueDate?: Date, status?: string) => {
-      if (!dueDate || status === "completed") return false;
-      return isBefore(new Date(dueDate), new Date());
-    };
-  
-    useEffect(() => {
-      const overdue = checkIsOverdue(localTask.due_date, localTask.status);
-      setIsOverdue(overdue);
-  
-      if (overdue && localTask.status !== "overdue") {
-        setLocalTask((prevTask) => ({
-          ...prevTask,
-          status: "overdue",
-        }));
-      }
-    }, [localTask.due_date, localTask.status]);
+    if (!dueDate || status === "completed") return false;
+    return isBefore(new Date(dueDate), new Date());
+  };
+
+  useEffect(() => {
+    const overdue = checkIsOverdue(localTask.due_date, localTask.status);
+    setIsOverdue(overdue);
+
+    if (overdue && localTask.priority !== "overdue") {
+      const updatedTask = {
+        ...localTask,
+        priority: "overdue" as Priority,
+      };
+      setLocalTask(updatedTask);
+      updateTask(localTask.task_id, { status: localTask.status }, updatedTask)
+        .then(() => {
+          console.log("Priority updated to overdue in the database");
+        })
+        .catch((error) => {
+          console.error("Failed to update task priority in the database:", error);
+          setLocalTask(task);
+        });
+    }
+  }, [localTask, localTask.due_date, localTask.priority, localTask.status, task]);
 
   useEffect(() => {
     setLocalTask(task);
@@ -94,7 +103,6 @@ export function TaskCard({ task }: TaskCardProps) {
       router.refresh();
       window.location.reload();
       toast.success("Task marked as completed");
-
     } catch (error) {
       console.error("Error completing task:", error);
       setLocalTask(task);
@@ -135,7 +143,6 @@ export function TaskCard({ task }: TaskCardProps) {
       setLocalTask(optimisticTask);
       setIsEditing(false);
       await updateTask(task.task_id, updatedTask, optimisticTask);
-
     } catch (error) {
       console.error("Error updating task:", error);
       setLocalTask(task);
@@ -165,7 +172,7 @@ export function TaskCard({ task }: TaskCardProps) {
           {localTask.priority && (
             <Badge
               variant="outline"
-              className={`ml-2 flex-shrink-0 text-sm ${
+              className={`ml-2 flex-shrink-0 text- ${
                 isOverdue
                   ? "text-red-600 border-red-600"
                   : getStatusColor(localTask.priority)
