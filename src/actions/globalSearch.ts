@@ -65,7 +65,7 @@ export async function search(
           '*, matters!inner(name, client, opposing_council, court, attorney:users!assigned_attorney(user_name))'
         )
         .limit(10)
-      // console.log('🔍 Tasks Query:', tasksQuery.toString())
+
       console.log('✅ Tasks Data:', tasks)
       console.log('❌ Tasks Error:', error)
 

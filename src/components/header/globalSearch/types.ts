@@ -40,7 +40,7 @@ export type SortDirection = 'asc' | 'desc'
 
 // Task types
 export type Priority = 'low' | 'medium' | 'high'
-export type TaskStatus = 'pending' | 'completed' | 'overdue'
+export type TaskStatus = 'in-progress' | 'completed' | 'overdue'
 export type BillStatus = 'Active' | 'Pending'
 
 export interface Task {
