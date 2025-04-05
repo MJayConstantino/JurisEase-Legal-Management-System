@@ -91,7 +91,7 @@ export function BillingsItem({ bill, matter, onUpdate, onDelete, index }: Billin
             <AlertDialogHeader>
               <AlertDialogTitle className="text-lg md:text-xl">Are you sure?</AlertDialogTitle>
               <AlertDialogDescription className="text-sm md:text-base dark:text-gray-300">
-                This will permanently delete the bill "{bill.name}".
+                <p>This will permanently delete the bill &quot;{bill.name}&quot;.</p>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

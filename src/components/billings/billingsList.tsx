@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { ArrowUpDown } from "lucide-react"
-import type { Bill, SortDirection, SortField } from "@/types/billing.type"
+import type { Bill, SortField } from "@/types/billing.type"
 import { BillingsItem } from "@/components/billings/billingsItem"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Matter } from "@/types/matter.type"
@@ -16,7 +16,6 @@ interface BillingsListProps {
   onDelete: (id: string) => void
   isLoading?: boolean
   sortField: SortField | null
-  sortDirection: SortDirection
   onSortChange: (field: SortField) => void
 }
 
@@ -27,7 +26,6 @@ export function BillingsList({
   onDelete,
   isLoading = false,
   sortField,
-  sortDirection,
   onSortChange,
 }: BillingsListProps) {
 

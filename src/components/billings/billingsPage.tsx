@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from "react"
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval } from "date-fns"
-
+import { useCallback } from 'react';
 import { BillingsRevenueHeader } from "@/components/billings/billingsRevenueHeader"
 import { BillingsList } from "@/components/billings/billingsList"
 import { BillingsAddDialog } from "@/components/billings/billingsAddDialog"
@@ -38,14 +38,46 @@ export function BillingInterface() {
       }
     loadData()
 
-  }, [])
+  }, [setBills, setIsLoading, setMatters])
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentDateTime(new Date())
     }, 60000)
     return () => clearInterval(interval)
-  }, [])
+  }, [setCurrentDateTime])
+
+const sortBills = useCallback((billsToSort: Bill[], field: SortField, direction: SortDirection) => {
+  return [...billsToSort].sort((a, b) => {
+    let comparison = 0;
+
+    switch (field) {
+      case "matterName":
+        const matterA = matters.find((m) => m.matter_id === a.matter_id)?.name || "";
+        const matterB = matters.find((m) => m.matter_id === b.matter_id)?.name || "";
+        comparison = matterA.localeCompare(matterB);
+        break;
+      case "name":
+        comparison = a.name.localeCompare(b.name);
+        break;
+      case "amount":
+        comparison = a.amount - b.amount;
+        break;
+      case "created_at":
+        comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        break;
+      case "status":
+        comparison = a.status.localeCompare(b.status);
+        break;
+      case "remarks":
+        comparison = (a.remarks || "").localeCompare(b.remarks || "");
+        break;
+    }
+
+    return direction === "asc" ? comparison : -comparison;
+  });
+}, [matters]);
+
 
   useEffect(() => {
     let result = [...bills]
@@ -101,38 +133,8 @@ export function BillingInterface() {
     }
 
     setFilteredBills(result)
-  }, [bills, timeFilter, statusFilter, sortField, sortDirection, selectedMatterId])
-
-  const sortBills = (billsToSort: Bill[], field: SortField, direction: SortDirection) => {
-    return [...billsToSort].sort((a, b) => {
-      let comparison = 0
-
-      switch (field) {
-        case "matterName":
-          const matterA = matters.find((m) => m.matter_id === a.matter_id)?.name || ""
-          const matterB = matters.find((m) => m.matter_id === b.matter_id)?.name || ""
-          comparison = matterA.localeCompare(matterB)
-          break
-        case "name":
-          comparison = a.name.localeCompare(b.name)
-          break
-        case "amount":
-          comparison = a.amount - b.amount
-          break
-        case "created_at":
-          comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-          break
-        case "status":
-          comparison = a.status.localeCompare(b.status)
-          break
-        case "remarks":
-          comparison = (a.remarks || "").localeCompare(b.remarks || "")
-          break
-      }
-
-      return direction === "asc" ? comparison : -comparison
-    })
-  }
+  }, [bills, timeFilter, statusFilter, sortField, sortDirection, selectedMatterId,
+    setFilteredBills, sortBills])
 
 
   const handleSortChange = (field: SortField) => {
@@ -273,7 +275,6 @@ export function BillingInterface() {
               onDelete={deleteBill}
               isLoading={isLoading}
               sortField={sortField}
-              sortDirection={sortDirection}
               onSortChange={handleSortChange}          
             />
           </div>

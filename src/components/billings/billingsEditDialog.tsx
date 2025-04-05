@@ -44,7 +44,7 @@ import { Matter } from "@/types/matter.type"
         setStatus(bill.status)
         setRemarks(bill.remarks || "")
       }
-    }, [bill, open])
+    }, [bill, open, setMatterId, setName, setAmount, setCreated_at, setStatus, setRemarks])
   
     const handleSave = () => {
       if (!name || !amount || !matter_id) return
