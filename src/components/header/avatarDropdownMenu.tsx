@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
@@ -12,16 +14,46 @@ import {
 import { Signout } from "./signout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import UserInfo from "@/app/loggedIn/user-info";
+import { fetchUserInfoAction } from "@/actions/users";
+
 interface AvatarDropdownMenuProps {
   isLoading?: boolean;
   defaultOpen?: boolean;
 }
 
+interface UserData {
+  full_name: string;
+  avatar_url: string;
+}
+
 function AvatarDropdownMenu({
-  isLoading = false,
+  isLoading: propIsLoading = false,
   defaultOpen = false,
 }: AvatarDropdownMenuProps) {
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        // Call the server action directly to get the user data.
+        const data: UserData = await fetchUserInfoAction();
+        setUserData(data);
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchUser();
+  }, []);
+
+  // Combine any external loading state with our internal state.
+  const isLoading = propIsLoading || loading;
+  const fallbackLetter = userData?.full_name
+    ? userData.full_name.charAt(0).toUpperCase()
+    : "U";
+
   return (
     <DropdownMenu defaultOpen={defaultOpen}>
       <DropdownMenuTrigger asChild>
@@ -35,12 +67,14 @@ function AvatarDropdownMenu({
           ) : (
             <Avatar>
               <AvatarImage
-                src="/placeholder.svg?height=40&width=40"
-                alt="User"
+                src={
+                  userData?.avatar_url || "/placeholder.svg?height=40&width=40"
+                }
+                alt={userData?.full_name || "User"}
               />
               <AvatarFallback className="text-black dark:text-white">
-                {UserInfo.name.slice(0, 1).toUpperCase()}
-                </AvatarFallback>
+                {fallbackLetter}
+              </AvatarFallback>
             </Avatar>
           )}
         </Button>
@@ -50,7 +84,7 @@ function AvatarDropdownMenu({
         className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-md"
       >
         <DropdownMenuLabel className="px-3 py-2 text-sm text-black dark:text-white">
-          {isLoading ? <Skeleton className="w-24 h-4" /> : <UserInfo/>}
+          {isLoading ? <Skeleton className="w-24 h-4" /> : userData?.full_name}
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="border-gray-200 dark:border-gray-600" />
         <DropdownMenuItem className="px-3 py-2 text-black dark:text-white">
