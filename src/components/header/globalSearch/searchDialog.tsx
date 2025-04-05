@@ -185,7 +185,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
               ref={inputRef}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search for matters, documents, tasks..."
+              placeholder="Search for matters, bills, tasks..."
               className="border-0 p-0 focus-visible:ring-0 text-lg flex-1 text-foreground placeholder:text-muted-foreground"
             />
             <Button
