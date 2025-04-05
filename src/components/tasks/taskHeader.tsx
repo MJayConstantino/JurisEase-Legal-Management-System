@@ -85,7 +85,7 @@ export function TasksHeader({
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* New Task Button */}
           <Button
-            variant="default"
+            variant="blue"
             size="sm"
             className="sm:h-9"
             onClick={() => setIsAddTaskOpen(true)}
@@ -108,33 +108,33 @@ export function TasksHeader({
           {/* Filter Buttons */}
           <div className="flex flex-wrap gap-2 bg-gray-100 shadow dark:bg-gray-700 rounded-md  justify-center sm:justify-start">
             <Button
-              variant={activeFilter === "all" ? "default" : "ghost"}
+              variant={activeFilter === "all" ? "blue" : "ghost"}
               size="sm"
-              className="px-3 py-1 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none"
+              className="px-3 py-1 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none hover:cursor-pointer"
               onClick={() => handleFilterChange("all")}
             >
               All Tasks
             </Button>
             <Button
-              variant={activeFilter === "in-progress" ? "default" : "ghost"}
+              variant={activeFilter === "in-progress" ? "blue" : "ghost"}
               size="sm"
-              className="px-3 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none"
+              className="px-3 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none hover:cursor-pointer"
               onClick={() => handleFilterChange("in-progress")}
             >
               In-Progress
             </Button>
             <Button
-              variant={activeFilter === "overdue" ? "default" : "ghost"}
+              variant={activeFilter === "overdue" ? "blue" : "ghost"}
               size="sm"
-              className="px-3 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none"
+              className="px-3 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none hover:cursor-pointer"
               onClick={() => handleFilterChange("overdue")}
             >
               Overdue
             </Button>
             <Button
-              variant={activeFilter === "completed" ? "default" : "ghost"}
+              variant={activeFilter === "completed" ? "blue" : "ghost"}
               size="sm"
-              className="px-3 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none"
+              className="px-3 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none hover:cursor-pointer"
               onClick={() => handleFilterChange("completed")}
             >
               Completed
@@ -144,18 +144,18 @@ export function TasksHeader({
           {/* View Toggle */}
           <div className="grid grid-cols-2 gap bg-gray-100 shadow dark:bg-gray-700 rounded-md w-full sm:flex sm:gap-3 sm:w-auto sm:justify-start">
             <Button
-              variant={view === "grid" ? "default" : "ghost"}
+              variant={view === "grid" ? "blue" : "ghost"}
               size="sm"
-              className="px-3 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none"
+              className="px-3 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none hover:cursor-pointer"
               onClick={() => onViewChange("grid")}
             >
               <Grid className="h-5 w-5 mr-2" />
               <span className="text-xs">Grid</span>
             </Button>
             <Button
-              variant={view === "table" ? "default" : "ghost"}
+              variant={view === "table" ? "blue" : "ghost"}
               size="sm"
-              className="px-3 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none"
+              className="px-3 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none hover:cursor-pointer"
               onClick={() => onViewChange("table")}
             >
               <List className="h-5 w-5 mr-2" />

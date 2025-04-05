@@ -176,12 +176,26 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
   return (
     <>
       <div
-        className={`flex items-center my-2 rounded-lg justify-between p-3 sm:p-4 border hover:bg-muted/20 ${
+        className={`flex items-center my-2 rounded-lg justify-between p-3 sm:p-4 border ${
           isOverdue
             ? "border-red-500 bg-red-50 dark:bg-red-950"
+            : localTask.status === "completed"
+            ? "border-green-500 bg-green-50 dark:bg-green-950"
             : "bg-white dark:bg-gray-800 dark:border-gray-700"
         }`}
       >
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleComplete}
+          disabled={localTask.status === "completed" || isProcessing}
+          className={`mr-2 sm:mr-4 flex-shrink-0 ${
+            localTask.status === "completed" ? "hover:cursor-not-allowed" : "hover:cursor-pointer"
+          }`}
+        >
+          <Check className="h-4 w-4" />
+          <span className="sr-only">Complete</span>
+        </Button>
         <div className="flex-1 min-w-0 mr-2 ">
           <div className="flex items-center gap-2 flex-wrap">
             <h3 className="font-medium truncate">{localTask.name}</h3>
@@ -203,9 +217,9 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 dark:text-gray-400">
           <div className="text-xs sm:text-sm hidden sm:block">
-            <span className={isOverdue ? "text-red-600" : ""}>
+            <span className="text-xs sm:text-sm line-clamp-1 ext-muted-foreground dark:text-gray-400">
               {formatDate(localTask.due_date)}
             </span>
           </div>
@@ -223,17 +237,8 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={handleComplete}
-              disabled={localTask.status === "completed" || isProcessing}
-            >
-              <Check className="h-4 w-4" />
-              <span className="sr-only">Complete</span>
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
               onClick={handleEdit}
+              className="hover:cursor-pointer"
               disabled={isProcessing}
             >
               <Pencil className="h-4 w-4" />
@@ -244,7 +249,7 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
               variant="ghost"
               size="icon"
               onClick={handleDelete}
-              className="text-destructive hover:text-destructive"
+              className="text-destructive hover:text-destructive hover:cursor-pointer"
               disabled={isProcessing}
             >
               <Trash2 className="h-4 w-4" />

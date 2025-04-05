@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import type { Status, Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { format, isBefore } from "date-fns";
-import { Calendar, Check, Pencil, Trash2 } from "lucide-react";
+import { Calendar, Check, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { updateTask, deleteTask } from "@/actions/tasks";
 import { getMatters } from "@/actions/matters";
@@ -15,6 +15,7 @@ import { getStatusColor } from "@/utils/getStatusColor";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "../ui/skeleton";
+import { TaskDeleteDialog } from "./taskDeleteDialog";
 
 interface TaskCardProps {
   task: Task;
@@ -172,6 +173,8 @@ export function TaskCard({ task }: TaskCardProps) {
         className={`border rounded-lg p-3 shadow-sm h-full flex flex-col ${
           isOverdue
             ? "border-red-500 bg-red-50 dark:bg-red-950"
+            : localTask.status === "completed"
+            ? "border-green-500 bg-green-50 dark:bg-green-950"
             : "bg-white dark:bg-gray-800 dark:border-gray-700"
         }`}
       >
@@ -212,13 +215,7 @@ export function TaskCard({ task }: TaskCardProps) {
 
         <div className="flex items-center text-xs sm:text-sm text-muted-foreground mb-auto dark:text-gray-400">
           <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
-          <span
-            className={`text-xs sm:text-sm line-clamp-1 ${
-              isOverdue
-                ? "text-red-600 font-medium dark:text-red-400"
-                : "text-muted-foreground dark:text-gray-400"
-            }`}
-          >
+          <span className="text-xs sm:text-sm line-clamp-1 ext-muted-foreground dark:text-gray-400">
             Due: {formatDate(localTask.due_date)}
           </span>
         </div>
@@ -235,7 +232,7 @@ export function TaskCard({ task }: TaskCardProps) {
             <Button
               variant="default"
               size="sm"
-              className="h-7 w-auto px-1.5 text-xs dark:text-white bg-green-800 hover:bg-green-900"
+              className="hover:cursor-pointer h-7 w-auto px-1.5 text-xs dark:text-white bg-green-800 hover:bg-green-900"
               onClick={handleComplete}
               disabled={localTask.status === "completed" || isProcessing}
             >
@@ -246,24 +243,18 @@ export function TaskCard({ task }: TaskCardProps) {
             <Button
               variant="default"
               size="sm"
-              className="h-7 w-auto px-1.5 text-xs dark:bg-white"
+              className="hover:cursor-pointer bg-[#2D336B] hover:bg-[#1B1E4B} h-7 w-auto px-1.5 text-xs dark:bg-white"
               onClick={handleEdit}
               disabled={isProcessing}
             >
               <Pencil className="h-3 w-3 mr-1" />
               <span className="hidden xxs:inline">Edit</span>
             </Button>
-
-            <Button
-              variant="destructive"
-              size="sm"
-              className="h-7 w-auto px-1.5 text-xs"
-              onClick={handleDelete}
-              disabled={isProcessing}
-            >
-              <Trash2 className="h-3 w-3 mr-1" />
-              <span className="hidden xxs:inline">Delete</span>
-            </Button>
+            <TaskDeleteDialog
+              taskName={localTask.name}
+              isProcessing={isProcessing}
+              onConfirm={handleDelete}
+            />
           </div>
         </div>
       </div>
