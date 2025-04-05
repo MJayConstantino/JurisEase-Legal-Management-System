@@ -26,6 +26,9 @@ export async function search(
           include_opposing: attributes.includes('opposingCouncil'),
           include_court: attributes.includes('court'),
         })
+        .select(
+          '*, attorney:users!assigned_attorney(user_name, user_id),staff:users!assigned_staff(user_name, user_id)'
+        )
         .limit(10)
       console.log('✅ Tasks Data:', matters)
       console.log('❌ Tasks Error:', error)
@@ -34,6 +37,9 @@ export async function search(
       searchResults.push(
         ...(matters ?? []).map(
           (matter: {
+            opposing_council: any
+            court: any
+            attorney: any
             matter_id: any
             name: any
             client: any
@@ -42,7 +48,11 @@ export async function search(
             id: matter.matter_id,
             type: 'Matter' as const,
             title: matter.name,
-            subtitle: `Client: ${matter.client}`,
+            subtitle: `Client: ${matter.client}, Attorney: ${
+              matter.attorney ? matter.attorney.user_name : 'N/A'
+            }, Opposing Council: ${
+              matter.opposing_council ? matter.opposing_council.name : 'N/A'
+            }, Court: ${matter.court ? matter.court.name : 'N/A'}`,
             status: matter.status as MatterStatus,
             route: `/matters/${matter.matter_id}`,
           })
@@ -75,6 +85,7 @@ export async function search(
       searchResults.push(
         ...(tasks ?? []).map(
           (task: {
+            priority: any
             task_id: any
             matter_id: any
             name: any
@@ -86,13 +97,13 @@ export async function search(
             matterid: task.matter_id,
             type: 'Task' as const,
             title: task.name,
-            subtitle: task.matters
-              ? `Matter: ${task.matters.name}`
-              : `Due: ${
-                  task.due_date
-                    ? new Date(task.due_date).toLocaleDateString()
-                    : 'No date'
-                }`,
+            subtitle: `Matter: ${
+              task.matters ? task.matters.name : 'N/A'
+            }, Priority: ${task.priority}, Due date: ${
+              task.due_date
+                ? new Date(task.due_date).toLocaleDateString()
+                : 'No date'
+            }`,
             status: task.status,
             route: `/tasks/${task.task_id}`,
           })

@@ -4,7 +4,7 @@ import { MobileNavMenu } from '@/components/sidebar/mobileNavMenu'
 import { ModeToggle } from '@/components/mode-toggle'
 import CreateNewButton from './createNewButton'
 import DesktopSearch from './globalSearch/desktopSearch'
-import MobileSearch from './mobileSearch'
+
 import AvatarDropdownMenu from './avatarDropdownMenu'
 
 export function Header() {

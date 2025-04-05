@@ -74,6 +74,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
   }, [open])
 
   // Perform search when query or filters change
+
   useEffect(() => {
     // Only search if there's a query
     if (searchQuery.trim()) {
@@ -84,6 +85,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
       setDisplayedResults([])
       setCurrentPage(1)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, searchByFilters, contentTypeFilters])
 
   // Update displayed results when page changes or all results update
@@ -102,10 +104,12 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
     try {
       // Convert filter objects to arrays of selected options
       const contentTypes = Object.entries(contentTypeFilters)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .filter(([_, value]) => value)
         .map(([key]) => key)
 
       const attributes = Object.entries(searchByFilters)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .filter(([_, value]) => value)
         .map(([key]) => key)
 
