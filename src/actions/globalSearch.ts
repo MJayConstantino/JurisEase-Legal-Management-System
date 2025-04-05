@@ -101,34 +101,48 @@ export async function search(
 
     // ✅ Case-Insensitive Billings Query
     if (contentTypes.includes('bills')) {
-      let billingsQuery = supabase
-        .from('billings')
-        .select('*, matters(name, matter_id)')
+      console.log(attributes)
+      let { data: billings, error } = await supabase
+        .rpc('search_billings', {
+          search_term: query,
+          include_attorney: attributes.includes('attorney'),
+          include_client: attributes.includes('clientName'),
+          include_case: attributes.includes('caseName'),
+          include_opposing: attributes.includes('opposingCouncil'),
+          include_court: attributes.includes('court'),
+        })
+        .select(
+          '*, matters!inner(name, client, opposing_council, court, attorney:users!assigned_attorney(user_name))'
+        )
+        .limit(10)
 
-      billingsQuery = billingsQuery.or(
-        `name.ilike.%${query}%, remarks.ilike.%${query}%`
-      )
-
-      const { data: billings, error } = await billingsQuery.limit(10)
-
-      console.log('🔍 Billings Query:', billingsQuery.toString())
+      // console.log('🔍 Billings Query:', billingsQuery.toString())
       console.log('✅ Billings Data:', billings)
       console.log('❌ Billings Error:', error)
 
       if (error) throw new Error(error.message)
 
       searchResults.push(
-        ...(billings ?? []).map((billing) => ({
-          id: billing.bill_id,
-          matterid: billing.matter_id,
-          type: 'Bill' as const,
-          status: billing.status,
-          title: billing.name || `Invoice #${billing.bill_id}`,
-          subtitle: `Matter: ${billing.matters?.name || 'Unknown'}, Amount: $${
-            billing.amount || '0.00'
-          }`,
-          route: `/bills/${billing.bill_id}`,
-        }))
+        ...(billings ?? []).map(
+          (billing: {
+            bill_id: any
+            matter_id: any
+            status: any
+            name: any
+            matters: { name: any }
+            amount: any
+          }) => ({
+            id: billing.bill_id,
+            matterid: billing.matter_id,
+            type: 'Bill' as const,
+            status: billing.status,
+            title: billing.name || `Invoice #${billing.bill_id}`,
+            subtitle: `Matter: ${billing.matters.name || 'Unknown'}, Amount: $${
+              billing.amount || '0.00'
+            }`,
+            route: `/bills/${billing.bill_id}`,
+          })
+        )
       )
     }
 
