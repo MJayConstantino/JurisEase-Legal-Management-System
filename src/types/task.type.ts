@@ -1,5 +1,5 @@
-export type Priority = 'low' | 'medium' | 'high'
-export type Status = 'pending' | 'completed'
+export type Priority = 'low' | 'medium' | 'high' | 'overdue'
+export type Status = 'in-progress' | 'completed'
 
 export interface Task {
   task_id: string

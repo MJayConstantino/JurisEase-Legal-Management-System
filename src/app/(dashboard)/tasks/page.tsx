@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function Task() {
   return (
-    <div className="flex flex-col gap-3 h-full">
+    <div className="flex flex-col gap-6 h-full">
       <TaskList />
     </div>
   );
