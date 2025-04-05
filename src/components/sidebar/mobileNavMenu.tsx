@@ -8,7 +8,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, Receipt, X } from "lucide-react";
 import { FolderClosed, ListTodo } from "lucide-react";
 
 const navItems = [
@@ -22,6 +22,11 @@ const navItems = [
     title: "Tasks",
     icon: ListTodo,
     href: "/tasks",
+  },
+  {
+    title: "Billings",
+    icon: Receipt,
+    href: "/billings",
   },
 ];
 

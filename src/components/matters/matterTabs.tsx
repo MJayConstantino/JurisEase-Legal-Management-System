@@ -63,7 +63,7 @@ export function MatterTabs({ children }: MatterTabsProps) {
 
         <TabsContent value="billing" className="p-6 m-0">
           <div className="h-[400px] flex items-center justify-center border border-dashed rounded-lg">
-            <p className="text-muted-foreground">
+          <p className="text-muted-foreground">
               Billing content will be displayed here
             </p>
           </div>

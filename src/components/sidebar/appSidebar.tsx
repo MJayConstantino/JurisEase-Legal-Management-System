@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FolderClosed, ListTodo } from "lucide-react";
+import { FolderClosed, ListTodo, Receipt } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -18,7 +18,12 @@ const navItems = [
     title: "Tasks",
     icon: ListTodo,
     href: "/tasks",
-  }
+  },
+  {
+    title: "Billings",
+    icon: Receipt,
+    href: "/billings",
+  },
 ];
 
 export function AppSidebar() {
