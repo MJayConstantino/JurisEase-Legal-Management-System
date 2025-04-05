@@ -27,7 +27,8 @@ export async function search(
           include_court: attributes.includes('court'),
         })
         .limit(10)
-
+      console.log('✅ Tasks Data:', matters)
+      console.log('❌ Tasks Error:', error)
       if (error) throw new Error(error.message)
 
       searchResults.push(
