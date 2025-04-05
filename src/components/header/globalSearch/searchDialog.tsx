@@ -137,7 +137,11 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
     if (result.type === 'Matter') {
       router.push(`/matters/${result.id}`)
     } else if (result.type === 'Task') {
-      router.push(`/matters/${result.matterid}`)
+      if (result.matterid) {
+        router.push(`/matters/${result.matterid}`)
+      } else {
+        router.push(`/tasks`)
+      }
     } else if (result.type === 'Bill') {
       router.push(`/matters/${result.matterid}`)
     }
