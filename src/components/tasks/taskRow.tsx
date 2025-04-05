@@ -13,6 +13,7 @@ import { TaskForm } from "./taskForm";
 import { getStatusColor } from "@/utils/getStatusColor";
 import { Status, Task } from "@/types/task.type";
 import { toast } from "sonner";
+import { Skeleton } from "../ui/skeleton";
 
 interface TaskRowProps {
   task: Task;
@@ -194,9 +195,11 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
             )}
           </div>
           <div className="text-xs sm:text-sm text-muted-foreground truncate">
-            {isLoadingMatters
-              ? "Loading matter..."
-              : matterName || "No matter assigned"}
+            {isLoadingMatters ? (
+              <Skeleton className="inline-block w-24 h-4 rounded" />
+            ) : (
+              matterName || "No matter assigned"
+            )}
           </div>
         </div>
 
