@@ -27,31 +27,40 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isOverdue, setIsOverdue] = useState(false);
 
-   const checkIsOverdue = (dueDate?: Date, status?: string) => {
-      if (!dueDate || status === "completed") return false;
-      return isBefore(new Date(dueDate), new Date());
-    };
-  
-    useEffect(() => {
-      const overdue = checkIsOverdue(localTask.due_date, localTask.status);
-      setIsOverdue(overdue);
-  
-      if (overdue && localTask.priority !== "overdue") {
-        const updatedTask = {
-          ...localTask,
-          priority: "overdue" as Priority,
-        };
-        setLocalTask(updatedTask);
-        updateTask(localTask.task_id, { status: localTask.status }, updatedTask)
-          .then(() => {
-            console.log("Priority updated to overdue in the database");
-          })
-          .catch((error) => {
-            console.error("Failed to update task priority in the database:", error);
-            setLocalTask(task);
-          });
-      }
-    }, [localTask, localTask.due_date, localTask.priority, localTask.status, task]);
+  const checkIsOverdue = (dueDate?: Date, status?: string) => {
+    if (!dueDate || status === "completed") return false;
+    return isBefore(new Date(dueDate), new Date());
+  };
+
+  useEffect(() => {
+    const overdue = checkIsOverdue(localTask.due_date, localTask.status);
+    setIsOverdue(overdue);
+
+    if (overdue && localTask.status !== "overdue") {
+      const updatedTask = {
+        ...localTask,
+        priority: "overdue" as Priority,
+      };
+      setLocalTask(updatedTask);
+      updateTask(localTask.task_id, { status: localTask.status }, updatedTask)
+        .then(() => {
+          console.log("Priority updated to overdue in the database");
+        })
+        .catch((error) => {
+          console.error(
+            "Failed to update task priority in the database:",
+            error
+          );
+          setLocalTask(task);
+        });
+    }
+  }, [
+    localTask,
+    localTask.due_date,
+    localTask.priority,
+    localTask.status,
+    task,
+  ]);
 
   useEffect(() => {
     setLocalTask(task);
@@ -102,7 +111,6 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
         }
       );
       toast.success("Task marked as completed");
-      
 
       if (onTaskUpdated) onTaskUpdated();
     } catch (error) {
@@ -178,15 +186,11 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
             <h3 className="font-medium truncate">{localTask.name}</h3>
             {localTask.priority && (
               <Badge
-              variant="outline"
-              className={`ml-2 flex-shrink-0 text-xs ${
-                isOverdue
-                  ? "text-red-600 border-red-600"
-                  : getStatusColor(localTask.priority)
-              }`}
-            >
-              {isOverdue ? "overdue" : localTask.priority}
-            </Badge>
+                variant="outline"
+                className={`text-xs ${getStatusColor(localTask.priority)}`}
+              >
+                {localTask.priority}
+              </Badge>
             )}
           </div>
           <div className="text-xs sm:text-sm text-muted-foreground truncate">

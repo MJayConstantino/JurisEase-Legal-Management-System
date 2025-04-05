@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import type { Priority, Task } from "@/types/task.type";
+import type { Status, Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { format, isBefore } from "date-fns";
 import { Calendar, Check, Pencil, Trash2 } from "lucide-react";
@@ -37,10 +37,10 @@ export function TaskCard({ task }: TaskCardProps) {
     const overdue = checkIsOverdue(localTask.due_date, localTask.status);
     setIsOverdue(overdue);
 
-    if (overdue && localTask.priority !== "overdue") {
+    if (overdue && localTask.status !== "overdue") {
       const updatedTask = {
         ...localTask,
-        priority: "overdue" as Priority,
+        status: "overdue" as Status,
       };
       setLocalTask(updatedTask);
       updateTask(localTask.task_id, { status: localTask.status }, updatedTask)
@@ -48,11 +48,20 @@ export function TaskCard({ task }: TaskCardProps) {
           console.log("Priority updated to overdue in the database");
         })
         .catch((error) => {
-          console.error("Failed to update task priority in the database:", error);
+          console.error(
+            "Failed to update task priority in the database:",
+            error
+          );
           setLocalTask(task);
         });
     }
-  }, [localTask, localTask.due_date, localTask.priority, localTask.status, task]);
+  }, [
+    localTask,
+    localTask.due_date,
+    localTask.priority,
+    localTask.status,
+    task,
+  ]);
 
   useEffect(() => {
     setLocalTask(task);
@@ -172,13 +181,9 @@ export function TaskCard({ task }: TaskCardProps) {
           {localTask.priority && (
             <Badge
               variant="outline"
-              className={`ml-2 flex-shrink-0 text- ${
-                isOverdue
-                  ? "text-red-600 border-red-600"
-                  : getStatusColor(localTask.priority)
-              }`}
+              className={`text-xs ${getStatusColor(localTask.priority)}`}
             >
-              {isOverdue ? "overdue" : localTask.priority}
+              {localTask.priority}
             </Badge>
           )}
         </div>
