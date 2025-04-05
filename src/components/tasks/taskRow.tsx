@@ -11,7 +11,7 @@ import { getMatters } from "@/actions/matters";
 import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
 import { TaskForm } from "./taskForm";
 import { getStatusColor } from "@/utils/getStatusColor";
-import { Priority, Task } from "@/types/task.type";
+import { Status, Task } from "@/types/task.type";
 import { toast } from "sonner";
 
 interface TaskRowProps {
@@ -39,7 +39,7 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
     if (overdue && localTask.status !== "overdue") {
       const updatedTask = {
         ...localTask,
-        priority: "overdue" as Priority,
+        Status: "overdue" as Status,
       };
       setLocalTask(updatedTask);
       updateTask(localTask.task_id, { status: localTask.status }, updatedTask)
