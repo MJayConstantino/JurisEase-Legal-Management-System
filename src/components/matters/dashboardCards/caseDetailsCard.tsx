@@ -16,15 +16,15 @@ import {
 } from "@/components/ui/select";
 import { EditableCard } from "../editableCard";
 import { updateMatter } from "@/actions/matters";
-import { Matter } from "@/types/matter.type";
+import type { Matter } from "@/types/matter.type";
 import { toast } from "sonner";
 import { fetchUsersAction } from "@/actions/users";
 import { getUserDisplayName } from "@/utils/getUserDisplayName";
 import { getStatusColor } from "@/utils/getStatusColor";
-import { User as UserType } from "@/types/user.type";
-import { Skeleton } from "@/components/ui/skeleton";
+import type { User as UserType } from "@/types/user.type";
 import { formatDateForDisplay } from "@/utils/formatDateForDisplay";
 import { formatDateForInput } from "@/utils/formatDateForInput";
+import { CaseDetailsCardSkeleton } from "./caseDetailsCardSkeleton";
 
 interface CaseDetailsCardProps {
   matter: Matter;
@@ -101,66 +101,7 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
   };
 
   if (isLoading) {
-    return (
-      <EditableCard
-        title="Case Details"
-        onSave={handleSave}
-        onCancel={handleCancel}
-      >
-        <div className="space-y-6">
-          {/* Main info skeleton */}
-          <div className="space-y-4">
-            <Skeleton className="h-6 w-3/4" />
-            <div className="flex gap-4">
-              <Skeleton className="h-6 w-1/3" />
-              <Skeleton className="h-6 w-1/3" />
-            </div>
-            <Skeleton className="h-24 w-full" />
-            <div className="flex gap-4">
-              <Skeleton className="h-6 w-1/2" />
-              <Skeleton className="h-6 w-1/2" />
-            </div>
-          </div>
-
-          {/* Client info skeleton */}
-          <div className="space-y-4">
-            <Skeleton className="h-6 w-1/2" />
-            <div className="space-y-2">
-              <div className="flex items-center">
-                <Skeleton className="h-4 w-4 mr-2" />
-                <Skeleton className="h-6 flex-1" />
-              </div>
-              <div className="flex items-center">
-                <Skeleton className="h-4 w-4 mr-2" />
-                <Skeleton className="h-6 flex-1" />
-              </div>
-              <div className="flex items-center">
-                <Skeleton className="h-4 w-4 mr-2" />
-                <Skeleton className="h-6 flex-1" />
-              </div>
-            </div>
-          </div>
-
-          {/* Assignment skeleton */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-1/2" />
-              <div className="flex items-center">
-                <Skeleton className="h-4 w-4 mr-2" />
-                <Skeleton className="h-6 flex-1" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-1/2" />
-              <div className="flex items-center">
-                <Skeleton className="h-4 w-4 mr-2" />
-                <Skeleton className="h-6 flex-1" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </EditableCard>
-    );
+    return <CaseDetailsCardSkeleton />;
   }
 
   return (
@@ -371,68 +312,81 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
               Case Assignment
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-  <h5 className="text-sm text-muted-foreground mb-1">Assigned Attorney</h5>
-  <div className="flex items-center">
-    <Briefcase className="h-4 w-4 mr-2 text-muted-foreground" />
-    {isEditing ? (
-      <Select
-        value={editedMatter.assigned_attorney || ""}
-        onValueChange={(value) => handleChange("assigned_attorney", value)}
-      >
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Select attorney..." />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Users</SelectLabel>
-            {users.map((user) => (
-              <SelectItem key={user.user_id} value={user.user_id}>
-                {user.user_name || user.user_email}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    ) : (
-      <p>
-        {getUserDisplayName(editedMatter.assigned_attorney || "", users) ||
-          "N/A"}
-      </p>
-    )}
-  </div>
-</div>
+              <div>
+                <h5 className="text-sm text-muted-foreground mb-1">
+                  Assigned Attorney
+                </h5>
+                <div className="flex items-center">
+                  <Briefcase className="h-4 w-4 mr-2 text-muted-foreground" />
+                  {isEditing ? (
+                    <Select
+                      value={editedMatter.assigned_attorney || ""}
+                      onValueChange={(value) =>
+                        handleChange("assigned_attorney", value)
+                      }
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select attorney..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Users</SelectLabel>
+                          {users.map((user) => (
+                            <SelectItem key={user.user_id} value={user.user_id}>
+                              {user.user_name || user.user_email}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <p>
+                      {getUserDisplayName(
+                        editedMatter.assigned_attorney || "",
+                        users
+                      ) || "N/A"}
+                    </p>
+                  )}
+                </div>
+              </div>
 
               <div>
-  <h5 className="text-sm text-muted-foreground mb-1">Assigned Staff</h5>
-  <div className="flex items-center">
-    <User className="h-4 w-4 mr-2 text-muted-foreground" />
-    {isEditing ? (
-      <Select
-        value={editedMatter.assigned_staff || ""}
-        onValueChange={(value) => handleChange("assigned_staff", value)}
-      >
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Select staff member..." />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Users</SelectLabel>
-            {users.map((user) => (
-              <SelectItem key={user.user_id} value={user.user_id}>
-                {user.user_name || user.user_email}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    ) : (
-      <p>
-        {getUserDisplayName(editedMatter.assigned_staff || "", users) || "N/A"}
-      </p>
-    )}
-  </div>
-</div>
+                <h5 className="text-sm text-muted-foreground mb-1">
+                  Assigned Staff
+                </h5>
+                <div className="flex items-center">
+                  <User className="h-4 w-4 mr-2 text-muted-foreground" />
+                  {isEditing ? (
+                    <Select
+                      value={editedMatter.assigned_staff || ""}
+                      onValueChange={(value) =>
+                        handleChange("assigned_staff", value)
+                      }
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select staff member..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Users</SelectLabel>
+                          {users.map((user) => (
+                            <SelectItem key={user.user_id} value={user.user_id}>
+                              {user.user_name || user.user_email}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <p>
+                      {getUserDisplayName(
+                        editedMatter.assigned_staff || "",
+                        users
+                      ) || "N/A"}
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
