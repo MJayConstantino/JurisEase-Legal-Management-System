@@ -17,7 +17,6 @@ export async function search(
   //problem with the join caused me to rely on raw SQL lol
   try {
     if (contentTypes.includes('matters')) {
-      console.log(attributes)
       let { data: matters, error } = await supabase
         .rpc('search_matters', {
           search_term: query,
@@ -52,39 +51,51 @@ export async function search(
 
     // ✅ Case-Insensitive Task Query
     if (contentTypes.includes('tasks')) {
-      let tasksQuery = supabase
-        .from('tasks')
-        .select('*, matters(name, matter_id)')
-
-      tasksQuery = tasksQuery.or(
-        `name.ilike.%${query}%, description.ilike.%${query}%`
-      )
-      let taskFilters = []
-
-      const { data: tasks, error } = await tasksQuery.limit(10)
-
-      console.log('🔍 Tasks Query:', tasksQuery.toString())
+      console.log(attributes)
+      let { data: tasks, error } = await supabase
+        .rpc('search_tasks', {
+          search_term: query,
+          include_attorney: attributes.includes('attorney'),
+          include_client: attributes.includes('clientName'),
+          include_case: attributes.includes('caseName'),
+          include_opposing: attributes.includes('opposingCouncil'),
+          include_court: attributes.includes('court'),
+        })
+        .select(
+          '*, matters!inner(name, client, opposing_council, court, attorney:users!assigned_attorney(user_name))'
+        )
+        .limit(10)
+      // console.log('🔍 Tasks Query:', tasksQuery.toString())
       console.log('✅ Tasks Data:', tasks)
       console.log('❌ Tasks Error:', error)
 
       if (error) throw new Error(error.message)
 
       searchResults.push(
-        ...(tasks ?? []).map((task) => ({
-          id: task.task_id,
-          matterid: task.matter_id,
-          type: 'Task' as const,
-          title: task.name,
-          subtitle: task.matters
-            ? `Matter: ${task.matters.name}`
-            : `Due: ${
-                task.due_date
-                  ? new Date(task.due_date).toLocaleDateString()
-                  : 'No date'
-              }`,
-          status: task.status,
-          route: `/tasks/${task.task_id}`,
-        }))
+        ...(tasks ?? []).map(
+          (task: {
+            task_id: any
+            matter_id: any
+            name: any
+            matters: { name: any }
+            due_date: string | number | Date
+            status: any
+          }) => ({
+            id: task.task_id,
+            matterid: task.matter_id,
+            type: 'Task' as const,
+            title: task.name,
+            subtitle: task.matters
+              ? `Matter: ${task.matters.name}`
+              : `Due: ${
+                  task.due_date
+                    ? new Date(task.due_date).toLocaleDateString()
+                    : 'No date'
+                }`,
+            status: task.status,
+            route: `/tasks/${task.task_id}`,
+          })
+        )
       )
     }
 
