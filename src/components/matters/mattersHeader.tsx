@@ -11,7 +11,10 @@ interface MattersHeaderProps {
   onSortChange: (sort: string) => void;
 }
 
-export function MattersHeader({ onStatusChange }: MattersHeaderProps) {
+export function MattersHeader({
+  onStatusChange,
+  onSortChange,
+}: MattersHeaderProps) {
   const [isAddMatterOpen, setIsAddMatterOpen] = useState(false);
 
   return (
@@ -29,11 +32,43 @@ export function MattersHeader({ onStatusChange }: MattersHeaderProps) {
             className="w-full md:w-auto"
             onValueChange={onStatusChange}
           >
-            <TabsList>
-              <TabsTrigger value="all">All Matters</TabsTrigger>
-              <TabsTrigger value="open">Open</TabsTrigger>
-              <TabsTrigger value="pending">Pending</TabsTrigger>
-              <TabsTrigger value="closed">Closed</TabsTrigger>
+            <TabsList className="bg-gray-50 dark:bg-gray-800/50">
+              <TabsTrigger
+                value="all"
+                className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 
+                  data-[state=active]:text-primary dark:data-[state=active]:text-primary-foreground
+                  data-[state=active]:shadow-sm data-[state=active]:font-medium
+                  dark:text-gray-300 dark:data-[state=active]:border-b-2 dark:data-[state=active]:border-primary"
+              >
+                All Matters
+              </TabsTrigger>
+              <TabsTrigger
+                value="open"
+                className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 
+                  data-[state=active]:text-green-600 dark:data-[state=active]:text-green-400
+                  data-[state=active]:shadow-sm data-[state=active]:font-medium
+                  dark:text-gray-300 dark:data-[state=active]:border-b-2 dark:data-[state=active]:border-green-500"
+              >
+                Open
+              </TabsTrigger>
+              <TabsTrigger
+                value="pending"
+                className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 
+                  data-[state=active]:text-yellow-600 dark:data-[state=active]:text-yellow-400
+                  data-[state=active]:shadow-sm data-[state=active]:font-medium
+                  dark:text-gray-300 dark:data-[state=active]:border-b-2 dark:data-[state=active]:border-yellow-500"
+              >
+                Pending
+              </TabsTrigger>
+              <TabsTrigger
+                value="closed"
+                className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 
+                  data-[state=active]:text-gray-600 dark:data-[state=active]:text-gray-300
+                  data-[state=active]:shadow-sm data-[state=active]:font-medium
+                  dark:text-gray-300 dark:data-[state=active]:border-b-2 dark:data-[state=active]:border-gray-500"
+              >
+                Closed
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>

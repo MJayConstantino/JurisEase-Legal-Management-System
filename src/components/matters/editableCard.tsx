@@ -35,7 +35,7 @@ export function EditableCard({
   };
 
   return (
-    <Card>
+    <Card className="">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle>{title}</CardTitle>
         {editable && (

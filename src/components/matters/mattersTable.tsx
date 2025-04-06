@@ -12,10 +12,8 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
-import { deleteMatter } from "@/actions/matters";
 import type { Matter, SortField, SortDirection } from "@/types/matter.type";
 import { useState, useEffect } from "react";
-import { toast } from "sonner";
 import { fetchUsersAction } from "@/actions/users";
 import { MatterRow } from "./matterRow";
 import type { User } from "@/types/user.type";
@@ -60,15 +58,6 @@ export function MattersTable({
   const handleDelete = async (matterId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setDeletingId(matterId);
-    try {
-      await deleteMatter(matterId);
-      toast.success("The matter has been deleted successfully.");
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to delete matter. Please try again.");
-    } finally {
-      setDeletingId(null);
-    }
   };
 
   const getSortIcon = (field: SortField) => {

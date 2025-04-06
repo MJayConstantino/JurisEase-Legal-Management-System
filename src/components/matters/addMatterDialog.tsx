@@ -50,13 +50,18 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
       return;
     }
 
+    if (!matterData.case_number.trim()) {
+      toast.error("Case Number is required");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
       await createMatter({
         name: matterData.name,
         client: matterData.client || "To be determined",
-        case_number: matterData.case_number || "",
+        case_number: matterData.case_number,
         status: matterData.status,
         description: "",
         created_at: new Date(),
@@ -73,6 +78,7 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
       });
 
       onOpenChange(false);
+      window.location.reload();
     } catch (error) {
       console.error(error);
       toast.error("Failed to create matter. Please try again.");
