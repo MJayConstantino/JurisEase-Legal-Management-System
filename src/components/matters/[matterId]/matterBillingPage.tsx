@@ -1,0 +1,198 @@
+"use client"
+
+import { useParams } from "next/navigation"
+import { useEffect } from "react"
+import { MatterBillAddDialog } from "../matters-billings/matterBillingAddDialog"
+import { MatterBillingListHeader } from "../matters-billings/matterBillingListHeader"
+import { useCallback } from 'react';
+import { BillingsList } from "@/components/billings/billingsList"
+import type { Bill, SortDirection, SortField, StatusFilter } from "@/types/billing.type"
+import { BillingStates } from "@/components/billings/billingsStates"
+import { getMatters } from "@/actions/matters"
+import { createBill as addBillToDb, updateBill as updateBillInDb, deleteBill as deleteBillFromDb, getBillsByMatterId } from "@/actions/billing"
+
+
+export function MatterBillingPage() {
+  const {
+    bills, setBills, filteredBills, setFilteredBills, setCurrentDateTime, isNewBillDialogOpen, 
+    setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, sortField, setSortField, sortDirection, setSortDirection,
+    statusFilter, setStatusFilter, matters, setMatters, selectedMatterId
+  } = BillingStates()
+
+  const params = useParams()
+  const paramsMatterId = params.matterId as string
+
+  useEffect(() => {
+    async function loadData() {
+        setIsLoading(true)
+        try {
+          const [billsData, mattersData] = await Promise.all([
+            getBillsByMatterId(paramsMatterId),
+            getMatters()
+          ])
+          setBills(billsData)
+          setMatters(mattersData)
+        } catch (error) {
+          console.error('Failed to load data:', error)
+        } finally {
+          setIsLoading(false)
+        }
+      }
+    loadData()
+
+  }, [setBills, setIsLoading, setMatters])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentDateTime(new Date())
+    }, 60000)
+    return () => clearInterval(interval)
+  }, [setCurrentDateTime])
+
+const sortBills = useCallback((billsToSort: Bill[], field: SortField, direction: SortDirection) => {
+  return [...billsToSort].sort((a, b) => {
+    let comparison = 0;
+
+    switch (field) {
+      case "matterName":
+        const matterA = matters.find((m) => m.matter_id === a.matter_id)?.name || "";
+        const matterB = matters.find((m) => m.matter_id === b.matter_id)?.name || "";
+        comparison = matterA.localeCompare(matterB);
+        break;
+      case "name":
+        comparison = a.name.localeCompare(b.name);
+        break;
+      case "amount":
+        comparison = a.amount - b.amount;
+        break;
+      case "created_at":
+        comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        break;
+      case "status":
+        comparison = a.status.localeCompare(b.status);
+        break;
+      case "remarks":
+        comparison = (a.remarks || "").localeCompare(b.remarks || "");
+        break;
+    }
+
+    return direction === "asc" ? comparison : -comparison;
+  });
+}, [matters]);
+
+
+  useEffect(() => {
+    let result = [...bills]
+
+    if (statusFilter !== "all") {
+      const statusMap: Record<StatusFilter, string> = {
+        all: "",
+        active: "Active",
+        paid: "Paid",
+        pending: "Pending",
+        overdue: "Overdue",
+      }
+
+      const filterStatus = statusMap[statusFilter]
+      if (filterStatus) {
+        result = result.filter((bill) => bill.status === filterStatus)
+      }
+    }
+
+    if (sortField) {
+      result = sortBills(result, sortField, sortDirection)
+    }
+
+    setFilteredBills(result)
+  }, [bills, timeFilter, statusFilter, sortField, sortDirection, selectedMatterId,
+    setFilteredBills, sortBills])
+
+
+  const handleSortChange = (field: SortField) => {
+    if (sortField === field) {
+
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"))
+    } else {
+
+      setSortField(field)
+      setSortDirection("asc")
+    }
+  }
+
+  const addBill = async (bill: Omit<Bill, "bill_id">) => {
+    setIsLoading(true)
+    try {
+      const newBill = await addBillToDb(bill)
+      if (newBill) {
+        setBills(prev => [...prev, newBill])
+      }
+    } catch (error) {
+      console.error('Failed to add bill:', error)
+    } finally {
+      setIsLoading(false)
+    }
+
+  }
+
+  const updateBill = async (updatedBill: Bill) => {
+    setIsLoading(true)
+    try {
+      const result = await updateBillInDb(updatedBill)
+      if (result) {
+        setBills(prev => prev.map(bill => bill.bill_id === updatedBill.bill_id ? updatedBill : bill))
+      }
+    } catch (error) {
+      console.error('Failed to update bill:', error)
+    } finally {
+      setIsLoading(false)
+    }
+
+  }
+
+  const deleteBill = async (id: string) => {
+    setIsLoading(true)
+    try {
+      const success = await deleteBillFromDb(id)
+      if (success) {
+        setBills(prev => prev.filter(bill => bill.bill_id !== id))
+      }
+    } catch (error) {
+      console.error('Failed to delete bill:', error)
+    } finally {
+      setIsLoading(false)
+    }
+    
+  }
+  return (
+    <div className="py-4 md:py-8 px-0">
+      <div className="max-w-auto mx-auto">
+        <div className="border dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 mt-4">
+  
+          <MatterBillingListHeader 
+          statusFilter={"all"} 
+          onStatusFilterChange={setStatusFilter} 
+          onNewBill={() => setIsNewBillDialogOpen(true)}/>
+
+          <div className="max-h-[600px] overflow-y-auto">
+            <BillingsList
+              bills={filteredBills}
+              matters={matters}
+              onUpdate={updateBill}
+              onDelete={deleteBill}
+              isLoading={isLoading}
+              sortField={sortField}
+              onSortChange={handleSortChange}          
+            />
+          </div>
+        </div>
+
+        <MatterBillAddDialog
+          open={isNewBillDialogOpen}
+          onOpenChange={setIsNewBillDialogOpen}
+          onSave={addBill}
+          matters={matters} 
+          currentMatterId={paramsMatterId}        />
+      </div>
+    </div>
+  )
+};

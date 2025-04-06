@@ -22,7 +22,7 @@ import { Matter } from "@/types/matter.type"
 interface BillingsItemProps {
   bill: Bill
   matter?: Matter
-  matters: Matter[]
+  matters?: Matter[]
   onUpdate: (bill: Bill) => void
   onDelete: (id: string) => void
   index: number
