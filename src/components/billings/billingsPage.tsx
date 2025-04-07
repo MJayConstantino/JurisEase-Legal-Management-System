@@ -28,6 +28,7 @@ import {
   updateBill as updateBillInDb,
   deleteBill as deleteBillFromDb,
 } from "@/actions/billing";
+import { toast } from "sonner";
 
 export function BillingInterface() {
   const {
@@ -155,10 +156,10 @@ export function BillingInterface() {
     if (statusFilter !== "all") {
       const statusMap: Record<StatusFilter, string> = {
         all: "",
-        active: "Active",
-        paid: "Paid",
-        pending: "Pending",
-        overdue: "Overdue",
+        active: "active",
+        paid: "paid",
+        pending: "pending",
+        overdue: "overdue",
       };
 
       const filterStatus = statusMap[statusFilter];
@@ -247,8 +248,10 @@ export function BillingInterface() {
       if (newBill) {
         setBills((prev) => [...prev, newBill]);
       }
+      toast.success("Bill added successfully!");
     } catch (error) {
       console.error("Failed to add bill:", error);
+      toast.error("Failed to add bill. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -265,8 +268,10 @@ export function BillingInterface() {
           )
         );
       }
+      toast.success("Bill updated successfully!");
     } catch (error) {
       console.error("Failed to update bill:", error);
+      toast.error("Failed to update bill. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -279,8 +284,10 @@ export function BillingInterface() {
       if (success) {
         setBills((prev) => prev.filter((bill) => bill.bill_id !== id));
       }
+      toast.success("Bill deleted successfully!");
     } catch (error) {
       console.error("Failed to delete bill:", error);
+      toast.error("Failed to delete bill. Please try again.");
     } finally {
       setIsLoading(false);
     }
