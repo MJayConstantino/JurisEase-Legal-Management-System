@@ -207,7 +207,7 @@ export function MatterBillingPage() {
     }
   };
   return (
-    <div className=" pb-4 md:pb-8 px-0 pt-0 overflow-auto">
+    <div className="pb-4 md:pb-8 px-0 pt-0 overflow-auto">
       <div className="max-w-auto mx-auto">
         <div className="border dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 mt-0">
           <BillingsListHeader
