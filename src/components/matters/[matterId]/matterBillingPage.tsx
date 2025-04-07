@@ -1,31 +1,33 @@
 "use client"
 
-import { useEffect, useMemo } from "react"
-import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval } from "date-fns"
+import { useParams } from "next/navigation"
+import { useEffect } from "react"
 import { useCallback } from 'react';
-import { BillingsRevenueHeader } from "@/components/billings/billingsRevenueHeader"
+import { BillingsAddDialog } from "@/components/billings/billingsAddDialog";
+import { BillingsListHeader } from "@/components/billings/billingsListHeader";
 import { BillingsList } from "@/components/billings/billingsList"
-import { BillingsAddDialog } from "@/components/billings/billingsAddDialog"
-import { BillingsListHeader } from "@/components/billings/billingsListHeader"
+import { BillingStates } from "@/components/billings/billingsStates"
 import type { Bill, SortDirection, SortField, StatusFilter } from "@/types/billing.type"
-import { BillingStates } from "./billingsStates"
 import { getMatters } from "@/actions/matters"
-import { getBills, createBill as addBillToDb, updateBill as updateBillInDb, deleteBill as deleteBillFromDb } from "@/actions/billing"
+import { createBill as addBillToDb, updateBill as updateBillInDb, deleteBill as deleteBillFromDb, getBillsByMatterId } from "@/actions/billing"
 
 
-export function BillingInterface() {
+export function MatterBillingPage() {
   const {
-    bills, setBills, filteredBills, setFilteredBills, currentDateTime, setCurrentDateTime, isNewBillDialogOpen, 
-    setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, setTimeFilter, sortField, setSortField, sortDirection, setSortDirection,
-    statusFilter, setStatusFilter, matters, setMatters, selectedMatterId, setSelectedMatterId
+    bills, setBills, filteredBills, setFilteredBills, setCurrentDateTime, isNewBillDialogOpen, 
+    setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, sortField, setSortField, sortDirection, setSortDirection,
+    statusFilter, setStatusFilter, matters, setMatters, selectedMatterId
   } = BillingStates()
+
+  const params = useParams()
+  const paramsMatterId = params.matterId as string
 
   useEffect(() => {
     async function loadData() {
         setIsLoading(true)
         try {
           const [billsData, mattersData] = await Promise.all([
-            getBills(),
+            getBillsByMatterId(paramsMatterId),
             getMatters()
           ])
           setBills(billsData)
@@ -38,7 +40,7 @@ export function BillingInterface() {
       }
     loadData()
 
-  }, [setBills, setIsLoading, setMatters])
+  }, [setBills, setIsLoading, setMatters, paramsMatterId])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -82,33 +84,6 @@ const sortBills = useCallback((billsToSort: Bill[], field: SortField, direction:
   useEffect(() => {
     let result = [...bills]
 
-    if (timeFilter !== "all") {
-      const today = new Date()
-
-      if (timeFilter === "today") {
-        result = result.filter((bill) => {
-          const billDate = new Date(bill.created_at)
-          return format(billDate, "yyyy-MM-dd") === format(today, "yyyy-MM-dd")
-        })
-      } else if (timeFilter === "week") {
-        const weekStart = startOfWeek(today)
-        const weekEnd = endOfWeek(today)
-
-        result = result.filter((bill) => {
-          const billDate = new Date(bill.created_at)
-          return isWithinInterval(billDate, { start: weekStart, end: weekEnd })
-        })
-      } else if (timeFilter === "month") {
-        const monthStart = startOfMonth(today)
-        const monthEnd = endOfMonth(today)
-
-        result = result.filter((bill) => {
-          const billDate = new Date(bill.created_at)
-          return isWithinInterval(billDate, { start: monthStart, end: monthEnd })
-        })
-      }
-    }
-
     if (statusFilter !== "all") {
       const statusMap: Record<StatusFilter, string> = {
         all: "",
@@ -122,10 +97,6 @@ const sortBills = useCallback((billsToSort: Bill[], field: SortField, direction:
       if (filterStatus) {
         result = result.filter((bill) => bill.status === filterStatus)
       }
-    }
-
-    if (selectedMatterId) {
-      result = result.filter((bill) => bill.matter_id === selectedMatterId)
     }
 
     if (sortField) {
@@ -147,55 +118,6 @@ const sortBills = useCallback((billsToSort: Bill[], field: SortField, direction:
       setSortDirection("asc")
     }
   }
-
-  const handleMatterFilterChange = (matterId: string) => {
-    setSelectedMatterId(matterId === "all" ? null : matterId)
-  }
-
-
-  const totalRevenue = useMemo(() => {
-    return filteredBills.reduce((sum, bill) => sum +  Number(bill.amount), 0)
-  }, [filteredBills])
-
-
-  const todayRevenue = useMemo(() => {
-    const today = new Date()
-    return bills
-      .filter((bill) => {
-        const billDate = new Date(bill.created_at)
-        return format(billDate, "yyyy-MM-dd") === format(today, "yyyy-MM-dd")
-      })
-      .reduce((sum, bill) => sum +  Number(bill.amount), 0)
-  }, [bills])
-
-
-  const weekRevenue = useMemo(() => {
-    const today = new Date()
-    const weekStart = startOfWeek(today)
-    const weekEnd = endOfWeek(today)
-
-    return bills
-      .filter((bill) => {
-        const billDate = new Date(bill.created_at)
-        return isWithinInterval(billDate, { start: weekStart, end: weekEnd })
-      })
-      .reduce((sum, bill) => sum +  Number(bill.amount), 0)
-  }, [bills])
-
-
-  const monthRevenue = useMemo(() => {
-    const today = new Date()
-    const monthStart = startOfMonth(today)
-    const monthEnd = endOfMonth(today)
-
-    return bills
-      .filter((bill) => {
-        const billDate = new Date(bill.created_at)
-        return isWithinInterval(billDate, { start: monthStart, end: monthEnd })
-      })
-      .reduce((sum, bill) => sum +  Number(bill.amount), 0)
-  }, [bills])
-
 
   const addBill = async (bill: Omit<Bill, "bill_id">) => {
     setIsLoading(true)
@@ -242,29 +164,18 @@ const sortBills = useCallback((billsToSort: Bill[], field: SortField, direction:
     
   }
   return (
-    <div className="py-0 px-0">
+    <div className=" pb-4 md:pb-8 px-0 pt-0 overflow-auto">
       <div className="max-w-auto mx-auto">
+        <div className="border dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 mt-0">
   
-        <BillingsRevenueHeader
-          totalRevenue={totalRevenue}
-          todayRevenue={todayRevenue}
-          weekRevenue={weekRevenue}
-          monthRevenue={monthRevenue}
-          currentDateTime={currentDateTime}
-          activeFilter={timeFilter}
-          onFilterChange={setTimeFilter}
-        />
-
-  
-        <div className="border dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 mt-4">
-  
-          <BillingsListHeader
+          <BillingsListHeader 
+            statusFilter={"all"} 
+            onStatusFilterChange={setStatusFilter} 
             onNewBill={() => setIsNewBillDialogOpen(true)}
-            statusFilter={statusFilter}
-            onStatusFilterChange={setStatusFilter}
             matters={matters}
-            selectedMatterId={selectedMatterId || "all"}
-            onMatterFilterChange={handleMatterFilterChange}
+            selectedMatterId={paramsMatterId}
+            onMatterFilterChange={() => {}}
+            hideMatterFilter={true}
           />
 
           <div className="max-h-[600px] overflow-y-auto">
@@ -275,7 +186,8 @@ const sortBills = useCallback((billsToSort: Bill[], field: SortField, direction:
               onDelete={deleteBill}
               isLoading={isLoading}
               sortField={sortField}
-              onSortChange={handleSortChange}          
+              onSortChange={handleSortChange}
+              hideMatterColumn={true}          
             />
           </div>
         </div>
@@ -284,8 +196,9 @@ const sortBills = useCallback((billsToSort: Bill[], field: SortField, direction:
           open={isNewBillDialogOpen}
           onOpenChange={setIsNewBillDialogOpen}
           onSave={addBill}
-          matters={matters} 
-          matterBillingMatterId={""}        />
+          matters={matters}
+          disableMatterColumn={true}
+          matterBillingMatterId={paramsMatterId}        />
       </div>
     </div>
   )

@@ -1,4 +1,10 @@
-export type BillStatus = "Active" | "Paid" | "Pending" | "Overdue"
+// export type BillStatus = "Active" | "Paid" | "Pending" | "Overdue"
+export enum BillStatus {
+  active = "active",
+  paid = "paid",
+  pending = "pending",
+  overdue = "overdue",
+}
 
 export interface Bill {
   bill_id: string

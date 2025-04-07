@@ -4,6 +4,7 @@ import type React from "react";
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { LayoutDashboard, CheckSquare, DollarSign } from "lucide-react";
+import { MatterBillingPage } from "./[matterId]/matterBillingPage";
 
 interface MatterTabsProps {
   children: React.ReactNode;
@@ -62,10 +63,8 @@ export function MatterTabs({ children }: MatterTabsProps) {
         </TabsContent>
 
         <TabsContent value="billing" className="p-6 m-0">
-          <div className="h-[400px] flex items-center justify-center border border-dashed rounded-lg">
-          <p className="text-muted-foreground">
-              Billing content will be displayed here
-            </p>
+          <div className="h-[400px] flex items-center items-start justify-center border border-dashed rounded-lg">
+            <MatterBillingPage/>
           </div>
         </TabsContent>
       </div>
