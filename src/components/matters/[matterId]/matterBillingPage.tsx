@@ -40,7 +40,7 @@ export function MatterBillingPage() {
       }
     loadData()
 
-  }, [setBills, setIsLoading, setMatters])
+  }, [setBills, setIsLoading, setMatters, paramsMatterId])
 
   useEffect(() => {
     const interval = setInterval(() => {
