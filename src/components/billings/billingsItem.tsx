@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { format } from "date-fns"
+import { format } from "date-fns";
 
-import type { Bill } from "@/types/billing.type"
-import { BillingsButtons } from "@/components/billings/billingsButtons"
-import { BillingsEditDialog } from "@/components/billings/billingsEditDialog"
-import { TableCell, TableRow } from "@/components/ui/table"
+import type { Bill } from "@/types/billing.type";
+import { BillingsButtons } from "@/components/billings/billingsButtons";
+import { BillingsEditDialog } from "@/components/billings/billingsEditDialog";
+import { TableCell, TableRow } from "@/components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,90 +15,128 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { BillingStates } from "./billingsStates"
-import { Matter } from "@/types/matter.type"
+} from "@/components/ui/alert-dialog";
+import { BillingStates } from "./billingsStates";
+import { Matter } from "@/types/matter.type";
 
 interface BillingsItemProps {
-  bill: Bill
-  matter?: Matter
-  matters?: Matter[]
-  onUpdate: (bill: Bill) => void
-  onDelete: (id: string) => void
-  index: number
-  hideMatterColumn?: boolean 
+  bill: Bill;
+  matter?: Matter;
+  matters?: Matter[];
+  onUpdate: (bill: Bill) => void;
+  onDelete: (id: string) => void;
+  index: number;
+  hideMatterColumn?: boolean;
 }
 
-export function BillingsItem({ bill, matter, onUpdate, onDelete, index, hideMatterColumn = false }: BillingsItemProps) {
+export function BillingsItem({
+  bill,
+  matter,
+  onUpdate,
+  onDelete,
+  index,
+  hideMatterColumn = false,
+}: BillingsItemProps) {
   const {
-    isEditDialogOpen, setIsEditDialogOpen, isDeleteDialogOpen, setIsDeleteDialogOpen
-  } = BillingStates()
+    isEditDialogOpen,
+    setIsEditDialogOpen,
+    isDeleteDialogOpen,
+    setIsDeleteDialogOpen,
+  } = BillingStates();
 
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "decimal",
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
-    }).format(amount)
-  }
+    }).format(amount);
+  };
 
   const getStatusStyles = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100"
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100";
       case "paid":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100";
       case "pending":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100"
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100";
       case "overdue":
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100"
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100";
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100"
+        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100";
     }
-  }
+  };
 
-  
   return (
     <TableRow className="text-sm md:text-base dark:border-gray-700">
-      <TableCell className="text-center text-gray-500 dark:text-gray-400 font-medium w-12">{index}</TableCell>
-      
+      <TableCell className="text-center text-gray-500 dark:text-gray-400 font-medium w-12">
+        {index}
+      </TableCell>
+
       {!hideMatterColumn && (
         <TableCell
           className="font-medium max-w-[150px] truncate"
-          title={matter ? `${matter.name} [${matter.case_number}]` : `Matter ID: ${bill.matter_id}`}
+          title={
+            matter
+              ? `${matter.name} [${matter.case_number}]`
+              : `Matter ID: ${bill.matter_id}`
+          }
         >
-          {matter ? `${matter.name} [${matter.case_number}]` : `Matter ID: ${bill.matter_id}`}
+          {matter
+            ? `${matter.name} [${matter.case_number}]`
+            : `Matter ID: ${bill.matter_id}`}
         </TableCell>
       )}
-      <TableCell className="font-medium max-w-[200px] truncate" title={bill.name}>
+      <TableCell
+        className="font-medium max-w-[200px] truncate"
+        title={bill.name}
+      >
         {bill.name}
       </TableCell>
       <TableCell>{formatAmount(bill.amount)}</TableCell>
       <TableCell>{format(new Date(bill.created_at), "MMM d, yyyy")}</TableCell>
       <TableCell>
         <span
-          className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium ${getStatusStyles(bill.status)}`}
+          className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium ${getStatusStyles(
+            bill.status
+          )}`}
         >
           {bill.status}
         </span>
       </TableCell>
       <TableCell
-        className={`${hideMatterColumn ? "max-w-[250px]" : "max-w-[200px]"} truncate`}
+        className={`${
+          hideMatterColumn ? "max-w-[250px]" : "max-w-[200px]"
+        } truncate`}
         title={bill.remarks || "-"}
       >
         {bill.remarks || "-"}
       </TableCell>
       <TableCell className="text-right">
-        <BillingsButtons onEdit={() => setIsEditDialogOpen(true)} onDelete={() => setIsDeleteDialogOpen(true)} />
+        <BillingsButtons
+          onEdit={() => setIsEditDialogOpen(true)}
+          onDelete={() => setIsDeleteDialogOpen(true)}
+        />
 
-        <BillingsEditDialog bill={bill} open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} onSave={onUpdate} matters={[]} />
+        <BillingsEditDialog
+          bill={bill}
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          onSave={onUpdate}
+          matters={[]}
+        />
 
-        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialog
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+        >
           <AlertDialogContent className="max-w-md dark:bg-gray-800 dark:border-gray-700">
             <AlertDialogHeader>
-              <AlertDialogTitle className="text-lg md:text-xl">Are you sure?</AlertDialogTitle>
+              <AlertDialogTitle className="text-lg md:text-xl">
+                Are you sure?
+              </AlertDialogTitle>
               <AlertDialogDescription className="text-sm md:text-base dark:text-gray-300">
-                <p>This will permanently delete the bill &quot;{bill.name}&quot;.</p>
+                This will permanently delete the bill &quot;{bill.name}&quot;.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -116,6 +154,5 @@ export function BillingsItem({ bill, matter, onUpdate, onDelete, index, hideMatt
         </AlertDialog>
       </TableCell>
     </TableRow>
-  )
+  );
 }
-

@@ -1,50 +1,81 @@
-"use client"
+"use client";
 
-import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
-import { useMediaQuery } from "@/hooks/use-media-query"
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
-import { Bill, BillStatus} from "@/types/billing.type"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { cn } from "@/lib/utils"
-import { BillingStates } from "./billingsStates"
-import { Textarea } from "../ui/textarea"
-import { Matter } from "@/types/matter.type"
-import { useEffect, useState } from "react"
+import { Bill, BillStatus } from "@/types/billing.type";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import { BillingStates } from "./billingsStates";
+import { Textarea } from "../ui/textarea";
+import { Matter } from "@/types/matter.type";
+import { useEffect, useState } from "react";
 
 interface BillingsAddDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSave: (bill: Omit<Bill, "bill_id">) => void
-  matters: Matter[]
-  matterBillingMatterId: string
-  disableMatterColumn?: boolean
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSave: (bill: Omit<Bill, "bill_id">) => void;
+  matters: Matter[];
+  matterBillingMatterId: string;
+  disableMatterColumn?: boolean;
 }
 
-export function BillingsAddDialog({ open, onOpenChange, onSave, matters, matterBillingMatterId, disableMatterColumn = false }: BillingsAddDialogProps) {
-   const {
-        name, setName, amount, setAmount, created_at, setCreated_at, 
-        status, setStatus, remarks, setRemarks
-      }= BillingStates()
-  const [matter_id, setMatterId] = useState(matterBillingMatterId || "")
-  
-  const isDesktop = useMediaQuery("(min-width: 768px)")
+export function BillingsAddDialog({
+  open,
+  onOpenChange,
+  onSave,
+  matters,
+  matterBillingMatterId,
+  disableMatterColumn = false,
+}: BillingsAddDialogProps) {
+  const {
+    name,
+    setName,
+    amount,
+    setAmount,
+    created_at,
+    setCreated_at,
+    status,
+    setStatus,
+    remarks,
+    setRemarks,
+  } = BillingStates();
+  const [matter_id, setMatterId] = useState(matterBillingMatterId || "");
+
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
     if (open) {
-      setMatterId(matterBillingMatterId)
+      setMatterId(matterBillingMatterId);
     }
-  }, [open,matterBillingMatterId])
+  }, [open, matterBillingMatterId]);
 
   const handleSave = () => {
-    if (!name || !amount || !matter_id) return
-    
+    if (!name || !amount || !matter_id) return;
+
     const newBill: Omit<Bill, "bill_id"> = {
       matter_id,
       name,
@@ -52,46 +83,64 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, matters, matterB
       created_at: created_at.toISOString(),
       status,
       remarks,
-    }
+    };
 
-    onSave(newBill)
-    resetForm()
-    onOpenChange(false)
-  }
+    onSave(newBill);
+    resetForm();
+    onOpenChange(false);
+  };
 
   const resetForm = () => {
-    setMatterId("")
-    setName("")
-    setAmount("")
-    setCreated_at(new Date())
-    setStatus(BillStatus.pending)
-    setRemarks("")
-  }
+    setMatterId("");
+    setName("");
+    setAmount("");
+    setCreated_at(new Date());
+    setStatus(BillStatus.pending);
+    setRemarks("");
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className={`${isDesktop ? "sm:max-w-[700px]" : "sm:max-w-[90vw]"} max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700`}
+        className={`${
+          isDesktop ? "sm:max-w-[700px]" : "sm:max-w-[90vw]"
+        } max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700`}
       >
         <DialogHeader>
-          <DialogTitle className="text-xl md:text-2xl">Add New Bill</DialogTitle>
+          <DialogTitle className="text-xl md:text-2xl">
+            Add New Bill
+          </DialogTitle>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
-          <div className={`grid ${isDesktop ? "grid-cols-2" : "grid-cols-1"} gap-4`}>
-
+          <div
+            className={`grid ${
+              isDesktop ? "grid-cols-2" : "grid-cols-1"
+            } gap-4`}
+          >
             <div className="space-y-4">
-            <div className="grid gap-2">
+              <div className="grid gap-2">
                 <Label htmlFor="matter" className="text-base md:text-lg">
                   Matter
                 </Label>
-                <Select value={matter_id} onValueChange={setMatterId} disabled={disableMatterColumn}>
-                  <SelectTrigger id="matter" className="text-sm md:text-base dark:bg-gray-700 dark:border-gray-600">
+                <Select
+                  value={matter_id}
+                  onValueChange={setMatterId}
+                  disabled={disableMatterColumn}
+                >
+                  <SelectTrigger
+                    id="matter"
+                    className="text-sm md:text-base dark:bg-gray-700 dark:border-gray-600"
+                  >
                     <SelectValue placeholder="Select matter" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[200px] overflow-y-auto dark:bg-gray-700 dark:border-gray-600">
                     {matters.map((matter) => (
-                      <SelectItem key={matter.matter_id} value={matter.matter_id} className="text-sm md:text-base">
+                      <SelectItem
+                        key={matter.matter_id}
+                        value={matter.matter_id}
+                        className="text-sm md:text-base"
+                      >
                         {matter.name} [{matter.case_number}]
                       </SelectItem>
                     ))}
@@ -136,7 +185,7 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, matters, matterB
                       variant="outline"
                       className={cn(
                         "w-full justify-start text-left font-normal text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:border-gray-600",
-                        !created_at && "text-muted-foreground",
+                        !created_at && "text-muted-foreground"
                       )}
                     >
                       <CalendarIcon className="mr-2 h-3 w-3 md:h-4 md:w-4" />
@@ -156,25 +205,41 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, matters, matterB
               </div>
             </div>
 
-       
             <div className="flex flex-col">
               <div className="grid gap-2 mb-4 space-y-2">
-                  <Label htmlFor="status">Status</Label>
-                  <Select
-                    defaultValue="Pending"
-                    value={status}
-                    onValueChange={(value) => setStatus(value as BillStatus)}
+                <Label htmlFor="status">Status</Label>
+                <Select
+                  defaultValue="Pending"
+                  value={status}
+                  onValueChange={(value) => setStatus(value as BillStatus)}
+                >
+                  <SelectTrigger
+                    id="status"
+                    className="text-sm md:text-base dark:bg-gray-700 dark:border-gray-600"
                   >
-                    <SelectTrigger id="status" className="text-sm md:text-base dark:bg-gray-700 dark:border-gray-600">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-[200px] overflow-y-auto dark:bg-gray-700 dark:border-gray-600">
-                      <SelectItem value="Active" className="text-sm md:text-base">Active</SelectItem>
-                      <SelectItem value="Paid" className="text-sm md:text-base">Paid</SelectItem>
-                      <SelectItem value="Pending" className="text-sm md:text-base">Pending</SelectItem>
-                      <SelectItem value="Overdue" className="text-sm md:text-base">Overdue</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px] overflow-y-auto dark:bg-gray-700 dark:border-gray-600">
+                    <SelectItem value="active" className="text-sm md:text-base">
+                      Active
+                    </SelectItem>
+                    <SelectItem value="paid" className="text-sm md:text-base">
+                      Paid
+                    </SelectItem>
+                    <SelectItem
+                      value="pending"
+                      className="text-sm md:text-base"
+                    >
+                      Pending
+                    </SelectItem>
+                    <SelectItem
+                      value="overdue"
+                      className="text-sm md:text-base"
+                    >
+                      Overdue
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="flex flex-col flex-grow">
@@ -212,8 +277,5 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, matters, matterB
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-
-
-
