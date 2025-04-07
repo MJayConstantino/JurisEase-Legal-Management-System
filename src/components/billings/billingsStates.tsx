@@ -9,7 +9,7 @@ export function BillingStates(){
     const [name, setName] = useState("")
     const [amount, setAmount] = useState("")
     const [created_at, setCreated_at] = useState<Date>(new Date())
-    const [status, setStatus] = useState<BillStatus>("Pending")
+    const [status, setStatus] = useState<BillStatus>(BillStatus.pending)
     const [remarks, setRemarks] = useState("")
     const [matter_id, setMatterId] = useState("")
 

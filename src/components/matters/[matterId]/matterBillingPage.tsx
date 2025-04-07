@@ -2,12 +2,12 @@
 
 import { useParams } from "next/navigation"
 import { useEffect } from "react"
-import { MatterBillAddDialog } from "../matters-billings/matterBillingAddDialog"
-import { MatterBillingListHeader } from "../matters-billings/matterBillingListHeader"
 import { useCallback } from 'react';
+import { BillingsAddDialog } from "@/components/billings/billingsAddDialog";
+import { BillingsListHeader } from "@/components/billings/billingsListHeader";
 import { BillingsList } from "@/components/billings/billingsList"
-import type { Bill, SortDirection, SortField, StatusFilter } from "@/types/billing.type"
 import { BillingStates } from "@/components/billings/billingsStates"
+import type { Bill, SortDirection, SortField, StatusFilter } from "@/types/billing.type"
 import { getMatters } from "@/actions/matters"
 import { createBill as addBillToDb, updateBill as updateBillInDb, deleteBill as deleteBillFromDb, getBillsByMatterId } from "@/actions/billing"
 
@@ -164,14 +164,19 @@ const sortBills = useCallback((billsToSort: Bill[], field: SortField, direction:
     
   }
   return (
-    <div className="py-4 md:py-8 px-0">
+    <div className=" pb-4 md:pb-8 px-0 pt-0 overflow-auto">
       <div className="max-w-auto mx-auto">
-        <div className="border dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 mt-4">
+        <div className="border dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 mt-0">
   
-          <MatterBillingListHeader 
-          statusFilter={"all"} 
-          onStatusFilterChange={setStatusFilter} 
-          onNewBill={() => setIsNewBillDialogOpen(true)}/>
+          <BillingsListHeader 
+            statusFilter={"all"} 
+            onStatusFilterChange={setStatusFilter} 
+            onNewBill={() => setIsNewBillDialogOpen(true)}
+            matters={matters}
+            selectedMatterId={paramsMatterId}
+            onMatterFilterChange={() => {}}
+            hideMatterFilter={true}
+          />
 
           <div className="max-h-[600px] overflow-y-auto">
             <BillingsList
@@ -181,17 +186,19 @@ const sortBills = useCallback((billsToSort: Bill[], field: SortField, direction:
               onDelete={deleteBill}
               isLoading={isLoading}
               sortField={sortField}
-              onSortChange={handleSortChange}          
+              onSortChange={handleSortChange}
+              hideMatterColumn={true}          
             />
           </div>
         </div>
 
-        <MatterBillAddDialog
+        <BillingsAddDialog
           open={isNewBillDialogOpen}
           onOpenChange={setIsNewBillDialogOpen}
           onSave={addBill}
-          matters={matters} 
-          currentMatterId={paramsMatterId}        />
+          matters={matters}
+          disableMatterColumn={true}
+          matterBillingMatterId={paramsMatterId}        />
       </div>
     </div>
   )

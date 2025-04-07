@@ -242,7 +242,7 @@ const sortBills = useCallback((billsToSort: Bill[], field: SortField, direction:
     
   }
   return (
-    <div className="py-4 md:py-8 px-0">
+    <div className="py-0 px-0">
       <div className="max-w-auto mx-auto">
   
         <BillingsRevenueHeader
@@ -284,8 +284,8 @@ const sortBills = useCallback((billsToSort: Bill[], field: SortField, direction:
           open={isNewBillDialogOpen}
           onOpenChange={setIsNewBillDialogOpen}
           onSave={addBill}
-          matters={matters}
-        />
+          matters={matters} 
+          matterBillingMatterId={""}        />
       </div>
     </div>
   )

@@ -4,7 +4,7 @@ import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 
-import type { Bill, BillStatus} from "@/types/billing.type"
+import { Bill, BillStatus} from "@/types/billing.type"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -16,22 +16,32 @@ import { cn } from "@/lib/utils"
 import { BillingStates } from "./billingsStates"
 import { Textarea } from "../ui/textarea"
 import { Matter } from "@/types/matter.type"
+import { useEffect, useState } from "react"
 
 interface BillingsAddDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSave: (bill: Omit<Bill, "bill_id">) => void
   matters: Matter[]
+  matterBillingMatterId: string
+  disableMatterColumn?: boolean
 }
 
-export function BillingsAddDialog({ open, onOpenChange, onSave, matters }: BillingsAddDialogProps) {
+export function BillingsAddDialog({ open, onOpenChange, onSave, matters, matterBillingMatterId, disableMatterColumn = false }: BillingsAddDialogProps) {
    const {
         name, setName, amount, setAmount, created_at, setCreated_at, 
-        status, setStatus, remarks, setRemarks, matter_id, setMatterId
+        status, setStatus, remarks, setRemarks
       }= BillingStates()
+  const [matter_id, setMatterId] = useState(matterBillingMatterId || "")
   
   const isDesktop = useMediaQuery("(min-width: 768px)")
-  
+
+  useEffect(() => {
+    if (open) {
+      setMatterId(matterBillingMatterId)
+    }
+  }, [open,matterBillingMatterId])
+
   const handleSave = () => {
     if (!name || !amount || !matter_id) return
     
@@ -54,7 +64,7 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, matters }: Billi
     setName("")
     setAmount("")
     setCreated_at(new Date())
-    setStatus("Active")
+    setStatus(BillStatus.pending)
     setRemarks("")
   }
 
@@ -75,7 +85,7 @@ export function BillingsAddDialog({ open, onOpenChange, onSave, matters }: Billi
                 <Label htmlFor="matter" className="text-base md:text-lg">
                   Matter
                 </Label>
-                <Select value={matter_id} onValueChange={setMatterId}>
+                <Select value={matter_id} onValueChange={setMatterId} disabled={disableMatterColumn}>
                   <SelectTrigger id="matter" className="text-sm md:text-base dark:bg-gray-700 dark:border-gray-600">
                     <SelectValue placeholder="Select matter" />
                   </SelectTrigger>
