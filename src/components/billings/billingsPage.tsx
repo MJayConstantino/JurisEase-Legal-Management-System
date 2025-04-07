@@ -286,7 +286,7 @@ export function BillingInterface() {
     }
   };
   return (
-    <div className="px-0">
+    <div className="py-0 px-0">
       <div className="max-w-auto mx-auto">
         <BillingsRevenueHeader
           totalRevenue={totalRevenue}
@@ -326,6 +326,7 @@ export function BillingInterface() {
           onOpenChange={setIsNewBillDialogOpen}
           onSave={addBill}
           matters={matters}
+          matterBillingMatterId={""}
         />
       </div>
     </div>
