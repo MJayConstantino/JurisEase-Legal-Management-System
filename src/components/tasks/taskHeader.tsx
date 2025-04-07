@@ -1,19 +1,22 @@
-"use client";
+"use client"
 
-import { Plus, Grid, List } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import type { Task } from "@/types/task.type";
-import { createTask } from "@/actions/tasks";
-import { TaskForm } from "./taskForm";
-import { toast } from "sonner";
+import type React from "react"
+
+import { Plus, Grid, List } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import type { Task } from "@/types/task.type"
+import { createTask } from "@/actions/tasks"
+import { TaskForm } from "./taskForm"
+import { toast } from "sonner"
 
 interface TasksHeaderProps {
-  onSearch: (term: string) => void;
-  onStatusChange: (status: string) => void;
-  onViewChange: (view: "grid" | "table") => void;
-  view: "grid" | "table";
-  onTaskCreated?: (task: Task) => void;
+  onSearch: (term: string) => void
+  onStatusChange: (status: string) => void
+  onViewChange: (view: "grid" | "table") => void
+  view: "grid" | "table"
+  onTaskCreated?: (task: Task) => void
+  matter_id?: string // Add matter_id prop
 }
 
 export function TasksHeader({
@@ -21,14 +24,15 @@ export function TasksHeader({
   onViewChange,
   view,
   onTaskCreated,
+  matter_id, // Add matter_id parameter
 }: TasksHeaderProps) {
-  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
-  const [activeFilter, setActiveFilter] = useState<string>("all");
+  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false)
+  const [activeFilter, setActiveFilter] = useState<string>("all")
 
   const handleFilterChange = (filter: string) => {
-    setActiveFilter(filter);
-    onStatusChange(filter);
-  };
+    setActiveFilter(filter)
+    onStatusChange(filter)
+  }
 
   const handleSaveTask = async (task: Task) => {
     try {
@@ -38,21 +42,21 @@ export function TasksHeader({
         status: task.status,
         priority: task.priority,
         due_date: task.due_date,
-        matter_id: task.matter_id,
-      } as Omit<Task, "id">;
+        matter_id: matter_id || task.matter_id, // Use provided matter_id if available
+      } as Omit<Task, "id">
 
-      setIsAddTaskOpen(false);
+      setIsAddTaskOpen(false)
 
-      const createdTask = await createTask(newTask);
+      const createdTask = await createTask(newTask)
 
       if (createdTask && onTaskCreated) {
-        onTaskCreated(createdTask);
+        onTaskCreated(createdTask)
       }
     } catch (error) {
-      console.error("Error creating task:", error);
-      toast.error("Failed to create task");
+      console.error("Error creating task:", error)
+      toast.error("Failed to create task")
     }
-  };
+  }
 
   const handleSaveAndCreateAnother = async (task: Task) => {
     try {
@@ -62,19 +66,19 @@ export function TasksHeader({
         status: task.status,
         priority: task.priority,
         due_date: task.due_date,
-        matter_id: task.matter_id,
-      } as Omit<Task, "id">;
+        matter_id: matter_id || task.matter_id, // Use provided matter_id if available
+      } as Omit<Task, "id">
 
-      const createdTask = await createTask(newTask);
+      const createdTask = await createTask(newTask)
 
       if (createdTask && onTaskCreated) {
-        onTaskCreated(createdTask);
+        onTaskCreated(createdTask)
       }
     } catch (error) {
-      console.error("Error creating task:", error);
-      toast.error("Failed to create task");
+      console.error("Error creating task:", error)
+      toast.error("Failed to create task")
     }
-  };
+  }
 
   return (
     <div className="w-full">
@@ -82,12 +86,7 @@ export function TasksHeader({
       <div className="bg-white shadow dark:bg-gray-900 rounded-lg p-3 sm:p-3 border">
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* New Task Button */}
-          <Button
-            variant="blue"
-            size="sm"
-            className="sm:h-9"
-            onClick={() => setIsAddTaskOpen(true)}
-          >
+          <Button variant="blue" size="sm" className="sm:h-9" onClick={() => setIsAddTaskOpen(true)}>
             <Plus className="h-3 w-3 mr-1 sm:mr-2" />
             <span className="text-xs sm:text-sm">New Task</span>
           </Button>
@@ -156,8 +155,23 @@ export function TasksHeader({
           onOpenChange={setIsAddTaskOpen}
           onSave={handleSaveTask}
           onSaveAndCreateAnother={handleSaveAndCreateAnother}
+          initialTask={
+            matter_id
+              ? {
+                  task_id: "",
+                  name: "",
+                  description: "",
+                  due_date: undefined,
+                  priority: "low",
+                  status: "in-progress",
+                  matter_id: matter_id,
+                  created_at: new Date(),
+                }
+              : undefined
+          }
         />
       </div>
     </div>
-  );
+  )
 }
+
