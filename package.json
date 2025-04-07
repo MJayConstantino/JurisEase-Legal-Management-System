@@ -9,11 +9,11 @@
     "lint": "next lint",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test:api": "cd ./tests/newman  && newman run auth.json --reporter-cli-no-console",
-    "test:frontend": "jest --selectProjects frontend --verbose",
-    "test:backend": "jest --selectProjects backend --verbose",
-    "test": "jest --detectOpenHandles --verbose",
-    "test:watch": "jest --detectOpenHandles --verbose --watchAll"
+    "test:api": "cd ./tests/newman && cross-env NODE_ENV=test newman run auth.json --reporter-cli-no-console",
+    "test:frontend": "cross-env NODE_ENV=test jest --selectProjects frontend --verbose",
+    "test:backend": "cross-env NODE_ENV=test jest --selectProjects backend --verbose",
+    "test": "cross-env NODE_ENV=test jest --detectOpenHandles --verbose",
+    "test:watch": "cross-env NODE_ENV=test jest --detectOpenHandles --verbose --watchAll"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.6",
@@ -75,6 +75,8 @@
     "@vitest/browser": "^3.0.8",
     "@vitest/coverage-v8": "^3.0.8",
     "babel-jest": "^29.7.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.7",
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
     "eslint-plugin-storybook": "^0.11.4",
