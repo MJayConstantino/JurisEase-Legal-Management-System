@@ -43,7 +43,7 @@ export function TaskList() {
         },
         (payload) => {
           console.log("Change received!", payload);
-          fetchTasks(); 
+          fetchTasks();
 
           if (payload.eventType === "INSERT") {
             toast.success("New task added");
@@ -79,6 +79,12 @@ export function TaskList() {
       return matchesSearch && matchesStatus;
     })
     .sort((a, b) => {
+      if (a.status === "overdue" && b.status !== "overdue") return -1;
+      if (a.status !== "overdue" && b.status === "overdue") return 1;
+
+      if (a.status === "completed" && b.status !== "completed") return 1;
+      if (a.status !== "completed" && b.status === "completed") return -1;
+
       const dateA = a.due_date ? new Date(a.due_date).getTime() : 0;
       const dateB = b.due_date ? new Date(b.due_date).getTime() : 0;
       return dateA - dateB;
@@ -101,7 +107,7 @@ export function TaskList() {
   };
 
   const handleTaskUpdated = () => {
-    fetchTasks(); 
+    fetchTasks();
   };
 
   return (
