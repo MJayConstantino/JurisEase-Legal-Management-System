@@ -9,10 +9,9 @@ export function BillingStates(){
     const [name, setName] = useState("")
     const [amount, setAmount] = useState("")
     const [created_at, setCreated_at] = useState<Date>(new Date())
-    const [status, setStatus] = useState<BillStatus>("Active")
+    const [status, setStatus] = useState<BillStatus>(BillStatus.pending)
     const [remarks, setRemarks] = useState("")
     const [matter_id, setMatterId] = useState("")
-
 
     // billing items
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -35,6 +34,10 @@ export function BillingStates(){
     const [selectedMatterId, setSelectedMatterId] = useState<string | null>(null)
     const [currentMatter, setCurrentMatter] = useState<Matter | null>(null)
 
+    // matter-billing page
+    const [billToEdit, setBillToEdit] = useState<Bill | null>(null)
+    const [billIdToDelete, setBillIdToDelete] = useState<string | null>(null)
+
     return{
         name, setName, remarks, setRemarks, amount, setAmount, created_at, setCreated_at, 
         status, setStatus, matter_id, setMatterId,
@@ -45,6 +48,8 @@ export function BillingStates(){
 
         bills, setBills, filteredBills, setFilteredBills, currentDateTime, setCurrentDateTime, isNewBillDialogOpen, 
         setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, setTimeFilter, sortField, setSortField, sortDirection, setSortDirection,
-        statusFilter, setStatusFilter, matters, setMatters, selectedMatterId, setSelectedMatterId, currentMatter, setCurrentMatter
+        statusFilter, setStatusFilter, matters, setMatters, selectedMatterId, setSelectedMatterId, currentMatter, setCurrentMatter,
+
+        billToEdit, setBillToEdit, billIdToDelete, setBillIdToDelete
     }
 }

@@ -22,13 +22,14 @@ import { Matter } from "@/types/matter.type"
 interface BillingsItemProps {
   bill: Bill
   matter?: Matter
-  matters: Matter[]
+  matters?: Matter[]
   onUpdate: (bill: Bill) => void
   onDelete: (id: string) => void
   index: number
+  hideMatterColumn?: boolean 
 }
 
-export function BillingsItem({ bill, matter, onUpdate, onDelete, index }: BillingsItemProps) {
+export function BillingsItem({ bill, matter, onUpdate, onDelete, index, hideMatterColumn = false }: BillingsItemProps) {
   const {
     isEditDialogOpen, setIsEditDialogOpen, isDeleteDialogOpen, setIsDeleteDialogOpen
   } = BillingStates()
@@ -43,13 +44,13 @@ export function BillingsItem({ bill, matter, onUpdate, onDelete, index }: Billin
 
   const getStatusStyles = (status: string) => {
     switch (status) {
-      case "Active":
+      case "active":
         return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100"
-      case "Paid":
+      case "paid":
         return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
-      case "Pending":
+      case "pending":
         return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100"
-      case "Overdue":
+      case "overdue":
         return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100"
       default:
         return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100"
@@ -60,12 +61,15 @@ export function BillingsItem({ bill, matter, onUpdate, onDelete, index }: Billin
   return (
     <TableRow className="text-sm md:text-base dark:border-gray-700">
       <TableCell className="text-center text-gray-500 dark:text-gray-400 font-medium w-12">{index}</TableCell>
-      <TableCell
-        className="font-medium max-w-[150px] truncate"
-        title={matter ? `${matter.name} [${matter.case_number}]` : `Matter ID: ${bill.matter_id}`}
-      >
-        {matter ? `${matter.name} [${matter.case_number}]` : `Matter ID: ${bill.matter_id}`}
-      </TableCell>
+      
+      {!hideMatterColumn && (
+        <TableCell
+          className="font-medium max-w-[150px] truncate"
+          title={matter ? `${matter.name} [${matter.case_number}]` : `Matter ID: ${bill.matter_id}`}
+        >
+          {matter ? `${matter.name} [${matter.case_number}]` : `Matter ID: ${bill.matter_id}`}
+        </TableCell>
+      )}
       <TableCell className="font-medium max-w-[200px] truncate" title={bill.name}>
         {bill.name}
       </TableCell>
@@ -78,7 +82,10 @@ export function BillingsItem({ bill, matter, onUpdate, onDelete, index }: Billin
           {bill.status}
         </span>
       </TableCell>
-      <TableCell className="max-w-[250px] truncate" title={bill.remarks || "-"}>
+      <TableCell
+        className={`${hideMatterColumn ? "max-w-[250px]" : "max-w-[200px]"} truncate`}
+        title={bill.remarks || "-"}
+      >
         {bill.remarks || "-"}
       </TableCell>
       <TableCell className="text-right">

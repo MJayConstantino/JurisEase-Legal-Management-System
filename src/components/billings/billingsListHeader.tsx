@@ -19,9 +19,10 @@ interface BillingsListHeaderProps {
   matters: Matter[]
   selectedMatterId: string
   onMatterFilterChange: (matterId: string) => void
+  hideMatterFilter?: boolean
 }
 
-export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChange,  matters, selectedMatterId, onMatterFilterChange }: BillingsListHeaderProps) {
+export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChange,  matters, selectedMatterId, onMatterFilterChange, hideMatterFilter = false, }: BillingsListHeaderProps) {
   const {isDropdownOpen, setIsDropdownOpen}= BillingStates()
 
   const statusOptions = [
@@ -87,26 +88,28 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
           </DropdownMenu>
         </div>
       </div>
-      <div className="w-full md:w-auto flex items-center space-x-4">
-        <Label htmlFor="matter" className="text-base md:text-lg">
-          Filter by Matter:
-        </Label>
-        <Select value={selectedMatterId} onValueChange={(value) => onMatterFilterChange(value)}>
-          <SelectTrigger className="w-full md:w-[220px] dark:bg-gray-800 dark:border-gray-700 text-sm md:text-base">
-            <SelectValue placeholder="Filter by matter" />
-          </SelectTrigger>
-          <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
-            <SelectItem value="all" className="text-sm md:text-base">
-              All
-            </SelectItem>
-            {matters.map((matter) => (
-              <SelectItem key={matter.matter_id} value={matter.matter_id} className="text-sm md:text-base">
-                {matter.name} [{matter.case_number}]
+      {!hideMatterFilter && (
+        <div className="w-full md:w-auto flex items-center space-x-4">
+          <Label htmlFor="matter" className="text-base md:text-lg">
+            Filter by Matter:
+          </Label>
+          <Select value={selectedMatterId} onValueChange={(value) => onMatterFilterChange(value)}>
+            <SelectTrigger className="w-full md:w-[220px] dark:bg-gray-800 dark:border-gray-700 text-sm md:text-base">
+              <SelectValue placeholder="Filter by matter" />
+            </SelectTrigger>
+            <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
+              <SelectItem value="all" className="text-sm md:text-base">
+                All
               </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+              {matters.map((matter) => (
+                <SelectItem key={matter.matter_id} value={matter.matter_id} className="text-sm md:text-base">
+                  {matter.name} [{matter.case_number}]
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
     </div>
   )
 }
