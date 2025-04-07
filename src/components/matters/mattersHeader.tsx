@@ -18,7 +18,7 @@ export function MattersHeader({
   const [isAddMatterOpen, setIsAddMatterOpen] = useState(false);
 
   return (
-    <div className="p-4 border-b">
+    <div className="p-4 border-b bg-gray-50 dark:bg-gray-900 dark:border-gray-700">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <Button onClick={() => setIsAddMatterOpen(true)}>

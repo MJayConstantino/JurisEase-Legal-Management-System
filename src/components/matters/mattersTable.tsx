@@ -84,10 +84,10 @@ export function MattersTable({
   return (
     <div className="overflow-x-auto">
       <Table>
-        <TableHeader>
+        <TableHeader className="border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
           <TableRow>
             <TableHead>
-              {renderSortableHeader("case_number", "Case Number")}
+              {renderSortableHeader("case_number", "Case #")}
             </TableHead>
             <TableHead>{renderSortableHeader("name", "Matter Name")}</TableHead>
             <TableHead>{renderSortableHeader("client", "Client")}</TableHead>

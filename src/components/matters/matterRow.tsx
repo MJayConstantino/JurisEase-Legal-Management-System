@@ -51,7 +51,11 @@ export function MatterRow({
         onClick={() => onRowClick(matter.matter_id)}
       >
         <TableCell className="font-medium">
-          {isLoading ? <Skeleton className="w-24 h-4" /> : matter.case_number}
+          {isLoading ? (
+            <Skeleton className="w-24 h-4 items-center" />
+          ) : (
+            matter.case_number
+          )}
         </TableCell>
         <TableCell>
           {isLoading ? <Skeleton className="w-32 h-4" /> : matter.name}
