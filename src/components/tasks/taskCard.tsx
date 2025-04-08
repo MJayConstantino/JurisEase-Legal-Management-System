@@ -1,10 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { Status, Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { format, isBefore } from "date-fns";
-import { Calendar, Check, Pencil } from "lucide-react";
+import { Calendar, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { updateTask, deleteTask } from "@/actions/tasks";
 import { getMatters } from "@/actions/matters";
@@ -98,26 +99,52 @@ export function TaskCard({ task }: TaskCardProps) {
     if (isProcessing) return;
 
     try {
+      setIsProcessing(true);
+
+      // If task is completed, revert to previous state or default to "in progress"
+      // If task is overdue and due date is still in the past, keep it as overdue
+      let newStatus: Status;
+
+      if (localTask.status === "completed") {
+        // Check if it should be overdue based on due date
+        if (
+          localTask.due_date &&
+          isBefore(new Date(localTask.due_date), new Date())
+        ) {
+          newStatus = "overdue";
+        } else {
+          // Default to "in progress" if not overdue
+          newStatus = "in-progress";
+        }
+      } else {
+        newStatus = "completed";
+      }
+
       setLocalTask({
         ...localTask,
-        status: "completed",
+        status: newStatus,
       });
 
       await updateTask(
         task.task_id,
-        { status: "completed" },
+        { status: newStatus },
         {
           ...task,
-          status: "completed",
+          status: newStatus,
         }
       );
       router.refresh();
       window.location.reload();
-      toast.success("Task marked as completed");
+      toast.success(
+        newStatus === "completed"
+          ? "Task marked as completed"
+          : `Task marked as ${newStatus}`
+      );
     } catch (error) {
-      console.error("Error completing task:", error);
+      console.error("Error updating task status:", error);
       setLocalTask(task);
-      toast.error("Failed to complete task");
+      toast.error("Failed to update task status");
+    } finally {
       setIsProcessing(false);
     }
   };
@@ -221,25 +248,33 @@ export function TaskCard({ task }: TaskCardProps) {
         </div>
 
         <div className="flex flex-wrap items-center justify-between mt-2 pt-2 border-t dark:border-gray-700 gap-y-2">
-          <Badge
-            variant="outline"
-            className={`text-xs ${getStatusColor(localTask.status)}`}
-          >
-            {localTask.status}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge
+              variant="outline"
+              className={`text-xs ${getStatusColor(localTask.status)}`}
+            >
+              {localTask.status}
+            </Badge>
+          </div>
 
           <div className="flex flex-wrap gap-1">
-            <Button
-              variant="default"
-              size="sm"
-              className="hover:cursor-pointer h-7 w-auto px-1.5 text-xs dark:text-white bg-green-800 hover:bg-green-900"
-              onClick={handleComplete}
-              disabled={localTask.status === "completed" || isProcessing}
-            >
-              <Check className="h-3 w-3 mr-1" />
-              <span className="hidden xxs:inline">Complete</span>
-            </Button>
-
+            <div className="flex items-center">
+              <label
+              htmlFor={`task-complete-${task.task_id}`}
+              className="text-xs cursor-pointer select-none mr-3 font-medium text-muted-foreground dark:text-gray-400"
+              >
+              Mark as Complete
+              </label>
+              <Checkbox
+              checked={localTask.status === "completed"}
+              onCheckedChange={handleComplete}
+              disabled={isProcessing}
+              id={`task-complete-${task.task_id}`}
+              className={`mr-1 h-7 w-8 border-2 border-gray-300 rounded-md hover:cursor-pointer shadow ${
+                localTask.status === "completed" ? "dark:bg-green-700" : "dark:bg-gray-800"
+              }`}
+              />
+            </div>
             <Button
               variant="default"
               size="sm"

@@ -1,117 +1,130 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import type { Task } from "@/types/task.type";
-import { getTasks } from "@/actions/tasks";
-import { TaskRow } from "./taskRow";
-import { TaskCard } from "./taskCard";
-import { TasksHeader } from "./taskHeader";
-import { supabase } from "@/lib/supabase";
-import { toast } from "sonner";
+import { useState, useEffect, useCallback } from "react"
+import type { Task } from "@/types/task.type"
+import { getTasks } from "@/actions/tasks"
+import { getTasksByMatterId } from "@/actions/tasks"
+import { TaskRow } from "./taskRow"
+import { TaskCard } from "./taskCard"
+import { TasksHeader } from "./taskHeader"
+import { supabase } from "@/lib/supabase"
+import { toast } from "sonner"
 
-export function TaskList() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [view, setView] = useState<"grid" | "table">("grid");
+interface TaskListProps {
+  matterId?: string
+}
 
-  const fetchTasks = async () => {
-    setIsLoading(true);
+export function TaskList({ matterId }: TaskListProps) {
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [view, setView] = useState<"grid" | "table">("grid")
+
+  const fetchTasks = useCallback(async () => {
+    setIsLoading(true)
     try {
-      const data = await getTasks();
-      setTasks(data);
+      const data = matterId ? await getTasksByMatterId(matterId) : await getTasks()
+      setTasks(data ?? [])
     } catch (error) {
-      console.error("Error fetching tasks:", error);
-      toast.error("Failed to load tasks");
+      console.error("Error fetching tasks:", error)
+      toast.error("Failed to load tasks")
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }, [matterId])
 
   useEffect(() => {
-    fetchTasks();
+    fetchTasks()
 
+    // Set up real-time subscription for tasks related to this matter
     const channel = supabase
-      .channel("tasks-changes")
+      .channel(`tasks-changes-${matterId || "all"}`)
       .on(
         "postgres_changes",
         {
           event: "*",
           schema: "public",
           table: "tasks",
+          ...(matterId ? { filter: `matter_id=eq.${matterId}` } : {}),
         },
         (payload) => {
-          console.log("Change received!", payload);
-          fetchTasks(); 
+          console.log("Change received!", payload)
+          fetchTasks()
 
           if (payload.eventType === "INSERT") {
-            toast.success("New task added");
+            toast.success("New task added")
           } else if (payload.eventType === "UPDATE") {
-            toast.success("Task updated");
+            toast.success("Task updated")
           } else if (payload.eventType === "DELETE") {
-            toast.success("Task deleted");
+            toast.success("Task deleted")
           }
-        }
+        },
       )
-      .subscribe();
+      .subscribe()
 
     return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+      supabase.removeChannel(channel)
+    }
+  }, [fetchTasks, matterId])
 
   const filteredTasks = tasks
     .filter((task) => {
+      // Additional filtering for search and status
       const matchesSearch =
         searchTerm === "" ||
         task.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         task.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        task.task_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        task.matter_id?.toLowerCase().includes(searchTerm.toLowerCase());
+        task.task_id.toLowerCase().includes(searchTerm.toLowerCase())
 
       const matchesStatus =
         statusFilter === "all" ||
         (statusFilter === "in-progress" && task.status === "in-progress") ||
         (statusFilter === "overdue" && task.status === "overdue") ||
-        (statusFilter === "completed" && task.status === "completed");
+        (statusFilter === "completed" && task.status === "completed")
 
-      return matchesSearch && matchesStatus;
+      return matchesSearch && matchesStatus
     })
     .sort((a, b) => {
-      const dateA = a.due_date ? new Date(a.due_date).getTime() : 0;
-      const dateB = b.due_date ? new Date(b.due_date).getTime() : 0;
-      return dateA - dateB;
-    });
+      if (a.status === "overdue" && b.status !== "overdue") return -1
+      if (a.status !== "overdue" && b.status === "overdue") return 1
+
+      if (a.status === "completed" && b.status !== "completed") return 1
+      if (a.status !== "completed" && b.status === "completed") return -1
+
+      const dateA = a.due_date ? new Date(a.due_date).getTime() : 0
+      const dateB = b.due_date ? new Date(b.due_date).getTime() : 0
+      return dateA - dateB
+    })
 
   const handleStatusChange = (status: string) => {
-    setStatusFilter(status);
-  };
+    setStatusFilter(status)
+  }
 
   const handleSearch = (term: string) => {
-    setSearchTerm(term);
-  };
+    setSearchTerm(term)
+  }
 
   const handleViewChange = (newView: "grid" | "table") => {
-    setView(newView);
-  };
+    setView(newView)
+  }
 
-  const addTask = (task: Task) => {
-    setTasks((prevTasks) => [task, ...prevTasks]);
-  };
-
-  const handleTaskUpdated = () => {
-    fetchTasks(); 
-  };
+  const handleTaskCreated = (task: Task) => {
+    // Only add the task if it belongs to this matter
+    if (!matterId || task.matter_id === matterId) {
+      setTasks((prevTasks) => [task, ...prevTasks])
+    }
+  }
 
   return (
-    <div className="container mx-auto py-2">
+    <div className="container mx-auto py-2 w-full">
       <TasksHeader
         onSearch={handleSearch}
         onStatusChange={handleStatusChange}
         onViewChange={handleViewChange}
         view={view}
-        onTaskCreated={addTask}
+        onTaskCreated={handleTaskCreated}
+        matter_id={matterId} // Pass the matter_id to pre-fill in new tasks
       />
 
       {isLoading ? (
@@ -120,7 +133,11 @@ export function TaskList() {
         </div>
       ) : filteredTasks.length === 0 ? (
         <div className="flex justify-center items-center h-64 text-muted-foreground">
-          <p>No tasks found. Create a new task to get started.</p>
+          <p>
+            {matterId
+              ? "No tasks found for this matter. Create a new task to get started."
+              : "No tasks found. Create a new task to get started."}
+          </p>
         </div>
       ) : view === "grid" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
@@ -131,14 +148,11 @@ export function TaskList() {
       ) : (
         <div className="mt-6">
           {filteredTasks.map((task) => (
-            <TaskRow
-              key={task.task_id}
-              task={task}
-              onTaskUpdated={handleTaskUpdated}
-            />
+            <TaskRow key={task.task_id} task={task} onTaskUpdated={fetchTasks} />
           ))}
         </div>
       )}
     </div>
-  );
+  )
 }
+
