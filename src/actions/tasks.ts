@@ -9,28 +9,42 @@ export async function getTasksByMatterId(matterId: string) {
     .from("tasks")
     .select("*")
     .eq("matter_id", matterId)
-    .order("due_date", { ascending: true })
+    .order("due_date", { ascending: true });
 
   if (error) {
-    console.error("Error fetching tasks for matter:", error)
-    return null
+    console.error("Error fetching tasks for matter:", error);
+    return null;
   }
 
-  return data as Task[]
+  return data as Task[];
+}
+
+export async function createTasksbyMatterId(matterId: string) {
+  const { data, error } = await supabase
+    .from("tasks")
+    .insert({ matter_id: matterId })
+    .select();
+
+  if (error) {
+    console.error("Error creating tasks for matter:", error);
+    return null;
+  }
+
+  return data as Task[];
 }
 
 export async function getTasks() {
   const { data, error } = await supabase
-    .from('tasks')
-    .select('*')
-    .order('due_date', { ascending: true })
-  
-if (error) {
-  console.error("Error fetching task:", error)
-  return []
-}
+    .from("tasks")
+    .select("*")
+    .order("due_date", { ascending: true });
 
-return data as Task[]
+  if (error) {
+    console.error("Error fetching task:", error);
+    return [];
+  }
+
+  return data as Task[];
 }
 
 export async function getTaskById(task_id: string) {
