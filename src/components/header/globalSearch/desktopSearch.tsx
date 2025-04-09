@@ -43,7 +43,7 @@ function DesktopSearch() {
           className="h-10 bg-white/90 dark:bg-gray-800/90 text-[#1B1E4B] dark:text-white pl-10 rounded-md cursor-pointer"
           onClick={handleOpenDialog}
           readOnly
-          aria-label="Search"
+          aria-label="SearchInput"
         />
         <Search
           className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#1B1E4B] dark:text-gray-400 cursor-pointer"
@@ -54,10 +54,11 @@ function DesktopSearch() {
       {/* Mobile view - just the search icon button (hidden on desktop/tablet) */}
       <Button
         variant="ghost"
+        role="button"
         size="sm"
         className="text-white hover:bg-[#1B1E4B]/50 dark:hover:bg-gray-800/50 flex items-center justify-center h-10 w-10 p-0 block md:hidden"
         onClick={handleOpenDialog}
-        aria-label="Search"
+        aria-label="SearchButton"
       >
         <Search className="h-5 w-5" />
         <span className="sr-only">Search</span>

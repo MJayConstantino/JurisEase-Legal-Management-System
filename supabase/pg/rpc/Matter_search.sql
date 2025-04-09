@@ -11,31 +11,17 @@ BEGIN
   SELECT DISTINCT m.*
   FROM matters m
   LEFT JOIN users attorney ON m.assigned_attorney = attorney.user_id
-  WHERE (
-    -- Default case: search only name when no attributes or only caseName is selected
-    (NOT include_attorney AND NOT include_client AND NOT include_opposing AND NOT include_court)
-    AND (m.name ILIKE '%' || search_term || '%')
-    
-    OR
-    
-    -- Attorney search (with not null check)
-    (include_attorney AND attorney.user_id IS NOT NULL AND attorney.user_name ILIKE '%' || search_term || '%')
-    
-    OR
-    
-    -- Client search
-    (include_client AND m.client ILIKE '%' || search_term || '%')
-    
-    OR
-    
-    -- Opposing council search
-    (include_opposing AND m.opposing_council->>'name' ILIKE '%' || search_term || '%')
-    
-    OR
-    
-    -- Court search
-    (include_court AND m.court->>'name' ILIKE '%' || search_term || '%')
-  )
+  WHERE 
+    -- ✅ **Always search case name**
+    (m.name ILIKE search_term || '%')
+
+    -- ✅ **Expand search instead of restricting results**
+    OR (include_case AND m.name ILIKE search_term || '%') -- Case name should always be included
+    OR (include_client AND m.client IS NOT NULL AND m.client ILIKE search_term || '%')
+    OR (include_attorney AND attorney.user_id IS NOT NULL AND attorney.user_name ILIKE search_term || '%')
+    OR (include_opposing AND m.opposing_council IS NOT NULL AND m.opposing_council->>'name' ILIKE search_term || '%')
+    OR (include_court AND m.court IS NOT NULL AND m.court->>'name' ILIKE search_term || '%')
+
   ORDER BY m.name;
 END;
 $$ LANGUAGE plpgsql;
