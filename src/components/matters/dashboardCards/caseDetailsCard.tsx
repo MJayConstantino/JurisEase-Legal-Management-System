@@ -15,9 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { EditableCard } from "../editableCard";
-import { updateMatter } from "@/actions/matters";
 import type { Matter } from "@/types/matter.type";
-import { toast } from "sonner";
 import { fetchUsersAction } from "@/actions/users";
 import { getUserDisplayName } from "@/utils/getUserDisplayName";
 import { getStatusColor } from "@/utils/getStatusColor";
@@ -25,6 +23,10 @@ import type { User as UserType } from "@/types/user.type";
 import { formatDateForDisplay } from "@/utils/formatDateForDisplay";
 import { formatDateForInput } from "@/utils/formatDateForInput";
 import { CaseDetailsCardSkeleton } from "./caseDetailsCardSkeleton";
+import {
+  handleSaveMatter,
+  handleCancelMatter,
+} from "@/action-handlers/matters";
 
 interface CaseDetailsCardProps {
   matter: Matter;
@@ -53,51 +55,38 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
 
   const handleChange = (field: string, value: any) => {
     setEditedMatter((prev) => {
-      // If changing status to closed, update date_closed to today as a Date object
       if (
         field === "status" &&
         value === "closed" &&
         prev.status !== "closed"
       ) {
-        return {
-          ...prev,
-          [field]: value,
-          date_closed: new Date(),
-        };
-      }
-      // If changing status from closed to something else, clear date_closed
-      else if (
+        return { ...prev, [field]: value, date_closed: new Date() };
+      } else if (
         field === "status" &&
         value !== "closed" &&
         prev.status === "closed"
       ) {
-        return {
-          ...prev,
-          [field]: value,
-          date_closed: undefined,
-        };
+        return { ...prev, [field]: value, date_closed: undefined };
       }
-      return {
-        ...prev,
-        [field]: value,
-      };
+      return { ...prev, [field]: value };
     });
   };
 
-  const handleSave = async () => {
-    try {
-      const updatedMatter = await updateMatter(editedMatter);
+  const saveChanges = async () => {
+    const { matter: updatedMatter, error } = await handleSaveMatter(
+      editedMatter
+    );
+    if (!error && updatedMatter) {
       onUpdate?.(updatedMatter);
-      toast.success("Case details have been updated successfully.");
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to update case details. Please try again.");
-      setEditedMatter({ ...matter });
+    } else {
+      const { matter: original } = handleCancelMatter(matter);
+      setEditedMatter(original);
     }
   };
 
-  const handleCancel = () => {
-    setEditedMatter({ ...matter });
+  const cancelChanges = () => {
+    const { matter: original } = handleCancelMatter(matter);
+    setEditedMatter(original);
   };
 
   if (isLoading) {
@@ -107,8 +96,8 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
   return (
     <EditableCard
       title="Case Details"
-      onSave={handleSave}
-      onCancel={handleCancel}
+      onSave={saveChanges}
+      onCancel={cancelChanges}
     >
       {(isEditing) => (
         <div className="space-y-6">
@@ -306,7 +295,7 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
             </div>
           </div>
 
-          {/* Assignment Section - All in one row */}
+          {/* Assignment Section */}
           <div>
             <h4 className="text-sm font-semibold text-muted-foreground mb-2">
               Case Assignment

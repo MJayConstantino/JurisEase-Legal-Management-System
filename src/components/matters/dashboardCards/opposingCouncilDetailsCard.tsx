@@ -4,9 +4,11 @@ import { useState } from "react";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { EditableCard } from "../editableCard";
-import { updateMatter } from "@/actions/matters";
 import type { Matter } from "@/types/matter.type";
-import { toast } from "sonner";
+import {
+  handleSaveMatter,
+  handleCancelMatter,
+} from "@/action-handlers/matters";
 
 interface OpposingCouncilDetailsCardProps {
   matter: Matter;
@@ -32,22 +34,21 @@ export function OpposingCouncilDetailsCard({
     }));
   };
 
-  const handleSave = async () => {
-    try {
-      const updatedMatter = await updateMatter(editedMatter);
+  const saveChanges = async () => {
+    const { matter: updatedMatter, error } = await handleSaveMatter(
+      editedMatter
+    );
+    if (!error && updatedMatter) {
       onUpdate?.(updatedMatter);
-      toast.success("Opposing council details have been updated successfully.");
-    } catch (error) {
-      console.error(error);
-      toast.error(
-        "Failed to update opposing council details. Please try again."
-      );
-      setEditedMatter({ ...matter });
+    } else {
+      const { matter: original } = handleCancelMatter(matter);
+      setEditedMatter(original);
     }
   };
 
-  const handleCancel = () => {
-    setEditedMatter({ ...matter });
+  const cancelChanges = () => {
+    const { matter: original } = handleCancelMatter(matter);
+    setEditedMatter(original);
   };
 
   const opposingCouncil = editedMatter.opposing_council || {
@@ -60,8 +61,8 @@ export function OpposingCouncilDetailsCard({
   return (
     <EditableCard
       title="Opposing Council"
-      onSave={handleSave}
-      onCancel={handleCancel}
+      onSave={saveChanges}
+      onCancel={cancelChanges}
     >
       {(isEditing) => (
         <div className="space-y-4">

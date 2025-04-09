@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,9 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createMatter } from "@/actions/matters";
-import { toast } from "sonner";
 import type { MatterStatus } from "@/types/matter.type";
+import { handleCreateMatter } from "@/action-handlers/matters";
 
 interface AddMatterDialogProps {
   open: boolean;
@@ -44,47 +42,20 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!matterData.name.trim()) {
-      toast.error("Matter name is required");
-      return;
-    }
-
-    if (!matterData.case_number.trim()) {
-      toast.error("Case Number is required");
-      return;
-    }
-
     setIsSubmitting(true);
 
-    try {
-      await createMatter({
-        name: matterData.name,
-        client: matterData.client || "To be determined",
-        case_number: matterData.case_number,
-        status: matterData.status,
-        description: "",
-        created_at: new Date(),
-        date_opened: new Date(),
-      });
-
-      toast.success("New matter has been created successfully.");
-
+    const { error } = await handleCreateMatter(matterData);
+    if (!error) {
       setMatterData({
         name: "",
         client: "",
         case_number: "",
         status: "open" as MatterStatus,
       });
-
       onOpenChange(false);
       window.location.reload();
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to create matter. Please try again.");
-    } finally {
-      setIsSubmitting(false);
     }
+    setIsSubmitting(false);
   };
 
   return (

@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { MattersHeader } from "./mattersHeader";
 import { MattersTable } from "./mattersTable";
-import { getMatters } from "@/actions/matters";
 import type { Matter, SortField, SortDirection } from "@/types/matter.type";
 import { Loader2 } from "lucide-react";
+import { handleFetchMatters } from "@/action-handlers/matters";
 
 export function MattersList() {
   const [matters, setMatters] = useState<Matter[]>([]);
@@ -15,20 +15,18 @@ export function MattersList() {
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   useEffect(() => {
-    const fetchMatters = async () => {
+    async function fetchData() {
       setIsLoading(true);
-      try {
-        const data = await getMatters();
-        setMatters(data);
-      } catch (error) {
-        console.error("Error fetching matters:", error);
-      } finally {
-        setIsLoading(false);
+      const { matters: fetchedMatters, error } = await handleFetchMatters();
+      if (!error) {
+        setMatters(fetchedMatters);
+      } else {
+        setMatters([]);
       }
-    };
-
-    fetchMatters();
-  }, []);
+      setIsLoading(false);
+    }
+    fetchData();
+  }, [statusFilter, sortField, sortDirection]);
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -78,12 +76,7 @@ export function MattersList() {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border shadow">
-      <MattersHeader
-        onStatusChange={setStatusFilter}
-        onSortChange={(direction) =>
-          setSortDirection(direction as SortDirection)
-        }
-      />
+      <MattersHeader onStatusChange={setStatusFilter} />
       {isLoading ? (
         <div className="flex justify-center items-center p-12">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
