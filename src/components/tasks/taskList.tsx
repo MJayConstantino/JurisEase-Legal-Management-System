@@ -17,7 +17,6 @@ interface TaskListProps {
 export function TaskList({ matterId }: TaskListProps) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [view, setView] = useState<"grid" | "table">("grid")
 
@@ -37,7 +36,6 @@ export function TaskList({ matterId }: TaskListProps) {
   useEffect(() => {
     fetchTasks()
 
-    // Set up real-time subscription for tasks related to this matter
     const channel = supabase
       .channel(`tasks-changes-${matterId || "all"}`)
       .on(
@@ -70,12 +68,6 @@ export function TaskList({ matterId }: TaskListProps) {
 
   const filteredTasks = tasks
     .filter((task) => {
-      // Additional filtering for search and status
-      const matchesSearch =
-        searchTerm === "" ||
-        task.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        task.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        task.task_id.toLowerCase().includes(searchTerm.toLowerCase())
 
       const matchesStatus =
         statusFilter === "all" ||
@@ -83,7 +75,7 @@ export function TaskList({ matterId }: TaskListProps) {
         (statusFilter === "overdue" && task.status === "overdue") ||
         (statusFilter === "completed" && task.status === "completed")
 
-      return matchesSearch && matchesStatus
+      return matchesStatus
     })
     .sort((a, b) => {
       if (a.status === "overdue" && b.status !== "overdue") return -1
@@ -101,16 +93,12 @@ export function TaskList({ matterId }: TaskListProps) {
     setStatusFilter(status)
   }
 
-  const handleSearch = (term: string) => {
-    setSearchTerm(term)
-  }
 
   const handleViewChange = (newView: "grid" | "table") => {
     setView(newView)
   }
 
   const handleTaskCreated = (task: Task) => {
-    // Only add the task if it belongs to this matter
     if (!matterId || task.matter_id === matterId) {
       setTasks((prevTasks) => [task, ...prevTasks])
     }
@@ -119,7 +107,6 @@ export function TaskList({ matterId }: TaskListProps) {
   return (
     <div className="container mx-auto py-2 w-full">
       <TasksHeader
-        onSearch={handleSearch}
         onStatusChange={handleStatusChange}
         onViewChange={handleViewChange}
         view={view}
