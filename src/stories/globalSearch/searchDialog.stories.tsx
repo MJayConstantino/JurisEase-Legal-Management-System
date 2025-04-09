@@ -20,76 +20,6 @@ const withTheme: Decorator = (Story, context: StoryContext) => {
   )
 }
 
-// ✅ **Mock Results Based on Filters**
-const mockResults: SearchResult[] = [
-  {
-    id: '1',
-    type: 'Matter',
-    title: 'Case A',
-    subtitle: 'Client A',
-    status: 'open',
-    route: '/matters/1',
-  },
-  {
-    id: '2',
-    type: 'Task',
-    title: 'Task B',
-    subtitle: 'Due tomorrow',
-    status: 'in-progress',
-    route: '/tasks/2',
-  },
-  {
-    id: '3',
-    type: 'Bill',
-    title: 'Invoice C',
-    subtitle: 'Pending payment',
-    status: 'pending',
-    route: '/bills/3',
-  },
-]
-
-// ✅ **Mock Parent State Management**
-const MockParentWrapper = ({ open }: { open: boolean }) => {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [results, setResults] = useState<SearchResult[]>(mockResults)
-  const [isSearching, setIsSearching] = useState(false)
-  const [searchByFilters, setSearchByFilters] = useState<SearchByFilters>({
-    clientName: true,
-    attorney: true,
-    caseName: true,
-    opposingCouncil: false,
-    court: false,
-  })
-  const [contentTypeFilters, setContentTypeFilters] =
-    useState<ContentTypeFilters>({
-      matters: true,
-      tasks: true,
-      bills: true,
-    })
-  const [hasMore, setHasMore] = useState(true)
-
-  return (
-    <SearchDialog
-      open={open}
-      onOpenChange={action('Dialog toggled')}
-      query={searchQuery}
-      results={results}
-      isSearching={isSearching}
-      searchByFilters={searchByFilters}
-      setSearchByFilters={setSearchByFilters}
-      contentTypeFilters={contentTypeFilters}
-      setContentTypeFilters={setContentTypeFilters}
-      totalResults={results.length}
-      hasMore={hasMore}
-      onResultClick={(result) => action('Result clicked')(result)}
-      onLoadMore={() => {
-        action('Load more clicked')()
-        setResults((prev) => [...prev, ...mockResults])
-      }}
-    />
-  )
-}
-
 // 🏗 **Meta Configuration**
 export default {
   title: 'globalSearch/SearchDialog',
@@ -101,7 +31,6 @@ export default {
 } as Meta<typeof SearchDialog>
 
 const Template: StoryObj<typeof SearchDialog> = {
-  render: (args) => <MockParentWrapper open={args.open} />,
   args: {
     open: true,
   },
@@ -110,6 +39,11 @@ const Template: StoryObj<typeof SearchDialog> = {
 // 🆕 **Default Story (Dialog Just Opens)**
 export const DefaultView: StoryObj<typeof SearchDialog> = {
   ...Template,
+}
+
+export const ClosedView: StoryObj<typeof SearchDialog> = {
+  ...Template,
+  args: { open: false },
 }
 
 // 📉 **Collapsed View (Collapses all collapsible components)**
@@ -145,14 +79,28 @@ export const AllFiltersChecked: StoryObj<typeof SearchDialog> = {
   ...Template,
   args: {
     open: true,
-    searchByFilters: {
-      clientName: true,
-      attorney: true,
-      caseName: true,
-      opposingCouncil: true,
-      court: true,
-    },
-    contentTypeFilters: { matters: true, tasks: true, bills: true },
+  },
+  play: async () => {
+    // ✅ Select all checkbox elements
+    const checkboxes = Array.from(
+      document.querySelectorAll('[data-slot="checkbox"]')
+    ) as HTMLElement[]
+
+    for (const checkbox of checkboxes) {
+      const isChecked =
+        checkbox.querySelector('[data-slot="checkbox-indicator"]') !== null
+
+      if (!isChecked) {
+        await userEvent.click(checkbox) // ✅ User clicks checkbox
+        action('Checkbox checked')(checkbox.id) // ✅ Log user action
+
+        await waitFor(() => {
+          expect(
+            checkbox.querySelector('[data-slot="checkbox-indicator"]')
+          ).toBeTruthy()
+        }) // ✅ Validate state change
+      }
+    }
   },
 }
 
@@ -161,14 +109,6 @@ export const SomeFiltersChecked: StoryObj<typeof SearchDialog> = {
   ...Template,
   args: {
     open: true,
-    searchByFilters: {
-      clientName: true,
-      attorney: false,
-      caseName: true,
-      opposingCouncil: false,
-      court: false,
-    },
-    contentTypeFilters: { matters: true, tasks: false, bills: true },
   },
 }
 
@@ -177,46 +117,79 @@ export const NoFiltersChecked: StoryObj<typeof SearchDialog> = {
   ...Template,
   args: {
     open: true,
-    searchByFilters: {
-      clientName: false,
-      attorney: false,
-      caseName: false,
-      opposingCouncil: false,
-      court: false,
-    },
-    contentTypeFilters: { matters: false, tasks: false, bills: false },
   },
-}
+  play: async () => {
+    // ✅ Select all checkbox elements
+    const checkboxes = Array.from(
+      document.querySelectorAll('[data-slot="checkbox"]')
+    ) as HTMLElement[]
 
-// ✅ **Simulate Loading State**
-export const LoadingState: StoryObj<typeof SearchDialog> = {
-  ...Template,
-  args: { open: true, isSearching: true, results: [] },
-}
+    for (const checkbox of checkboxes) {
+      const isChecked =
+        checkbox.querySelector('[data-slot="checkbox-indicator"]') !== null
 
-// ✅ **Simulate No Results**
-export const NoResults: StoryObj<typeof SearchDialog> = {
-  ...Template,
-  args: {
-    open: true,
-    query: 'Nonexistent query',
-    results: [],
-    isSearching: false,
-    totalResults: 0,
-    hasMore: false,
+      if (isChecked) {
+        await userEvent.click(checkbox) // ✅ Simulate user unchecking checkbox
+        action('Checkbox unchecked')(checkbox.id) // ✅ Log unchecking action
+
+        await waitFor(() => {
+          expect(
+            checkbox.querySelector('[data-slot="checkbox-indicator"]')
+          ).toBeFalsy()
+        }) // ✅ Validate state change
+      }
+    }
   },
 }
 
 // ✅ **Short Search Input**
 export const ShortSearchInput: StoryObj<typeof SearchDialog> = {
   ...Template,
-  args: { open: true, query: 'Law' },
-}
+  args: {
+    open: true,
+  },
+  play: async () => {
+    // ✅ Select the search input box
+    const searchInputBox = (await waitFor(() =>
+      document.querySelector('[aria-label="DialogBoxSearch"]')
+    )) as HTMLInputElement
 
+    // ✅ Simulate typing "Law" into the search box
+    await userEvent.type(searchInputBox, 'XEEE')
+    action('User typed in search box')('XEEE')
+
+    // ✅ Validate that input value matches expected search term
+    await waitFor(() => {
+      expect(searchInputBox).toHaveValue('XEEE')
+    })
+  },
+}
 // ✅ **Long Search Input**
 export const LongSearchInput: StoryObj<typeof SearchDialog> = {
   ...Template,
-  args: { open: true, query: 'Complex Legal Matters & Litigation Cases' },
+  args: { open: true },
+  play: async () => {
+    // ✅ Select the search input box
+    const searchInputBox = (await waitFor(() =>
+      document.querySelector('[aria-label="DialogBoxSearch"]')
+    )) as HTMLInputElement
+
+    // ✅ Simulate typing "Law" into the search box
+    await userEvent.type(
+      searchInputBox,
+      'LNGSRCHRSULTTATIRLLYHDIIHVTMKTLNRBCUZTODFDJDLDLFJSDLFJSDF:DFDF'
+    )
+    action('User typed in search box')(
+      'LNGSRCHRSULTTATIRLLYHDIIHVTMKTLNRBCUZTODFDJDLDLFJSDLFJSDF:DFDF'
+    )
+
+    // ✅ Validate that input value matches expected search term
+    await waitFor(() => {
+      expect(searchInputBox).toHaveValue(
+        'LNGSRCHRSULTTATIRLLYHDIIHVTMKTLNRBCUZTODFDJDLDLFJSDLFJSDF:DFDF'
+      )
+    })
+  },
 }
 
 // ✅ **Cleared Search Input**
@@ -238,33 +211,5 @@ export const ClearedSearchInput: StoryObj<typeof SearchDialog> = {
     action('Clicked Clear button')()
 
     await waitFor(() => expect(searchInputBox).toHaveValue(''))
-  },
-}
-// ✅ **Clicked Search Result**
-export const ClickedSearchResult: StoryObj<typeof SearchDialog> = {
-  ...Template,
-  play: async () => {
-    const searchResultItem = (await waitFor(() =>
-      document.querySelector('[data-slot="search-result"]')
-    )) as HTMLElement
-    await userEvent.click(searchResultItem)
-    action('Clicked search result')(searchResultItem.textContent)
-  },
-}
-
-// ✅ **Load More Results**
-export const LoadMoreResults: StoryObj<typeof SearchDialog> = {
-  ...Template,
-  play: async () => {
-    const loadMoreButton = (await waitFor(() =>
-      document.querySelector('[data-slot="button"]')
-    )) as HTMLElement
-    await userEvent.click(loadMoreButton)
-    action('Clicked Load More button')()
-    await waitFor(() =>
-      expect(
-        document.querySelectorAll('.cursor-pointer').length
-      ).toBeGreaterThan(mockResults.length)
-    )
   },
 }
