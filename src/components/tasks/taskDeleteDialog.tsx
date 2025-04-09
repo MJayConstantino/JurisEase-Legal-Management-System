@@ -1,16 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Trash2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 interface TaskDeleteDialogProps {
   taskName: string;
@@ -28,7 +22,7 @@ export function TaskDeleteDialog({
 
   const handleDelete = async () => {
     if (isDeleting) return;
-    
+
     try {
       setIsDeleting(true);
       await onConfirm();
@@ -78,7 +72,7 @@ export function TaskDeleteDialog({
               disabled={isDeleting}
               className="hover:cursor-pointer"
             >
-              {isDeleting ? "Deleting..." : "Delete"}
+                {isDeleting ?  <Loader2 className="mr-2" /> : "Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>

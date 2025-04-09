@@ -1,9 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { Matter } from "@/types/matter.type";
 import { format, isBefore } from "date-fns";
-import { Check, Pencil, Trash2 } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { updateTask, deleteTask } from "@/actions/tasks";
@@ -11,22 +12,25 @@ import { getMatters } from "@/actions/matters";
 import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
 import { TaskForm } from "./taskForm";
 import { getStatusColor } from "@/utils/getStatusColor";
-import { Status, Task } from "@/types/task.type";
+import type { Status, Task } from "@/types/task.type";
 import { toast } from "sonner";
 import { Skeleton } from "../ui/skeleton";
+import { useRouter } from "next/navigation";
+import { TaskDeleteDialog } from "./taskDeleteDialog";
 
 interface TaskRowProps {
   task: Task;
   onTaskUpdated?: () => void;
 }
 
-export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
+export function TaskRow({ task }: TaskRowProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [localTask, setLocalTask] = useState<Task>(task);
   const [matters, setMatters] = useState<Matter[]>([]);
   const [isLoadingMatters, setIsLoadingMatters] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isOverdue, setIsOverdue] = useState(false);
+  const router = useRouter();
 
   const checkIsOverdue = (dueDate?: Date, status?: string) => {
     if (!dueDate || status === "completed") return false;
@@ -40,7 +44,7 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
     if (overdue && localTask.status !== "overdue") {
       const updatedTask = {
         ...localTask,
-        Status: "overdue" as Status,
+        status: "overdue" as Status,
       };
       setLocalTask(updatedTask);
       updateTask(localTask.task_id, { status: localTask.status }, updatedTask)
@@ -97,27 +101,46 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
 
     try {
       setIsProcessing(true);
+      let newStatus: Status;
+
+      if (localTask.status === "completed") {
+        if (
+          localTask.due_date &&
+          isBefore(new Date(localTask.due_date), new Date())
+        ) {
+          newStatus = "overdue";
+        } else {
+          newStatus = "in-progress";
+        }
+      } else {
+        newStatus = "completed";
+      }
 
       setLocalTask({
         ...localTask,
-        status: "completed",
+        status: newStatus,
       });
 
       await updateTask(
         task.task_id,
-        { status: "completed" },
+        { status: newStatus },
         {
           ...task,
-          status: "completed",
+          status: newStatus,
         }
       );
-      toast.success("Task marked as completed");
-
-      if (onTaskUpdated) onTaskUpdated();
+      router.refresh();
+      window.location.reload();
+      toast.success(
+        newStatus === "completed"
+          ? "Task marked as completed"
+          : `Task marked as ${newStatus}`
+      );
     } catch (error) {
-      console.error("Error completing task:", error);
+      console.error("Error updating task status:", error);
       setLocalTask(task);
-      toast.error("Failed to complete task");
+      toast.error("Failed to update task status");
+    } finally {
       setIsProcessing(false);
     }
   };
@@ -132,8 +155,7 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
       toast.success("Task deleted successfully");
 
       window.location.reload();
-
-      if (onTaskUpdated) onTaskUpdated();
+      router.refresh();
     } catch (error) {
       console.error("Error deleting task:", error);
       toast.error("Failed to delete task");
@@ -154,12 +176,7 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
 
       setLocalTask(optimisticTask);
       setIsEditing(false);
-
       await updateTask(task.task_id, updatedTask, optimisticTask);
-
-      window.location.reload();
-
-      if (onTaskUpdated) onTaskUpdated();
     } catch (error) {
       console.error("Error updating task:", error);
       setLocalTask(task);
@@ -184,21 +201,22 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
             : "bg-white dark:bg-gray-800 dark:border-gray-700"
         }`}
       >
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleComplete}
-          disabled={localTask.status === "completed" || isProcessing}
-          className={`mr-2 sm:mr-4 flex-shrink-0 ${
-            localTask.status === "completed" ? "hover:cursor-not-allowed" : "hover:cursor-pointer"
+        <Checkbox
+          checked={localTask.status === "completed"}
+          onCheckedChange={handleComplete}
+          disabled={isProcessing}
+          id={`task-complete-${task.task_id}`}
+          className={`mr-3 h-4 w-4 border-2 border-gray-300 rounded hover:cursor-pointer shadow ${
+            localTask.status === "completed"
+              ? "dark:bg-green-700"
+              : "dark:bg-gray-800"
           }`}
-        >
-          <Check className="h-4 w-4" />
-          <span className="sr-only">Complete</span>
-        </Button>
+        />
         <div className="flex-1 min-w-0 mr-2 ">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="font-medium truncate">{localTask.name}</h3>
+            <h3 className="font-medium text-sm sm:text-base line-clamp-2 dark:text-white overflow-y-auto">
+              {localTask.name}
+            </h3>
             {localTask.priority && (
               <Badge
                 variant="outline"
@@ -245,16 +263,11 @@ export function TaskRow({ task, onTaskUpdated }: TaskRowProps) {
               <span className="sr-only">Edit</span>
             </Button>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleDelete}
-              className="text-destructive hover:text-destructive hover:cursor-pointer"
-              disabled={isProcessing}
-            >
-              <Trash2 className="h-4 w-4" />
-              <span className="sr-only">Delete</span>
-            </Button>
+            <TaskDeleteDialog
+              taskName={localTask.name}
+              isProcessing={isProcessing}
+              onConfirm={handleDelete}
+            />
           </div>
         </div>
       </div>
