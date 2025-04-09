@@ -34,7 +34,7 @@ import { Textarea } from "../ui/textarea";
 import { Matter } from "@/types/matter.type";
 import { useEffect, useState } from "react";
 
-interface BillingsAddDialogProps {
+export interface BillingsAddDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSave: (bill: Omit<Bill, "bill_id">) => void;
