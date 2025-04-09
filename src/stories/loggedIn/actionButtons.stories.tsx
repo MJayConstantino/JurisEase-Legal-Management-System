@@ -1,21 +1,24 @@
-import type { Meta, StoryObj } from "@storybook/react"
-import ActionButtons from "@/components/homepage/loggedIn/actionButtons"
+import type { Meta, StoryObj } from "@storybook/react";
+import ActionButtons from "@/components/homepage/loggedIn/actionButtons";
 
 const meta: Meta<typeof ActionButtons> = {
   title: "Logged In/ActionButtons",
   component: ActionButtons,
   parameters: {
+    nextjs: {
+      appDirectory: true,
+    },
     layout: "fullscreen",
     viewport: {
       defaultViewport: "responsive",
     },
   },
   tags: ["autodocs"],
-}
+};
 
-export default meta
+export default meta;
 
-type Story = StoryObj<typeof ActionButtons>
+type Story = StoryObj<typeof ActionButtons>;
 
 export const Default: Story = {
   args: {
@@ -25,7 +28,7 @@ export const Default: Story = {
     signOutLoading: false,
     isLoading: false,
   },
-}
+};
 
 export const DashboardLoading: Story = {
   args: {
@@ -35,7 +38,7 @@ export const DashboardLoading: Story = {
     signOutLoading: false,
     isLoading: false,
   },
-}
+};
 
 export const SignOutLoading: Story = {
   args: {
@@ -45,7 +48,7 @@ export const SignOutLoading: Story = {
     signOutLoading: true,
     isLoading: false,
   },
-}
+};
 
 export const BothLoading: Story = {
   args: {
@@ -55,7 +58,7 @@ export const BothLoading: Story = {
     signOutLoading: true,
     isLoading: true,
   },
-}
+};
 
 export const DisabledButtons: Story = {
   args: {
@@ -65,4 +68,4 @@ export const DisabledButtons: Story = {
     signOutLoading: false,
     isLoading: true,
   },
-}
+};
