@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { Skeleton } from "../ui/skeleton";
 import { useRouter } from "next/navigation";
 import { TaskDeleteDialog } from "./taskDeleteDialog";
+import { useParams } from "next/navigation";
 
 interface TaskRowProps {
   task: Task;
@@ -31,6 +32,8 @@ export function TaskRow({ task }: TaskRowProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isOverdue, setIsOverdue] = useState(false);
   const router = useRouter();
+  const params = useParams();
+  const matterId = params.matterId as string | undefined;
 
   const checkIsOverdue = (dueDate?: Date, status?: string) => {
     if (!dueDate || status === "completed") return false;
@@ -275,6 +278,7 @@ export function TaskRow({ task }: TaskRowProps) {
       <TaskForm
         open={isEditing}
         onOpenChange={setIsEditing}
+        disableMatterSelect={!!matterId}
         onSave={handleSaveTask}
         onSaveAndCreateAnother={handleSaveAndCreateAnother}
         initialTask={localTask}

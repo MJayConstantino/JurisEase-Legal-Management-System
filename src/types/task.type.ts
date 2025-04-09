@@ -1,6 +1,5 @@
-
-
 export type Priority = "low" | "medium" | "high";
+
 export type Status = "in-progress" | "completed" | "overdue"
 
 

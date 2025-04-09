@@ -24,7 +24,7 @@ export default function HeroSection({ title, subtitle, buttonText }: HeroSection
         <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-10">{subtitle}</p>
         <Link href="/login">
           <Button
-            className="bg-[#2D336B] hover:bg-[#1B1E4B] hover:cursor-pointer text-white text-xl font-aileron font-bold py-3 px-8 h-auto"
+            className="bg-[#2D336B] hover:bg-[#1B1E4B] hover:cursor-pointer text-white text-xl font-bold py-3 px-8 h-auto"
             onClick={handleButtonClick}
             disabled={isButtonDisabled}
           >
