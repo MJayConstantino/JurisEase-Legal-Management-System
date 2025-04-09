@@ -73,7 +73,7 @@ export async function search(
           include_court: attributes.includes('court'),
         })
         .select(
-          '*, matters!inner(name, client, opposing_council, court, attorney:users!assigned_attorney(user_name))'
+          '*, matters(name, client, opposing_council, court, attorney:users!assigned_attorney(user_name))'
         )
         .limit(10)
 

@@ -23,6 +23,19 @@ import { DialogTitle } from '@radix-ui/react-dialog'
 interface SearchDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  query?: string
+  results?: SearchResult[]
+  isSearching?: boolean
+  searchByFilters?: SearchByFiltersType
+  setSearchByFilters?: React.Dispatch<React.SetStateAction<SearchByFiltersType>>
+  contentTypeFilters?: ContentTypeFilters
+  setContentTypeFilters?: React.Dispatch<
+    React.SetStateAction<ContentTypeFilters>
+  >
+  totalResults?: number
+  hasMore?: boolean
+  onResultClick?: (result: SearchResult) => void
+  onLoadMore?: () => void
 }
 
 export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
@@ -175,13 +188,17 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTitle className="sr-only">Search Dialog</DialogTitle>
-      <DialogContent className="w-[calc(100%-2rem)] sm:max-w-xl max-h-[90vh] p-4 sm:p-6 overflow-hidden">
+      <DialogContent
+        role="dialog"
+        className="w-[calc(100%-2rem)] sm:max-w-xl max-h-[90vh] p-4 sm:p-6 overflow-hidden"
+      >
         {/* Make the entire content area scrollable */}
         <div className="max-h-[calc(90vh-2rem)] overflow-y-auto pr-2">
           {/* Search input area - sticky at the top */}
           <div className="flex items-center border-b border-border pb-4 sticky top-0 bg-background z-10">
             <Search className="h-5 w-5 text-muted-foreground mr-2 flex-shrink-0" />
             <Input
+              aria-label="DialogBoxSearch"
               ref={inputRef}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -191,6 +208,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
             <Button
               variant="outline"
               size="sm"
+              aria-label="Clear"
               onClick={handleClearSearch}
               className="ml-2 whitespace-nowrap"
             >
