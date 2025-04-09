@@ -11,12 +11,11 @@ import { TaskForm } from "./taskForm"
 import { toast } from "sonner"
 
 interface TasksHeaderProps {
-  onSearch: (term: string) => void
   onStatusChange: (status: string) => void
   onViewChange: (view: "grid" | "table") => void
   view: "grid" | "table"
   onTaskCreated?: (task: Task) => void
-  matter_id?: string // Add matter_id prop
+  matter_id?: string 
 }
 
 export function TasksHeader({
@@ -24,7 +23,7 @@ export function TasksHeader({
   onViewChange,
   view,
   onTaskCreated,
-  matter_id, // Add matter_id parameter
+  matter_id, 
 }: TasksHeaderProps) {
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false)
   const [activeFilter, setActiveFilter] = useState<string>("all")
@@ -42,7 +41,7 @@ export function TasksHeader({
         status: task.status,
         priority: task.priority,
         due_date: task.due_date,
-        matter_id: matter_id || task.matter_id, // Use provided matter_id if available
+        matter_id: matter_id || task.matter_id,
       } as Omit<Task, "id">
 
       setIsAddTaskOpen(false)
@@ -66,7 +65,7 @@ export function TasksHeader({
         status: task.status,
         priority: task.priority,
         due_date: task.due_date,
-        matter_id: matter_id || task.matter_id, // Use provided matter_id if available
+        matter_id: matter_id || task.matter_id
       } as Omit<Task, "id">
 
       const createdTask = await createTask(newTask)
@@ -154,6 +153,7 @@ export function TasksHeader({
           open={isAddTaskOpen}
           onOpenChange={setIsAddTaskOpen}
           onSave={handleSaveTask}
+          disableMatterSelect={!!matter_id} 
           onSaveAndCreateAnother={handleSaveAndCreateAnother}
           initialTask={
             matter_id

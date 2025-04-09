@@ -17,9 +17,11 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "../ui/skeleton";
 import { TaskDeleteDialog } from "./taskDeleteDialog";
+import { useParams } from "next/navigation";
 
 interface TaskCardProps {
   task: Task;
+  onTaskUpdated?: () => void;
 }
 
 export function TaskCard({ task }: TaskCardProps) {
@@ -30,6 +32,8 @@ export function TaskCard({ task }: TaskCardProps) {
   const [isLoadingMatters, setIsLoadingMatters] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isOverdue, setIsOverdue] = useState(false);
+  const params = useParams();
+  const matterId = params.matterId as string | undefined;
 
   const checkIsOverdue = (dueDate?: Date, status?: string) => {
     if (!dueDate || status === "completed") return false;
@@ -101,19 +105,15 @@ export function TaskCard({ task }: TaskCardProps) {
     try {
       setIsProcessing(true);
 
-      // If task is completed, revert to previous state or default to "in progress"
-      // If task is overdue and due date is still in the past, keep it as overdue
       let newStatus: Status;
 
       if (localTask.status === "completed") {
-        // Check if it should be overdue based on due date
         if (
           localTask.due_date &&
           isBefore(new Date(localTask.due_date), new Date())
         ) {
           newStatus = "overdue";
         } else {
-          // Default to "in progress" if not overdue
           newStatus = "in-progress";
         }
       } else {
@@ -297,6 +297,7 @@ export function TaskCard({ task }: TaskCardProps) {
       <TaskForm
         open={isEditing}
         onOpenChange={setIsEditing}
+        disableMatterSelect={!!matterId}
         onSave={handleSaveTask}
         onSaveAndCreateAnother={handleSaveAndCreateAnother}
         initialTask={localTask}

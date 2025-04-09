@@ -35,6 +35,8 @@ interface TaskFormProps {
   onSave: (task: Task) => void;
   onSaveAndCreateAnother: (task: Task) => void;
   initialTask?: Task | null;
+  matters?: Matter[];
+  disableMatterSelect?: boolean;
 }
 
 export function TaskForm({
@@ -43,8 +45,8 @@ export function TaskForm({
   onSave,
   onSaveAndCreateAnother,
   initialTask,
+  disableMatterSelect = false,  
 }: TaskFormProps) {
-  const router = useRouter();
   const [task, setTask] = useState<Task>({
     task_id: "",
     name: "",
@@ -52,10 +54,10 @@ export function TaskForm({
     due_date: undefined,
     priority: "low",
     status: "in-progress",
-    matter_id: "",
+    matter_id: "", 
     created_at: new Date(),
   });
-
+  const router = useRouter();
   const [matters, setMatters] = useState<Matter[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -116,6 +118,8 @@ export function TaskForm({
     }));
   };
 
+
+
   const validateForm = () => {
     if (!task.name.trim()) {
       toast.error("Task name is required");
@@ -134,12 +138,13 @@ export function TaskForm({
     const taskToSave = {
       ...task,
       task_id: task.task_id,
+      ...(task.task_id ? { task_id: task.task_id } : {}),
       name: task.name.trim(),
       description: task.description?.trim() || "",
       due_date: task.due_date,
       priority: task.priority || "low",
       status: task.status || "in-progess",
-      matter_id: task.matter_id,
+      matter_id: task.matter_id?.trim() || undefined,
       created_at: task.created_at || new Date(),
     };
 
@@ -279,11 +284,12 @@ export function TaskForm({
               <Select
                 value={task.matter_id || ""}
                 onValueChange={(value) => handleChange("matter_id", value)}
+                disabled={disableMatterSelect} 
               >
                 <SelectTrigger className="w-full hover:cursor-pointer dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
                   <SelectValue
                     placeholder={selectedMatterName || "Select a matter"}
-                  />
+                   >{selectedMatterName || "N/A"}</SelectValue>
                 </SelectTrigger>
                 <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
                   <SelectGroup>
@@ -306,7 +312,7 @@ export function TaskForm({
                           value={matter.matter_id}
                           className="dark:text-gray-100 dark:focus:bg-gray-600"
                         >
-                          {matter.name}
+                          {matter.name} 
                         </SelectItem>
                       ))
                     ) : (
