@@ -6,13 +6,11 @@ import { action } from '@storybook/addon-actions'
 import React, { useState } from 'react'
 import type { SearchResult } from '@/components/header/globalSearch/types'
 
-// 🏗 **Meta Configuration**
 export default {
   title: 'globalSearch/SearchResults',
   component: SearchResults,
 } as Meta<typeof SearchResults>
 
-// ✅ **Mock Results**
 const mockResults: SearchResult[] = [
   {
     id: '1',
@@ -40,7 +38,6 @@ const mockResults: SearchResult[] = [
   },
 ]
 
-// ✅ **Mock Parent Component to Simulate State**
 const MockParentWrapper = ({
   query,
   results,
@@ -66,7 +63,7 @@ const MockParentWrapper = ({
       onResultClick={(result) => action('Result clicked')(result)}
       onLoadMore={() => {
         action('Load more clicked')()
-        setCurrentResults((prev) => [...prev, ...mockResults]) // ✅ Ensures proper state update
+        setCurrentResults((prev) => [...prev, ...mockResults])
       }}
     />
   )
@@ -83,12 +80,10 @@ const Template: StoryObj<typeof SearchResults> = {
   },
 }
 
-// 🆕 **Default Story (Collapsible Open)**
 export const DefaultView: StoryObj<typeof SearchResults> = {
   ...Template,
 }
 
-// 📉 **Collapsed View (Ensures collapsible starts open, then closes)**
 export const CollapsedView: StoryObj<typeof SearchResults> = {
   ...Template,
   play: async () => {
@@ -109,7 +104,6 @@ export const CollapsedView: StoryObj<typeof SearchResults> = {
   },
 }
 
-// ✅ **Simulate Loading State**
 export const LoadingState: StoryObj<typeof SearchResults> = {
   ...Template,
   args: {
@@ -121,7 +115,6 @@ export const LoadingState: StoryObj<typeof SearchResults> = {
   },
 }
 
-// ✅ **Simulate No Results State**
 export const NoResults: StoryObj<typeof SearchResults> = {
   ...Template,
   args: {
@@ -133,19 +126,17 @@ export const NoResults: StoryObj<typeof SearchResults> = {
   },
 }
 
-// ✅ **Check Pagination (Load More)**
 export const LoadMorePagination: StoryObj<typeof SearchResults> = {
   ...Template,
   play: async () => {
     const loadMoreButton = (await waitFor(() =>
       document.querySelector('[data-slot="button"]')
-    )) as HTMLElement // ✅ Uses the correct ShadCN Button selector
+    )) as HTMLElement
 
-    await userEvent.hover(loadMoreButton) // ✅ Ensures interaction is registered
+    await userEvent.hover(loadMoreButton)
     await userEvent.click(loadMoreButton)
     action('Clicked Load More')()
 
-    // ✅ Wait for results to update
     await waitFor(() =>
       expect(
         document.querySelectorAll('.cursor-pointer').length
@@ -154,7 +145,6 @@ export const LoadMorePagination: StoryObj<typeof SearchResults> = {
   },
 }
 
-// ✅ **Test Clicking Search Results**
 export const ClickSearchResults: StoryObj<typeof SearchResults> = {
   ...Template,
   play: async () => {

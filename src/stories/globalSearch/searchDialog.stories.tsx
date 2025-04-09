@@ -11,7 +11,6 @@ import type {
   ContentTypeFilters,
 } from '@/components/header/globalSearch/types'
 
-// ✅ **Theme Provider for Light/Dark Mode**
 const withTheme: Decorator = (Story, context: StoryContext) => {
   return (
     <ThemeProvider defaultTheme={context.globals.theme ?? 'light'}>
@@ -20,7 +19,6 @@ const withTheme: Decorator = (Story, context: StoryContext) => {
   )
 }
 
-// 🏗 **Meta Configuration**
 export default {
   title: 'globalSearch/SearchDialog',
   component: SearchDialog,
@@ -36,7 +34,6 @@ const Template: StoryObj<typeof SearchDialog> = {
   },
 }
 
-// 🆕 **Default Story (Dialog Just Opens)**
 export const DefaultView: StoryObj<typeof SearchDialog> = {
   ...Template,
 }
@@ -46,7 +43,6 @@ export const ClosedView: StoryObj<typeof SearchDialog> = {
   args: { open: false },
 }
 
-// 📉 **Collapsed View (Collapses all collapsible components)**
 export const CollapsedView: StoryObj<typeof SearchDialog> = {
   ...Template,
   args: { open: true },
@@ -56,32 +52,27 @@ export const CollapsedView: StoryObj<typeof SearchDialog> = {
     ) as HTMLElement[]
 
     for (const collapsible of collapsibles) {
-      // ✅ Log initial state before clicking
       const initialState = collapsible.getAttribute('data-state')
       action('Initial collapsible state')(initialState)
 
-      // ✅ Click collapsible
       await userEvent.click(collapsible)
       action('Collapsed filter section')(collapsible.textContent)
 
-      // ✅ Wait for state change
       await waitFor(() => {
         const finalState = collapsible.getAttribute('data-state')
         action('Final collapsible state')(finalState)
-        expect(finalState).toBe('closed') // ✅ Validate state change
+        expect(finalState).toBe('closed')
       })
     }
   },
 }
 
-// ✅ **Check All Filters Checked**
 export const AllFiltersChecked: StoryObj<typeof SearchDialog> = {
   ...Template,
   args: {
     open: true,
   },
   play: async () => {
-    // ✅ Select all checkbox elements
     const checkboxes = Array.from(
       document.querySelectorAll('[data-slot="checkbox"]')
     ) as HTMLElement[]
@@ -91,14 +82,13 @@ export const AllFiltersChecked: StoryObj<typeof SearchDialog> = {
         checkbox.querySelector('[data-slot="checkbox-indicator"]') !== null
 
       if (!isChecked) {
-        await userEvent.click(checkbox) // ✅ User clicks checkbox
-        action('Checkbox checked')(checkbox.id) // ✅ Log user action
-
+        await userEvent.click(checkbox)
+        action('Checkbox checked')(checkbox.id)
         await waitFor(() => {
           expect(
             checkbox.querySelector('[data-slot="checkbox-indicator"]')
           ).toBeTruthy()
-        }) // ✅ Validate state change
+        })
       }
     }
   },
