@@ -119,7 +119,7 @@ export function BillingsAddDialog({
             } gap-4`}
           >
             <div className="space-y-4">
-              <div className="grid gap-2">
+              <div id="matterDiv" className="grid gap-2">
                 <Label htmlFor="matter" className="text-base md:text-lg">
                   Matter
                 </Label>
