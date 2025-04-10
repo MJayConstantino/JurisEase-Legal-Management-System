@@ -6,13 +6,11 @@ import { action } from '@storybook/addon-actions'
 import React, { useState } from 'react'
 import type { SearchByFilters as SearchByFiltersType } from '@/components/header/globalSearch/types'
 
-// 🏗 **Meta Configuration**
 export default {
   title: 'globalSearch/SearchByFilters',
   component: SearchByFilters,
 } as Meta<typeof SearchByFilters>
 
-// ✅ **Mock Parent Component to Simulate State**
 const MockParentWrapper = ({
   initialFilters,
 }: {
@@ -25,7 +23,7 @@ const MockParentWrapper = ({
       filters={filters}
       setFilters={(update) => {
         action('Filter updated')(update)
-        setFilters(update) // ✅ Updates real state inside Storybook
+        setFilters(update)
       }}
     />
   )
@@ -44,12 +42,10 @@ const Template: StoryObj<typeof SearchByFilters> = {
   },
 }
 
-// 🆕 **Default Story (Collapsible Open)**
 export const DefaultView: StoryObj<typeof SearchByFilters> = {
   ...Template,
 }
 
-// 📉 **Collapsed View (Ensures filters are collapsed from expanded default state)**
 export const CollapsedView: StoryObj<typeof SearchByFilters> = {
   ...Template,
   play: async () => {
@@ -57,18 +53,15 @@ export const CollapsedView: StoryObj<typeof SearchByFilters> = {
       document.querySelector('[data-slot="collapsible-trigger"]')
     )) as HTMLElement
 
-    // ✅ Ensure it's **already expanded** by default
     await waitFor(() => {
       const initialState = collapsibleTrigger.getAttribute('data-state')
       action('Initial collapsible state')(initialState)
-      expect(initialState).toBe('open') // ✅ Ensuring default is expanded
+      expect(initialState).toBe('open')
     })
 
-    // ✅ Click to collapse
     await userEvent.click(collapsibleTrigger)
     action('Clicked collapsible trigger to collapse')()
 
-    // ✅ Wait for **it to close**
     await waitFor(() => {
       const collapsed =
         collapsibleTrigger.getAttribute('data-state') === 'closed'
@@ -78,7 +71,6 @@ export const CollapsedView: StoryObj<typeof SearchByFilters> = {
   },
 }
 
-// ✅ **Check All Unchecked Checkboxes (Expands collapsible first if needed)**
 export const CheckedUncheckedCheckBoxes: StoryObj<typeof SearchByFilters> = {
   ...Template,
   play: async () => {
@@ -86,7 +78,6 @@ export const CheckedUncheckedCheckBoxes: StoryObj<typeof SearchByFilters> = {
       document.querySelector('[data-slot="collapsible-trigger"]')
     )) as HTMLElement
 
-    // ✅ Expand collapsible before interacting with checkboxes if needed
     if (collapsibleTrigger.getAttribute('data-state') !== 'open') {
       await userEvent.click(collapsibleTrigger)
       action('Clicked collapsible trigger to expand')()

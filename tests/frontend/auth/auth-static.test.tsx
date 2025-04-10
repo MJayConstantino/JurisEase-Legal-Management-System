@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { Header, HeaderProps } from '../../../src/components/auth/Header'
 import { Footer, FooterProps } from '../../../src/components/auth/Footer'
+import '../../../jest.setup'
 
 import user from '@testing-library/user-event'
 import React from 'react'
