@@ -23,19 +23,6 @@ import { DialogTitle } from '@radix-ui/react-dialog'
 interface SearchDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  query?: string
-  results?: SearchResult[]
-  isSearching?: boolean
-  searchByFilters?: SearchByFiltersType
-  setSearchByFilters?: React.Dispatch<React.SetStateAction<SearchByFiltersType>>
-  contentTypeFilters?: ContentTypeFilters
-  setContentTypeFilters?: React.Dispatch<
-    React.SetStateAction<ContentTypeFilters>
-  >
-  totalResults?: number
-  hasMore?: boolean
-  onResultClick?: (result: SearchResult) => void
-  onLoadMore?: () => void
 }
 
 export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {

@@ -1,6 +1,6 @@
 import Header from "@/components/homepage/header"
-import HeroSection from "@/components/homepage/hero-section"
-import ServicesSection from "@/components/homepage/service-section"
+import HeroSection from "@/components/homepage/heroSection"
+import ServicesSection from "@/components/homepage/serviceSection"
 import Footer from "@/components/homepage/footer"
 
 export default function LandingPage() {

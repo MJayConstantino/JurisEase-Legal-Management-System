@@ -34,7 +34,7 @@ import { Textarea } from "../ui/textarea";
 import { Matter } from "@/types/matter.type";
 import { useEffect, useState } from "react";
 
-interface BillingsAddDialogProps {
+export interface BillingsAddDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSave: (bill: Omit<Bill, "bill_id">) => void;
@@ -119,7 +119,7 @@ export function BillingsAddDialog({
             } gap-4`}
           >
             <div className="space-y-4">
-              <div className="grid gap-2">
+              <div id="matterDiv" className="grid gap-2">
                 <Label htmlFor="matter" className="text-base md:text-lg">
                   Matter
                 </Label>
