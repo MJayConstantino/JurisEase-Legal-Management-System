@@ -22,13 +22,8 @@ import type {
 } from "@/types/billing.type";
 import { BillingStates } from "./billingsStates";
 import { getMatters } from "@/actions/matters";
-import {
-  getBills,
-  createBill as addBillToDb,
-  updateBill as updateBillInDb,
-  deleteBill as deleteBillFromDb,
-} from "@/actions/billing";
-import { toast } from "sonner";
+import { getBills } from "@/actions/billing";
+import { BillingsActionHandlers } from "@/action-handlers/billings";
 
 export function BillingInterface() {
   const {
@@ -55,6 +50,12 @@ export function BillingInterface() {
     selectedMatterId,
     setSelectedMatterId,
   } = BillingStates();
+
+  const {
+    addBill,
+    updateBill,
+    deleteBill
+  } = BillingsActionHandlers()
 
   useEffect(() => {
     async function loadData() {
@@ -241,57 +242,6 @@ export function BillingInterface() {
       .reduce((sum, bill) => sum + Number(bill.amount), 0);
   }, [bills]);
 
-  const addBill = async (bill: Omit<Bill, "bill_id">) => {
-    setIsLoading(true);
-    try {
-      const newBill = await addBillToDb(bill);
-      if (newBill) {
-        setBills((prev) => [...prev, newBill]);
-      }
-      toast.success("Bill added successfully!");
-    } catch (error) {
-      console.error("Failed to add bill:", error);
-      toast.error("Failed to add bill. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const updateBill = async (updatedBill: Bill) => {
-    setIsLoading(true);
-    try {
-      const result = await updateBillInDb(updatedBill);
-      if (result) {
-        setBills((prev) =>
-          prev.map((bill) =>
-            bill.bill_id === updatedBill.bill_id ? updatedBill : bill
-          )
-        );
-      }
-      toast.success("Bill updated successfully!");
-    } catch (error) {
-      console.error("Failed to update bill:", error);
-      toast.error("Failed to update bill. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const deleteBill = async (id: string) => {
-    setIsLoading(true);
-    try {
-      const success = await deleteBillFromDb(id);
-      if (success) {
-        setBills((prev) => prev.filter((bill) => bill.bill_id !== id));
-      }
-      toast.success("Bill deleted successfully!");
-    } catch (error) {
-      console.error("Failed to delete bill:", error);
-      toast.error("Failed to delete bill. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
   return (
     <div className="py-0 px-0">
       <div className="max-w-auto mx-auto">
