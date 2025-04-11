@@ -60,10 +60,14 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] dark:bg-gray-800 dark:border-gray-700">
+      <DialogContent
+        className="sm:max-w-[425px] dark:bg-gray-800 dark:border-gray-700"
+        aria-labelledby="dialog-title"
+        aria-describedby="dialog-description"
+      >
         <DialogHeader>
-          <DialogTitle>Add New Matter</DialogTitle>
-          <DialogDescription>
+          <DialogTitle id="dialog-title">Add New Matter</DialogTitle>
+          <DialogDescription id="dialog-description">
             Create a new legal matter. You can add more details later.
           </DialogDescription>
         </DialogHeader>
@@ -73,6 +77,8 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
             <Label htmlFor="matter-name">Matter Name *</Label>
             <Input
               id="matter-name"
+              name="matter-name"
+              data-testid="matter-name-input"
               className="dark:bg-gray-700 dark:border-gray-600"
               placeholder="Case Name"
               value={matterData.name}
@@ -85,6 +91,8 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
             <Label htmlFor="case-number">Case Number</Label>
             <Input
               id="case-number"
+              name="case-number"
+              data-testid="case-number-input"
               className="dark:bg-gray-700 dark:border-gray-600"
               placeholder="Case Number"
               value={matterData.case_number}
@@ -97,6 +105,8 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
             <Label htmlFor="client-name">Client Name</Label>
             <Input
               id="client-name"
+              name="client-name"
+              data-testid="client-name-input"
               className="dark:bg-gray-700 dark:border-gray-600"
               placeholder="Client name"
               value={matterData.client}
@@ -112,14 +122,22 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
             >
               <SelectTrigger
                 id="status"
+                name="status"
+                data-testid="status-select"
                 className="dark:bg-gray-700 dark:border-gray-600"
               >
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
-                <SelectItem value="open">Open</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="closed">Closed</SelectItem>
+                <SelectItem value="open" data-testid="status-open">
+                  Open
+                </SelectItem>
+                <SelectItem value="pending" data-testid="status-pending">
+                  Pending
+                </SelectItem>
+                <SelectItem value="closed" data-testid="status-closed">
+                  Closed
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -127,13 +145,18 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
           <div className="flex justify-end gap-2 pt-4">
             <Button
               type="button"
+              data-testid="cancel-button"
               className="text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              data-testid="create-matter-button"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Creating..." : "Create Matter"}
             </Button>
           </div>
