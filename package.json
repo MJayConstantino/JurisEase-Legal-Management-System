@@ -9,7 +9,7 @@
     "lint": "next lint",
     "storybook": "cross-env NODE_ENV=test storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test:api": "cd ./tests/newman && cross-env NODE_ENV=test newman run auth.json --reporter-cli-no-console",
+    "test:api": "cd ./tests/newman && cross-env NODE_ENV=test newman run <POSTMAN_URL_HERE> --reporter-cli-no-console",
     "test:frontend": "cross-env NODE_ENV=test jest --selectProjects frontend --verbose",
     "test:backend": "cross-env NODE_ENV=test jest --selectProjects backend --verbose",
     "test": "cross-env NODE_ENV=test jest --detectOpenHandles --verbose",
