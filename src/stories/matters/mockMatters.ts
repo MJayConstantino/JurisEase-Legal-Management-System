@@ -1,10 +1,5 @@
 // matters.mock.ts
-import type {
-  Matter,
-  MatterStatus,
-  OpposingCouncil,
-  Court,
-} from "@/types/matter.type";
+import type { Matter } from "@/types/matter.type";
 
 export const mockMatters: Matter[] = [
   {

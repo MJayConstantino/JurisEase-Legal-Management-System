@@ -6,11 +6,7 @@ import { action } from "@storybook/addon-actions";
 import * as matterActions from "@/action-handlers/matters";
 import { jest } from "@storybook/jest";
 import { mockMatters } from "./mockMatters";
-
-// --- Mock next/navigation ---
-// This prevents the "invariant expected app router to be mounted" error
-// by providing a stub implementation for useRouter that returns the minimal
-// router methods required by your component.
+import { ThemeProvider } from "@/components/theme-provider";
 
 const sampleMatter = mockMatters[0];
 
@@ -26,6 +22,15 @@ const meta: Meta<typeof MatterConfirmDeletionDialog> = {
       defaultViewport: "responsive",
     },
   },
+  decorators: [
+    (Story) => (
+      <ThemeProvider attribute="class" defaultTheme="light">
+        <div className="min-h-screen">
+          <Story />
+        </div>
+      </ThemeProvider>
+    ),
+  ],
 };
 
 export default meta;
@@ -41,8 +46,27 @@ export const OpenDialog: Story = {
     onOpenChange: action("onOpenChange"),
     matter: sampleMatter,
     onSuccess: action("onSuccess"),
-    // redirectToList: false,
+    redirectToList: false,
   },
+};
+
+export const DarkMode: Story = {
+  args: {
+    isOpen: true,
+    onOpenChange: action("onOpenChange"),
+    matter: sampleMatter,
+    onSuccess: action("onSuccess"),
+    redirectToList: false,
+  },
+  decorators: [
+    (Story) => (
+      <ThemeProvider attribute="class" defaultTheme="dark">
+        <div className="min-h-screen">
+          <Story />
+        </div>
+      </ThemeProvider>
+    ),
+  ],
 };
 
 /**
@@ -57,7 +81,7 @@ export const DeletionSuccess: Story = {
     onOpenChange: action("onOpenChange"),
     matter: sampleMatter,
     onSuccess: action("onSuccess"),
-    // redirectToList: false,
+    redirectToList: false,
   },
   decorators: [
     (Story) => {
@@ -89,7 +113,7 @@ export const DeletionFailure: Story = {
     onOpenChange: action("onOpenChange"),
     matter: sampleMatter,
     onSuccess: action("onSuccess"),
-    // redirectToList: false,
+    redirectToList: false,
   },
   decorators: [
     (Story) => {

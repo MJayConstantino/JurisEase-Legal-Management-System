@@ -1,3 +1,4 @@
+// stories/MatterRow.stories.tsx
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { MatterRow } from "@/components/matters/matterRow";
@@ -38,8 +39,7 @@ export default meta;
 type Story = StoryObj<typeof MatterRow>;
 
 /**
- * Default:
- * Displays a MatterRow with loaded data.
+ * Light Mode Stories
  */
 export const Default: Story = {
   args: {
@@ -52,10 +52,6 @@ export const Default: Story = {
   },
 };
 
-/**
- * Loading:
- * Displays the MatterRow in a loading state.
- */
 export const Loading: Story = {
   args: {
     matter: sampleMatter,
@@ -68,11 +64,7 @@ export const Loading: Story = {
   },
 };
 
-/**
- * DeleteInteraction:
- * An interactive story that simulates opening the dropdown menu and clicking "Delete Matter."
- */
-export const DeleteInteraction: Story = {
+export const WithDropdownDownMneuActive: Story = {
   args: {
     matter: sampleMatter,
     users: mockUsers,
@@ -88,8 +80,32 @@ export const DeleteInteraction: Story = {
       name: /open menu/i,
     });
     await userEvent.click(moreButton);
-    // Click the "Delete Matter" dropdown item.
-    const deleteOption = await canvas.findByText(/delete matter/i);
-    await userEvent.click(deleteOption);
   },
+};
+
+/**
+ * Dark Mode Stories
+ * Wrap each story in a dark mode container.
+ */
+export const DefaultDark: Story = {
+  ...Default,
+  decorators: [
+    (Story) => <div className="dark bg-gray-900 text-white p-4">{Story()}</div>,
+  ],
+};
+
+export const LoadingDark: Story = {
+  ...Loading,
+  decorators: [
+    (Story) => <div className="dark bg-gray-900 text-white p-4">{Story()}</div>,
+  ],
+};
+
+export const WithDropdownDownMneuActiveDark: Story = {
+  ...WithDropdownDownMneuActive,
+  decorators: [
+    (Story) => (
+      <div className="dark bg-gray-900 w-screen text-white p-4">{Story()}</div>
+    ),
+  ],
 };

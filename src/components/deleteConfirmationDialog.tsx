@@ -46,13 +46,16 @@ export function DeleteConfirmationDialog({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className="dark:bg-gray-800 dark:border-gray-700">
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>
+          <AlertDialogCancel
+            disabled={isDeleting}
+            className="dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+          >
             {cancelText}
           </AlertDialogCancel>
           <AlertDialogAction
@@ -61,7 +64,7 @@ export function DeleteConfirmationDialog({
               handleConfirm();
             }}
             disabled={isDeleting}
-            className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            className="bg-red-600 hover:bg-red-700 focus:ring-red-600 dark:text-white text-black"
           >
             {isDeleting ? (
               <>

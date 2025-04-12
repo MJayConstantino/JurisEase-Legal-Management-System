@@ -3,7 +3,7 @@ import React from "react";
 import { MatterHeader } from "@/components/matters/matterHeader";
 import { mockMatters } from "./mockMatters";
 import { userEvent, within } from "@storybook/testing-library";
-import { action } from "@storybook/addon-actions";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const sampleMatter = mockMatters[0];
 
@@ -16,89 +16,122 @@ const meta: Meta<typeof MatterHeader> = {
     },
     layout: "fullscreen",
     viewport: {
-      defaultViewport: "responsive",
+      viewports: {
+        mobile: { name: "Mobile", styles: { width: "375px", height: "812px" } },
+        tablet: {
+          name: "Tablet",
+          styles: { width: "768px", height: "1024px" },
+        },
+      },
+      defaultViewport: "rsponsive",
+    },
+    themes: {
+      default: "light",
+      list: [
+        { name: "light", class: "", color: "#ffffff" },
+        { name: "dark", class: "dark", color: "#000000" },
+      ],
     },
   },
-  decorators: [
-    (Story) => (
-      <div
-        style={{
-          padding: "2rem",
-          maxWidth: "600px",
-          margin: "0 auto",
-          background: "#f0f0f0",
-        }}
-      >
-        <Story />
-      </div>
-    ),
-  ],
 };
 
 export default meta;
 type Story = StoryObj<typeof MatterHeader>;
 
-/**
- * Default:
- * Renders the MatterHeader component with a sample matter.
- */
 export const Default: Story = {
   args: {
     matter: sampleMatter,
   },
+  decorators: [
+    (Story) => (
+      <ThemeProvider attribute="class" defaultTheme="light">
+        <div className="min-h-screen w-screen p-4 bg-white dark:bg-gray-900">
+          <Story />
+        </div>
+      </ThemeProvider>
+    ),
+  ],
 };
 
-/**
- * DarkMode:
- * Renders the MatterHeader component on a dark background.
- */
 export const DarkMode: Story = {
   args: {
     matter: sampleMatter,
   },
   parameters: {
-    backgrounds: { default: "dark" },
+    themes: { current: "dark" },
   },
   decorators: [
     (Story) => (
-      <div className="dark bg-gray-800">
-        <Story />
-      </div>
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <div className="min-h-screen p-4 w-screen bg-white dark:bg-gray-900">
+          <Story />
+        </div>
+      </ThemeProvider>
     ),
   ],
 };
 
-/**
- * DeleteInteraction:
- * An interactive story which simulates a user opening the dropdown menu
- * and clicking "Delete Matter", which causes the deletion confirmation dialog
- * to open.
- */
-export const DeleteInteraction: Story = {
+export const MobileView: Story = {
+  args: {
+    matter: sampleMatter,
+  },
+  parameters: {
+    viewport: { defaultViewport: "mobile" },
+  },
+  decorators: [
+    (Story) => (
+      <ThemeProvider attribute="class" defaultTheme="light">
+        <div className="min-h-screen w-screen p-4 bg-white dark:bg-gray-900">
+          <Story />
+        </div>
+      </ThemeProvider>
+    ),
+  ],
+};
+
+export const WithOptionsOpen: Story = {
   args: {
     matter: sampleMatter,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-
-    // Find the "More options" button by its accessible name.
     const moreButton = await canvas.findByRole("button", {
       name: /more options/i,
     });
     await userEvent.click(moreButton);
-
-    // Wait for the DropdownMenuItem that contains "Delete Matter"
-    const deleteOption = await canvas.findByText(/delete matter/i);
-    await userEvent.click(deleteOption);
-
-    // Optionally check for the appearance of the deletion confirmation dialog.
-    try {
-      const deletionDialog = await canvas.findByRole("dialog");
-      action("Deletion Dialog Opened")(deletionDialog);
-    } catch {
-      action("Deletion Dialog Not Found")(
-        "The deletion dialog did not appear."
-      );
-    }
   },
+  decorators: [
+    (Story) => (
+      <ThemeProvider attribute="class" defaultTheme="light">
+        <div className="min-h-screen w-screen p-4 bg-white dark:bg-gray-900">
+          <Story />
+        </div>
+      </ThemeProvider>
+    ),
+  ],
+};
+
+export const WithOptionsOpenDarkMode: Story = {
+  args: {
+    matter: sampleMatter,
+  },
+  parameters: {
+    themes: { current: "dark" },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const moreButton = await canvas.findByRole("button", {
+      name: /more options/i,
+    });
+    await userEvent.click(moreButton);
+  },
+  decorators: [
+    (Story) => (
+      <ThemeProvider attribute="class" defaultTheme="dark">
+        <div className="min-h-screen w-screen p-4 bg-white dark:bg-gray-900">
+          <Story />
+        </div>
+      </ThemeProvider>
+    ),
+  ],
 };

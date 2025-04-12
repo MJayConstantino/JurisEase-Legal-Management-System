@@ -2,96 +2,161 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { EditableCard } from "@/components/matters/editableCard";
 import { userEvent, within } from "@storybook/testing-library";
 import { action } from "@storybook/addon-actions";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { ThemeProvider } from "@/components/theme-provider";
 import React from "react";
+
+// Helper functions
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const meta: Meta<typeof EditableCard> = {
   title: "Matters/EditableCard",
   component: EditableCard,
   parameters: {
-    nextjs: {
-      appDirectory: true,
-    },
     layout: "fullscreen",
     viewport: {
+      viewports: {
+        mobile: { name: "Mobile", styles: { width: "375px", height: "812px" } },
+      },
       defaultViewport: "responsive",
     },
   },
+  decorators: [
+    (Story) => (
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        <div className="min-h-screen w-screen p-4">
+          <Story />
+        </div>
+      </ThemeProvider>
+    ),
+  ],
 };
 
 export default meta;
 type Story = StoryObj<typeof EditableCard>;
 
-/**
- * Basic example: Render an EditableCard with static children.
- */
-export const Empty: Story = {
+// Base template for form fields
+const BaseFormTemplate = (isEditing: boolean) => (
+  <div className="space-y-4">
+    <div className="space-y-2">
+      <Label htmlFor="matter-name">Matter Name *</Label>
+      <Input
+        id="matter-name"
+        defaultValue="Smith vs. Johnson"
+        disabled={!isEditing}
+        required
+      />
+    </div>
+    <div className="space-y-2">
+      <Label htmlFor="case-number">Case Number</Label>
+      <Input id="case-number" defaultValue="2024-001" disabled={!isEditing} />
+    </div>
+    <div className="space-y-2">
+      <Label htmlFor="description">Description</Label>
+      <Textarea
+        id="description"
+        defaultValue="Legal proceedings regarding..."
+        disabled={!isEditing}
+      />
+    </div>
+    <div className="space-y-2">
+      <Label htmlFor="status">Status</Label>
+      <Select disabled={!isEditing} defaultValue="active">
+        <SelectTrigger>
+          <SelectValue placeholder="Select status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="active">Active</SelectItem>
+          <SelectItem value="pending">Pending</SelectItem>
+          <SelectItem value="closed">Closed</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  </div>
+);
+
+export const Default: Story = {
   args: {
-    title: "Empty Card",
-    children: "This is an empty EditableCard with static content.",
+    title: "Matter Details",
+    children: BaseFormTemplate,
+    onSave: action("onSave"),
+    onCancel: action("onCancel"),
   },
 };
 
-/**
- * Dark Mode variant: Uses background parameters to simulate a dark environment.
- */
 export const DarkMode: Story = {
   args: {
-    title: "Dark Mode EditableCard",
-    children: "This card is styled for dark mode.",
-    editable: true,
+    ...Default.args,
+    title: "Dark Mode Matter Details",
   },
-  decorators: [(Story) => <div className="dark">{Story()}</div>],
+  parameters: {
+    themes: { current: "dark" },
+  },
 };
 
-/**
- * Interactive example: Demonstrates the editable behavior with onSave & onCancel actions.
- * The children prop is provided as a function that changes its output based on the editing state.
- */
-export const Interactive: Story = {
+export const MobileView: Story = {
   args: {
-    title: "Interactive EditableCard",
-    children: (isEditing: boolean) => (
-      <div>{isEditing ? "Now editing..." : "Click edit to start editing."}</div>
-    ),
-    onSave: action("save"),
-    onCancel: action("cancel"),
+    ...Default.args,
+    title: "Mobile Matter Details",
+  },
+  parameters: {
+    viewport: { defaultViewport: "mobile" },
   },
   play: async ({ canvasElement }) => {
-    // Locate the canvas element and use testing-library's within to search for elements.
     const canvas = within(canvasElement);
-    // Find the edit button and click it to enter editing mode.
+
+    // Enter edit mode with delay
+    await delay(1000);
     const editButton = await canvas.findByRole("button", { name: /edit/i });
     await userEvent.click(editButton);
-    // Short delay to simulate the user observing the change.
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    // Now, find the save button and click it.
+
+    // Fill in form fields with delays
+    const matterNameInput = canvas.getByLabelText(/matter name/i);
+    await delay(1000);
+    await userEvent.clear(matterNameInput);
+    await delay(500);
+    await userEvent.type(matterNameInput, "Mobile Test Case", { delay: 100 });
+
+    // Save changes with delay
+    await delay(1000);
     const saveButton = await canvas.findByRole("button", { name: /check/i });
     await userEvent.click(saveButton);
   },
 };
 
-/**
- * Custom Actions example: Includes custom onSave and onCancel actions
- * and uses a play function to simulate editing and then canceling.
- */
-export const CustomActions: Story = {
+export const WithValidation: Story = {
   args: {
-    title: "Custom Action EditableCard",
-    children: (isEditing: boolean) => (
-      <div>{isEditing ? "Editing Mode Enabled" : "Viewing Mode"}</div>
-    ),
-    onSave: action("Custom Save"),
-    onCancel: action("Custom Cancel"),
+    ...Default.args,
+    title: "Validation Example",
+    onSave: async () => {
+      await delay(1000);
+    },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    // Enter editing mode
+
+    // Enter edit mode
+    await delay(1000);
     const editButton = await canvas.findByRole("button", { name: /edit/i });
     await userEvent.click(editButton);
-    // Wait a moment to simulate editing
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    // Click cancel to exit editing mode
-    const cancelButton = await canvas.findByRole("button", { name: /x/i });
-    await userEvent.click(cancelButton);
+
+    // Clear required field
+    const matterNameInput = canvas.getByLabelText(/matter name/i);
+    await delay(500);
+    await userEvent.clear(matterNameInput);
+
+    // Try to save (should show error)
+    await delay(1000);
+    const saveButton = await canvas.findByRole("button", { name: /check/i });
+    await userEvent.click(saveButton);
   },
 };
