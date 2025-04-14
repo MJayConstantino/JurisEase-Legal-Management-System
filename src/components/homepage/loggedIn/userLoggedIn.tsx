@@ -5,7 +5,6 @@ import { createSupabaseClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Header from "@/components/homepage/header";
 import { Card, CardContent } from "@/components/ui/card";
-import { fetchUserInfoAction } from "@/actions/users";
 import WelcomeHeader from "@/components/homepage/loggedIn/welcomeHeader";
 import UserProfile from "@/components/homepage/loggedIn/userProfile";
 import ActionButtons from "@/components/homepage/loggedIn/actionButtons";
@@ -15,13 +14,14 @@ interface UserData {
   avatar_url: string;
 }
 
-export default function UserLoggedIn() {
+export default function UserLoggedIn(props: any) {
+  const override = props.__storybookMockOverride ?? {};
   const supabase = createSupabaseClient();
   const router = useRouter();
-  const [signOutLoading, setSignOutLoading] = useState(false);
-  const [dashboardLoading, setDashboardLoading] = useState(false);
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [loadingUser, setLoadingUser] = useState(true);
+  const [signOutLoading, setSignOutLoading] = useState(override.signOutLoading ?? false);
+  const [dashboardLoading, setDashboardLoading] = useState(override.dashboardLoading ?? false);
+  const [userData, setUserData] = useState<UserData | null>(override.userData ?? null);
+  const [loadingUser, setLoadingUser] = useState(override.loadingUser ?? true);
 
   const navItems = [
     { label: "Home", href: "#" },
@@ -32,7 +32,12 @@ export default function UserLoggedIn() {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const data: UserData = await fetchUserInfoAction();
+        const fetchAction =
+          typeof (global as any).fetchUserInfoAction === "function"
+            ? (global as any).fetchUserInfoAction
+            : (await import("@/actions/users")).fetchUserInfoAction;
+  
+        const data: UserData = await fetchAction();
         setUserData(data);
       } catch (error) {
         console.error("Error fetching user info:", error);
@@ -40,8 +45,10 @@ export default function UserLoggedIn() {
         setLoadingUser(false);
       }
     }
+  
     fetchUser();
   }, []);
+  
 
   const handleSignOut = async () => {
     setSignOutLoading(true);
