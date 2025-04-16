@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { Bill, BillStatus, SortDirection, SortField, StatusFilter, TimeFilter } from  "@/types/billing.type"
 import { Matter } from "@/types/matter.type"
+import { format } from "date-fns"
 
 
 export function BillingStates(){
@@ -12,6 +13,7 @@ export function BillingStates(){
     const [status, setStatus] = useState<BillStatus>(BillStatus.pending)
     const [remarks, setRemarks] = useState("")
     const [matter_id, setMatterId] = useState("")
+    const [dateString, setDateString] = useState(format(new Date(), "yyyy-MM-dd"))
 
     // billing items
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -40,7 +42,7 @@ export function BillingStates(){
 
     return{
         name, setName, remarks, setRemarks, amount, setAmount, created_at, setCreated_at, 
-        status, setStatus, matter_id, setMatterId,
+        status, setStatus, matter_id, setMatterId, dateString, setDateString,
         
         isEditDialogOpen, setIsEditDialogOpen, isDeleteDialogOpen, setIsDeleteDialogOpen,
 

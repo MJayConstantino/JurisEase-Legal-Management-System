@@ -1,12 +1,10 @@
 "use client";
 
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns"
+import { CalendarIcon } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query";
-
 import { Bill, BillStatus } from "@/types/billing.type";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
@@ -17,22 +15,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
 import { BillingStates } from "./billingsStates";
 import { Textarea } from "../ui/textarea";
 import { Matter } from "@/types/matter.type";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export interface BillingsAddDialogProps {
   open: boolean;
@@ -62,8 +54,11 @@ export function BillingsAddDialog({
     setStatus,
     remarks,
     setRemarks,
+    dateString,
+    setDateString
   } = BillingStates();
   const [matter_id, setMatterId] = useState(matterBillingMatterId || "");
+  const dateInputRef = useRef<HTMLInputElement>(null)
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -94,10 +89,30 @@ export function BillingsAddDialog({
     setMatterId("");
     setName("");
     setAmount("");
-    setCreated_at(new Date());
+    const today = new Date()
+      setCreated_at(today)
+      setDateString(format(today, "yyyy-MM-dd"))
     setStatus(BillStatus.pending);
     setRemarks("");
   };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newDateString = e.target.value
+    setDateString(newDateString)
+
+    if (newDateString) {
+      const newDate = new Date(newDateString)
+      if (!isNaN(newDate.getTime())) {
+        setCreated_at(newDate)
+      }
+    }
+  }
+
+  const openDatePicker = () => {
+    if (dateInputRef.current) {
+      dateInputRef.current.showPicker()
+    }
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -119,7 +134,7 @@ export function BillingsAddDialog({
             } gap-4`}
           >
             <div className="space-y-4">
-              <div id="matterDiv" className="grid gap-2">
+              <div className="grid gap-2">
                 <Label htmlFor="matter" className="text-base md:text-lg">
                   Matter
                 </Label>
@@ -175,33 +190,39 @@ export function BillingsAddDialog({
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="date" className="text-base md:text-lg">
-                  Created At
+                <Label htmlFor="date-display" className="text-base md:text-lg">
+                  Date Billed
                 </Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      id="date"
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:border-gray-600",
-                        !created_at && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-3 w-3 md:h-4 md:w-4" />
-                      {created_at ? format(created_at, "PPP") : "Select date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 dark:bg-gray-700 dark:border-gray-600">
-                    <Calendar
-                      mode="single"
-                      selected={created_at}
-                      onSelect={(date) => date && setCreated_at(date)}
-                      initialFocus
-                      className="dark:bg-gray-700"
-                    />
-                  </PopoverContent>
-                </Popover>
+                <div className="relative">
+                  <Input
+                    id="date-display"
+                    readOnly
+                    value={created_at ? format(created_at, "MMMM d, yyyy") : ""}
+                    className="text-sm md:text-base h-9 md:h-10 pr-10 dark:bg-gray-700 dark:border-gray-600"
+                    placeholder="Select date"
+                    onClick={openDatePicker}
+                  />
+
+                  <input
+                    ref={dateInputRef}
+                    type="date"
+                    value={dateString}
+                    onChange={handleDateChange}
+                    className="sr-only"
+                    tabIndex={-1}
+                  />
+
+                  <Button
+                    name="dateBtn"
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={openDatePicker}
+                    className="absolute right-0 top-0 h-full px-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                  >
+                    <CalendarIcon className="h-4 w-4 md:h-5 md:w-5" />
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -209,7 +230,7 @@ export function BillingsAddDialog({
               <div className="grid gap-2 mb-4 space-y-2">
                 <Label htmlFor="status">Status</Label>
                 <Select
-                  defaultValue="Pending"
+                  defaultValue="pending"
                   value={status}
                   onValueChange={(value) => setStatus(value as BillStatus)}
                 >
@@ -262,6 +283,7 @@ export function BillingsAddDialog({
 
         <DialogFooter>
           <Button
+            id="cancelBtn"
             variant="outline"
             onClick={() => onOpenChange(false)}
             className="text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
@@ -269,6 +291,7 @@ export function BillingsAddDialog({
             Cancel
           </Button>
           <Button
+            id="saveBtn"
             className="bg-indigo-900 hover:bg-indigo-800 dark:bg-indigo-700 dark:hover:bg-indigo-600 text-sm md:text-base h-9 md:h-10"
             onClick={handleSave}
           >
