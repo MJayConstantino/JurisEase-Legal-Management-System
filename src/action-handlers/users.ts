@@ -1,6 +1,6 @@
 // utils/authHandlers.ts
-import { createSupabaseClient } from '@/utils/supabase/client'
-import { signinAction, signOutAction, signUpAction } from '@/actions/users'
+import { createSupabaseClient } from '../utils/supabase/client'
+import { signinAction, signOutAction, signUpAction } from '../actions/users'
 import { toast } from 'sonner'
 
 export const handleLoginSubmit = async (formData: FormData) => {
