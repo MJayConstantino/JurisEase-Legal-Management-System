@@ -15,10 +15,16 @@ export type User = z.infer<typeof userSchema>
 export async function signinAction(formData: FormData) {
   const supabase = await createSupabaseClient()
   const data = Object.fromEntries(formData.entries()) as User
-  if (userSchema.safeParse(data).error) {
+  const zodError = userSchema.safeParse(data).error
+  if (zodError) {
+    const zodErrorObj = zodError.flatten().fieldErrors
     return {
       error:
-        'Invalid data Inputted' + userSchema.safeParse(data).error?.message,
+        'Invalid Data Inputted: ' +
+        (
+          (zodErrorObj.email ? '(Invalid Email Format) ' : '') +
+          (zodErrorObj.password ? '(Invalid Password Format)' : '')
+        ).trim(),
     }
   }
   const { error } = await supabase.auth.signInWithPassword(data)
@@ -35,8 +41,18 @@ export async function signUpAction(formData: FormData) {
   const supabase = await createSupabaseClient()
 
   const data = Object.fromEntries(formData.entries()) as User
-  if (userSchema.safeParse(data).error) {
-    return { error: 'Invalid data Inputted' }
+  const zodError = userSchema.safeParse(data).error
+  if (zodError || !data.name) {
+    const zodErrorObj = zodError?.flatten().fieldErrors
+    return {
+      error:
+        'Invalid data Inputted: ' +
+        (
+          (zodErrorObj?.email ? '(Invalid Email Format) ' : '') +
+          (zodErrorObj?.password ? '(Invalid Password Format) ' : '') +
+          (data.name ? '' : '(No Name Provided)')
+        ).trim(),
+    }
   }
   const { error } = await supabase.auth.signUp({
     email: data.email,

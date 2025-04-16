@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 export const handleLoginSubmit = async (formData: FormData) => {
   const { error } = await signinAction(formData)
   if (error) {
-    console.error(error)
+    // console.error(error)
     return { error }
   }
 
@@ -16,7 +16,6 @@ export const handleLoginSubmit = async (formData: FormData) => {
 export const handleSignUpSubmit = async (formData: FormData) => {
   const { error } = await signUpAction(formData)
   if (error) {
-    console.error(error)
     return { error }
   }
 
@@ -41,7 +40,7 @@ export const handleGoogleSignIn = async () => {
 
     return { error: null }
   } catch (err: any) {
-    console.error('Error in Google login:', err.message)
+    // console.error('Error in Google login:', err.message)
     return { error: 'Failed Google Login: ' + err.message }
   }
 }

@@ -4,12 +4,32 @@ import {
   handleGoogleSignIn,
   handleSignOut,
 } from '../../../src/action-handlers/users'
-// import { createSupabaseClient } from '../../../src/utils/supabase/client'
-// import {
-//   signinAction,
-//   signUpAction,
-//   signOutAction,
-// } from '../../../src/actions/users'
+import { mockUserData, invalidUserData, wrongUserData } from './auth-mock-data'
+
+/*
+🚨 You don't need to test the handlers if most of your testing relies on database or server actions
+    1. Only test handlers that have more than one step business side logic if YOU ARE testing them
+    2. An example handler is an additional verification before calling the await <insert action here> 
+*/
+
+// ✅ Mocking the location property
+Object.defineProperty(global, 'location', {
+  value: {
+    ancestorOrigins: {
+      // if necessary, you can keep this empty or provide a mock value
+    },
+    hash: '',
+    host: 'localhost:3007',
+    hostname: 'localhost',
+    href: 'http://localhost:3007/',
+    origin: 'http://localhost:3007',
+    pathname: '/',
+    port: '3007',
+    protocol: 'http:',
+    search: '',
+  },
+  writable: true,
+})
 
 // ✅ Mocking the Supabase Client
 jest.mock('../../../src/utils/supabase/client', () => ({
@@ -30,90 +50,79 @@ jest.mock('../../../src/utils/supabase/client', () => ({
 jest.mock('../../../src/actions/users', () => ({
   signinAction: jest.fn(async (formData) => {
     const data = Object.fromEntries(formData.entries())
-    if (data.email === 'test@example.com' && data.password === 'password') {
+    if (
+      data.email === mockUserData.email &&
+      data.password === mockUserData.password
+    ) {
       return { error: null }
     }
     return { error: 'Invalid credentials' }
   }),
   signUpAction: jest.fn(async (formData) => {
     const data = Object.fromEntries(formData.entries())
-    if (data.email && data.password) {
+    if (data.email && data.password && data.name) {
       return { error: null }
     }
     return { error: 'Invalid sign-up data' }
   }),
   signOutAction: jest.fn(async () => ({ error: null })),
 }))
+describe('When the user clicks any button that prompts the handler functions', () => {
+  // ✅ handleLoginSubmit test sucess
+  describe('If the user tries to login and the handlerLogSin handler is prompted', () => {
+    it('should log in successfully if the user provides valid credentials', async () => {
+      const formData = new FormData()
+      formData.append('email', 'test@example.com')
+      formData.append('password', 'password')
 
-// ✅ handleLoginSubmit Tests
-describe('handleLoginSubmit', () => {
-  // remove focus after a while
-  fit('should log in successfully with valid credentials', async () => {
-    const formData = new FormData()
-    formData.append('email', 'test@example.com')
-    formData.append('password', 'password')
+      const result = await handleLoginSubmit(formData)
+      expect(result.error).toBe(null)
+    })
+    //❌ error when the user gives invalid credentials
+    it('should return an error if the user provides  invalid credentials', async () => {
+      const formData = new FormData()
+      formData.append('email', wrongUserData.email)
+      formData.append('password', wrongUserData.password)
 
-    const result = await handleLoginSubmit(formData)
-    console.log('Login success result:', result)
+      const result = await handleLoginSubmit(formData)
+      expect(result.error).toBe('Invalid credentials')
+    })
+  })
+  // ✅ handleSignUpSubmit test success
+  describe('If the user tries to sign up and the handleSignUpSubnit handler is prompted', () => {
+    it('should sign up successfully if user provides valid data', async () => {
+      const formData = new FormData()
+      formData.append('email', mockUserData.email)
+      formData.append('password', mockUserData.password)
+      formData.append('name', mockUserData.name)
+
+      const result = await handleSignUpSubmit(formData)
+      expect(result.error).toBe(null)
+    })
+    //❌ error when the user gives invalid credentials
+    it('should return an error if user provides invalid data', async () => {
+      const formData = new FormData()
+      formData.append('email', invalidUserData.email)
+      formData.append('password', invalidUserData.password) // Too short
+
+      const result = await handleSignUpSubmit(formData)
+      expect(result.error).toBeDefined()
+      expect(result.error).toBe('Invalid sign-up data')
+    })
   })
 
-  it('should return an error for invalid credentials', async () => {
-    const formData = new FormData()
-    formData.append('email', 'wrong@example.com')
-    formData.append('password', 'incorrect')
+  // ✅ handleGoogleSignIn tests sucess
+  describe('when the user tries to sign in and clicks the google button', () => {
+    it('should sign in successfully with Google', async () => {
+      const result = await handleGoogleSignIn()
 
-    const result = await handleLoginSubmit(formData)
-    console.log('Login failure result:', result)
+      expect(result.error).toBe(null)
+    })
   })
-})
-
-// ✅ handleSignUpSubmit Tests
-describe('handleSignUpSubmit', () => {
-  it('should sign up successfully with valid data', async () => {
-    const formData = new FormData()
-    formData.append('email', 'test@example.com')
-    formData.append('password', 'password')
-    formData.append('name', 'Test User')
-
-    const result = await handleSignUpSubmit(formData)
-    console.log('Sign-up success result:', result)
-  })
-
-  it('should return an error for invalid data', async () => {
-    const formData = new FormData()
-    formData.append('email', 'invalid-email')
-    formData.append('password', 'pass') // Too short
-
-    const result = await handleSignUpSubmit(formData)
-    console.log('Sign-up failure result:', result)
-  })
-})
-
-// ✅ handleGoogleSignIn Tests
-describe('handleGoogleSignIn', () => {
-  it('should sign in successfully with Google', async () => {
-    const result = await handleGoogleSignIn()
-    console.log('Google sign-in success result:', result)
-  })
-
-  it('should return an error for an invalid provider', async () => {
-    // jest.spyOn(global, 'createSupabaseClient').mockImplementationOnce(() => ({
-    //   auth: {
-    //     signInWithOAuth: async () => ({
-    //       error: { message: 'Invalid provider' },
-    //     }),
-    //   },
-    // }))
-
-    const result = await handleGoogleSignIn()
-    console.log('Google sign-in failure result:', result)
-  })
-})
-
-// ✅ handleSignOut Tests
-describe('handleSignOut', () => {
-  it('should successfully sign out', async () => {
-    const result = await handleSignOut()
-    console.log('Sign-out result:', result)
+  // ✅ handleSignOut Tests
+  describe('whent he user  clicks any button that prompts the handleSignOut handler', () => {
+    it('should successfully sign out the user if there is a session or does nothing', async () => {
+      const result = await handleSignOut()
+    })
   })
 })

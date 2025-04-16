@@ -70,5 +70,14 @@ in your test block.
 fit('should do something), ()
  => {
  expect...}
- 
+
+test.only('should do something), () => {
+}
+describe.only('describe block), () => {
+}
+
+d
+5. if you have a test that you want to do and remember you can also do
+it.todo('test i need to do')
+test.todo('test i need to do')
  */
