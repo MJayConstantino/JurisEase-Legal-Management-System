@@ -45,7 +45,7 @@ export function TaskForm({
   onSave,
   onSaveAndCreateAnother,
   initialTask,
-  disableMatterSelect = false,  
+  disableMatterSelect = false,
 }: TaskFormProps) {
   const [task, setTask] = useState<Task>({
     task_id: "",
@@ -54,7 +54,7 @@ export function TaskForm({
     due_date: undefined,
     priority: "low",
     status: "in-progress",
-    matter_id: "", 
+    matter_id: "",
     created_at: new Date(),
   });
   const router = useRouter();
@@ -117,8 +117,6 @@ export function TaskForm({
       [field]: value,
     }));
   };
-
-
 
   const validateForm = () => {
     if (!task.name.trim()) {
@@ -195,6 +193,7 @@ export function TaskForm({
 
   return (
     <Dialog
+        data-testid="task-form-dialog"
       open={open}
       onOpenChange={(newOpen) => {
         if (!isSubmitting) {
@@ -202,7 +201,10 @@ export function TaskForm({
         }
       }}
     >
-      <DialogContent className="sm:max-w-[500px] w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
+      <DialogContent
+      
+        className="sm:max-w-[500px] w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700"
+      >
         <DialogHeader>
           <DialogTitle className="dark:text-gray-100">
             {task.task_id ? "Edit Task" : "New Task"}
@@ -212,7 +214,11 @@ export function TaskForm({
           <div className="space-y-2">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="sm:col-span-2">
-                <Label htmlFor="name" className="dark:text-gray-200">
+                <Label
+                  htmlFor="name"
+                  alt-text="name"
+                  className="dark:text-gray-200"
+                >
                   Name
                 </Label>
                 <Input
@@ -224,7 +230,11 @@ export function TaskForm({
                 />
               </div>
               <div>
-                <Label htmlFor="priority" className="dark:text-gray-200">
+                <Label
+                  htmlFor="priority"
+                  alt-text="priority"
+                  className="dark:text-gray-200"
+                >
                   Priority
                 </Label>
                 <Select
@@ -262,7 +272,11 @@ export function TaskForm({
             </div>
 
             <div>
-              <Label htmlFor="description" className="dark:text-gray-200">
+              <Label
+                htmlFor="description"
+                alt-text="description"
+                className="dark:text-gray-200"
+              >
                 Description
               </Label>
               <Textarea
@@ -278,18 +292,24 @@ export function TaskForm({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="assigned-matter" className="dark:text-gray-200">
+              <Label
+                htmlFor="assignedMatter"
+                aria-label="assignedMatter"
+                className="dark:text-gray-200"
+              >
                 Assigned Matter
               </Label>
               <Select
                 value={task.matter_id || ""}
                 onValueChange={(value) => handleChange("matter_id", value)}
-                disabled={disableMatterSelect} 
+                disabled={disableMatterSelect}
               >
                 <SelectTrigger className="w-full hover:cursor-pointer dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
                   <SelectValue
                     placeholder={selectedMatterName || "Select a matter"}
-                   >{selectedMatterName || "N/A"}</SelectValue>
+                  >
+                    {selectedMatterName || "N/A"}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
                   <SelectGroup>
@@ -312,7 +332,7 @@ export function TaskForm({
                           value={matter.matter_id}
                           className="dark:text-gray-100 dark:focus:bg-gray-600"
                         >
-                          {matter.name} 
+                          {matter.name}
                         </SelectItem>
                       ))
                     ) : (
@@ -331,7 +351,11 @@ export function TaskForm({
             </div>
 
             <div>
-              <Label htmlFor="taskStatus" className="dark:text-gray-200">
+              <Label
+                htmlFor="taskStatus"
+                aria-label="taskStatus"
+                className="dark:text-gray-200"
+              >
                 Task status
               </Label>
               <Select
@@ -365,7 +389,11 @@ export function TaskForm({
           </div>
 
           <div>
-            <Label htmlFor="dueDate" className="dark:text-gray-200">
+            <Label
+              htmlFor="dueDate"
+              aria-label="dueDate"
+              className="dark:text-gray-200"
+            >
               Due date
             </Label>
             <Input
@@ -385,6 +413,7 @@ export function TaskForm({
         <DialogFooter className="flex-col sm:flex-row gap-2 sm:justify-between">
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <Button
+              aria-label="saveTask"
               type="submit"
               className="w-full sm:w-auto hover:cursor-pointer"
               onClick={() => handleSubmit(false)}

@@ -68,7 +68,6 @@ export function TaskList({ matterId }: TaskListProps) {
 
   const filteredTasks = tasks
     .filter((task) => {
-
       const matchesStatus =
         statusFilter === "all" ||
         (statusFilter === "in-progress" && task.status === "in-progress") ||
@@ -93,7 +92,6 @@ export function TaskList({ matterId }: TaskListProps) {
     setStatusFilter(status)
   }
 
-
   const handleViewChange = (newView: "grid" | "table") => {
     setView(newView)
   }
@@ -105,41 +103,44 @@ export function TaskList({ matterId }: TaskListProps) {
   }
 
   return (
-    <div className="container mx-auto py-2 w-full">
-      <TasksHeader
-        onStatusChange={handleStatusChange}
-        onViewChange={handleViewChange}
-        view={view}
-        onTaskCreated={handleTaskCreated}
-        matter_id={matterId} // Pass the matter_id to pre-fill in new tasks
-      />
+    <div className="container mx-auto py-2 w-full h-full flex flex-col">
+      <div className="flex-shrink-0">
+        <TasksHeader
+          onStatusChange={handleStatusChange}
+          onViewChange={handleViewChange}
+          view={view}
+          onTaskCreated={handleTaskCreated}
+          matter_id={matterId}
+        />
+      </div>
 
-      {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <p>Loading tasks...</p>
-        </div>
-      ) : filteredTasks.length === 0 ? (
-        <div className="flex justify-center items-center h-64 text-muted-foreground">
-          <p>
-            {matterId
-              ? "No tasks found for this matter. Create a new task to get started."
-              : "No tasks found. Create a new task to get started."}
-          </p>
-        </div>
-      ) : view === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-          {filteredTasks.map((task) => (
-            <TaskCard key={task.task_id} task={task} />
-          ))}
-        </div>
-      ) : (
-        <div className="mt-6">
-          {filteredTasks.map((task) => (
-            <TaskRow key={task.task_id} task={task} onTaskUpdated={fetchTasks} />
-          ))}
-        </div>
-      )}
+      <div className="flex-grow overflow-y-auto">
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <p>Loading tasks...</p>
+          </div>
+        ) : filteredTasks.length === 0 ? (
+          <div className="flex justify-center items-center h-64 text-muted-foreground">
+            <p>
+              {matterId
+                ? "No tasks found for this matter. Create a new task to get started."
+                : "No tasks found. Create a new task to get started."}
+            </p>
+          </div>
+        ) : view === "grid" ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+            {filteredTasks.map((task) => (
+              <TaskCard key={task.task_id} task={task} />
+            ))}
+          </div>
+        ) : (
+          <div className="mt-6">
+            {filteredTasks.map((task) => (
+              <TaskRow key={task.task_id} task={task} onTaskUpdated={fetchTasks} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
-

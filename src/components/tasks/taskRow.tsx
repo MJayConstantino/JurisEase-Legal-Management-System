@@ -22,6 +22,7 @@ import { useParams } from "next/navigation";
 interface TaskRowProps {
   task: Task;
   onTaskUpdated?: () => void;
+  matters?: Matter[];
 }
 
 export function TaskRow({ task }: TaskRowProps) {
@@ -217,7 +218,7 @@ export function TaskRow({ task }: TaskRowProps) {
         />
         <div className="flex-1 min-w-0 mr-2 ">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="font-medium text-sm sm:text-base line-clamp-2 dark:text-white overflow-y-auto">
+            <h3 className="font-medium text-sm sm:text-base line-clamp-2 dark:text-white">
               {localTask.name}
             </h3>
             {localTask.priority && (
@@ -230,10 +231,17 @@ export function TaskRow({ task }: TaskRowProps) {
             )}
           </div>
           <div className="text-xs sm:text-sm text-muted-foreground truncate">
-            {isLoadingMatters ? (
-              <Skeleton className="inline-block w-24 h-4 rounded" />
-            ) : (
-              matterName || "No matter assigned"
+            {localTask.matter_id && (
+              <div className="text-xs sm:text-sm font-medium mb-2 truncate dark:text-gray-300">
+                Matter:{" "}
+                <span className="font-normal">
+                  {isLoadingMatters ? (
+                    <Skeleton className="inline-block w-24 h-4 rounded" />
+                  ) : (
+                    matterName || "No matter assigned"
+                  )}
+                </span>
+              </div>
             )}
           </div>
         </div>
