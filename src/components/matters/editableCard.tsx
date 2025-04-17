@@ -35,23 +35,34 @@ export function EditableCard({
   };
 
   return (
-    <Card>
+    <Card className="dark:bg-gray-800">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle>{title}</CardTitle>
         {editable && (
           <div>
             {isEditing ? (
               <div className="flex gap-2">
-                <Button variant="ghost" size="sm" onClick={handleSave}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label="check"
+                  onClick={handleSave}
+                >
                   <Check className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="sm" onClick={handleCancel}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label="x"
+                  onClick={handleCancel}
+                >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
             ) : (
               <Button
                 variant="ghost"
+                aria-label="edit"
                 size="sm"
                 onClick={() => setIsEditing(true)}
               >
