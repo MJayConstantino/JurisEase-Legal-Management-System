@@ -47,7 +47,7 @@ export const DarkMode: Story = {
 
 /**
  * FilterInteraction:
- * An interactive story that simulates clicking one of the filter buttons.
+ * An interactive story that simulates clicking the filter buttons.
  */
 export const FilterInteraction: Story = {
   args: {
@@ -55,8 +55,78 @@ export const FilterInteraction: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    // Simulate clicking the "Open" filter button.
+    const delay = (ms: number) =>
+      new Promise((resolve) => setTimeout(resolve, ms));
+
+    // Click "Open"
     const openButton = await canvas.findByRole("button", { name: /open/i });
     await userEvent.click(openButton);
+    await delay(1000);
+
+    // Click "Pending"
+    const pendingButton = await canvas.findByRole("button", {
+      name: /pending/i,
+    });
+    await userEvent.click(pendingButton);
+    await delay(1000);
+
+    // Click "Closed"
+    const closedButton = await canvas.findByRole("button", { name: /closed/i });
+    await userEvent.click(closedButton);
+    await delay(1000);
+
+    // Click "All Matters"
+    const allMattersButton = await canvas.findByRole("button", {
+      name: /all matters/i,
+    });
+    await userEvent.click(allMattersButton);
+    await delay(1000);
+  },
+};
+
+/**
+ * FilterInteraction:
+ * An interactive story that simulates clicking the filter buttons.
+ */
+export const FilterInteractionDarkMode: Story = {
+  args: {
+    onStatusChange: action("status changed"),
+  },
+  parameters: { backgrounds: { default: "dark" } },
+  decorators: [
+    (Story) => (
+      <div className="dark">
+        <Story />
+      </div>
+    ),
+  ],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const delay = (ms: number) =>
+      new Promise((resolve) => setTimeout(resolve, ms));
+
+    // Click "Open"
+    const openButton = await canvas.findByRole("button", { name: /open/i });
+    await userEvent.click(openButton);
+    await delay(1000);
+
+    // Click "Pending"
+    const pendingButton = await canvas.findByRole("button", {
+      name: /pending/i,
+    });
+    await userEvent.click(pendingButton);
+    await delay(1000);
+
+    // Click "Closed"
+    const closedButton = await canvas.findByRole("button", { name: /closed/i });
+    await userEvent.click(closedButton);
+    await delay(1000);
+
+    // Click "All Matters"
+    const allMattersButton = await canvas.findByRole("button", {
+      name: /all matters/i,
+    });
+    await userEvent.click(allMattersButton);
+    await delay(1000);
   },
 };

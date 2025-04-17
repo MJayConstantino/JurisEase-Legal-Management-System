@@ -20,14 +20,6 @@ const meta: Meta<typeof AddMatterDialog> = {
     viewport: {
       viewports: {
         mobile: { name: "Mobile", styles: { width: "375px", height: "812px" } },
-        tablet: {
-          name: "Tablet",
-          styles: { width: "768px", height: "1024px" },
-        },
-        desktop: {
-          name: "Desktop",
-          styles: { width: "1920px", height: "1080px" },
-        },
       },
       defaultViewport: "responsive",
     },
@@ -75,12 +67,5 @@ export const MobileView: Story = {
   ...Template,
   parameters: {
     viewport: { defaultViewport: "mobile" },
-  },
-};
-
-export const TabletView: Story = {
-  ...Template,
-  parameters: {
-    viewport: { defaultViewport: "tablet" },
   },
 };

@@ -3,6 +3,7 @@ import React from "react";
 import { MattersTable } from "@/components/matters/mattersTable";
 import { mockMatters } from "./mockMatters";
 import { action } from "@storybook/addon-actions";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const meta: Meta<typeof MattersTable> = {
   title: "Matters/MattersTable",
@@ -10,16 +11,12 @@ const meta: Meta<typeof MattersTable> = {
   parameters: {
     nextjs: { appDirectory: true },
     layout: "fullscreen",
-    viewport: { defaultViewport: "responsive" },
+    viewports: {
+      mobile: { name: "Mobile", styles: { width: "375px", height: "812px" } },
+      defaultViewport: "responsive",
+    },
   },
   tags: ["autodocs"],
-  decorators: [
-    (Story) => (
-      <div className="w-screen">
-        <Story />
-      </div>
-    ),
-  ],
 };
 
 export default meta;
@@ -34,9 +31,13 @@ export const Default: Story = {
     sortDirection: "desc",
   },
   decorators: [
-    (Story) => {
-      return <div className="p-4">{Story()}</div>;
-    },
+    (Story) => (
+      <ThemeProvider attribute="class" defaultTheme="light">
+        <div className="w-screen">
+          <Story />
+        </div>
+      </ThemeProvider>
+    ),
   ],
 };
 
@@ -49,24 +50,13 @@ export const Empty: Story = {
     sortDirection: "desc",
   },
   decorators: [
-    (Story) => {
-      return <div className="p-4">{Story()}</div>;
-    },
-  ],
-};
-
-// Loading view: simulates a loading state by never resolving fetchUsersAction.
-export const Loading: Story = {
-  args: {
-    matters: mockMatters,
-    onSort: action("onSort"),
-    sortField: "date_opened",
-    sortDirection: "desc",
-  },
-  decorators: [
-    (Story) => {
-      return <div className="p-4">{Story()}</div>;
-    },
+    (Story) => (
+      <ThemeProvider attribute="class" defaultTheme="light">
+        <div className="w-screen">
+          <Story />
+        </div>
+      </ThemeProvider>
+    ),
   ],
 };
 
@@ -79,29 +69,15 @@ export const DarkMode: Story = {
     sortDirection: "desc",
   },
   decorators: [
-    (Story) => {
-      return <div className="dark">{Story()}</div>;
-    },
+    (Story) => (
+      <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
+        <div className="dark w-screen bg-gray-900 min-h-screen">
+          <Story />
+        </div>
+      </ThemeProvider>
+    ),
   ],
   parameters: {
     backgrounds: { default: "dark" },
-  },
-};
-
-// MobileView: renders the component in a mobile viewport.
-export const MobileView: Story = {
-  args: {
-    matters: mockMatters,
-    onSort: action("onSort"),
-    sortField: "date_opened",
-    sortDirection: "desc",
-  },
-  decorators: [
-    (Story) => {
-      return <div className="p-4">{Story()}</div>;
-    },
-  ],
-  parameters: {
-    viewport: { defaultViewport: "iphonex" },
   },
 };

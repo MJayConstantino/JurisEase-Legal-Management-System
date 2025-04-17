@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Matter } from "@/types/matter.type";
+import type { Matter } from "@/types/matter.type";
 import { getStatusColor } from "@/utils/getStatusColor";
 import { MatterConfirmDeletionDialog } from "./matterConfirmDeletionDialog";
 
@@ -23,57 +23,74 @@ interface MatterHeaderProps {
 
 export function MatterHeader({ matter }: MatterHeaderProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  // Fallback for caseNumber if not provided
+  const caseNumber =
+    matter.case_number || `${matter.matter_id.substring(0, 8)}`;
+
   return (
     <>
-      <div className="bg-white dark:bg-gray-800 rounded-lg border shadow p-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <Link href="/matters">
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <ArrowLeft className="h-4 w-4" />
-                  <span className="sr-only">Back to matters</span>
-                </Button>
-              </Link>
-              <h1 className="text-2xl font-bold">{matter.name}</h1>
-              <Badge
-                className={getStatusColor(matter.status)}
-                variant="outline"
+      <div className="bg-white dark:bg-gray-800 rounded-lg border shadow p-4 sm:p-6">
+        {/* Top row with back button and actions - always in a row */}
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <Link href="/matters">
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <ArrowLeft className="h-4 w-4" />
+              <span className="sr-only">Back to matters</span>
+            </Button>
+          </Link>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">More options</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-red-600 focus:text-red-600"
+                onClick={() => setIsDeleteDialogOpen(true)}
               >
-                {matter.status.charAt(0).toUpperCase() + matter.status.slice(1)}
-              </Badge>
-            </div>
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground">
-              <span>Matter ID: {matter.matter_id}</span>
-              <span className="hidden sm:inline">•</span>
-              <span>Case Number: {matter.case_number}</span>
-              <span className="hidden sm:inline">•</span>
-              <span>Client: {matter.client}</span>
-            </div>
+                Delete Matter
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        {/* Matter title and badge */}
+        <div className="flex flex-wrap items-center gap-2 mb-2">
+          <h1 className="text-xl sm:text-2xl font-bold mr-2">{matter.name}</h1>
+          <Badge className={getStatusColor(matter.status)} variant="outline">
+            {matter.status.charAt(0).toUpperCase() + matter.status.slice(1)}
+          </Badge>
+        </div>
+
+        {/* Matter details */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-1">
+            <span className="font-medium">ID:</span>
+            <span className="truncate">{matter.matter_id.substring(0, 8)}</span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">More options</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="text-red-600 focus:text-red-600"
-                  onClick={() => setIsDeleteDialogOpen(true)}
-                >
-                  Delete Matter
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <span className="hidden sm:inline">•</span>
+
+          <div className="flex items-center gap-1">
+            <span className="font-medium">Case:</span>
+            <span className="truncate">{caseNumber}</span>
+          </div>
+
+          <span className="hidden sm:inline">•</span>
+
+          <div className="flex items-center gap-1">
+            <span className="font-medium">Client:</span>
+            <span className="truncate">{matter.client}</span>
           </div>
         </div>
       </div>
+
       <MatterConfirmDeletionDialog
         isOpen={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}

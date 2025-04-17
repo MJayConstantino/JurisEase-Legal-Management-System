@@ -2,10 +2,14 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { MattersList } from "@/components/matters/mattersList";
 import { mockMatters } from "./mockMatters";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Matter } from "@/types/matter.type";
-import * as matterActions from "@/action-handlers/matters";
 
-const matters: Matter[] = mockMatters;
+// Mock fetch functions for Storybook control
+const emptyFetch = async () => ({ matters: [], error: null });
+const loadingFetch = async (): Promise<{ matters: Matter[]; error: any }> =>
+  new Promise(() => {}); // never resolves
+const contentFetch = async () => ({ matters: mockMatters, error: null });
 
 const meta: Meta<typeof MattersList> = {
   title: "Matters/MattersList",
@@ -13,14 +17,21 @@ const meta: Meta<typeof MattersList> = {
   parameters: {
     nextjs: { appDirectory: true },
     layout: "fullscreen",
-    viewport: { defaultViewport: "responsive" },
+    viewport: {
+      viewports: {
+        mobile: { name: "Mobile", styles: { width: "375px", height: "812px" } },
+      },
+      defaultViewport: "responsive",
+    },
   },
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div className="w-screen">
-        <Story />
-      </div>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        <div className="w-screen min-h-screen bg-white dark:bg-gray-900 p-4">
+          <Story />
+        </div>
+      </ThemeProvider>
     ),
   ],
 };
@@ -30,32 +41,22 @@ type Story = StoryObj<typeof MattersList>;
 
 /**
  * Empty:
- * Simulates an empty list by overriding handleFetchMatters to return an empty array.
+ * Simulates an empty list by overriding fetchMatters to return an empty array.
  */
 export const Empty: Story = {
-  // In your implementation, you can override the fetch function here.
-  // For now, we show the default with an empty state.
-  decorators: [
-    (Story) => (
-      <div className="p-4">
-        <Story />
-      </div>
-    ),
-  ],
+  args: {
+    fetchMatters: emptyFetch,
+  },
 };
 
 /**
  * Loading:
- * Simulates a loading state by overriding handleFetchMatters to never resolve.
+ * Simulates a loading state by overriding fetchMatters to never resolve.
  */
 export const Loading: Story = {
-  decorators: [
-    (Story) => (
-      <div className="p-4">
-        <Story />
-      </div>
-    ),
-  ],
+  args: {
+    fetchMatters: loadingFetch,
+  },
 };
 
 /**
@@ -63,31 +64,31 @@ export const Loading: Story = {
  * Simulates a successful fetch returning the mock matters.
  */
 export const WithContent: Story = {
-  decorators: [
-    (Story) => (
-      <div className="p-4">
-        <Story />
-      </div>
-    ),
-  ],
+  args: {
+    fetchMatters: contentFetch,
+  },
 };
 
 /**
  * DarkMode:
- * Shows the MattersList on a dark background with populated content,
- * filling the whole screen using Tailwind CSS flex classes.
+ * Shows the MattersList on a dark background with populated content.
  */
 export const DarkMode: Story = {
-  decorators: [
-    (Story) => (
-      <div className="dark">
-        <Story />
-      </div>
-    ),
-  ],
+  args: {
+    fetchMatters: contentFetch,
+  },
   parameters: {
     backgrounds: { default: "dark" },
   },
+  decorators: [
+    (Story) => (
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <div className="dark bg-gray-900 min-h-screen w-screen p-4">
+          <Story />
+        </div>
+      </ThemeProvider>
+    ),
+  ],
 };
 
 /**
@@ -95,14 +96,10 @@ export const DarkMode: Story = {
  * Renders the MattersList with content in a mobile viewport.
  */
 export const MobileView: Story = {
+  args: {
+    fetchMatters: contentFetch,
+  },
   parameters: {
     viewport: { defaultViewport: "mobile" },
   },
-  decorators: [
-    (Story) => (
-      <div className="p-4">
-        <Story />
-      </div>
-    ),
-  ],
 };

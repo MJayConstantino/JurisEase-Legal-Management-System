@@ -7,26 +7,38 @@ import type { Matter, SortField, SortDirection } from "@/types/matter.type";
 import { Loader2 } from "lucide-react";
 import { handleFetchMatters } from "@/action-handlers/matters";
 
-export function MattersList() {
+interface MattersListProps {
+  /** Custom fetch function for Storybook or real data */
+  fetchMatters?: () => Promise<{ matters: Matter[]; error: any }>;
+}
+
+export function MattersList({
+  fetchMatters = handleFetchMatters,
+}: MattersListProps) {
   const [matters, setMatters] = useState<Matter[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [sortField, setSortField] = useState<SortField>("date_opened");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
-      const { matters: fetchedMatters, error } = await handleFetchMatters();
-      if (!error) {
-        setMatters(fetchedMatters);
-      } else {
+      try {
+        const { matters: fetchedMatters, error } = await fetchMatters();
+        if (!error) {
+          setMatters(fetchedMatters);
+        } else {
+          setMatters([]);
+        }
+      } catch {
         setMatters([]);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     }
     fetchData();
-  }, [statusFilter, sortField, sortDirection]);
+  }, [fetchMatters, statusFilter, sortField, sortDirection]);
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {

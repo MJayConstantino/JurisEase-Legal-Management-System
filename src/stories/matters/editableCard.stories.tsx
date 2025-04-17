@@ -30,15 +30,6 @@ const meta: Meta<typeof EditableCard> = {
       defaultViewport: "responsive",
     },
   },
-  decorators: [
-    (Story) => (
-      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-        <div className="min-h-screen w-screen p-4">
-          <Story />
-        </div>
-      </ThemeProvider>
-    ),
-  ],
 };
 
 export default meta;
@@ -91,6 +82,15 @@ export const Default: Story = {
     onSave: action("onSave"),
     onCancel: action("onCancel"),
   },
+  decorators: [
+    (Story) => (
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        <div className="min-h-screen w-screen p-4">
+          <Story />
+        </div>
+      </ThemeProvider>
+    ),
+  ],
 };
 
 export const DarkMode: Story = {
@@ -101,6 +101,15 @@ export const DarkMode: Story = {
   parameters: {
     themes: { current: "dark" },
   },
+  decorators: [
+    (Story) => (
+      <ThemeProvider attribute="class" defaultTheme="dark">
+        <div className="dark min-h-screen w-screen p-4">
+          <Story />
+        </div>
+      </ThemeProvider>
+    ),
+  ],
 };
 
 export const MobileView: Story = {
@@ -131,12 +140,21 @@ export const MobileView: Story = {
     const saveButton = await canvas.findByRole("button", { name: /check/i });
     await userEvent.click(saveButton);
   },
+  decorators: [
+    (Story) => (
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        <div className="min-h-screen w-screen p-4">
+          <Story />
+        </div>
+      </ThemeProvider>
+    ),
+  ],
 };
 
-export const WithValidation: Story = {
+export const EditInteraction: Story = {
   args: {
     ...Default.args,
-    title: "Validation Example",
+    title: "Edit Interaction",
     onSave: async () => {
       await delay(1000);
     },
@@ -149,14 +167,51 @@ export const WithValidation: Story = {
     const editButton = await canvas.findByRole("button", { name: /edit/i });
     await userEvent.click(editButton);
 
-    // Clear required field
+    // Type in the "Matter Name" input
     const matterNameInput = canvas.getByLabelText(/matter name/i);
     await delay(500);
     await userEvent.clear(matterNameInput);
+    await userEvent.type(matterNameInput, "Updated Matter Name", {
+      delay: 100,
+    });
 
-    // Try to save (should show error)
+    // Type in the "Case Number" input
+    const caseNumberInput = canvas.getByLabelText(/case number/i);
+    await delay(500);
+    await userEvent.clear(caseNumberInput);
+    await userEvent.type(caseNumberInput, "2024-XYZ", { delay: 100 });
+
+    // Type in the "Description" textarea
+    const descriptionInput = canvas.getByLabelText(/description/i);
+    await delay(500);
+    await userEvent.clear(descriptionInput);
+    await userEvent.type(
+      descriptionInput,
+      "Updated description for the matter.",
+      { delay: 50 }
+    );
+
+    // // Change the "Status" select
+    // const statusTrigger = canvas.getByRole("button", {
+    //   name: /select status/i,
+    // });
+    // await delay(500);
+    // await userEvent.click(statusTrigger);
+    // const closedOption = await canvas.findByText(/closed/i);
+    // await userEvent.click(closedOption);
+
+    // Save changes
     await delay(1000);
     const saveButton = await canvas.findByRole("button", { name: /check/i });
     await userEvent.click(saveButton);
   },
+  decorators: [
+    (Story) => (
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        <div className="min-h-screen w-screen p-4">
+          <Story />
+        </div>
+      </ThemeProvider>
+    ),
+  ],
 };
