@@ -21,6 +21,7 @@ import { useParams } from "next/navigation";
 
 interface TaskCardProps {
   task: Task;
+  matters?: Matter[];
   onTaskUpdated?: () => void;
 }
 

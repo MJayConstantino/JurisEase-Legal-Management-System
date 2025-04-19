@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { Plus, Grid, List } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
@@ -29,9 +28,14 @@ export function TasksHeader({
   const [activeFilter, setActiveFilter] = useState<string>("all")
 
   const handleFilterChange = (filter: string) => {
-    setActiveFilter(filter)
-    onStatusChange(filter)
-  }
+    setActiveFilter(filter);
+    onStatusChange(filter);
+  };
+
+  const getButtonVariant = (filter: string, activeFilter: string) => {
+    return filter === activeFilter ? "blue" : "ghost";
+  };
+  
 
   const handleSaveTask = async (task: Task) => {
     try {
@@ -85,7 +89,12 @@ export function TasksHeader({
       <div className="bg-white shadow dark:bg-gray-900 rounded-lg p-3 sm:p-3 border">
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* New Task Button */}
-          <Button variant="blue" size="sm" className="sm:h-9" onClick={() => setIsAddTaskOpen(true)}>
+          <Button
+            variant="blue"
+            size="sm"
+            className="sm:h-9"
+            onClick={() => setIsAddTaskOpen(true)}
+          >
             <Plus className="h-3 w-3 mr-1 sm:mr-2" />
             <span className="text-xs sm:text-sm">New Task</span>
           </Button>
@@ -93,7 +102,7 @@ export function TasksHeader({
           {/* Filter Buttons */}
           <div className="flex flex-wrap gap-2 bg-gray-100 shadow dark:bg-gray-700 rounded-md justify-center sm:justify-start">
             <Button
-              variant={activeFilter === "all" ? "blue" : "ghost"}
+              variant={getButtonVariant("all", activeFilter)}
               size="sm"
               className="px-3 py-1 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none hover:cursor-pointer"
               onClick={() => handleFilterChange("all")}
@@ -101,7 +110,7 @@ export function TasksHeader({
               All Tasks
             </Button>
             <Button
-              variant={activeFilter === "in-progress" ? "blue" : "ghost"}
+              variant={getButtonVariant("in-progress", activeFilter)}
               size="sm"
               className="px-3 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none hover:cursor-pointer"
               onClick={() => handleFilterChange("in-progress")}
@@ -109,7 +118,7 @@ export function TasksHeader({
               In-Progress
             </Button>
             <Button
-              variant={activeFilter === "overdue" ? "blue" : "ghost"}
+              variant={getButtonVariant("overdue", activeFilter)}
               size="sm"
               className="px-3 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none hover:cursor-pointer"
               onClick={() => handleFilterChange("overdue")}
@@ -117,7 +126,7 @@ export function TasksHeader({
               Overdue
             </Button>
             <Button
-              variant={activeFilter === "completed" ? "blue" : "ghost"}
+              variant={getButtonVariant("completed", activeFilter)}
               size="sm"
               className="px-3 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none hover:cursor-pointer"
               onClick={() => handleFilterChange("completed")}
@@ -153,7 +162,7 @@ export function TasksHeader({
           open={isAddTaskOpen}
           onOpenChange={setIsAddTaskOpen}
           onSave={handleSaveTask}
-          disableMatterSelect={!!matter_id} 
+          disableMatterSelect={!!matter_id}
           onSaveAndCreateAnother={handleSaveAndCreateAnother}
           initialTask={
             matter_id
@@ -172,6 +181,6 @@ export function TasksHeader({
         />
       </div>
     </div>
-  )
+  );
 }
 

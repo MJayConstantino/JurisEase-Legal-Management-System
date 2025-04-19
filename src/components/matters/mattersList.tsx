@@ -3,32 +3,42 @@
 import { useState, useEffect } from "react";
 import { MattersHeader } from "./mattersHeader";
 import { MattersTable } from "./mattersTable";
-import { getMatters } from "@/actions/matters";
 import type { Matter, SortField, SortDirection } from "@/types/matter.type";
 import { Loader2 } from "lucide-react";
+import { handleFetchMatters } from "@/action-handlers/matters";
 
-export function MattersList() {
+interface MattersListProps {
+  /** Custom fetch function for Storybook or real data */
+  fetchMatters?: () => Promise<{ matters: Matter[]; error: any }>;
+}
+
+export function MattersList({
+  fetchMatters = handleFetchMatters,
+}: MattersListProps) {
   const [matters, setMatters] = useState<Matter[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [sortField, setSortField] = useState<SortField>("date_opened");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   useEffect(() => {
-    const fetchMatters = async () => {
+    async function fetchData() {
       setIsLoading(true);
       try {
-        const data = await getMatters();
-        setMatters(data);
-      } catch (error) {
-        console.error("Error fetching matters:", error);
+        const { matters: fetchedMatters, error } = await fetchMatters();
+        if (!error) {
+          setMatters(fetchedMatters);
+        } else {
+          setMatters([]);
+        }
+      } catch {
+        setMatters([]);
       } finally {
         setIsLoading(false);
       }
-    };
-
-    fetchMatters();
-  }, []);
+    }
+    fetchData();
+  }, [fetchMatters, statusFilter, sortField, sortDirection]);
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -78,12 +88,7 @@ export function MattersList() {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border shadow">
-      <MattersHeader
-        onStatusChange={setStatusFilter}
-        onSortChange={(direction) =>
-          setSortDirection(direction as SortDirection)
-        }
-      />
+      <MattersHeader onStatusChange={setStatusFilter} />
       {isLoading ? (
         <div className="flex justify-center items-center p-12">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
