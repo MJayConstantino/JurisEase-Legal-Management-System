@@ -1,4 +1,4 @@
-// export type BillStatus = "Active" | "Paid" | "Pending" | "Overdue"
+
 export enum BillStatus {
   active = "active",
   paid = "paid",
