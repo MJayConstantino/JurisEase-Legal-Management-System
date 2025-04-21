@@ -2,6 +2,8 @@
 import { createSupabaseClient } from '../utils/supabase/client'
 import { signinAction, signOutAction, signUpAction } from '../actions/users'
 import { toast } from 'sonner'
+import dotenv from 'dotenv'
+dotenv.config()
 
 export const handleLoginSubmit = async (formData: FormData) => {
   const { error } = await signinAction(formData)
@@ -28,9 +30,7 @@ export const handleGoogleSignIn = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${
-          location.origin || 'http://localhost:3007'
-        }/auth/callback`,
+        redirectTo: `${process.env.SITE_URL}/auth/callback`,
       },
     })
 
