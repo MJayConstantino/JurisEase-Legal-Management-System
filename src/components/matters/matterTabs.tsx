@@ -33,8 +33,8 @@ export function MatterTabs({ children }: MatterTabsProps) {
             className="flex items-center gap-2 py-3 px-4 rounded-none 
               data-[state=active]:border-b-2 data-[state=active]:border-primary 
               data-[state=active]:bg-primary/5 dark:data-[state=active]:bg-primary/10
-              data-[state=active]:text-primary dark:data-[state=active]:text-primary-foreground
-              dark:text-gray-300 dark:hover:text-white"
+              data-[state=active]:text-primary dark:data-[state=active]:text-white
+            dark:text-gray-300 dark:hover:text-white"
           >
             <LayoutDashboard className="h-4 w-4" />
             <span className="hidden sm:inline">Dashboard</span>
@@ -44,7 +44,7 @@ export function MatterTabs({ children }: MatterTabsProps) {
             className="flex items-center gap-2 py-3 px-4 rounded-none 
               data-[state=active]:border-b-2 data-[state=active]:border-primary 
               data-[state=active]:bg-primary/5 dark:data-[state=active]:bg-primary/10
-              data-[state=active]:text-primary dark:data-[state=active]:text-primary-foreground
+              data-[state=active]:text-primary dark:data-[state=active]:text-white
               dark:text-gray-300 dark:hover:text-white"
           >
             <CheckSquare className="h-4 w-4" />
@@ -55,8 +55,8 @@ export function MatterTabs({ children }: MatterTabsProps) {
             className="flex items-center gap-2 py-3 px-4 rounded-none 
               data-[state=active]:border-b-2 data-[state=active]:border-primary 
               data-[state=active]:bg-primary/5 dark:data-[state=active]:bg-primary/10
-              data-[state=active]:text-primary dark:data-[state=active]:text-primary-foreground
-              dark:text-gray-300 dark:hover:text-white"
+              data-[state=active]:text-primary dark:data-[state=active]:text-white
+            dark:text-gray-300 dark:hover:text-white"
           >
             <DollarSign className="h-4 w-4" />
             <span className="hidden sm:inline">Billing</span>

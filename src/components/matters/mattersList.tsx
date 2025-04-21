@@ -1,44 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { MattersHeader } from "./mattersHeader";
 import { MattersTable } from "./mattersTable";
 import type { Matter, SortField, SortDirection } from "@/types/matter.type";
-import { Loader2 } from "lucide-react";
-import { handleFetchMatters } from "@/action-handlers/matters";
 
 interface MattersListProps {
-  /** Custom fetch function for Storybook or real data */
-  fetchMatters?: () => Promise<{ matters: Matter[]; error: any }>;
+  matters: Matter[];
 }
 
-export function MattersList({
-  fetchMatters = handleFetchMatters,
-}: MattersListProps) {
-  const [matters, setMatters] = useState<Matter[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export function MattersList({ matters }: MattersListProps) {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [sortField, setSortField] = useState<SortField>("date_opened");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
-
-  useEffect(() => {
-    async function fetchData() {
-      setIsLoading(true);
-      try {
-        const { matters: fetchedMatters, error } = await fetchMatters();
-        if (!error) {
-          setMatters(fetchedMatters);
-        } else {
-          setMatters([]);
-        }
-      } catch {
-        setMatters([]);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchData();
-  }, [fetchMatters, statusFilter, sortField, sortDirection]);
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -89,18 +63,12 @@ export function MattersList({
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border shadow">
       <MattersHeader onStatusChange={setStatusFilter} />
-      {isLoading ? (
-        <div className="flex justify-center items-center p-12">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      ) : (
-        <MattersTable
-          matters={sortedMatters}
-          onSort={handleSort}
-          sortField={sortField}
-          sortDirection={sortDirection}
-        />
-      )}
+      <MattersTable
+        matters={sortedMatters}
+        onSort={handleSort}
+        sortField={sortField}
+        sortDirection={sortDirection}
+      />
     </div>
   );
 }
