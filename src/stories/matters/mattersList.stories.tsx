@@ -3,13 +3,6 @@ import React from "react";
 import { MattersList } from "@/components/matters/mattersList";
 import { mockMatters } from "./mockMatters";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Matter } from "@/types/matter.type";
-
-// Mock fetch functions for Storybook control
-const emptyFetch = async () => ({ matters: [], error: null });
-const loadingFetch = async (): Promise<{ matters: Matter[]; error: any }> =>
-  new Promise(() => {}); // never resolves
-const contentFetch = async () => ({ matters: mockMatters, error: null });
 
 const meta: Meta<typeof MattersList> = {
   title: "Matters/MattersList",
@@ -41,21 +34,11 @@ type Story = StoryObj<typeof MattersList>;
 
 /**
  * Empty:
- * Simulates an empty list by overriding fetchMatters to return an empty array.
+ * Simulates an empty list by passing an empty matters array.
  */
 export const Empty: Story = {
   args: {
-    fetchMatters: emptyFetch,
-  },
-};
-
-/**
- * Loading:
- * Simulates a loading state by overriding fetchMatters to never resolve.
- */
-export const Loading: Story = {
-  args: {
-    fetchMatters: loadingFetch,
+    matters: [],
   },
 };
 
@@ -65,7 +48,7 @@ export const Loading: Story = {
  */
 export const WithContent: Story = {
   args: {
-    fetchMatters: contentFetch,
+    matters: mockMatters,
   },
 };
 
@@ -75,7 +58,7 @@ export const WithContent: Story = {
  */
 export const DarkMode: Story = {
   args: {
-    fetchMatters: contentFetch,
+    matters: mockMatters,
   },
   parameters: {
     backgrounds: { default: "dark" },
@@ -97,7 +80,7 @@ export const DarkMode: Story = {
  */
 export const MobileView: Story = {
   args: {
-    fetchMatters: contentFetch,
+    matters: mockMatters,
   },
   parameters: {
     viewport: { defaultViewport: "mobile" },
