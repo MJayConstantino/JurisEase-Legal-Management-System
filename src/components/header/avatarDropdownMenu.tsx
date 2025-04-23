@@ -15,10 +15,13 @@ import { Signout } from "./signout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchUserInfoAction } from "@/actions/users";
+import { useRouter } from 'next/navigation';
+import { createSupabaseClient } from "@/utils/supabase/client";
 
 interface AvatarDropdownMenuProps {
   isLoading?: boolean;
   defaultOpen?: boolean;
+  userId: string;
 }
 
 interface UserData {
@@ -29,9 +32,26 @@ interface UserData {
 function AvatarDropdownMenu({
   isLoading: propIsLoading = false,
   defaultOpen = false,
-}: AvatarDropdownMenuProps) {
+}: AvatarDropdownMenuProps){
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
+  const router = useRouter();
+  const supabase = createSupabaseClient();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        setUserId(user.id);
+      }
+    };
+
+    getUser();
+  }, [supabase]);
 
   useEffect(() => {
     async function fetchUser() {
@@ -47,6 +67,15 @@ function AvatarDropdownMenu({
     }
     fetchUser();
   }, []);
+
+  const handleProfileClick = () => {
+    if (!userId) {
+      console.warn('User ID not available');
+      return;
+    }
+
+    router.push(`/user/${userId}`);
+  };
 
   // Combine any external loading state with our internal state.
   const isLoading = propIsLoading || loading;
@@ -87,7 +116,7 @@ function AvatarDropdownMenu({
           {isLoading ? <Skeleton className="w-24 h-4" /> : userData?.full_name}
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="border-gray-200 dark:border-gray-600" />
-        <DropdownMenuItem className="px-3 py-2 text-black dark:text-white">
+        <DropdownMenuItem onClick={handleProfileClick} className="px-3 py-2 text-black dark:text-white">
           Profile
         </DropdownMenuItem>
         <DropdownMenuItem className="px-3 py-2 text-black dark:text-white">

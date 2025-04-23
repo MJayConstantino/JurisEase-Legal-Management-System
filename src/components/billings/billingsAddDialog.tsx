@@ -160,7 +160,7 @@ export function BillingsAddDialog({
             } gap-4`}
           >
             <div className="space-y-4">
-              <div className="grid gap-2">
+              <div className="grid gap-2 overflow-hidden">
                 <Label htmlFor="matter" className="text-base md:text-lg">
                   Matter
                 </Label>
@@ -188,7 +188,7 @@ export function BillingsAddDialog({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="grid gap-2">
+              <div className="grid gap-2 overflow-hidden">
                 <Label htmlFor="name" className="text-base md:text-lg">
                   Bill Name
                 </Label>
@@ -201,7 +201,7 @@ export function BillingsAddDialog({
                 />
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid gap-2 overflow-hidden">
                 <Label htmlFor="amount" className="text-base md:text-lg">
                   Amount
                 </Label>

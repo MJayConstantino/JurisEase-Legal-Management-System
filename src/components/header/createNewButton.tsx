@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
@@ -10,6 +10,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AddMatterDialog } from "@/components/matters/addMatterDialog";
+import { BillingsAddDialog } from "../billings/billingsAddDialog";
+import { BillingStates } from "../billings/billingsStates";
+import { BillingsActionHandlers } from "@/action-handlers/billings";
+import { getMatters } from "@/actions/matters";
 
 interface CreateNewButtonProps {
   defaultOpen?: boolean;
@@ -17,6 +21,25 @@ interface CreateNewButtonProps {
 
 export function CreateNewButton({ defaultOpen = false }: CreateNewButtonProps) {
   const [isAddMatterOpen, setIsAddMatterOpen] = useState(false);
+  const {matters, setIsLoading, setMatters, isNewBillDialogOpen, setIsNewBillDialogOpen} = BillingStates()
+  const {addBill} = BillingsActionHandlers()
+
+  useEffect(() => {
+    async function loadData() {
+      setIsLoading(true);
+      try {
+        const [mattersData] = await Promise.all([
+          getMatters(),
+        ]);
+        setMatters(mattersData);
+      } catch (error) {
+        console.error("Failed to load data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadData();
+  }, [setIsLoading, setMatters]);
 
   return (
     <>
@@ -32,12 +55,19 @@ export function CreateNewButton({ defaultOpen = false }: CreateNewButtonProps) {
             New Matter
           </DropdownMenuItem>
           <DropdownMenuItem>New Task</DropdownMenuItem>
-          <DropdownMenuItem>New Bill</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsNewBillDialogOpen(true)}>New Bill</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       <AddMatterDialog
         open={isAddMatterOpen}
         onOpenChange={setIsAddMatterOpen}
+      />
+      <BillingsAddDialog 
+        open={isNewBillDialogOpen} 
+        onOpenChange={setIsNewBillDialogOpen} 
+        onSave={addBill} 
+        matters={matters} 
+        matterBillingMatterId={""}
       />
     </>
   );
