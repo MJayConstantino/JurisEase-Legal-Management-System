@@ -37,6 +37,7 @@ export default function UserProfilePage({ onEdit, onDelete }: UserProfilePage) {
           setUserEmail('Email not found');
         }
       } catch (error) {
+        console.log(error)
         setUserName('Error fetching user data');
         setUserEmail('Error fetching user data');
       } finally {
