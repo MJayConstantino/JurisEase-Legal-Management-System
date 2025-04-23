@@ -8,12 +8,8 @@ import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
-interface UserProfilePage {
-  onEdit: () => void
-  onDelete: () => void
-}
 
-export default function UserProfilePage({ onEdit, onDelete }: UserProfilePage) {
+export default function UserProfilePage() {
   const { userId } = useParams();
   const [userName, setUserName] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -70,7 +66,7 @@ export default function UserProfilePage({ onEdit, onDelete }: UserProfilePage) {
 
         <div className="flex items-center justify-center gap-4 mt-6">
           <h1 className="text-2xl font-semibold">{userName}</h1>
-          <Button variant="outline" size="icon" className="h-7 w-7 md:h-9 md:w-9" onClick={onEdit}>
+          <Button variant="outline" size="icon" className="h-7 w-7 md:h-9 md:w-9" >
             <Edit className="h-3 w-3 md:h-4 md:w-4" />
             <span className="sr-only">Edit</span>
           </Button>
@@ -79,7 +75,7 @@ export default function UserProfilePage({ onEdit, onDelete }: UserProfilePage) {
         <p className="text-center text-muted-foreground mt-1">{userEmail}</p>
         <div className="flex-grow" />
         <div className="flex justify-end pt-10">
-        <Button variant="outline" size="icon" className="h-7 w-7 md:h-9 md:w-9" onClick={onDelete}>
+        <Button variant="outline" size="icon" className="h-7 w-7 md:h-9 md:w-9" >
           <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
           <span className="sr-only">Delete</span>
         </Button>

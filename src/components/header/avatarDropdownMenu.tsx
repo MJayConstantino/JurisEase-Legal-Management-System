@@ -21,7 +21,6 @@ import { createSupabaseClient } from "@/utils/supabase/client";
 interface AvatarDropdownMenuProps {
   isLoading?: boolean;
   defaultOpen?: boolean;
-  userId: string;
 }
 
 interface UserData {
