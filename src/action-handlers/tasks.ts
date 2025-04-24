@@ -1,6 +1,5 @@
 "use server";
 
-import { toast } from "sonner";
 import { revalidatePath } from "next/cache";
 import type { Priority, Task } from "@/types/task.type";
 import {
@@ -10,11 +9,11 @@ import {
   getTasks,
   getTasksByMatterId,
 } from "@/actions/tasks";
-import { TaskStatus } from "@/components/header/globalSearch/types";
+import type { TaskStatus } from "@/components/header/globalSearch/types";
 
 interface CreateTaskInput {
   name: string;
-  description?: string | null | ""
+  description?: string | null | "";
   due_date?: Date;
   matter_id?: string;
   status: TaskStatus;
@@ -29,13 +28,19 @@ export const handleCreateTask = async (
   }
 
   try {
+    const dueDate = taskData.due_date
+      ? typeof taskData.due_date === "string"
+        ? new Date(taskData.due_date)
+        : taskData.due_date
+      : undefined;
+
     const newTask = await createTask({
       name: taskData.name,
-      due_date: taskData.due_date,
+      due_date: dueDate,
       matter_id: taskData.matter_id,
       status: taskData.status || "in-progress",
       priority: taskData.priority || "low",
-      description: "",
+      description: taskData.description || "",
       created_at: new Date(),
     });
 
@@ -55,11 +60,16 @@ export const handleUpdateTask = async (
   optimisticTask?: Task
 ): Promise<{ task?: Task; error: string | null }> => {
   try {
+    const processedUpdateData = { ...updateData };
+    if (updateData.due_date && typeof updateData.due_date === "string") {
+      processedUpdateData.due_date = new Date(updateData.due_date);
+    }
+
     const result = await updateTask(
       taskId,
-      { status: updateData.status || "in-progress" },
+      { status: processedUpdateData.status || "in-progress" },
       {
-        ...updateData,
+        ...processedUpdateData,
         task_id: taskId,
       } as Task
     );
@@ -87,12 +97,10 @@ export const handleDeleteTask = async (
 
     if (!success) throw new Error("Failed to delete task");
 
-    toast.success("Task deleted successfully.");
     revalidatePath("/tasks");
     return { error: null };
   } catch (error: any) {
     console.error("Error in handleDeleteTask:", error);
-    toast.error("Failed to delete task. Please try again.");
     return { error: "Failed to delete task." };
   }
 };
@@ -106,7 +114,6 @@ export const handleFetchTasks = async (): Promise<{
     return { tasks, error: null };
   } catch (error: any) {
     console.error("Error in handleFetchTasks:", error);
-    toast.error("Failed to fetch tasks. Please try again.");
     return { tasks: [], error: "Failed to fetch tasks." };
   }
 };
@@ -122,7 +129,6 @@ export const handleFetchTasksByMatterId = async (
     return { tasks, error: null };
   } catch (error: any) {
     console.error("Error in handleFetchTasksByMatterId:", error);
-    toast.error("Failed to fetch tasks for the matter. Please try again.");
     return { tasks: [], error: "Failed to fetch tasks for the matter." };
   }
 };

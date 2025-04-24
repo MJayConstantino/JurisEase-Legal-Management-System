@@ -23,7 +23,7 @@ import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { getMattersDisplayName } from "@/utils/getMattersDisplayName"; 
+import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
 
 interface TaskFormProps {
   open: boolean;
@@ -32,7 +32,7 @@ interface TaskFormProps {
   onSaveAndCreateAnother: (task: Task) => void;
   initialTask?: Task | null;
   matters: Matter[];
-  isLoadingMatters: boolean; 
+  isLoadingMatters: boolean;
   disableMatterSelect?: boolean;
   getMatterNameDisplay: (matterId: string) => string;
 }
@@ -95,11 +95,10 @@ export function TaskForm({
   };
 
   const handleSubmit = async (createAnother = false) => {
-    if (isSubmitting) return; // Prevent multiple submissions
-
+    if (isSubmitting) return;
     if (!validateForm()) return;
 
-    setIsSubmitting(true); // Set submitting state before starting the process
+    setIsSubmitting(true);
 
     try {
       const taskToSave = {
@@ -120,11 +119,9 @@ export function TaskForm({
 
       if (createAnother) {
         await onSaveAndCreateAnother(taskToSave);
-        toast.success("Task created successfully");
         resetTaskForm();
       } else {
         await onSave(taskToSave);
-        toast.success("Task created successfully");
         onOpenChange(false);
       }
     } catch (error) {

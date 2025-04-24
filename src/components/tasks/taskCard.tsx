@@ -25,6 +25,7 @@ interface TaskCardProps {
   matters: Matter[];
   isOverdue?: boolean;
   setIsOverdue?: (isOverdue: boolean) => void;
+  matterName?: string;
 }
 
 export function TaskCard({
@@ -139,8 +140,6 @@ export function TaskCard({
     try {
       setIsProcessing(true);
       console.log("Deleting task:", task.task_id);
-
-      // Close dialog first to improve perceived performance
       setIsDeleteDialogOpen(false);
 
       const { error } = await handleDeleteTask(task.task_id);
@@ -149,17 +148,10 @@ export function TaskCard({
         throw new Error(error);
       }
 
-      // Call the callback to update parent component state
       onTaskDeleted(task.task_id);
-
-      // Ensure toast is called in a client-side context
-      if (typeof window !== "undefined") {
-        toast.success(`"${task.name}" has been deleted successfully.`);
-      }
     } catch (error) {
       console.error("Error deleting task:", error);
 
-      // Ensure toast is called in a client-side context
       if (typeof window !== "undefined") {
         toast.error("Failed to delete task");
       }
@@ -203,7 +195,7 @@ export function TaskCard({
           </p>
         )}
 
-        {localTask.matter_id && (
+        {localTask.matter_id && !matterId && (
           <div className="text-xs sm:text-sm font-medium mb-2 truncate dark:text-gray-300">
             Matter:{" "}
             <span className="font-normal">

@@ -15,10 +15,16 @@ import {
 } from "@/action-handlers/tasks";
 import { toast } from "sonner";
 import { isBefore } from "date-fns";
-import { getMattersDisplayName } from "@/utils/getMattersDisplayName"; // Import utility function
+import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
 
-interface TaskListProps {
+export interface TaskListProps {
   initialTasks: Task[];
+  onTaskCreated: (newTask: Task) => void;
+  onTaskUpdated: (updatedTask: Task) => void;
+  onTaskDeleted: (taskId: string) => void;
+  matters: Matter[];
+  isLoadingMatters: boolean;
+  isLoadingTasks: boolean;
   matterId?: string;
 }
 
@@ -193,7 +199,17 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
         onOpenChange={setIsTaskFormOpen}
         onSave={handleTaskCreated}
         onSaveAndCreateAnother={handleTaskCreated}
-        initialTask={editingTask}
+        initialTask={{
+          task_id: editingTask?.task_id || "",
+          name: editingTask?.name || "",
+          description: editingTask?.description || null,
+          due_date: editingTask?.due_date || null,
+          priority: editingTask?.priority || "low",
+          status: editingTask?.status || "in-progress",
+          created_at: editingTask?.created_at || new Date(),
+          matter_id: matterId || "",
+          isOverdue: editingTask?.isOverdue || false,
+        }}
         matters={matters}
         disableMatterSelect={!!matterId}
         isLoadingMatters={isLoadingMatters}

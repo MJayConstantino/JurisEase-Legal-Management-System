@@ -28,10 +28,8 @@ export function TaskDeleteDialog({
       const { error } = await handleDeleteTask(task.task_id);
 
       if (!error) {
-        // Close the dialog first
         onOpenChange(false);
 
-        // Then show success toast and handle callbacks
         if (typeof window !== "undefined") {
           toast.success(`"${task.name}" has been deleted successfully.`);
         }
@@ -44,7 +42,6 @@ export function TaskDeleteDialog({
           router.push("/tasks");
         }
 
-        // Force a refresh to update the UI
         router.refresh();
       } else {
         if (typeof window !== "undefined") {

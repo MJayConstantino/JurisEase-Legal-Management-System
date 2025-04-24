@@ -34,10 +34,11 @@ export function TasksHeader({
     onViewChange(newView);
   };
 
-  const handleTaskSave = async (task: Task): Promise<void> => {
+  const handleTaskCreated = (newTask: Task) => {
     setIsAddTaskOpen(false);
-    onTaskCreated?.(task);
-    return Promise.resolve();
+    if (onTaskCreated) {
+      onTaskCreated(newTask);
+    }
   };
 
   return (
@@ -115,11 +116,10 @@ export function TasksHeader({
 
        <TaskForm
               open={isAddTaskOpen}
+              onSave={handleTaskCreated}
+              onSaveAndCreateAnother={handleTaskCreated}
               onOpenChange={setIsAddTaskOpen}
               disableMatterSelect={false}
-              onSave={(task) => handleTaskSave(task)}
-              onSaveAndCreateAnother={(task) =>
-                handleTaskSave(task)}
               initialTask={undefined}
               matters={matters}
               isLoadingMatters={false}
