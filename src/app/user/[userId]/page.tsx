@@ -7,6 +7,13 @@ import { fetchUsersAction } from '@/actions/users';
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { User } from '@/types/user.type';
+
+export interface UserProfileProps{
+  user: User
+  onUpdate: (user: User) => void;
+  onDelete: (id: string) => void;
+}
 
 
 export default function UserProfilePage() {
@@ -44,42 +51,46 @@ export default function UserProfilePage() {
     fetchUserData();
   }, [userId]);
 
+
+  // Temporary loading state
   if (loading) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="flex flex-col pt-[25vh] gap-6 w-full h-full">
-      <div className="w-full max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col max-h-[50vh] overflow-y-auto">
-        <div className="flex items-center justify-between">
-          <Button  onClick={() => router.back()} className="text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-        </div>
-    
-        <div className="flex justify-center mt-6">
-          <Avatar className="h-24 w-24">
-            <AvatarImage src={userName || 'U'} alt="Profile picture" />
-            <AvatarFallback>{userName?.[0] ?? '?'}</AvatarFallback>
-          </Avatar>
-        </div>
-
-        <div className="flex items-center justify-center gap-4 mt-6">
-          <h1 className="text-2xl font-semibold">{userName}</h1>
-          <Button variant="outline" size="icon" className="h-7 w-7 md:h-9 md:w-9" >
-            <Edit className="h-3 w-3 md:h-4 md:w-4" />
-            <span className="sr-only">Edit</span>
-          </Button>
-        </div>
-    
-        <p className="text-center text-muted-foreground mt-1">{userEmail}</p>
-        <div className="flex-grow" />
-        <div className="flex justify-end pt-10">
-        <Button variant="outline" size="icon" className="h-7 w-7 md:h-9 md:w-9" >
-          <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
-          <span className="sr-only">Delete</span>
-        </Button>
+    <div className="h-screen w-screen">
+      <div className="flex flex-col pt-[25vh] gap-6 w-full h-full bg-transparent">
+        <div className="w-full max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col max-h-[50vh] overflow-y-auto">
+          <div className="flex items-center justify-between">
+            <Button  onClick={() => router.back()} className="text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
           </div>
+      
+          <div className="flex justify-center mt-6">
+            <Avatar className="h-24 w-24">
+              <AvatarImage src={userName || 'U'} alt="Profile picture" />
+              <AvatarFallback>{userName?.[0] ?? '?'}</AvatarFallback>
+            </Avatar>
+          </div>
+
+          <div className="flex items-center justify-center gap-4 mt-6">
+            <h1 className="text-2xl font-semibold">{userName}</h1>
+            <Button variant="outline" size="icon" className="h-7 w-7 md:h-9 md:w-9" >
+              <Edit className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="sr-only">Edit</span>
+            </Button>
+          </div>
+      
+          <p className="text-center text-muted-foreground mt-1">{userEmail}</p>
+          <div className="flex-grow" />
+          <div className="flex justify-end pt-10">
+          <Button variant="outline" size="icon" className="h-7 w-7 md:h-9 md:w-9" >
+            <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="sr-only">Delete</span>
+          </Button>
+            </div>
+        </div>
       </div>
     </div>
   );
