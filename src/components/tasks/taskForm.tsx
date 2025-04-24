@@ -15,19 +15,15 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectGroup,
-  SelectLabel,
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { useState, useEffect } from "react";
-import { getMatters } from "@/actions/matters";
-import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
+import { useState } from "react";
 import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { getMattersDisplayName } from "@/utils/getMattersDisplayName"; 
 
 interface TaskFormProps {
   open: boolean;
@@ -35,8 +31,10 @@ interface TaskFormProps {
   onSave: (task: Task) => void;
   onSaveAndCreateAnother: (task: Task) => void;
   initialTask?: Task | null;
-  matters?: Matter[];
+  matters: Matter[];
+  isLoadingMatters: boolean; 
   disableMatterSelect?: boolean;
+  getMatterNameDisplay: (matterId: string) => string;
 }
 
 export function TaskForm({
@@ -45,68 +43,38 @@ export function TaskForm({
   onSave,
   onSaveAndCreateAnother,
   initialTask,
+  matters,
+  isLoadingMatters,
   disableMatterSelect = false,
 }: TaskFormProps) {
-  const [task, setTask] = useState<Task>({
-    task_id: "",
-    name: "",
-    description: "",
-    due_date: undefined,
-    priority: "low",
-    status: "in-progress",
-    matter_id: "",
-    created_at: new Date(),
-  });
-  const router = useRouter();
-  const [matters, setMatters] = useState<Matter[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [task, setTask] = useState<Task>(
+    () =>
+      initialTask || {
+        task_id: "",
+        name: "",
+        description: "",
+        due_date: undefined,
+        priority: "low",
+        status: "in-progress",
+        matter_id: "",
+        created_at: new Date(),
+      }
+  );
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    async function fetchMatters() {
-      try {
-        setIsLoading(true);
-        const matterData = await getMatters();
-        const uniqueMatters = matterData.filter(
-          (matter, index, self) =>
-            index === self.findIndex((m) => m.matter_id === matter.matter_id)
-        );
-        setMatters(uniqueMatters);
-      } catch (error) {
-        console.error("Error fetching matters:", error);
-        toast.error("Failed to load matters");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchMatters();
-  }, []);
-
-  useEffect(() => {
-    if (open) {
-      if (initialTask) {
-        setTask({
-          ...initialTask,
-          task_id: initialTask.task_id || "",
-          due_date: initialTask.due_date
-            ? new Date(initialTask.due_date)
-            : undefined,
-        });
-      } else {
-        setTask({
-          task_id: "",
-          name: "",
-          description: "",
-          due_date: undefined,
-          priority: "low",
-          status: "in-progress",
-          matter_id: "",
-          created_at: new Date(),
-        });
-      }
-      setIsSubmitting(false);
-    }
-  }, [open, initialTask]);
+  const resetTaskForm = () => {
+    setTask({
+      task_id: "",
+      name: "",
+      description: "",
+      due_date: undefined,
+      priority: "low",
+      status: "in-progress",
+      matter_id: "",
+      created_at: new Date(),
+    });
+  };
 
   const handleChange = (
     field: keyof Task,
@@ -127,73 +95,53 @@ export function TaskForm({
   };
 
   const handleSubmit = async (createAnother = false) => {
-    if (isSubmitting) return;
+    if (isSubmitting) return; // Prevent multiple submissions
 
     if (!validateForm()) return;
 
-    setIsSubmitting(true);
-
-    const taskToSave = {
-      ...task,
-      task_id: task.task_id,
-      ...(task.task_id ? { task_id: task.task_id } : {}),
-      name: task.name.trim(),
-      description: task.description?.trim() || "",
-      due_date: task.due_date,
-      priority: task.priority || "low",
-      status: task.status || "in-progess",
-      matter_id: task.matter_id?.trim() || undefined,
-      created_at: task.created_at || new Date(),
-    };
+    setIsSubmitting(true); // Set submitting state before starting the process
 
     try {
+      const taskToSave = {
+        ...task,
+        name: task.name.trim(),
+        description: task.description?.trim() || "",
+        due_date: task.due_date
+          ? task.due_date instanceof Date
+            ? task.due_date.toISOString().split("T")[0]
+            : task.due_date
+          : null,
+        priority: task.priority || "low",
+        status: task.status || "in-progress",
+        matter_id: task.matter_id?.trim() || undefined,
+        created_at: task.created_at || new Date(),
+        task_id: task.task_id || "", // Ensure task_id is included
+      };
+
       if (createAnother) {
         await onSaveAndCreateAnother(taskToSave);
-        toast.success(
-          task.task_id
-            ? "Task updated successfully"
-            : "Task created successfully"
-        );
-        setTask({
-          task_id: "",
-          name: "",
-          description: "",
-          due_date: undefined,
-          priority: "low",
-          status: "in-progress",
-          matter_id: "",
-          created_at: new Date(),
-        });
-        setIsSubmitting(false);
+        toast.success("Task created successfully");
+        resetTaskForm();
       } else {
         await onSave(taskToSave);
-        toast.success(
-          task.task_id
-            ? "Task updated successfully"
-            : "Task created successfully"
-        );
+        toast.success("Task created successfully");
         onOpenChange(false);
-
-        if (task.task_id) {
-          router.refresh();
-          window.location.reload();
-        }
       }
     } catch (error) {
       console.error("Error saving task:", error);
       toast.error("Failed to save task");
+    } finally {
       setIsSubmitting(false);
     }
   };
 
-  const selectedMatterName = getMattersDisplayName(
-    task.matter_id || "",
-    matters
-  );
+  const selectedMatterName = task.matter_id
+    ? getMattersDisplayName(task.matter_id, matters)
+    : "Select a matter";
 
   return (
     <Dialog
-        data-testid="task-form-dialog"
+      data-testid="task-form-dialog"
       open={open}
       onOpenChange={(newOpen) => {
         if (!isSubmitting) {
@@ -201,10 +149,7 @@ export function TaskForm({
         }
       }}
     >
-      <DialogContent
-      
-        className="sm:max-w-[500px] w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700"
-      >
+      <DialogContent className="sm:max-w-[500px] w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
         <DialogHeader>
           <DialogTitle className="dark:text-gray-100">
             {task.task_id ? "Edit Task" : "New Task"}
@@ -214,11 +159,7 @@ export function TaskForm({
           <div className="space-y-2">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="sm:col-span-2">
-                <Label
-                  htmlFor="name"
-                  alt-text="name"
-                  className="dark:text-gray-200"
-                >
+                <Label htmlFor="name" className="dark:text-gray-200">
                   Name
                 </Label>
                 <Input
@@ -230,11 +171,7 @@ export function TaskForm({
                 />
               </div>
               <div>
-                <Label
-                  htmlFor="priority"
-                  alt-text="priority"
-                  className="dark:text-gray-200"
-                >
+                <Label htmlFor="priority" className="dark:text-gray-200">
                   Priority
                 </Label>
                 <Select
@@ -272,11 +209,7 @@ export function TaskForm({
             </div>
 
             <div>
-              <Label
-                htmlFor="description"
-                alt-text="description"
-                className="dark:text-gray-200"
-              >
+              <Label htmlFor="description" className="dark:text-gray-200">
                 Description
               </Label>
               <Textarea
@@ -292,75 +225,58 @@ export function TaskForm({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label
-                htmlFor="assignedMatter"
-                aria-label="assignedMatter"
-                className="dark:text-gray-200"
-              >
+              <Label htmlFor="assignedMatter" className="dark:text-gray-200">
                 Assigned Matter
               </Label>
               <Select
                 value={task.matter_id || ""}
                 onValueChange={(value) => handleChange("matter_id", value)}
-                disabled={disableMatterSelect}
+                disabled={disableMatterSelect || isLoadingMatters}
               >
                 <SelectTrigger className="w-full hover:cursor-pointer dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
-                  <SelectValue
-                    placeholder={selectedMatterName || "Select a matter"}
-                  >
-                    {selectedMatterName || "N/A"}
-                  </SelectValue>
+                  <SelectValue placeholder={selectedMatterName} />
                 </SelectTrigger>
                 <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
-                  <SelectGroup>
-                    <SelectLabel className="dark:text-gray-300">
-                      Matters
-                    </SelectLabel>
-                    {isLoading ? (
+                  {isLoadingMatters ? (
+                    <SelectItem
+                      key="loading"
+                      value="loading"
+                      disabled
+                      className="dark:text-gray-400"
+                    >
+                      Loading matters...
+                    </SelectItem>
+                  ) : matters && matters.length > 0 ? (
+                    matters.map((matter) => (
                       <SelectItem
-                        key="loading"
-                        value="loading"
-                        disabled
-                        className="dark:text-gray-400"
+                        key={matter.matter_id}
+                        value={matter.matter_id}
+                        className="dark:text-gray-100 dark:focus:bg-gray-600"
                       >
-                        Loading matters...
+                        {matter.name}
                       </SelectItem>
-                    ) : matters.length > 0 ? (
-                      matters.map((matter: Matter) => (
-                        <SelectItem
-                          key={matter.matter_id}
-                          value={matter.matter_id}
-                          className="dark:text-gray-100 dark:focus:bg-gray-600"
-                        >
-                          {matter.name}
-                        </SelectItem>
-                      ))
-                    ) : (
-                      <SelectItem
-                        key="no-matters"
-                        value="no-matters"
-                        disabled
-                        className="dark:text-gray-400"
-                      >
-                        {"No matters available"}
-                      </SelectItem>
-                    )}
-                  </SelectGroup>
+                    ))
+                  ) : (
+                    <SelectItem
+                      key="no-matters"
+                      value="no-matters"
+                      disabled
+                      className="dark:text-gray-400"
+                    >
+                      No matters available
+                    </SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label
-                htmlFor="taskStatus"
-                aria-label="taskStatus"
-                className="dark:text-gray-200"
-              >
+              <Label htmlFor="taskStatus" className="dark:text-gray-200">
                 Task status
               </Label>
               <Select
                 value={task.status}
-                onValueChange={(value: "in-progess" | "completed") =>
+                onValueChange={(value: "in-progress" | "completed") =>
                   handleChange("status", value)
                 }
               >
@@ -389,11 +305,7 @@ export function TaskForm({
           </div>
 
           <div>
-            <Label
-              htmlFor="dueDate"
-              aria-label="dueDate"
-              className="dark:text-gray-200"
-            >
+            <Label htmlFor="dueDate" className="dark:text-gray-200">
               Due date
             </Label>
             <Input
@@ -401,6 +313,7 @@ export function TaskForm({
               type="date"
               className="mt-1 hover:cursor-pointer dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
               value={task.due_date ? format(task.due_date, "yyyy-MM-dd") : ""}
+              min={format(new Date(), "yyyy-MM-dd")}
               onChange={(e) =>
                 handleChange(
                   "due_date",
@@ -413,11 +326,10 @@ export function TaskForm({
         <DialogFooter className="flex-col sm:flex-row gap-2 sm:justify-between">
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <Button
-              aria-label="saveTask"
               type="submit"
               className="w-full sm:w-auto hover:cursor-pointer"
-              onClick={() => handleSubmit(false)}
-              disabled={isSubmitting}
+              onClick={() => handleSubmit(false)} // Save Task button
+              disabled={isSubmitting} // Disable button while submitting
             >
               {isSubmitting
                 ? "Saving..."
@@ -429,8 +341,8 @@ export function TaskForm({
               <Button
                 variant="outline"
                 className="w-full sm:w-auto hover:cursor-pointer dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
-                onClick={() => handleSubmit(true)}
-                disabled={isSubmitting}
+                onClick={() => handleSubmit(true)} // Save and Create Another button
+                disabled={isSubmitting} // Disable button while submitting
               >
                 {isSubmitting ? "Saving..." : "Save and create another"}
               </Button>
@@ -440,7 +352,7 @@ export function TaskForm({
             variant="ghost"
             className="w-full sm:w-auto hover:cursor-pointer dark:text-gray-100 dark:hover:bg-gray-700"
             onClick={() => onOpenChange(false)}
-            disabled={isSubmitting}
+            disabled={isSubmitting} // Disable cancel button while submitting
           >
             Cancel
           </Button>

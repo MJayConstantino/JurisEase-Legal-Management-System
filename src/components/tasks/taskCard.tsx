@@ -5,97 +5,49 @@ import { Checkbox } from "@/components/ui/checkbox";
 import type { Status, Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { format, isBefore } from "date-fns";
-import { Calendar, Pencil } from "lucide-react";
+import { Calendar, Edit, Trash2Icon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { updateTask, deleteTask } from "@/actions/tasks";
-import { getMatters } from "@/actions/matters";
+import { handleUpdateTask, handleDeleteTask } from "@/action-handlers/tasks";
 import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { TaskForm } from "./taskForm";
 import { getStatusColor } from "@/utils/getStatusColor";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { Skeleton } from "../ui/skeleton";
 import { TaskDeleteDialog } from "./taskDeleteDialog";
 import { useParams } from "next/navigation";
 
 interface TaskCardProps {
   task: Task;
-  matters?: Matter[];
-  onTaskUpdated?: () => void;
+  isLoadingMatters: boolean;
+  onTaskUpdated: (updatedTask: Task) => void;
+  onTaskDeleted: (deletedTaskId: string) => void;
+  matters: Matter[];
+  isOverdue?: boolean;
+  setIsOverdue?: (isOverdue: boolean) => void;
 }
 
-export function TaskCard({ task }: TaskCardProps) {
-  const router = useRouter();
+export function TaskCard({
+  task,
+  onTaskUpdated,
+  onTaskDeleted,
+  matters = [],
+  isLoadingMatters = false,
+  isOverdue = false,
+}: TaskCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [localTask, setLocalTask] = useState<Task>(task);
-  const [matters, setMatters] = useState<Matter[]>([]);
-  const [isLoadingMatters, setIsLoadingMatters] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isOverdue, setIsOverdue] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const params = useParams();
   const matterId = params.matterId as string | undefined;
 
-  const checkIsOverdue = (dueDate?: Date, status?: string) => {
-    if (!dueDate || status === "completed") return false;
-    return isBefore(new Date(dueDate), new Date());
-  };
-
-  useEffect(() => {
-    const overdue = checkIsOverdue(localTask.due_date, localTask.status);
-    setIsOverdue(overdue);
-
-    if (overdue && localTask.status !== "overdue") {
-      const updatedTask = {
-        ...localTask,
-        status: "overdue" as Status,
-      };
-      setLocalTask(updatedTask);
-      updateTask(localTask.task_id, { status: localTask.status }, updatedTask)
-        .then(() => {
-          console.log("Priority updated to overdue in the database");
-        })
-        .catch((error) => {
-          console.error(
-            "Failed to update task priority in the database:",
-            error
-          );
-          setLocalTask(task);
-        });
-    }
-  }, [
-    localTask,
-    localTask.due_date,
-    localTask.priority,
-    localTask.status,
-    task,
-  ]);
-
-  useEffect(() => {
-    setLocalTask(task);
-  }, [task]);
-
-  useEffect(() => {
-    async function fetchMatters() {
-      try {
-        setIsLoadingMatters(true);
-        const matterData = await getMatters();
-        setMatters(matterData);
-      } catch (error) {
-        console.error("Error fetching matters:", error);
-      } finally {
-        setIsLoadingMatters(false);
-      }
-    }
-    fetchMatters();
-  }, []);
-
-  const formatDate = (date?: Date) => {
+  const formatDate = (date?: string | Date | null) => {
     if (!date) return "No date";
     try {
-      return format(date, "MMM dd, yyyy");
+      return format(new Date(date), "MMM dd, yyyy");
     } catch (error) {
-      console.error(error);
+      console.error("Error formatting date:", error);
       return "Invalid date";
     }
   };
@@ -121,21 +73,23 @@ export function TaskCard({ task }: TaskCardProps) {
         newStatus = "completed";
       }
 
-      setLocalTask({
+      const updatedTask = {
         ...localTask,
         status: newStatus,
-      });
+      };
 
-      await updateTask(
+      setLocalTask(updatedTask);
+
+      const result = await handleUpdateTask(
         task.task_id,
         { status: newStatus },
-        {
-          ...task,
-          status: newStatus,
-        }
+        updatedTask
       );
-      router.refresh();
-      window.location.reload();
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      onTaskUpdated(updatedTask);
       toast.success(
         newStatus === "completed"
           ? "Task marked as completed"
@@ -150,24 +104,6 @@ export function TaskCard({ task }: TaskCardProps) {
     }
   };
 
-  const handleDelete = async () => {
-    if (isProcessing) return;
-
-    try {
-      setIsProcessing(true);
-      await deleteTask(task.task_id);
-
-      toast.success("Task deleted successfully");
-
-      window.location.reload();
-      router.refresh();
-    } catch (error) {
-      console.error("Error deleting task:", error);
-      toast.error("Failed to delete task");
-      setIsProcessing(false);
-    }
-  };
-
   const handleEdit = () => {
     setIsEditing(true);
   };
@@ -175,13 +111,23 @@ export function TaskCard({ task }: TaskCardProps) {
   const handleSaveTask = async (updatedTask: Task) => {
     try {
       const optimisticTask = {
+        ...localTask,
         ...updatedTask,
-        task_id: task.task_id,
-      } as Task;
+      };
 
       setLocalTask(optimisticTask);
       setIsEditing(false);
-      await updateTask(task.task_id, updatedTask, optimisticTask);
+
+      const result = await handleUpdateTask(
+        task.task_id,
+        updatedTask,
+        optimisticTask
+      );
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      onTaskUpdated(optimisticTask);
     } catch (error) {
       console.error("Error updating task:", error);
       setLocalTask(task);
@@ -189,8 +135,37 @@ export function TaskCard({ task }: TaskCardProps) {
     }
   };
 
-  const handleSaveAndCreateAnother = async (updatedTask: Task) => {
-    await handleSaveTask(updatedTask);
+  const handleDelete = async () => {
+    try {
+      setIsProcessing(true);
+      console.log("Deleting task:", task.task_id);
+
+      // Close dialog first to improve perceived performance
+      setIsDeleteDialogOpen(false);
+
+      const { error } = await handleDeleteTask(task.task_id);
+      if (error) {
+        console.error("Error from handleDeleteTask:", error);
+        throw new Error(error);
+      }
+
+      // Call the callback to update parent component state
+      onTaskDeleted(task.task_id);
+
+      // Ensure toast is called in a client-side context
+      if (typeof window !== "undefined") {
+        toast.success(`"${task.name}" has been deleted successfully.`);
+      }
+    } catch (error) {
+      console.error("Error deleting task:", error);
+
+      // Ensure toast is called in a client-side context
+      if (typeof window !== "undefined") {
+        toast.error("Failed to delete task");
+      }
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
@@ -261,36 +236,43 @@ export function TaskCard({ task }: TaskCardProps) {
           <div className="flex flex-wrap gap-1">
             <div className="flex items-center">
               <label
-              htmlFor={`task-complete-${task.task_id}`}
-              className="text-xs cursor-pointer select-none mr-3 font-medium text-muted-foreground dark:text-gray-400"
+                htmlFor={`task-complete-${task.task_id}`}
+                className="text-xs cursor-pointer select-none mr-3 font-medium text-muted-foreground dark:text-gray-400"
               >
-              Mark as Complete
+                Mark as Complete
               </label>
               <Checkbox
-              checked={localTask.status === "completed"}
-              onCheckedChange={handleComplete}
-              disabled={isProcessing}
-              id={`task-complete-${task.task_id}`}
-              className={`mr-1 h-7 w-8 border-2 border-gray-300 rounded-md hover:cursor-pointer shadow ${
-                localTask.status === "completed" ? "dark:bg-green-700" : "dark:bg-gray-800"
-              }`}
+                checked={localTask.status === "completed"}
+                onCheckedChange={handleComplete}
+                disabled={isProcessing}
+                id={`task-complete-${task.task_id}`}
+                className={`mr-1 h-7 w-8 border-2 border-gray-300 rounded-md hover:cursor-pointer shadow ${
+                  localTask.status === "completed"
+                    ? "dark:bg-green-700"
+                    : "dark:bg-gray-800"
+                }`}
               />
             </div>
             <Button
-              variant="default"
-              size="sm"
-              className="hover:cursor-pointer bg-[#2D336B] hover:bg-[#1B1E4B} h-7 w-auto px-1.5 text-xs dark:bg-white"
+              variant="outline"
+              size="icon"
+              className="h-7 w-7 md:h-9 md:w-9"
               onClick={handleEdit}
               disabled={isProcessing}
             >
-              <Pencil className="h-3 w-3 mr-1" />
-              <span className="hidden xxs:inline">Edit</span>
+              <Edit className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="sr-only">Edit</span>
             </Button>
-            <TaskDeleteDialog
-              taskName={localTask.name}
-              isProcessing={isProcessing}
-              onConfirm={handleDelete}
-            />
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-7 w-7 md:h-9 md:w-9"
+              onClick={() => setIsDeleteDialogOpen(true)}
+              disabled={isProcessing}
+            >
+              <Trash2Icon className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="sr-only">Delete</span>
+            </Button>
           </div>
         </div>
       </div>
@@ -300,8 +282,20 @@ export function TaskCard({ task }: TaskCardProps) {
         onOpenChange={setIsEditing}
         disableMatterSelect={!!matterId}
         onSave={handleSaveTask}
-        onSaveAndCreateAnother={handleSaveAndCreateAnother}
+        onSaveAndCreateAnother={(task) => handleSaveTask(task)}
         initialTask={localTask}
+        matters={matters}
+        isLoadingMatters={isLoadingMatters}
+        getMatterNameDisplay={(matterId) =>
+          getMattersDisplayName(matterId, matters)
+        }
+      />
+
+      <TaskDeleteDialog
+        isOpen={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        task={task}
+        onSuccess={handleDelete}
       />
     </>
   );
