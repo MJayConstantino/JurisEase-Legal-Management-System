@@ -73,7 +73,7 @@ function AvatarDropdownMenu({
       return;
     }
 
-    router.push(`/user/${userId}`);
+    router.push(`/${userId}`);
   };
 
   // Combine any external loading state with our internal state.
