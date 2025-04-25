@@ -2,20 +2,23 @@
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import type { Status, Task } from "@/types/task.type";
+import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
-import { format, isBefore } from "date-fns";
 import { Calendar, Edit, Trash2Icon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { handleUpdateTask, handleDeleteTask } from "@/action-handlers/tasks";
 import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
 import { useState } from "react";
 import { TaskForm } from "./taskForm";
 import { getStatusColor } from "@/utils/getStatusColor";
-import { toast } from "sonner";
 import { Skeleton } from "../ui/skeleton";
 import { TaskDeleteDialog } from "./taskDeleteDialog";
 import { useParams } from "next/navigation";
+import {
+  handleComplete,
+  handleSaveTask,
+  handleDelete,
+  formatDate,
+} from "@/utils/taskHandlers";
 
 interface TaskCardProps {
   task: Task;
@@ -42,139 +45,6 @@ export function TaskCard({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const params = useParams();
   const matterId = params.matterId as string | undefined;
-
-  const formatDate = (date?: string | Date | null) => {
-    if (!date) return "No date";
-    try {
-      return format(new Date(date), "MMM dd, yyyy");
-    } catch (error) {
-      console.error("Error formatting date:", error);
-      return "Invalid date";
-    }
-  };
-
-  const handleComplete = async () => {
-    if (isProcessing) {
-      console.log("Task completion is already in progress.");
-      return;
-    }
-
-    try {
-      setIsProcessing(true);
-      console.log("Marking task as complete/incomplete:", localTask);
-
-      let newStatus: Status;
-
-      if (localTask.status === "completed") {
-        if (
-          localTask.due_date &&
-          isBefore(new Date(localTask.due_date), new Date())
-        ) {
-          newStatus = "overdue";
-        } else {
-          newStatus = "in-progress";
-        }
-      } else {
-        newStatus = "completed";
-      }
-
-      const updatedTask = {
-        ...localTask,
-        status: newStatus,
-      };
-
-      console.log("Updated task status:", updatedTask);
-      setLocalTask(updatedTask);
-
-      const result = await handleUpdateTask(
-        task.task_id,
-        { status: newStatus },
-        updatedTask
-      );
-      console.log("API response for task update:", result);
-
-      if (result.error) {
-        throw new Error(result.error);
-      }
-
-      onTaskUpdated(updatedTask);
-      toast.success(
-        newStatus === "completed"
-          ? "Task marked as completed"
-          : `Task marked as ${newStatus}`
-      );
-    } catch (error) {
-      console.error("Error updating task status:", error);
-      setLocalTask(task);
-      toast.error("Failed to update task status");
-    } finally {
-      setIsProcessing(false);
-      console.log("Task completion process finished.");
-    }
-  };
-
-  const handleEdit = () => {
-    console.log("Editing task:", localTask);
-    setIsEditing(true);
-  };
-
-  const handleSaveTask = async (updatedTask: Task) => {
-    try {
-      console.log("Saving task:", updatedTask);
-
-      const optimisticTask = {
-        ...localTask,
-        ...updatedTask,
-      };
-
-      setLocalTask(optimisticTask);
-      setIsEditing(false);
-
-      const result = await handleUpdateTask(
-        task.task_id,
-        updatedTask,
-        optimisticTask
-      );
-      console.log("API response for task save:", result);
-
-      if (result.error) {
-        throw new Error(result.error);
-      }
-
-      onTaskUpdated(optimisticTask);
-    } catch (error) {
-      console.error("Error updating task:", error);
-      setLocalTask(task);
-      toast.error("Failed to update task");
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      setIsProcessing(true);
-      console.log("Deleting task:", task.task_id);
-      setIsDeleteDialogOpen(false);
-
-      const { error } = await handleDeleteTask(task.task_id);
-      console.log("API response for task delete:", error);
-
-      if (error) {
-        console.error("Error from handleDeleteTask:", error);
-        throw new Error(error);
-      }
-
-      onTaskDeleted(task.task_id);
-    } catch (error) {
-      console.error("Error deleting task:", error);
-
-      if (typeof window !== "undefined") {
-        toast.error("Failed to delete task");
-      }
-    } finally {
-      setIsProcessing(false);
-      console.log("Task deletion process finished.");
-    }
-  };
 
   const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
 
@@ -247,11 +117,21 @@ export function TaskCard({
                 htmlFor={`task-complete-${task.task_id}`}
                 className="text-xs cursor-pointer select-none mr-3 font-medium text-muted-foreground dark:text-gray-400"
               >
-                Mark as Complete
+                {localTask.status === "completed"
+                  ? "Unmark as Complete"
+                  : "Mark as Complete"}
               </label>
               <Checkbox
                 checked={localTask.status === "completed"}
-                onCheckedChange={handleComplete}
+                onCheckedChange={() =>
+                  handleComplete(
+                    task,
+                    localTask,
+                    setLocalTask,
+                    onTaskUpdated,
+                    setIsProcessing
+                  )
+                }
                 disabled={isProcessing}
                 id={`task-complete-${task.task_id}`}
                 className={`mr-1 h-7 w-8 border-2 border-gray-300 rounded-md hover:cursor-pointer shadow ${
@@ -265,7 +145,7 @@ export function TaskCard({
               variant="outline"
               size="icon"
               className="h-7 w-7 md:h-9 md:w-9"
-              onClick={handleEdit}
+              onClick={() => setIsEditing(true)}
               disabled={isProcessing}
             >
               <Edit className="h-3 w-3 md:h-4 md:w-4" />
@@ -287,39 +167,41 @@ export function TaskCard({
 
       <TaskForm
         open={isEditing}
-        onOpenChange={(isOpen) => {
-          console.log("TaskForm open state changed to:", isOpen);
-          setIsEditing(isOpen);
-        }}
+        onOpenChange={setIsEditing}
         disableMatterSelect={!!matterId}
-        onSave={(updatedTask) => {
-          console.log("Task saved from TaskForm:", updatedTask);
-          handleSaveTask(updatedTask);
-        }}
-        onSaveAndCreateAnother={(task) => {
-          console.log("Task saved and creating another from TaskForm:", task);
-          handleSaveTask(task);
-        }}
+        onSave={(updatedTask) =>
+          handleSaveTask(
+            task,
+            updatedTask,
+            setLocalTask,
+            onTaskUpdated,
+            setIsProcessing
+          )
+        }
+        onSaveAndCreateAnother={(updatedTask) =>
+          handleSaveTask(
+            task,
+            updatedTask,
+            setLocalTask,
+            onTaskUpdated,
+            setIsProcessing
+          )
+        }
         initialTask={localTask}
         matters={matters}
         isLoadingMatters={isLoadingMatters}
-        getMatterNameDisplay={(matterId) => {
-          const displayName = getMattersDisplayName(matterId, matters);
-          console.log(
-            "Matter display name for ID",
-            matterId,
-            "is:",
-            displayName
-          );
-          return displayName;
-        }}
+        getMatterNameDisplay={(matterId) =>
+          getMattersDisplayName(matterId, matters)
+        }
       />
 
       <TaskDeleteDialog
         isOpen={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         task={task}
-        onSuccess={handleDelete}
+        onSuccess={() =>
+          handleDelete(task.task_id, onTaskDeleted, setIsProcessing)
+        }
       />
     </>
   );

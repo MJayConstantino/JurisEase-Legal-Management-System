@@ -14,6 +14,7 @@ interface TasksHeaderProps {
   view: "grid" | "table";
   onTaskCreated?: (newTask: Task) => void;
   matters: Matter[];
+  matterId?: string;
 }
 
 export function TasksHeader({
@@ -22,6 +23,7 @@ export function TasksHeader({
   view,
   onTaskCreated,
   matters = [],
+  matterId,
 }: TasksHeaderProps) {
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string>("all");
@@ -113,33 +115,22 @@ export function TasksHeader({
 
       <TaskForm
         open={isAddTaskOpen}
-        onOpenChange={(isOpen) => {
-          console.log("TaskForm open state changed to:", isOpen);
-          setIsAddTaskOpen(isOpen);
-        }}
+        onOpenChange={setIsAddTaskOpen}
         onSave={(newTask) => {
-          console.log("Task saved:", newTask);
           if (onTaskCreated) onTaskCreated(newTask);
-          setIsAddTaskOpen(false); 
+          setIsAddTaskOpen(false);
         }}
         onSaveAndCreateAnother={(newTask) => {
-          console.log("Task saved and creating another:", newTask);
           if (onTaskCreated) onTaskCreated(newTask);
         }}
-        disableMatterSelect={false}
+        disableMatterSelect={!!matterId}
         initialTask={undefined}
-        matters={matters} 
+        matters={matters}
         isLoadingMatters={isLoadingMatters}
-        getMatterNameDisplay={(matterId) => {
-          const displayName = getMattersDisplayName(matterId, matters);
-          console.log(
-            "Matter display name for ID",
-            matterId,
-            "is:",
-            displayName
-          );
-          return displayName;
-        }}
+        getMatterNameDisplay={(matterId) =>
+          getMattersDisplayName(matterId, matters)
+        }
+        matterId={matterId}
       />
     </div>
   );

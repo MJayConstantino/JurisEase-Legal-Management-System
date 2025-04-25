@@ -108,12 +108,13 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
 
   return (
     <div className="container mx-auto py-2 w-full h-full flex flex-col">
-      <TasksHeader
+         <TasksHeader
         onStatusChange={setStatusFilter}
         onViewChange={setView}
         view={view}
         onTaskCreated={handleTaskCreated}
         matters={matters}
+        matterId={matterId} 
       />
 
       <div className="flex-grow overflow-y-auto">

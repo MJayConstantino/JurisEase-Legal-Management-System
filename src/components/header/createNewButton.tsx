@@ -23,17 +23,10 @@ interface CreateNewButtonProps {
 export function CreateNewButton({
   defaultOpen = false,
   matters = [],
-  onTaskCreated,
+  
 }: CreateNewButtonProps) {
   const [isAddMatterOpen, setIsAddMatterOpen] = useState(false);
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
-
-  const handleTaskCreated = (newTask: Task) => {
-    if (onTaskCreated) {
-      onTaskCreated(newTask); 
-    }
-    setIsAddTaskOpen(false); 
-  };
 
   return (
     <>
@@ -63,8 +56,6 @@ export function CreateNewButton({
       <TaskForm
         open={isAddTaskOpen}
         onOpenChange={setIsAddTaskOpen}
-        onSave={handleTaskCreated}
-        onSaveAndCreateAnother={handleTaskCreated}
         disableMatterSelect={false}
         initialTask={undefined}
         matters={matters}

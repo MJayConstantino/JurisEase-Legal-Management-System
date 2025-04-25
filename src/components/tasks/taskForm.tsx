@@ -103,10 +103,17 @@ export function TaskForm({
     newTask: Task,
     keepFormOpen: boolean = false
   ) => {
-    if (isSubmitting) return;
-    if (!validateForm()) return;
+    if (isSubmitting) {
+      console.log("Submission in progress, skipping...");
+      return;
+    }
+    if (!validateForm()) {
+      console.log("Form validation failed.");
+      return;
+    }
 
     setIsSubmitting(true);
+    console.log("Submitting task:", newTask);
     try {
       const taskToCreate = {
         ...newTask,
@@ -114,19 +121,30 @@ export function TaskForm({
         matter_id: newTask.matter_id || undefined,
       };
 
+      console.log("Task to create:", taskToCreate);
       const response = await handleCreateTask(taskToCreate);
 
+      console.log("API response:", response);
       if (response && !response.error && response.task) {
         toast.success("Task created successfully");
 
         if (keepFormOpen && onSaveAndCreateAnother) {
+          console.log("Saving and keeping form open.");
           onSaveAndCreateAnother(response.task as Task);
           resetTaskForm();
         } else if (onSave) {
+          console.log("Saving and closing form.");
           onSave(response.task as Task);
-          onOpenChange(false); 
+        }
+
+        if (!keepFormOpen) {
+          setTimeout(() => {
+            onOpenChange(false);
+            resetTaskForm();
+          }, 0);
         }
       } else {
+        console.error("Error response from API:", response.error);
         toast.error(response.error || "Failed to save task to the database.");
       }
     } catch (error) {
@@ -134,6 +152,7 @@ export function TaskForm({
       toast.error("Failed to save task to the database.");
     } finally {
       setIsSubmitting(false);
+      console.log("Submission process completed.");
     }
   };
 
@@ -232,14 +251,16 @@ export function TaskForm({
                       Loading matters...
                     </SelectItem>
                   ) : matters.length > 0 ? (
-                    matters.map((matter) => (
-                      <SelectItem
-                        key={matter.matter_id}
-                        value={matter.matter_id}
-                      >
-                        {getMattersDisplayName(matter.matter_id, matters)}
-                      </SelectItem>
-                    ))
+                    matters.map((matter) => {
+                      return (
+                        <SelectItem
+                          key={matter.matter_id}
+                          value={matter.matter_id}
+                        >
+                          {getMattersDisplayName(matter.matter_id, matters)}
+                        </SelectItem>
+                      );
+                    })
                   ) : (
                     <SelectItem value="none" disabled>
                       No matters available
@@ -294,6 +315,7 @@ export function TaskForm({
           </div>
         </div>
 
+        {/* Footer Buttons */}
         <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:justify-between">
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <Button

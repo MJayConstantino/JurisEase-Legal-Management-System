@@ -10,12 +10,15 @@ import { Badge } from "@/components/ui/badge";
 import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
 import { TaskForm } from "./taskForm";
 import { getStatusColor } from "@/utils/getStatusColor";
-import type { Status, Task } from "@/types/task.type";
-import { toast } from "sonner";
+import type { Task } from "@/types/task.type";
 import { Skeleton } from "../ui/skeleton";
 import { TaskDeleteDialog } from "./taskDeleteDialog";
 import { useParams } from "next/navigation";
-import { taskHandlers } from "@/utils/taskHandlers";
+import {
+  handleComplete,
+  handleSaveTask,
+  handleDelete,
+} from "@/utils/taskHandlers";
 
 interface TaskRowProps {
   task: Task;
@@ -52,88 +55,6 @@ export function TaskRow({
     }
   };
 
-  const handleComplete = async () => {
-    console.log("Toggling task completion for:", localTask);
-    if (isProcessing) return;
-
-    try {
-      setIsProcessing(true);
-      const newStatus: Status =
-        localTask.status === "completed" ? "in-progress" : "completed";
-
-      const updatedTask = {
-        ...localTask,
-        status: newStatus,
-      };
-
-      console.log("Updating task status to:", newStatus);
-      setLocalTask(updatedTask);
-
-      await taskHandlers.handleComplete(
-        task.task_id,
-        updatedTask,
-        setLocalTask,
-        onTaskUpdated,
-        setIsProcessing
-      );
-
-      toast.success(
-        newStatus === "completed"
-          ? "Task marked as completed"
-          : "Task marked as in-progress"
-      );
-    } catch (error) {
-      console.error("Error updating task status:", error);
-      setLocalTask(task);
-      toast.error("Failed to update task status");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
-
-  const handleSaveTask = async (updatedTask: Task) => {
-    try {
-      const optimisticTask = {
-        ...localTask,
-        ...updatedTask,
-      };
-      setIsProcessing(true);
-
-      setLocalTask(optimisticTask);
-      setIsEditing(false);
-
-      await taskHandlers.handleSaveTask(
-        task,
-        updatedTask,
-        setLocalTask,
-        onTaskUpdated,
-        setIsProcessing
-      );
-    } catch (error) {
-      console.error("Error updating task:", error);
-      setLocalTask(task);
-      toast.error("Failed to update task");
-    }
-  };
-
-  const handleDelete = async () => {
-    console.log("Deleting task:", task);
-    try {
-      await taskHandlers.handleDelete(
-        task.task_id,
-        onTaskDeleted,
-        setIsProcessing
-      );
-    } catch (error) {
-      console.error("Error deleting task:", error);
-      toast.error("Failed to delete task");
-    }
-  };
-
   const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
 
   return (
@@ -149,7 +70,15 @@ export function TaskRow({
       >
         <Checkbox
           checked={localTask.status === "completed"}
-          onCheckedChange={handleComplete}
+          onCheckedChange={() =>
+            handleComplete(
+              task,
+              localTask,
+              setLocalTask,
+              onTaskUpdated,
+              setIsProcessing
+            )
+          }
           disabled={isProcessing}
           id={`task-complete-${task.task_id}`}
           className={`mr-3 h-4 w-4 border-2 border-gray-300 rounded hover:cursor-pointer shadow ${
@@ -208,7 +137,7 @@ export function TaskRow({
             variant="outline"
             size="icon"
             className="h-7 w-7 md:h-9 md:w-9"
-            onClick={handleEdit}
+            onClick={() => setIsEditing(true)}
             disabled={isProcessing}
           >
             <Edit className="h-3 w-3 md:h-4 md:w-4" />
@@ -232,8 +161,24 @@ export function TaskRow({
         open={isEditing}
         onOpenChange={setIsEditing}
         disableMatterSelect={!!matterId}
-        onSave={handleSaveTask}
-        onSaveAndCreateAnother={(task) => handleSaveTask(task)}
+        onSave={(updatedTask) =>
+          handleSaveTask(
+            task,
+            updatedTask,
+            setLocalTask,
+            onTaskUpdated,
+            setIsProcessing
+          )
+        }
+        onSaveAndCreateAnother={(updatedTask) =>
+          handleSaveTask(
+            task,
+            updatedTask,
+            setLocalTask,
+            onTaskUpdated,
+            setIsProcessing
+          )
+        }
         initialTask={localTask}
         matters={matters}
         isLoadingMatters={isLoadingMatters}
@@ -246,7 +191,9 @@ export function TaskRow({
         isOpen={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         task={task}
-        onSuccess={handleDelete}
+        onSuccess={() =>
+          handleDelete(task.task_id, onTaskDeleted, setIsProcessing)
+        }
       />
     </>
   );
