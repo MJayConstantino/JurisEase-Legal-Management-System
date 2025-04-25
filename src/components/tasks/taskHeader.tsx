@@ -7,6 +7,8 @@ import { TaskForm } from "./taskForm";
 import type { Task } from "@/types/task.type";
 import { Matter } from "@/types/matter.type";
 import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
+import { handleCreateTask } from "@/action-handlers/tasks";
+import { toast } from "sonner";
 
 interface TasksHeaderProps {
   onStatusChange: (status: string) => void;
@@ -21,30 +23,57 @@ export function TasksHeader({
   onViewChange,
   view,
   onTaskCreated,
-  matters = []
+  matters = [],
 }: TasksHeaderProps) {
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string>("all");
 
   const handleFilterChange = (filter: string) => {
+    console.log("Filter changed to:", filter);
     setActiveFilter(filter);
     onStatusChange(filter);
   };
+
   const handleViewToggle = (newView: "grid" | "table") => {
+    console.log("View toggled to:", newView);
     onViewChange(newView);
   };
 
-  const handleTaskCreated = (newTask: Task) => {
-    setIsAddTaskOpen(false);
-    if (onTaskCreated) {
-      onTaskCreated(newTask);
+  const handleTaskCreated = async (
+    newTask: Task,
+    keepFormOpen: boolean = false
+  ) => {
+    console.log("Creating task:", newTask);
+    try {
+      const response = await handleCreateTask({
+        ...newTask,
+        due_date: newTask.due_date ? new Date(newTask.due_date) : undefined,
+      });
+
+      console.log("Create task response:", response);
+
+      if (response && !response.error && response.task) {
+        toast.success("Task created successfully");
+
+        if (onTaskCreated) {
+          onTaskCreated(response.task as Task);
+        }
+
+        if (!keepFormOpen) {
+          setIsAddTaskOpen(false);
+        }
+      } else {
+        toast.error(response.error || "Failed to save task to the database.");
+      }
+    } catch (error) {
+      console.error("Error saving task:", error);
+      toast.error("Failed to save task to the database.");
     }
   };
 
   return (
     <div className="p-4 border-b bg-gray-50 dark:bg-gray-900 dark:border-gray-700 rounded-t-lg">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        {/* Add Task Button */}
         <Button
           variant="blue"
           size="sm"
@@ -55,7 +84,6 @@ export function TasksHeader({
           <span className="text-xs sm:text-sm">Add Task</span>
         </Button>
 
-        {/* Filter Buttons */}
         <div className="flex flex-wrap gap-2 bg-gray-100 shadow dark:bg-gray-700 rounded-md justify-center sm:justify-start">
           <Button
             variant={activeFilter === "all" ? "blue" : "ghost"}
@@ -91,7 +119,6 @@ export function TasksHeader({
           </Button>
         </div>
 
-        {/* View Toggle Buttons */}
         <div className="grid grid-cols-2 gap bg-gray-100 shadow dark:bg-gray-700 rounded-md w-full sm:flex sm:gap-3 sm:w-auto">
           <Button
             variant={view === "grid" ? "blue" : "ghost"}
@@ -114,19 +141,19 @@ export function TasksHeader({
         </div>
       </div>
 
-       <TaskForm
-              open={isAddTaskOpen}
-              onSave={handleTaskCreated}
-              onSaveAndCreateAnother={handleTaskCreated}
-              onOpenChange={setIsAddTaskOpen}
-              disableMatterSelect={false}
-              initialTask={undefined}
-              matters={matters}
-              isLoadingMatters={false}
-              getMatterNameDisplay={(matterId) =>
-                getMattersDisplayName(matterId, matters)
-              }
-            />
+      <TaskForm
+        open={isAddTaskOpen}
+        onSave={(newTask) => handleTaskCreated(newTask, false)} // Close form after saving
+        onSaveAndCreateAnother={(newTask) => handleTaskCreated(newTask, true)} // Keep form open after saving
+        onOpenChange={setIsAddTaskOpen}
+        disableMatterSelect={false}
+        initialTask={undefined}
+        matters={matters}
+        isLoadingMatters={false}
+        getMatterNameDisplay={(matterId) =>
+          getMattersDisplayName(matterId, matters)
+        }
+      />
     </div>
   );
 }

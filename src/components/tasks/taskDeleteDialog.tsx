@@ -24,8 +24,10 @@ export function TaskDeleteDialog({
   const router = useRouter();
 
   const handleDelete = async () => {
+    console.log("Attempting to delete task:", task);
     try {
       const { error } = await handleDeleteTask(task.task_id);
+      console.log("Delete result:", error ? error : "Success");
 
       if (!error) {
         onOpenChange(false);
@@ -35,10 +37,12 @@ export function TaskDeleteDialog({
         }
 
         if (onSuccess) {
+          console.log("Executing onSuccess callback");
           onSuccess();
         }
 
         if (redirectToList) {
+          console.log("Redirecting to task list");
           router.push("/tasks");
         }
 

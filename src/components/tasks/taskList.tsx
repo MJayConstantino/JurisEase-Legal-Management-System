@@ -5,17 +5,14 @@ import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { TaskRow } from "./taskRow";
 import { TaskCard } from "./taskCard";
-import { TaskForm } from "./taskForm";
 import { TasksHeader } from "./taskHeader";
 import { handleFetchMatters } from "@/action-handlers/matters";
 import {
-  handleCreateTask,
   handleFetchTasks,
   handleFetchTasksByMatterId,
 } from "@/action-handlers/tasks";
 import { toast } from "sonner";
 import { isBefore } from "date-fns";
-import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
 
 export interface TaskListProps {
   initialTasks: Task[];
@@ -35,8 +32,8 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
   const [matters, setMatters] = useState<Matter[]>([]);
   const [isLoadingMatters, setIsLoadingMatters] = useState(true);
   const [isLoadingTasks, setIsLoadingTasks] = useState(false);
-  const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [, setIsTaskFormOpen] = useState(false);
+  const [, setEditingTask] = useState<Task | null>(null);
 
   const checkIsOverdue = (dueDate?: Date, status?: string) => {
     if (!dueDate || status === "completed") return false;
@@ -51,11 +48,13 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
         let result;
 
         if (matterId) {
+          console.log("Fetching tasks for matterId:", matterId);
           result = await handleFetchTasksByMatterId(matterId);
         } else {
           result = await handleFetchTasks();
         }
 
+        console.log("Fetched tasks:", result);
         if (result.error) {
           throw new Error(result.error);
         }
@@ -87,6 +86,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
         setIsLoadingMatters(true);
         const { matters: matterData }: { matters: Matter[] } =
           await handleFetchMatters();
+        console.log("Fetched matters:", matterData);
         const uniqueMatters = matterData.filter(
           (matter, index, self) =>
             index === self.findIndex((m) => m.matter_id === matter.matter_id)
@@ -101,29 +101,6 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
     }
     fetchMatters();
   }, []);
-
-  const handleTaskCreated = async (newTask: Task) => {
-    try {
-      setIsLoadingTasks(true);
-
-      const response = await handleCreateTask({
-        ...newTask,
-        due_date: newTask.due_date ? new Date(newTask.due_date) : undefined,
-      });
-
-      if (response && !response.error && response.task) {
-        setTasks((prev) => [...prev, response.task as Task]);
-        toast.success("Task created successfully");
-      } else {
-        toast.error(response.error || "Failed to save task to the database.");
-      }
-    } catch (error) {
-      console.error("Error saving task:", error);
-      toast.error("Failed to save task to the database.");
-    } finally {
-      setIsLoadingTasks(false);
-    }
-  };
 
   const handleTaskUpdated = (updatedTask: Task) => {
     setTasks((prev) =>
@@ -194,29 +171,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
         )}
       </div>
 
-      <TaskForm
-        open={isTaskFormOpen}
-        onOpenChange={setIsTaskFormOpen}
-        onSave={handleTaskCreated}
-        onSaveAndCreateAnother={handleTaskCreated}
-        initialTask={{
-          task_id: editingTask?.task_id || "",
-          name: editingTask?.name || "",
-          description: editingTask?.description || null,
-          due_date: editingTask?.due_date || null,
-          priority: editingTask?.priority || "low",
-          status: editingTask?.status || "in-progress",
-          created_at: editingTask?.created_at || new Date(),
-          matter_id: matterId || "",
-          isOverdue: editingTask?.isOverdue || false,
-        }}
-        matters={matters}
-        disableMatterSelect={!!matterId}
-        isLoadingMatters={isLoadingMatters}
-        getMatterNameDisplay={(matterId) =>
-          getMattersDisplayName(matterId, matters)
-        }
-      />
+    
     </div>
   );
 }

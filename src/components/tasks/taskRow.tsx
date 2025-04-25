@@ -54,6 +54,7 @@ export function TaskRow({
   };
 
   const handleComplete = async () => {
+    console.log("Toggling task completion for:", localTask);
     if (isProcessing) return;
 
     try {
@@ -66,6 +67,7 @@ export function TaskRow({
         status: newStatus,
       };
 
+      console.log("Updating task status to:", newStatus);
       setLocalTask(updatedTask);
 
       const result = await handleUpdateTask(
@@ -73,6 +75,7 @@ export function TaskRow({
         { status: newStatus },
         updatedTask
       );
+      console.log("Update result:", result);
       if (result.error) {
         throw new Error(result.error);
       }
@@ -85,7 +88,7 @@ export function TaskRow({
       );
     } catch (error) {
       console.error("Error updating task status:", error);
-      setLocalTask(task); 
+      setLocalTask(task);
       toast.error("Failed to update task status");
     } finally {
       setIsProcessing(false);
@@ -109,7 +112,7 @@ export function TaskRow({
 
       const result = await handleUpdateTask(
         task.task_id,
-        updatedTask, 
+        updatedTask,
         optimisticTask
       );
       if (result.error) {
@@ -119,14 +122,16 @@ export function TaskRow({
       onTaskUpdated(optimisticTask);
     } catch (error) {
       console.error("Error updating task:", error);
-      setLocalTask(task); 
+      setLocalTask(task);
       toast.error("Failed to update task");
     }
   };
 
   const handleDelete = async () => {
+    console.log("Deleting task:", task);
     try {
       const { error } = await handleDeleteTask(task.task_id);
+      console.log("Delete result:", error ? error : "Success");
       if (error) {
         throw new Error(error);
       }
@@ -237,16 +242,18 @@ export function TaskRow({
       </div>
 
       <TaskForm
-  open={isEditing}
-  onOpenChange={setIsEditing}
-  disableMatterSelect={!!matterId}
-  onSave={handleSaveTask}
-  onSaveAndCreateAnother={(task) => handleSaveTask(task)}
-  initialTask={localTask}
-  matters={matters} // Changed from empty array
-  isLoadingMatters={isLoadingMatters}
-  getMatterNameDisplay={(matterId) => getMattersDisplayName(matterId, matters)}
-/>
+        open={isEditing}
+        onOpenChange={setIsEditing}
+        disableMatterSelect={!!matterId}
+        onSave={handleSaveTask}
+        onSaveAndCreateAnother={(task) => handleSaveTask(task)}
+        initialTask={localTask}
+        matters={matters} // Changed from empty array
+        isLoadingMatters={isLoadingMatters}
+        getMatterNameDisplay={(matterId) =>
+          getMattersDisplayName(matterId, matters)
+        }
+      />
 
       <TaskDeleteDialog
         isOpen={isDeleteDialogOpen}

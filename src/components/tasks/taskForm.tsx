@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -47,13 +48,14 @@ export function TaskForm({
   isLoadingMatters,
   disableMatterSelect = false,
 }: TaskFormProps) {
+  
   const [task, setTask] = useState<Task>(
     () =>
       initialTask || {
         task_id: "",
         name: "",
         description: "",
-        due_date: undefined,
+        due_date: "",
         priority: "low",
         status: "in-progress",
         matter_id: "",
@@ -103,6 +105,7 @@ export function TaskForm({
     try {
       const taskToSave = {
         ...task,
+        task_id: task.task_id,
         name: task.name.trim(),
         description: task.description?.trim() || "",
         due_date: task.due_date
@@ -114,15 +117,17 @@ export function TaskForm({
         status: task.status || "in-progress",
         matter_id: task.matter_id?.trim() || undefined,
         created_at: task.created_at || new Date(),
-        task_id: task.task_id || "", // Ensure task_id is included
       };
 
       if (createAnother) {
         await onSaveAndCreateAnother(taskToSave);
-        resetTaskForm();
+        if (!task.task_id) {
+          resetTaskForm();
+        }
       } else {
         await onSave(taskToSave);
         onOpenChange(false);
+        resetTaskForm();
       }
     } catch (error) {
       console.error("Error saving task:", error);
@@ -151,6 +156,9 @@ export function TaskForm({
           <DialogTitle className="dark:text-gray-100">
             {task.task_id ? "Edit Task" : "New Task"}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Task creation form
+          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="space-y-2">
@@ -231,7 +239,13 @@ export function TaskForm({
                 disabled={disableMatterSelect || isLoadingMatters}
               >
                 <SelectTrigger className="w-full hover:cursor-pointer dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
-                  <SelectValue placeholder={selectedMatterName} />
+                  <SelectValue
+                    placeholder={
+                      isLoadingMatters
+                        ? "Loading matters..."
+                        : selectedMatterName
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
                   {isLoadingMatters ? (
@@ -256,7 +270,7 @@ export function TaskForm({
                   ) : (
                     <SelectItem
                       key="no-matters"
-                      value="no-matters"
+                      value="none"
                       disabled
                       className="dark:text-gray-400"
                     >
@@ -309,12 +323,16 @@ export function TaskForm({
               id="dueDate"
               type="date"
               className="mt-1 hover:cursor-pointer dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
-              value={task.due_date ? format(task.due_date, "yyyy-MM-dd") : ""}
+              value={
+                task.due_date
+                  ? format(new Date(task.due_date), "yyyy-MM-dd")
+                  : ""
+              } // Ensure value is always a string
               min={format(new Date(), "yyyy-MM-dd")}
               onChange={(e) =>
                 handleChange(
                   "due_date",
-                  e.target.value ? new Date(e.target.value) : undefined
+                  e.target.value ? new Date(e.target.value) : ""
                 )
               }
             />
@@ -325,8 +343,8 @@ export function TaskForm({
             <Button
               type="submit"
               className="w-full sm:w-auto hover:cursor-pointer"
-              onClick={() => handleSubmit(false)} // Save Task button
-              disabled={isSubmitting} // Disable button while submitting
+              onClick={() => handleSubmit(false)} 
+              disabled={isSubmitting} 
             >
               {isSubmitting
                 ? "Saving..."
@@ -338,8 +356,8 @@ export function TaskForm({
               <Button
                 variant="outline"
                 className="w-full sm:w-auto hover:cursor-pointer dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
-                onClick={() => handleSubmit(true)} // Save and Create Another button
-                disabled={isSubmitting} // Disable button while submitting
+                onClick={() => handleSubmit(true)}
+                disabled={isSubmitting} 
               >
                 {isSubmitting ? "Saving..." : "Save and create another"}
               </Button>
@@ -349,7 +367,7 @@ export function TaskForm({
             variant="ghost"
             className="w-full sm:w-auto hover:cursor-pointer dark:text-gray-100 dark:hover:bg-gray-700"
             onClick={() => onOpenChange(false)}
-            disabled={isSubmitting} // Disable cancel button while submitting
+            disabled={isSubmitting} 
           >
             Cancel
           </Button>

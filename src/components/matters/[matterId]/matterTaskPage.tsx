@@ -19,8 +19,10 @@ export function MatterTaskPage() {
 
   useEffect(() => {
     const fetchTasks = async () => {
+      console.log("Fetching tasks for matterId:", matterId);
       try {
         const tasksData = await getTasksByMatterId(matterId);
+        console.log("Fetched tasks:", tasksData);
         setTasks(tasksData || []);
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -35,8 +37,10 @@ export function MatterTaskPage() {
 
   useEffect(() => {
     const fetchMatters = async () => {
+      console.log("Fetching matters...");
       try {
         const { matters: matterData } = await handleFetchMatters();
+        console.log("Fetched matters:", matterData);
         setMatters(matterData);
       } catch (error) {
         console.error("Error fetching matters:", error);
@@ -50,6 +54,7 @@ export function MatterTaskPage() {
   }, []);
 
   const handleTaskCreated = async (newTask: Task) => {
+    console.log("Creating task:", newTask);
     try {
       const taskWithMatter = {
         ...newTask,
@@ -57,6 +62,7 @@ export function MatterTaskPage() {
       };
 
       const createdTask = await createTask(taskWithMatter);
+      console.log("Created task:", createdTask);
       if (createdTask) {
         setTasks((prev) => [createdTask, ...prev]);
       }
