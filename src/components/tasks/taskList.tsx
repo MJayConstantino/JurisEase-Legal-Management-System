@@ -7,17 +7,16 @@ import { TaskRow } from "./taskRow";
 import { TaskCard } from "./taskCard";
 import { TasksHeader } from "./taskHeader";
 import { handleFetchMatters } from "@/action-handlers/matters";
-import {
-  handleFetchTasks,
-} from "@/action-handlers/tasks";
+import { handleFetchTasks } from "@/action-handlers/tasks";
 import { toast } from "sonner";
 import { isBefore } from "date-fns";
 
 export interface TaskListProps {
   initialTasks: Task[];
+  matterId?: string;
 }
 
-export function TaskList({ initialTasks = [] }: TaskListProps) {
+export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [view, setView] = useState<"grid" | "table">("grid");
@@ -86,7 +85,7 @@ export function TaskList({ initialTasks = [] }: TaskListProps) {
   }, []);
 
   const handleTaskCreated = (newTask: Task) => {
-    setTasks((prev) => [...prev, newTask]);
+    setTasks((prev) => [...prev, newTask]); // Add the new task to the list
   };
 
   const handleTaskUpdated = (updatedTask: Task) => {
@@ -102,6 +101,7 @@ export function TaskList({ initialTasks = [] }: TaskListProps) {
   };
 
   const filteredTasks = tasks.filter((task) => {
+    if (matterId && task.matter_id !== matterId) return false;
     if (statusFilter === "all") return true;
     return task.status === statusFilter;
   });
@@ -109,11 +109,11 @@ export function TaskList({ initialTasks = [] }: TaskListProps) {
   return (
     <div className="container mx-auto py-2 w-full h-full flex flex-col">
       <TasksHeader
-        matters={matters}
         onStatusChange={setStatusFilter}
         onViewChange={setView}
         view={view}
         onTaskCreated={handleTaskCreated}
+        matters={matters}
       />
 
       <div className="flex-grow overflow-y-auto">
@@ -146,9 +146,9 @@ export function TaskList({ initialTasks = [] }: TaskListProps) {
                 task={task}
                 matters={matters}
                 isLoadingMatters={isLoadingMatters}
+                isOverdue={task.status === "overdue" || false}
                 onTaskUpdated={handleTaskUpdated}
                 onTaskDeleted={handleTaskDeleted}
-                isOverdue={task.status === "overdue" || false}
               />
             ))}
           </div>

@@ -13,6 +13,7 @@ const mockTasks: { [key: string]: Task } = {
     priority: "medium",
     due_date: new Date("2026-04-12"),
     matter_id: mockMatter.matter_id,
+    created_at: new Date("2025-01-01"),
   },
   overdue: {
     task_id: "task2",
@@ -22,6 +23,7 @@ const mockTasks: { [key: string]: Task } = {
     priority: "high",
     due_date: new Date("2025-03-25"),
     matter_id: mockMatter.matter_id,
+    created_at: new Date("2025-01-02"),
   },
   complete: {
     task_id: "task3",
@@ -31,6 +33,7 @@ const mockTasks: { [key: string]: Task } = {
     priority: "medium",
     due_date: new Date("2025-04-10"),
     matter_id: mockMatter.matter_id,
+    created_at: new Date("2025-01-03"),
   },
   highPriority: {
     task_id: "task4",
@@ -40,6 +43,7 @@ const mockTasks: { [key: string]: Task } = {
     priority: "high",
     due_date: new Date("2026-04-12"),
     matter_id: mockMatter.matter_id,
+    created_at: new Date("2025-01-04"),
   },
   lowPriority: {
     task_id: "task5",
@@ -49,6 +53,7 @@ const mockTasks: { [key: string]: Task } = {
     priority: "low",
     due_date: new Date("2026-04-12"),
     matter_id: mockMatter.matter_id,
+    created_at: new Date("2025-01-05"),
   },
   mediumPriority: {
     task_id: "task6",
@@ -58,6 +63,7 @@ const mockTasks: { [key: string]: Task } = {
     priority: "medium",
     due_date: new Date("2026-04-12"),
     matter_id: mockMatter.matter_id,
+    created_at: new Date("2025-01-06"),
   },
   longDescription: {
     task_id: "task7",
@@ -68,6 +74,7 @@ const mockTasks: { [key: string]: Task } = {
     priority: "medium",
     due_date: new Date("2026-04-12"),
     matter_id: mockMatter.matter_id,
+    created_at: new Date("2025-01-07"),
   },
   withoutMatter: {
     task_id: "task8",
@@ -77,6 +84,7 @@ const mockTasks: { [key: string]: Task } = {
     priority: "medium",
     due_date: new Date("2026-04-12"),
     matter_id: "", 
+    created_at: new Date("2025-01-08"),
   },
   withoutDueDate: {
     task_id: "task9",
@@ -86,6 +94,7 @@ const mockTasks: { [key: string]: Task } = {
     priority: "medium",
     due_date: undefined, 
     matter_id: mockMatter.matter_id,
+    created_at: new Date("2025-01-09"),
   },
 };
 

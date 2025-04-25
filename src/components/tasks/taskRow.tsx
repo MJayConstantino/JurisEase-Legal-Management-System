@@ -14,8 +14,8 @@ import type { Status, Task } from "@/types/task.type";
 import { toast } from "sonner";
 import { Skeleton } from "../ui/skeleton";
 import { TaskDeleteDialog } from "./taskDeleteDialog";
-import { useParams, useRouter } from "next/navigation";
-import { handleUpdateTask, handleDeleteTask } from "@/action-handlers/tasks";
+import { useParams } from "next/navigation";
+import { taskHandlers } from "@/utils/taskHandlers";
 
 interface TaskRowProps {
   task: Task;
@@ -39,7 +39,6 @@ export function TaskRow({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const params = useParams();
-  const router = useRouter();
   const matterId = params.matterId as string | undefined;
 
   const formatDate = (date?: string | Date | null) => {
@@ -70,17 +69,14 @@ export function TaskRow({
       console.log("Updating task status to:", newStatus);
       setLocalTask(updatedTask);
 
-      const result = await handleUpdateTask(
+      await taskHandlers.handleComplete(
         task.task_id,
-        { status: newStatus },
-        updatedTask
+        updatedTask,
+        setLocalTask,
+        onTaskUpdated,
+        setIsProcessing
       );
-      console.log("Update result:", result);
-      if (result.error) {
-        throw new Error(result.error);
-      }
 
-      onTaskUpdated(updatedTask);
       toast.success(
         newStatus === "completed"
           ? "Task marked as completed"
@@ -110,16 +106,13 @@ export function TaskRow({
       setLocalTask(optimisticTask);
       setIsEditing(false);
 
-      const result = await handleUpdateTask(
-        task.task_id,
+      await taskHandlers.handleSaveTask(
+        task,
         updatedTask,
-        optimisticTask
+        setLocalTask,
+        onTaskUpdated,
+        setIsProcessing
       );
-      if (result.error) {
-        throw new Error(result.error);
-      }
-
-      onTaskUpdated(optimisticTask);
     } catch (error) {
       console.error("Error updating task:", error);
       setLocalTask(task);
@@ -130,17 +123,11 @@ export function TaskRow({
   const handleDelete = async () => {
     console.log("Deleting task:", task);
     try {
-      const { error } = await handleDeleteTask(task.task_id);
-      console.log("Delete result:", error ? error : "Success");
-      if (error) {
-        throw new Error(error);
-      }
-
-      onTaskDeleted(task.task_id);
-      setIsDeleteDialogOpen(false);
-      toast.success(`"${task.name}" has been deleted successfully.`);
-
-      router.refresh();
+      await taskHandlers.handleDelete(
+        task.task_id,
+        onTaskDeleted,
+        setIsProcessing
+      );
     } catch (error) {
       console.error("Error deleting task:", error);
       toast.error("Failed to delete task");
@@ -248,7 +235,7 @@ export function TaskRow({
         onSave={handleSaveTask}
         onSaveAndCreateAnother={(task) => handleSaveTask(task)}
         initialTask={localTask}
-        matters={matters} 
+        matters={matters}
         isLoadingMatters={isLoadingMatters}
         getMatterNameDisplay={(matterId) =>
           getMattersDisplayName(matterId, matters)

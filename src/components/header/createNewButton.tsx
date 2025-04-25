@@ -55,13 +55,11 @@ export function CreateNewButton({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Add Matter Dialog */}
       <AddMatterDialog
         open={isAddMatterOpen}
         onOpenChange={setIsAddMatterOpen}
       />
 
-      {/* Task Form */}
       <TaskForm
         open={isAddTaskOpen}
         onOpenChange={setIsAddTaskOpen}

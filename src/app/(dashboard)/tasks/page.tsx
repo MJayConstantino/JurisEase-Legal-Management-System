@@ -12,7 +12,7 @@ export default async function Task() {
   
   return (
     <div className="flex flex-col gap-6 h-full overflow-y-auto">
-      <TaskList initialTasks={tasks} />
+      <TaskList initialTasks={tasks}  />
     </div>
   );
 }

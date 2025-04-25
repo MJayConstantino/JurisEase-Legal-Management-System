@@ -68,7 +68,7 @@ export function MatterTabs({ children }: MatterTabsProps) {
         </TabsContent>
 
         <TabsContent value="tasks" className="p-6 m-0">
-          <MatterTaskPage />
+          <MatterTaskPage initialTasks={[]} />
         </TabsContent>
 
         <TabsContent value="billing" className="p-6 m-0">

@@ -25,6 +25,7 @@ export function TasksHeader({
 }: TasksHeaderProps) {
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string>("all");
+  const [isLoadingMatters] = useState<boolean>(false);
 
   const handleFilterChange = (filter: string) => {
     console.log("Filter changed to:", filter);
@@ -44,7 +45,10 @@ export function TasksHeader({
           variant="blue"
           size="sm"
           className="sm:h-9"
-          onClick={() => setIsAddTaskOpen(true)}
+          onClick={() => {
+            console.log("Opening Add Task form");
+            setIsAddTaskOpen(true);
+          }}
         >
           <Plus className="h-3 w-3 mr-1 sm:mr-2" />
           <span className="text-xs sm:text-sm">Add Task</span>
@@ -109,16 +113,33 @@ export function TasksHeader({
 
       <TaskForm
         open={isAddTaskOpen}
-        onOpenChange={setIsAddTaskOpen}
-        onSave={onTaskCreated} // Pass the callback directly
-        onSaveAndCreateAnother={onTaskCreated} // Pass the callback directly
+        onOpenChange={(isOpen) => {
+          console.log("TaskForm open state changed to:", isOpen);
+          setIsAddTaskOpen(isOpen);
+        }}
+        onSave={(newTask) => {
+          console.log("Task saved:", newTask);
+          if (onTaskCreated) onTaskCreated(newTask);
+          setIsAddTaskOpen(false); 
+        }}
+        onSaveAndCreateAnother={(newTask) => {
+          console.log("Task saved and creating another:", newTask);
+          if (onTaskCreated) onTaskCreated(newTask);
+        }}
         disableMatterSelect={false}
         initialTask={undefined}
-        matters={matters}
-        isLoadingMatters={false}
-        getMatterNameDisplay={(matterId) =>
-          getMattersDisplayName(matterId, matters)
-        }
+        matters={matters} 
+        isLoadingMatters={isLoadingMatters}
+        getMatterNameDisplay={(matterId) => {
+          const displayName = getMattersDisplayName(matterId, matters);
+          console.log(
+            "Matter display name for ID",
+            matterId,
+            "is:",
+            displayName
+          );
+          return displayName;
+        }}
       />
     </div>
   );

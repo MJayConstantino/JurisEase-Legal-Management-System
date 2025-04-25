@@ -54,10 +54,14 @@ export function TaskCard({
   };
 
   const handleComplete = async () => {
-    if (isProcessing) return;
+    if (isProcessing) {
+      console.log("Task completion is already in progress.");
+      return;
+    }
 
     try {
       setIsProcessing(true);
+      console.log("Marking task as complete/incomplete:", localTask);
 
       let newStatus: Status;
 
@@ -79,6 +83,7 @@ export function TaskCard({
         status: newStatus,
       };
 
+      console.log("Updated task status:", updatedTask);
       setLocalTask(updatedTask);
 
       const result = await handleUpdateTask(
@@ -86,6 +91,8 @@ export function TaskCard({
         { status: newStatus },
         updatedTask
       );
+      console.log("API response for task update:", result);
+
       if (result.error) {
         throw new Error(result.error);
       }
@@ -102,15 +109,19 @@ export function TaskCard({
       toast.error("Failed to update task status");
     } finally {
       setIsProcessing(false);
+      console.log("Task completion process finished.");
     }
   };
 
   const handleEdit = () => {
+    console.log("Editing task:", localTask);
     setIsEditing(true);
   };
 
   const handleSaveTask = async (updatedTask: Task) => {
     try {
+      console.log("Saving task:", updatedTask);
+
       const optimisticTask = {
         ...localTask,
         ...updatedTask,
@@ -124,6 +135,8 @@ export function TaskCard({
         updatedTask,
         optimisticTask
       );
+      console.log("API response for task save:", result);
+
       if (result.error) {
         throw new Error(result.error);
       }
@@ -143,6 +156,8 @@ export function TaskCard({
       setIsDeleteDialogOpen(false);
 
       const { error } = await handleDeleteTask(task.task_id);
+      console.log("API response for task delete:", error);
+
       if (error) {
         console.error("Error from handleDeleteTask:", error);
         throw new Error(error);
@@ -157,6 +172,7 @@ export function TaskCard({
       }
     } finally {
       setIsProcessing(false);
+      console.log("Task deletion process finished.");
     }
   };
 
@@ -271,16 +287,32 @@ export function TaskCard({
 
       <TaskForm
         open={isEditing}
-        onOpenChange={setIsEditing}
+        onOpenChange={(isOpen) => {
+          console.log("TaskForm open state changed to:", isOpen);
+          setIsEditing(isOpen);
+        }}
         disableMatterSelect={!!matterId}
-        onSave={handleSaveTask}
-        onSaveAndCreateAnother={(task) => handleSaveTask(task)}
+        onSave={(updatedTask) => {
+          console.log("Task saved from TaskForm:", updatedTask);
+          handleSaveTask(updatedTask);
+        }}
+        onSaveAndCreateAnother={(task) => {
+          console.log("Task saved and creating another from TaskForm:", task);
+          handleSaveTask(task);
+        }}
         initialTask={localTask}
         matters={matters}
         isLoadingMatters={isLoadingMatters}
-        getMatterNameDisplay={(matterId) =>
-          getMattersDisplayName(matterId, matters)
-        }
+        getMatterNameDisplay={(matterId) => {
+          const displayName = getMattersDisplayName(matterId, matters);
+          console.log(
+            "Matter display name for ID",
+            matterId,
+            "is:",
+            displayName
+          );
+          return displayName;
+        }}
       />
 
       <TaskDeleteDialog

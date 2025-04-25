@@ -48,7 +48,8 @@ export function TaskForm({
   initialTask,
   matters,
   isLoadingMatters,
-}: TaskFormProps) {
+  matterId,
+}: TaskFormProps & { matterId?: string }) {
   const [task, setTask] = useState<Task>(
     () =>
       initialTask || {
@@ -58,7 +59,7 @@ export function TaskForm({
         due_date: undefined,
         priority: "low",
         status: "in-progress",
-        matter_id: "",
+        matter_id: matterId || "",
         created_at: new Date(),
       }
   );
@@ -73,7 +74,7 @@ export function TaskForm({
       due_date: undefined,
       priority: "low",
       status: "in-progress",
-      matter_id: "",
+      matter_id: matterId || "",
       created_at: new Date(),
     });
   };
@@ -82,6 +83,7 @@ export function TaskForm({
     field: keyof Task,
     value: string | Date | undefined
   ) => {
+    console.log(`Field changed: ${field}, New value:`, value);
     setTask((prev) => ({
       ...prev,
       [field]: value,
@@ -89,6 +91,7 @@ export function TaskForm({
   };
 
   const validateForm = () => {
+    console.log("Validating form with task:", task);
     if (!task.name.trim()) {
       toast.error("Task name is required");
       return false;
@@ -121,13 +124,7 @@ export function TaskForm({
           resetTaskForm();
         } else if (onSave) {
           onSave(response.task as Task);
-        }
-
-        if (!keepFormOpen) {
-          setTimeout(() => {
-            onOpenChange(false);
-            resetTaskForm();
-          }, 0);
+          onOpenChange(false); 
         }
       } else {
         toast.error(response.error || "Failed to save task to the database.");
@@ -139,10 +136,6 @@ export function TaskForm({
       setIsSubmitting(false);
     }
   };
-
-  const selectedMatterName = task.matter_id
-    ? getMattersDisplayName(task.matter_id, matters)
-    : "Select a matter";
 
   return (
     <Dialog
@@ -222,14 +215,14 @@ export function TaskForm({
               <Select
                 value={task.matter_id || ""}
                 onValueChange={(value) => handleChange("matter_id", value)}
-                disabled={disableMatterSelect || isLoadingMatters}
+                disabled={disableMatterSelect || !!matterId || isLoadingMatters}
               >
                 <SelectTrigger className="w-full dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
                   <SelectValue
                     placeholder={
                       isLoadingMatters
                         ? "Loading matters..."
-                        : selectedMatterName
+                        : "Select a matter"
                     }
                   />
                 </SelectTrigger>
@@ -244,7 +237,7 @@ export function TaskForm({
                         key={matter.matter_id}
                         value={matter.matter_id}
                       >
-                        {matter.name}
+                        {getMattersDisplayName(matter.matter_id, matters)}
                       </SelectItem>
                     ))
                   ) : (
@@ -301,7 +294,6 @@ export function TaskForm({
           </div>
         </div>
 
-        {/* Footer Buttons */}
         <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:justify-between">
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <Button
