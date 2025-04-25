@@ -39,7 +39,7 @@ export default function LandingPage() {
   ]
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen align-items-center">
       <Header logoText="JurisEase" navItems={navItems} />
       <main className="flex-grow">
         <HeroSection

@@ -10,23 +10,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AddMatterDialog } from "@/components/matters/addMatterDialog";
-import { TaskForm } from "@/components/tasks/taskForm";
 import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
+import { AddTaskFormDialog } from "../addTaskDialog";
+import { getMattersDisplayNameByMatterId } from "@/utils/getMattersDisplayName";
 
 interface CreateNewButtonProps {
   defaultOpen?: boolean;
-  matters: Matter[]; 
-  onTaskCreated?: (newTask: Task) => void; 
+  matters?: Matter[];
+  matterId?: string;
+  onTaskCreated?: (newTask: Task) => void;
 }
 
 export function CreateNewButton({
   defaultOpen = false,
-  matters = [],
-  
+  matters: initialMatters = [],
+  matterId,
+  onTaskCreated,
 }: CreateNewButtonProps) {
   const [isAddMatterOpen, setIsAddMatterOpen] = useState(false);
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [matters] = useState<Matter[]>(initialMatters);
+  const [isLoadingMatters] = useState(false);
 
   return (
     <>
@@ -53,15 +58,15 @@ export function CreateNewButton({
         onOpenChange={setIsAddMatterOpen}
       />
 
-      <TaskForm
-        open={isAddTaskOpen}
+      <AddTaskFormDialog
+        onSave={onTaskCreated}
         onOpenChange={setIsAddTaskOpen}
-        disableMatterSelect={false}
-        initialTask={undefined}
         matters={matters}
-        isLoadingMatters={false}
-        getMatterNameDisplay={(matterId) =>
-          matters.find((matter) => matter.matter_id === matterId)?.name || "Unknown"
+        matterId={matterId}
+        isLoadingMatters={isLoadingMatters}
+        open={isAddTaskOpen}
+        getMatterNameDisplay={(id) =>
+          getMattersDisplayNameByMatterId(id, matters)
         }
       />
     </>

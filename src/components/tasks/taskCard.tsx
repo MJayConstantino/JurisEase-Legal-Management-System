@@ -117,9 +117,7 @@ export function TaskCard({
                 htmlFor={`task-complete-${task.task_id}`}
                 className="text-xs cursor-pointer select-none mr-3 font-medium text-muted-foreground dark:text-gray-400"
               >
-                {localTask.status === "completed"
-                  ? "Unmark as Complete"
-                  : "Mark as Complete"}
+                Mark as Complete
               </label>
               <Checkbox
                 checked={localTask.status === "completed"}

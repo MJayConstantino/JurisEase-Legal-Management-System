@@ -41,7 +41,7 @@ export function TasksHeader({
   };
 
   return (
-    <div className="p-4 border-b bg-gray-50 dark:bg-gray-900 dark:border-gray-700 rounded-t-lg">
+    <div className="pb-4 border-b bg-gray-50 dark:bg-gray-900 dark:border-gray-700 rounded-t-lg">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <Button
           variant="blue"

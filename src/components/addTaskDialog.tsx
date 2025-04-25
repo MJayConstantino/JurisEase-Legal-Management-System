@@ -19,35 +19,30 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
 import { handleCreateTask } from "@/action-handlers/tasks";
+import { handleFetchMatters } from "@/action-handlers/matters";
 
 interface TaskFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSave?: (newTask: Task) => void;
-  onSaveAndCreateAnother?: (newTask: Task) => void;
-  disableMatterSelect: boolean;
   initialTask?: Task;
   matters: Matter[];
   isLoadingMatters: boolean;
   getMatterNameDisplay: (matterId: string) => string;
 }
 
-export function TaskForm({
+export function AddTaskFormDialog({
   open,
   onOpenChange,
   onSave,
-  onSaveAndCreateAnother,
-  disableMatterSelect,
   initialTask,
-  matters,
-  isLoadingMatters,
   matterId,
 }: TaskFormProps & { matterId?: string }) {
   const [task, setTask] = useState<Task>(
@@ -65,6 +60,31 @@ export function TaskForm({
   );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingMatters, setIsLoadingMatters] = useState(true);
+  const [matters, setMatters] = useState<Matter[]>([]);
+
+  useEffect(() => {
+    console.log("Fetching matters...");
+    async function fetchMatters() {
+      try {
+        setIsLoadingMatters(true);
+        const { matters: matterData }: { matters: Matter[] } =
+          await handleFetchMatters();
+        console.log("Fetched matters:", matterData);
+        const uniqueMatters = matterData.filter(
+          (matter, index, self) =>
+            index === self.findIndex((m) => m.matter_id === matter.matter_id)
+        );
+        setMatters(uniqueMatters);
+      } catch (error) {
+        console.error("Error fetching matters:", error);
+        toast.error("Failed to load matters");
+      } finally {
+        setIsLoadingMatters(false);
+      }
+    }
+    fetchMatters();
+  }, []);
 
   const resetTaskForm = () => {
     setTask({
@@ -128,11 +148,7 @@ export function TaskForm({
       if (response && !response.error && response.task) {
         toast.success("Task created successfully");
 
-        if (keepFormOpen && onSaveAndCreateAnother) {
-          console.log("Saving and keeping form open.");
-          onSaveAndCreateAnother(response.task as Task);
-          resetTaskForm();
-        } else if (onSave) {
+        if (onSave) {
           console.log("Saving and closing form.");
           onSave(response.task as Task);
         }
@@ -234,7 +250,6 @@ export function TaskForm({
               <Select
                 value={task.matter_id || ""}
                 onValueChange={(value) => handleChange("matter_id", value)}
-                disabled={disableMatterSelect || !!matterId || isLoadingMatters}
               >
                 <SelectTrigger className="mt-2 w-full dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
                   <SelectValue
@@ -329,15 +344,6 @@ export function TaskForm({
                 ? "Update Task"
                 : "Save Task"}
             </Button>
-            {!task.task_id && (
-              <Button
-                variant="outline"
-                onClick={() => handleTaskCreated(task, true)}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Saving..." : "Save and Create Another"}
-              </Button>
-            )}
           </div>
           <Button
             variant="ghost"

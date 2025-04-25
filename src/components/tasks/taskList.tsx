@@ -85,7 +85,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
   }, []);
 
   const handleTaskCreated = (newTask: Task) => {
-    setTasks((prev) => [...prev, newTask]); // Add the new task to the list
+    setTasks((prev) => [...prev, newTask]); 
   };
 
   const handleTaskUpdated = (updatedTask: Task) => {
@@ -107,17 +107,16 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
   });
 
   return (
-    <div className="container mx-auto py-2 w-full h-full flex flex-col">
-         <TasksHeader
-        onStatusChange={setStatusFilter}
-        onViewChange={setView}
-        view={view}
-        onTaskCreated={handleTaskCreated}
-        matters={matters}
-        matterId={matterId} 
-      />
-
-      <div className="flex-grow overflow-y-auto">
+    <div className="border container mx-auto py-4 px-6 w-full h-full flex flex-col overflow-y-auto bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md">
+        <TasksHeader
+          onStatusChange={setStatusFilter}
+          onViewChange={setView}
+          view={view}
+          onTaskCreated={handleTaskCreated}
+          matters={matters}
+          matterId={matterId}
+        />
+      <div className="flex-grow mt-4 overflow-y-auto">
         {isLoadingTasks ? (
           <div className="flex justify-center items-center h-64">
             <p className="text-muted-foreground">Loading tasks...</p>
@@ -127,7 +126,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
             <p>No tasks found.</p>
           </div>
         ) : view === "grid" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredTasks.map((task) => (
               <TaskCard
                 key={task.task_id}
@@ -140,7 +139,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
             ))}
           </div>
         ) : (
-          <div className="mt-6">
+          <div className="mt-4">
             {filteredTasks.map((task) => (
               <TaskRow
                 key={task.task_id}
