@@ -9,31 +9,21 @@ import { TasksHeader } from "./taskHeader";
 import { handleFetchMatters } from "@/action-handlers/matters";
 import {
   handleFetchTasks,
-  handleFetchTasksByMatterId,
 } from "@/action-handlers/tasks";
 import { toast } from "sonner";
 import { isBefore } from "date-fns";
 
 export interface TaskListProps {
   initialTasks: Task[];
-  onTaskCreated: (newTask: Task) => void;
-  onTaskUpdated: (updatedTask: Task) => void;
-  onTaskDeleted: (taskId: string) => void;
-  matters: Matter[];
-  isLoadingMatters: boolean;
-  isLoadingTasks: boolean;
-  matterId?: string;
 }
 
-export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
+export function TaskList({ initialTasks = [] }: TaskListProps) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [view, setView] = useState<"grid" | "table">("grid");
   const [matters, setMatters] = useState<Matter[]>([]);
   const [isLoadingMatters, setIsLoadingMatters] = useState(true);
   const [isLoadingTasks, setIsLoadingTasks] = useState(false);
-  const [, setIsTaskFormOpen] = useState(false);
-  const [, setEditingTask] = useState<Task | null>(null);
 
   const checkIsOverdue = (dueDate?: Date, status?: string) => {
     if (!dueDate || status === "completed") return false;
@@ -45,14 +35,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
     async function fetchTasks() {
       try {
         setIsLoadingTasks(true);
-        let result;
-
-        if (matterId) {
-          console.log("Fetching tasks for matterId:", matterId);
-          result = await handleFetchTasksByMatterId(matterId);
-        } else {
-          result = await handleFetchTasks();
-        }
+        const result = await handleFetchTasks();
 
         console.log("Fetched tasks:", result);
         if (result.error) {
@@ -77,7 +60,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
     if (!initialTasks || initialTasks.length === 0) {
       fetchTasks();
     }
-  }, [matterId, initialTasks]);
+  }, [initialTasks]);
 
   useEffect(() => {
     console.log("Fetching matters...");
@@ -101,6 +84,10 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
     }
     fetchMatters();
   }, []);
+
+  const handleTaskCreated = (newTask: Task) => {
+    setTasks((prev) => [...prev, newTask]);
+  };
 
   const handleTaskUpdated = (updatedTask: Task) => {
     setTasks((prev) =>
@@ -126,10 +113,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
         onStatusChange={setStatusFilter}
         onViewChange={setView}
         view={view}
-        onTaskCreated={() => {
-          setEditingTask(null);
-          setIsTaskFormOpen(true);
-        }}
+        onTaskCreated={handleTaskCreated}
       />
 
       <div className="flex-grow overflow-y-auto">
@@ -170,8 +154,6 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
           </div>
         )}
       </div>
-
-    
     </div>
   );
 }

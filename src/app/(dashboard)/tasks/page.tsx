@@ -11,7 +11,7 @@ export default async function Task() {
   const { tasks = [] } = await handleFetchTasks();
   
   return (
-    <div className="flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-6 h-full overflow-y-auto">
       <TaskList initialTasks={tasks} />
     </div>
   );

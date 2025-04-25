@@ -7,8 +7,6 @@ import { TaskForm } from "./taskForm";
 import type { Task } from "@/types/task.type";
 import { Matter } from "@/types/matter.type";
 import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
-import { handleCreateTask } from "@/action-handlers/tasks";
-import { toast } from "sonner";
 
 interface TasksHeaderProps {
   onStatusChange: (status: string) => void;
@@ -37,38 +35,6 @@ export function TasksHeader({
   const handleViewToggle = (newView: "grid" | "table") => {
     console.log("View toggled to:", newView);
     onViewChange(newView);
-  };
-
-  const handleTaskCreated = async (
-    newTask: Task,
-    keepFormOpen: boolean = false
-  ) => {
-    console.log("Creating task:", newTask);
-    try {
-      const response = await handleCreateTask({
-        ...newTask,
-        due_date: newTask.due_date ? new Date(newTask.due_date) : undefined,
-      });
-
-      console.log("Create task response:", response);
-
-      if (response && !response.error && response.task) {
-        toast.success("Task created successfully");
-
-        if (onTaskCreated) {
-          onTaskCreated(response.task as Task);
-        }
-
-        if (!keepFormOpen) {
-          setIsAddTaskOpen(false);
-        }
-      } else {
-        toast.error(response.error || "Failed to save task to the database.");
-      }
-    } catch (error) {
-      console.error("Error saving task:", error);
-      toast.error("Failed to save task to the database.");
-    }
   };
 
   return (
@@ -143,9 +109,9 @@ export function TasksHeader({
 
       <TaskForm
         open={isAddTaskOpen}
-        onSave={(newTask) => handleTaskCreated(newTask, false)} // Close form after saving
-        onSaveAndCreateAnother={(newTask) => handleTaskCreated(newTask, true)} // Keep form open after saving
         onOpenChange={setIsAddTaskOpen}
+        onSave={onTaskCreated} // Pass the callback directly
+        onSaveAndCreateAnother={onTaskCreated} // Pass the callback directly
         disableMatterSelect={false}
         initialTask={undefined}
         matters={matters}

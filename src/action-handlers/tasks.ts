@@ -37,7 +37,7 @@ export const handleCreateTask = async (
     const newTask = await createTask({
       name: taskData.name,
       due_date: dueDate,
-      matter_id: taskData.matter_id,
+      matter_id: taskData.matter_id || undefined,
       status: taskData.status || "in-progress",
       priority: taskData.priority || "low",
       description: taskData.description || "",

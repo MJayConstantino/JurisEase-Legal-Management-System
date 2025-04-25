@@ -248,7 +248,7 @@ export function TaskRow({
         onSave={handleSaveTask}
         onSaveAndCreateAnother={(task) => handleSaveTask(task)}
         initialTask={localTask}
-        matters={matters} // Changed from empty array
+        matters={matters} 
         isLoadingMatters={isLoadingMatters}
         getMatterNameDisplay={(matterId) =>
           getMattersDisplayName(matterId, matters)

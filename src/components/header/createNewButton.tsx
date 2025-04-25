@@ -10,13 +10,30 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AddMatterDialog } from "@/components/matters/addMatterDialog";
+import { TaskForm } from "@/components/tasks/taskForm";
+import type { Task } from "@/types/task.type";
+import type { Matter } from "@/types/matter.type";
 
 interface CreateNewButtonProps {
   defaultOpen?: boolean;
+  matters: Matter[]; 
+  onTaskCreated?: (newTask: Task) => void; 
 }
 
-export function CreateNewButton({ defaultOpen = false }: CreateNewButtonProps) {
+export function CreateNewButton({
+  defaultOpen = false,
+  matters = [],
+  onTaskCreated,
+}: CreateNewButtonProps) {
   const [isAddMatterOpen, setIsAddMatterOpen] = useState(false);
+  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+
+  const handleTaskCreated = (newTask: Task) => {
+    if (onTaskCreated) {
+      onTaskCreated(newTask); 
+    }
+    setIsAddTaskOpen(false); 
+  };
 
   return (
     <>
@@ -31,13 +48,32 @@ export function CreateNewButton({ defaultOpen = false }: CreateNewButtonProps) {
           <DropdownMenuItem onClick={() => setIsAddMatterOpen(true)}>
             New Matter
           </DropdownMenuItem>
-          <DropdownMenuItem>New Task</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsAddTaskOpen(true)}>
+            New Task
+          </DropdownMenuItem>
           <DropdownMenuItem>New Bill</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Add Matter Dialog */}
       <AddMatterDialog
         open={isAddMatterOpen}
         onOpenChange={setIsAddMatterOpen}
+      />
+
+      {/* Task Form */}
+      <TaskForm
+        open={isAddTaskOpen}
+        onOpenChange={setIsAddTaskOpen}
+        onSave={handleTaskCreated}
+        onSaveAndCreateAnother={handleTaskCreated}
+        disableMatterSelect={false}
+        initialTask={undefined}
+        matters={matters}
+        isLoadingMatters={false}
+        getMatterNameDisplay={(matterId) =>
+          matters.find((matter) => matter.matter_id === matterId)?.name || "Unknown"
+        }
       />
     </>
   );
