@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Matter } from "@/types/matter.type";
-import { format, isBefore, parseISO } from "date-fns";
 import { Edit, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +17,8 @@ import {
   handleComplete,
   handleSaveTask,
   handleDelete,
+  isTaskOverdue,
+  formatDate,
 } from "@/utils/taskHandlers";
 
 interface TaskRowProps {
@@ -44,30 +45,11 @@ export function TaskRow({
   const params = useParams();
   const matterId = params.matterId as string | undefined;
 
-  const formatDate = (date?: string | Date | null) => {
-    if (!date) return "No date";
-    try {
-      const parsedDate = typeof date === "string" ? new Date(date) : date;
-      return format(parsedDate, "MMM dd, yyyy");
-    } catch (error) {
-      console.error(error);
-      return "Invalid date";
+  const isTaskOverdueFlag = isTaskOverdue(localTask.due_date ?? undefined, localTask.status);
+  
+    if (isTaskOverdueFlag && localTask.status !== "overdue") {
+      setLocalTask((prevTask) => ({ ...prevTask, status: "overdue" }));
     }
-  };
-
-  const isTaskOverdue =
-    localTask.status !== "completed" &&
-    localTask.due_date &&
-    isBefore(
-      typeof localTask.due_date === "string"
-        ? parseISO(localTask.due_date)
-        : localTask.due_date,
-      new Date()
-    );
-
-  if (isTaskOverdue && localTask.status !== "overdue") {
-    setLocalTask((prevTask) => ({ ...prevTask, status: "overdue" }));
-  }
 
   const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
 

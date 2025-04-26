@@ -203,6 +203,7 @@ export const AddNewTaskPlay: Story = {
     await new Promise((resolve) => setTimeout(resolve, 5000));
   },
 };
+
 export const EditTaskFormPlay: Story = {
   args: {
     open: true,
