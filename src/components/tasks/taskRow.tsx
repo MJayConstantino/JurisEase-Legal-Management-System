@@ -34,7 +34,6 @@ export function TaskRow({
   task,
   matters,
   isLoadingMatters,
-  isOverdue,
   onTaskUpdated,
   onTaskDeleted,
 }: TaskRowProps) {
@@ -57,7 +56,7 @@ export function TaskRow({
     <>
       <div
         className={`flex items-center my-2 rounded-lg justify-between p-3 sm:p-4 border ${
-          isOverdue
+          isTaskOverdueFlag
             ? "border-red-500 bg-red-50 dark:bg-red-950"
             : localTask.status === "completed"
             ? "border-green-500 bg-green-50 dark:bg-green-950"

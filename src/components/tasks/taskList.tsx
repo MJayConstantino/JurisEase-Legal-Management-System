@@ -95,12 +95,14 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
   const filteredTasks = tasks.filter((task) => {
     if (matterId && task.matter_id !== matterId) return false;
     if (statusFilter === "all") return true;
-    if (statusFilter === "overdue") return isTaskOverdue(task.due_date ?? undefined, task.status);
-    return task.status === statusFilter;
+    if (statusFilter === "overdue") {
+      return isTaskOverdue(task.due_date ?? undefined, task.status);
+    }
+    return task.status === statusFilter && !isTaskOverdue(task.due_date ?? undefined, task.status);
   });
 
   return (
-    <div className="border container mx-auto py-4 px-6 w-full h-full flex flex-col overflow-y-auto bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md">
+    <div className="border container mx-auto py-4 px-6 pt-2 w-full h-full flex flex-col overflow-y-auto bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md">
         <TasksHeader
           onStatusChange={setStatusFilter}
           onViewChange={setView}
