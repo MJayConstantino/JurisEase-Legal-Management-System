@@ -7,6 +7,13 @@ const nextConfig: NextConfig = {
   },
   images: {
     domains: ["lh3.googleusercontent.com"],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ysvesegmxbtcjgivpwkl.supabase.co',
+        pathname: '/storage/v1/object/public/**',
+      },
+    ],
   },
 };
 

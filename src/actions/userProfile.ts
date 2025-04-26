@@ -1,9 +1,10 @@
-"use server"
 
 import type { User } from "@/types/user.type"
 import { supabase } from "@/lib/supabase"
+import { redirectToHome } from "./routing";
+import { redirect } from "next/navigation";
 
-export async function updateProfileName(user: User){
+export async function updateUsername(user: User){
   const { data, error } = await supabase
     .from("users")
     .update(user)
@@ -18,16 +19,19 @@ export async function updateProfileName(user: User){
   return data;
 }
 
-export async function deleteUser(userId: string) {
+export async function updateAvatar(user: User){
+  return(console.log("There's no avatar storage", user))
+}
+
+export async function deleteUser(user: User) {
   const { error } = await supabase
   .from("users")
   .delete()
-  .eq("user_id", userId);
+  .eq("user_id", user.user_id)
 
   if (error) {
-    console.error("Error deleting user:", error);
-    throw new Error("Failed to delete user");
+    throw new Error('Failed to delete user: ' + error.message)
   }
 
-  return true
+  redirect("/login")
 }

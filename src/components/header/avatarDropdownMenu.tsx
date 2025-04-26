@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { LogOut, Plus, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -116,17 +116,14 @@ function AvatarDropdownMenu({
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="border-gray-200 dark:border-gray-600" />
         <DropdownMenuItem onClick={handleProfileClick} className="px-3 py-2 text-black dark:text-white">
-          Profile
-        </DropdownMenuItem>
-        <DropdownMenuItem className="px-3 py-2 text-black dark:text-white">
-          Settings
+          <User/> Profile
         </DropdownMenuItem>
         <DropdownMenuItem className="md:hidden px-3 py-2 text-black dark:text-white">
           <Plus className="mr-2 h-4 w-4" />
           <span>Create New</span>
         </DropdownMenuItem>
         <DropdownMenuItem className="px-3 py-2 text-black dark:text-white">
-          <Signout />
+          <LogOut/><Signout />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

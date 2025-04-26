@@ -1,12 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { User } from "@/types/user.type"
 import { PencilIcon } from "lucide-react"
-import { useRouter } from 'next/navigation'
 
 export function EditUsername({ 
   user,
@@ -17,7 +16,6 @@ export function EditUsername({
 }) {
   const [isEditing, setIsEditing] = useState(false)
   const [newName, setNewName] = useState(user.user_name)
-  const router = useRouter()
 
   const handleSave = () => {
     if (!newName) {
@@ -58,7 +56,7 @@ export function EditUsername({
       ) : (
         <>
           <h1 className="text-2xl font-bold">{user.user_name}</h1>
-          <Button className="bg-transparent" onClick={() => setIsEditing(true)}>
+          <Button className="bg-transparent hover:bg-indigo-500" onClick={() => setIsEditing(true)}>
             <PencilIcon className="text-black dark:text-white"/>
           </Button>
         </>
