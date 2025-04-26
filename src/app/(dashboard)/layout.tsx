@@ -22,12 +22,12 @@ export default async function DashboardLayout({
       disableTransitionOnChange
     >
       <SidebarProvider>
-        <div className="flex h-screen w-screen flex-col">
+        <div className="flex min-h-screen w-screen">
           <Header />
-          <div className="flex flex-1 overflow-hidden pt-16">
+          <div className="flex flex-1 pt-16">
             <AppSidebar />
             <main
-              className="flex-1 overflow-auto bg-white dark:bg-neutral-800 p-6 transition-all duration-300 
+              className="flex-1 bg-white dark:bg-neutral-800 p-6 transition-all duration-300 
                     md:group-data-[state=expanded]"
             >
               {children}

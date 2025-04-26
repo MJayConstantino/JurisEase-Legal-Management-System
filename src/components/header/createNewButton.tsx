@@ -10,13 +10,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AddMatterDialog } from "@/components/matters/addMatterDialog";
+import type { Task } from "@/types/task.type";
+import type { Matter } from "@/types/matter.type";
+import { AddTaskFormDialog } from "../addTaskDialog";
+import { getMattersDisplayNameByMatterId } from "@/utils/getMattersDisplayName";
 
 interface CreateNewButtonProps {
   defaultOpen?: boolean;
+  matters?: Matter[];
+  matterId?: string;
+  onTaskCreated?: (newTask: Task) => void;
 }
 
-export function CreateNewButton({ defaultOpen = false }: CreateNewButtonProps) {
+export function CreateNewButton({
+  defaultOpen = false,
+  matters: initialMatters = [],
+  matterId,
+  onTaskCreated,
+}: CreateNewButtonProps) {
   const [isAddMatterOpen, setIsAddMatterOpen] = useState(false);
+  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [matters] = useState<Matter[]>(initialMatters);
+  const [isLoadingMatters] = useState(false);
 
   return (
     <>
@@ -31,13 +46,28 @@ export function CreateNewButton({ defaultOpen = false }: CreateNewButtonProps) {
           <DropdownMenuItem onClick={() => setIsAddMatterOpen(true)}>
             New Matter
           </DropdownMenuItem>
-          <DropdownMenuItem>New Task</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsAddTaskOpen(true)}>
+            New Task
+          </DropdownMenuItem>
           <DropdownMenuItem>New Bill</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
       <AddMatterDialog
         open={isAddMatterOpen}
         onOpenChange={setIsAddMatterOpen}
+      />
+
+      <AddTaskFormDialog
+        onSave={onTaskCreated}
+        onOpenChange={setIsAddTaskOpen}
+        matters={matters}
+        matterId={matterId}
+        isLoadingMatters={isLoadingMatters}
+        open={isAddTaskOpen}
+        getMatterNameDisplay={(id) =>
+          getMattersDisplayNameByMatterId(id, matters)
+        }
       />
     </>
   );

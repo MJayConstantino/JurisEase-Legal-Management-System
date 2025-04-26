@@ -56,7 +56,7 @@ function DesktopSearch() {
         variant="ghost"
         role="button"
         size="sm"
-        className="text-white hover:bg-[#1B1E4B]/50 dark:hover:bg-gray-800/50 flex items-center justify-center h-10 w-10 p-0 block md:hidden"
+        className="text-white hover:bg-[#1B1E4B]/50 dark:hover:bg-gray-800/50 items-center justify-center h-10 w-10 p-0 block md:hidden"
         onClick={handleOpenDialog}
         aria-label="SearchButton"
       >

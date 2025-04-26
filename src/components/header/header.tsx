@@ -1,11 +1,11 @@
-import { SidebarTrigger } from '@/components/ui/sidebar'
-import { MobileNavMenu } from '@/components/sidebar/mobileNavMenu'
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { MobileNavMenu } from "@/components/sidebar/mobileNavMenu";
 
-import { ModeToggle } from '@/components/mode-toggle'
-import CreateNewButton from './createNewButton'
-import DesktopSearch from './globalSearch/desktopSearch'
+import { ModeToggle } from "@/components/mode-toggle";
+import CreateNewButton from "./createNewButton";
+import DesktopSearch from "./globalSearch/desktopSearch";
 
-import AvatarDropdownMenu from './avatarDropdownMenu'
+import AvatarDropdownMenu from "./avatarDropdownMenu";
 
 export function Header() {
   return (
@@ -21,14 +21,12 @@ export function Header() {
       <div className="flex items-center gap-2 md:gap-4">
         <DesktopSearch />
 
-        {/* <MobileSearch /> */}
-
-        <CreateNewButton />
+        <CreateNewButton matters={[]} />
 
         <ModeToggle />
 
         <AvatarDropdownMenu />
       </div>
     </header>
-  )
+  );
 }

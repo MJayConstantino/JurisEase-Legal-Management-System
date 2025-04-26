@@ -17,25 +17,25 @@ export default meta;
 type Story = StoryObj<typeof CreateNewButton>;
 
 export const Default: Story = {
-  render: () => <CreateNewButton />,
+  render: () => <CreateNewButton matters={[]} />,
 };
 
 export const DarkMode: Story = {
   render: () => (
     <div className="dark">
-      <CreateNewButton />
+      <CreateNewButton matters={[]} />
     </div>
   ),
 };
 
 export const DropdownOpen: Story = {
-  render: () => <CreateNewButton defaultOpen />,
+  render: () => <CreateNewButton defaultOpen matters={[]} />,
 };
 
 export const DropdownOpenDarkMode: Story = {
   render: () => (
     <div className="dark">
-      <CreateNewButton defaultOpen />
+      <CreateNewButton defaultOpen matters={[]} />
     </div>
   ),
 };
