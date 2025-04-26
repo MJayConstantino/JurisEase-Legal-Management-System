@@ -18,6 +18,7 @@ import {
   handleSaveTask,
   handleDelete,
   formatDate,
+  isTaskOverdue,
 } from "@/utils/taskHandlers";
 
 interface TaskCardProps {
@@ -37,7 +38,6 @@ export function TaskCard({
   onTaskDeleted,
   matters = [],
   isLoadingMatters = false,
-  isOverdue = false,
 }: TaskCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [localTask, setLocalTask] = useState<Task>(task);
@@ -48,11 +48,17 @@ export function TaskCard({
 
   const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
 
+  const isTaskOverdueFlag = isTaskOverdue(localTask.due_date ?? undefined, localTask.status);
+
+  if (isTaskOverdueFlag && localTask.status !== "overdue") {
+    setLocalTask((prevTask) => ({ ...prevTask, status: "overdue" }));
+  }
+
   return (
     <>
       <div
         className={`border rounded-lg p-3 shadow-sm h-full flex flex-col ${
-          isOverdue
+          isTaskOverdueFlag
             ? "border-red-500 bg-red-50 dark:bg-red-950"
             : localTask.status === "completed"
             ? "border-green-500 bg-green-50 dark:bg-green-950"

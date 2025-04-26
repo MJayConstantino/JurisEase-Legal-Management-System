@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Matter } from "@/types/matter.type";
-import { format } from "date-fns";
+import { format, isBefore, parseISO } from "date-fns";
 import { Edit, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -54,6 +54,20 @@ export function TaskRow({
       return "Invalid date";
     }
   };
+
+  const isTaskOverdue =
+    localTask.status !== "completed" &&
+    localTask.due_date &&
+    isBefore(
+      typeof localTask.due_date === "string"
+        ? parseISO(localTask.due_date)
+        : localTask.due_date,
+      new Date()
+    );
+
+  if (isTaskOverdue && localTask.status !== "overdue") {
+    setLocalTask((prevTask) => ({ ...prevTask, status: "overdue" }));
+  }
 
   const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
 
