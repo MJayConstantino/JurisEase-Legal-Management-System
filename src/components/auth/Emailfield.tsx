@@ -16,7 +16,6 @@ export const EmailField: React.FC<EmailFieldProps> = ({
   return (
     <InputField
       id="email"
-      type="email"
       name="email"
       label="Email"
       aria-label="Email"
