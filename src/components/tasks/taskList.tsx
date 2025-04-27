@@ -9,7 +9,7 @@ import { TasksHeader } from "./taskHeader";
 import { handleFetchMatters } from "@/action-handlers/matters";
 import { handleFetchTasks } from "@/action-handlers/tasks";
 import { toast } from "sonner";
-import { isBefore } from "date-fns";
+import { isTaskOverdue } from "@/utils/taskHandlers";
 
 export interface TaskListProps {
   initialTasks: Task[];
@@ -23,11 +23,6 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
   const [matters, setMatters] = useState<Matter[]>([]);
   const [isLoadingMatters, setIsLoadingMatters] = useState(true);
   const [isLoadingTasks, setIsLoadingTasks] = useState(false);
-
-  const checkIsOverdue = (dueDate?: Date, status?: string) => {
-    if (!dueDate || status === "completed") return false;
-    return isBefore(new Date(dueDate), new Date());
-  };
 
   useEffect(() => {
     console.log("Fetching tasks...");
@@ -43,10 +38,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
 
         const updatedTasks = result.tasks.map((task) => ({
           ...task,
-          isOverdue: checkIsOverdue(
-            task.due_date ? new Date(task.due_date) : undefined,
-            task.status
-          ),
+          isOverdue: isTaskOverdue(task.due_date ?? undefined, task.status),
         }));
         setTasks(updatedTasks);
       } catch (error) {
@@ -103,11 +95,14 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
   const filteredTasks = tasks.filter((task) => {
     if (matterId && task.matter_id !== matterId) return false;
     if (statusFilter === "all") return true;
-    return task.status === statusFilter;
+    if (statusFilter === "overdue") {
+      return isTaskOverdue(task.due_date ?? undefined, task.status);
+    }
+    return task.status === statusFilter && !isTaskOverdue(task.due_date ?? undefined, task.status);
   });
 
   return (
-    <div className="border container mx-auto py-4 px-6 w-full h-full flex flex-col overflow-y-auto bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md">
+    <div className="border container mx-auto py-4 px-6 pt-2 w-full h-full flex flex-col overflow-y-auto bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md">
         <TasksHeader
           onStatusChange={setStatusFilter}
           onViewChange={setView}
@@ -133,6 +128,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
                 task={task}
                 matters={matters}
                 isLoadingMatters={isLoadingMatters}
+                isOverdue={isTaskOverdue(task.due_date ?? undefined, task.status)}
                 onTaskUpdated={handleTaskUpdated}
                 onTaskDeleted={handleTaskDeleted}
               />
@@ -146,7 +142,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
                 task={task}
                 matters={matters}
                 isLoadingMatters={isLoadingMatters}
-                isOverdue={task.status === "overdue" || false}
+                isOverdue={isTaskOverdue(task.due_date ?? undefined, task.status)}
                 onTaskUpdated={handleTaskUpdated}
                 onTaskDeleted={handleTaskDeleted}
               />

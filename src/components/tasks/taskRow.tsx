@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Matter } from "@/types/matter.type";
-import { format } from "date-fns";
 import { Edit, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +17,8 @@ import {
   handleComplete,
   handleSaveTask,
   handleDelete,
+  isTaskOverdue,
+  formatDate,
 } from "@/utils/taskHandlers";
 
 interface TaskRowProps {
@@ -33,7 +34,6 @@ export function TaskRow({
   task,
   matters,
   isLoadingMatters,
-  isOverdue,
   onTaskUpdated,
   onTaskDeleted,
 }: TaskRowProps) {
@@ -44,16 +44,11 @@ export function TaskRow({
   const params = useParams();
   const matterId = params.matterId as string | undefined;
 
-  const formatDate = (date?: string | Date | null) => {
-    if (!date) return "No date";
-    try {
-      const parsedDate = typeof date === "string" ? new Date(date) : date;
-      return format(parsedDate, "MMM dd, yyyy");
-    } catch (error) {
-      console.error(error);
-      return "Invalid date";
+  const isTaskOverdueFlag = isTaskOverdue(localTask.due_date ?? undefined, localTask.status);
+  
+    if (isTaskOverdueFlag && localTask.status !== "overdue") {
+      setLocalTask((prevTask) => ({ ...prevTask, status: "overdue" }));
     }
-  };
 
   const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
 
@@ -61,7 +56,7 @@ export function TaskRow({
     <>
       <div
         className={`flex items-center my-2 rounded-lg justify-between p-3 sm:p-4 border ${
-          isOverdue
+          isTaskOverdueFlag
             ? "border-red-500 bg-red-50 dark:bg-red-950"
             : localTask.status === "completed"
             ? "border-green-500 bg-green-50 dark:bg-green-950"
