@@ -13,7 +13,8 @@
     "test:frontend": "cross-env NODE_ENV=test jest --selectProjects frontend  --detectOpenHandles --verbose",
     "test:backend": "cross-env NODE_ENV=test jest --selectProjects backend --detectOpenHandles --verbose",
     "test": "cross-env NODE_ENV=test jest --detectOpenHandles --verbose",
-    "test:watch": "cross-env NODE_ENV=test jest --detectOpenHandles --verbose --watchAll"
+    "test:watch": "cross-env NODE_ENV=test jest --detectOpenHandles --verbose --watchAll",
+    "cypress:open": "cross-env NODE_ENV=test cypress open"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.6",
@@ -77,6 +78,8 @@
     "@vitest/coverage-v8": "^3.0.8",
     "babel-jest": "^29.7.0",
     "cross-env": "^7.0.3",
+    "cypress": "^14.3.2",
+    "cypress-dark": "^1.8.3",
     "dotenv": "^16.4.7",
     "eslint": "^9",
     "eslint-config-next": "15.2.1",

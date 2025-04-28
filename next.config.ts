@@ -1,20 +1,13 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   /* config options here */
   eslint: {
-    dirs: ["src/app", "src/components"],
+    dirs: ['src/app', 'src/components'],
   },
   images: {
-    domains: ["lh3.googleusercontent.com"],
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'ysvesegmxbtcjgivpwkl.supabase.co',
-        pathname: '/storage/v1/object/public/**',
-      },
-    ],
+    domains: ['lh3.googleusercontent.com', 'ysvesegmxbtcjgivpwkl.supabase.co'],
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

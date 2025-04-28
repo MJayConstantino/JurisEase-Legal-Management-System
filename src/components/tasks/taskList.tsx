@@ -1,146 +1,155 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useCallback } from "react"
-import type { Task } from "@/types/task.type"
-import { getTasks } from "@/actions/tasks"
-import { getTasksByMatterId } from "@/actions/tasks"
-import { TaskRow } from "./taskRow"
-import { TaskCard } from "./taskCard"
-import { TasksHeader } from "./taskHeader"
-import { supabase } from "@/lib/supabase"
-import { toast } from "sonner"
+import { useState, useEffect } from "react";
+import type { Task } from "@/types/task.type";
+import type { Matter } from "@/types/matter.type";
+import { TaskRow } from "./taskRow";
+import { TaskCard } from "./taskCard";
+import { TasksHeader } from "./taskHeader";
+import { handleFetchMatters } from "@/action-handlers/matters";
+import { handleFetchTasks } from "@/action-handlers/tasks";
+import { toast } from "sonner";
+import { isTaskOverdue } from "@/utils/taskHandlers";
 
-interface TaskListProps {
-  matterId?: string
+export interface TaskListProps {
+  initialTasks: Task[];
+  matterId?: string;
 }
 
-export function TaskList({ matterId }: TaskListProps) {
-  const [tasks, setTasks] = useState<Task[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [view, setView] = useState<"grid" | "table">("grid")
-
-  const fetchTasks = useCallback(async () => {
-    setIsLoading(true)
-    try {
-      const data = matterId ? await getTasksByMatterId(matterId) : await getTasks()
-      setTasks(data ?? [])
-    } catch (error) {
-      console.error("Error fetching tasks:", error)
-      toast.error("Failed to load tasks")
-    } finally {
-      setIsLoading(false)
-    }
-  }, [matterId])
+export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [view, setView] = useState<"grid" | "table">("grid");
+  const [matters, setMatters] = useState<Matter[]>([]);
+  const [isLoadingMatters, setIsLoadingMatters] = useState(true);
+  const [isLoadingTasks, setIsLoadingTasks] = useState(false);
 
   useEffect(() => {
-    fetchTasks()
+    console.log("Fetching tasks...");
+    async function fetchTasks() {
+      try {
+        setIsLoadingTasks(true);
+        const result = await handleFetchTasks();
 
-    const channel = supabase
-      .channel(`tasks-changes-${matterId || "all"}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "tasks",
-          ...(matterId ? { filter: `matter_id=eq.${matterId}` } : {}),
-        },
-        (payload) => {
-          console.log("Change received!", payload)
-          fetchTasks()
+        console.log("Fetched tasks:", result);
+        if (result.error) {
+          throw new Error(result.error);
+        }
 
-          if (payload.eventType === "INSERT") {
-            toast.success("New task added")
-          } else if (payload.eventType === "UPDATE") {
-            toast.success("Task updated")
-          } else if (payload.eventType === "DELETE") {
-            toast.success("Task deleted")
-          }
-        },
+        const updatedTasks = result.tasks.map((task) => ({
+          ...task,
+          isOverdue: isTaskOverdue(task.due_date ?? undefined, task.status),
+        }));
+        setTasks(updatedTasks);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      } finally {
+        setIsLoadingTasks(false);
+      }
+    }
+
+    if (!initialTasks || initialTasks.length === 0) {
+      fetchTasks();
+    }
+  }, [initialTasks]);
+
+  useEffect(() => {
+    console.log("Fetching matters...");
+    async function fetchMatters() {
+      try {
+        setIsLoadingMatters(true);
+        const { matters: matterData }: { matters: Matter[] } =
+          await handleFetchMatters();
+        console.log("Fetched matters:", matterData);
+        const uniqueMatters = matterData.filter(
+          (matter, index, self) =>
+            index === self.findIndex((m) => m.matter_id === matter.matter_id)
+        );
+        setMatters(uniqueMatters);
+      } catch (error) {
+        console.error("Error fetching matters:", error);
+        toast.error("Failed to load matters");
+      } finally {
+        setIsLoadingMatters(false);
+      }
+    }
+    fetchMatters();
+  }, []);
+
+  const handleTaskCreated = (newTask: Task) => {
+    setTasks((prev) => [...prev, newTask]); 
+  };
+
+  const handleTaskUpdated = (updatedTask: Task) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.task_id === updatedTask.task_id ? updatedTask : task
       )
-      .subscribe()
+    );
+  };
 
-    return () => {
-      supabase.removeChannel(channel)
+  const handleTaskDeleted = (taskId: string) => {
+    setTasks((prev) => prev.filter((t) => t.task_id !== taskId));
+  };
+
+  const filteredTasks = tasks.filter((task) => {
+    if (matterId && task.matter_id !== matterId) return false;
+    if (statusFilter === "all") return true;
+    if (statusFilter === "overdue") {
+      return isTaskOverdue(task.due_date ?? undefined, task.status);
     }
-  }, [fetchTasks, matterId])
-
-  const filteredTasks = tasks
-    .filter((task) => {
-      const matchesStatus =
-        statusFilter === "all" ||
-        (statusFilter === "in-progress" && task.status === "in-progress") ||
-        (statusFilter === "overdue" && task.status === "overdue") ||
-        (statusFilter === "completed" && task.status === "completed")
-
-      return matchesStatus
-    })
-    .sort((a, b) => {
-      if (a.status === "overdue" && b.status !== "overdue") return -1
-      if (a.status !== "overdue" && b.status === "overdue") return 1
-
-      if (a.status === "completed" && b.status !== "completed") return 1
-      if (a.status !== "completed" && b.status === "completed") return -1
-
-      const dateA = a.due_date ? new Date(a.due_date).getTime() : 0
-      const dateB = b.due_date ? new Date(b.due_date).getTime() : 0
-      return dateA - dateB
-    })
-
-  const handleStatusChange = (status: string) => {
-    setStatusFilter(status)
-  }
-
-  const handleViewChange = (newView: "grid" | "table") => {
-    setView(newView)
-  }
-
-  const handleTaskCreated = (task: Task) => {
-    if (!matterId || task.matter_id === matterId) {
-      setTasks((prevTasks) => [task, ...prevTasks])
-    }
-  }
+    return task.status === statusFilter && !isTaskOverdue(task.due_date ?? undefined, task.status);
+  });
 
   return (
-    <div className="container mx-auto py-2 w-full h-full flex flex-col">
-      <div className="flex-shrink-0">
+    <div className="border container mx-auto py-4 px-6 pt-2 w-full h-full flex flex-col overflow-y-auto bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md">
         <TasksHeader
-          onStatusChange={handleStatusChange}
-          onViewChange={handleViewChange}
+          onStatusChange={setStatusFilter}
+          onViewChange={setView}
           view={view}
           onTaskCreated={handleTaskCreated}
-          matter_id={matterId}
+          matters={matters}
+          matterId={matterId}
         />
-      </div>
-
-      <div className="flex-grow overflow-y-auto">
-        {isLoading ? (
+      <div className="flex-grow mt-4 overflow-y-auto">
+        {isLoadingTasks ? (
           <div className="flex justify-center items-center h-64">
-            <p>Loading tasks...</p>
+            <p className="text-muted-foreground">Loading tasks...</p>
           </div>
         ) : filteredTasks.length === 0 ? (
           <div className="flex justify-center items-center h-64 text-muted-foreground">
-            <p>
-              {matterId
-                ? "No tasks found for this matter. Create a new task to get started."
-                : "No tasks found. Create a new task to get started."}
-            </p>
+            <p>No tasks found.</p>
           </div>
         ) : view === "grid" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredTasks.map((task) => (
-              <TaskCard key={task.task_id} task={task} />
+              <TaskCard
+                key={task.task_id}
+                task={task}
+                matters={matters}
+                isLoadingMatters={isLoadingMatters}
+                isOverdue={isTaskOverdue(task.due_date ?? undefined, task.status)}
+                onTaskUpdated={handleTaskUpdated}
+                onTaskDeleted={handleTaskDeleted}
+              />
             ))}
           </div>
         ) : (
-          <div className="mt-6">
+          <div className="mt-4">
             {filteredTasks.map((task) => (
-              <TaskRow key={task.task_id} task={task} onTaskUpdated={fetchTasks} />
+              <TaskRow
+                key={task.task_id}
+                task={task}
+                matters={matters}
+                isLoadingMatters={isLoadingMatters}
+                isOverdue={isTaskOverdue(task.due_date ?? undefined, task.status)}
+                onTaskUpdated={handleTaskUpdated}
+                onTaskDeleted={handleTaskDeleted}
+              />
             ))}
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }

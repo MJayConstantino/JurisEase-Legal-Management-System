@@ -1,0 +1,8 @@
+@font-face {
+  font-family: 'Aileron';
+  src: url('/assets/fonts/Aileron-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Add your existing global styles here */

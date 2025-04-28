@@ -1,15 +1,24 @@
 export type Priority = "low" | "medium" | "high";
 
-export type Status = "in-progress" | "completed" | "overdue"
-
+export type Status = "in-progress" | "completed" | "overdue";
 
 export interface Task {
-  task_id: string
-  name: string
-  description?: string
-  due_date?: Date
-  priority: Priority
-  status: Status
-  matter_id?: string
-  created_at?: Date
+  task_id: string;
+  name: string;
+  description?: string | null;
+  due_date?: Date | string | null;
+  priority: Priority;
+  status: Status;
+  matter_id?: string;
+  created_at: Date;
+  isOverdue?: boolean;
 }
+
+export type CreateTaskInput = {
+  name: string;
+  description?: string | null;
+  status: string;
+  priority: string;
+  due_date?: Date | string | null;
+  matter_id?: string;
+};

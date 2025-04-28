@@ -1,82 +1,73 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Trash2 } from "lucide-react";
-import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { DeleteConfirmationDialog } from "../deleteConfirmationDialog";
+import { toast } from "sonner";
+import { handleDeleteTask } from "@/action-handlers/tasks";
+import type { Task } from "@/types/task.type";
+import { useRouter } from "next/navigation";
 
 interface TaskDeleteDialogProps {
-  taskName: string;
-  isProcessing: boolean;
-  onConfirm: () => Promise<void>;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  task: Task;
+  onSuccess?: () => void;
+  redirectToList?: boolean;
 }
 
 export function TaskDeleteDialog({
-  taskName,
-  isProcessing,
-  onConfirm,
+  isOpen,
+  onOpenChange,
+  task,
+  onSuccess,
+  redirectToList = false,
 }: TaskDeleteDialogProps) {
-  const [open, setOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
 
   const handleDelete = async () => {
-    if (isDeleting) return;
-
+    console.log("Attempting to delete task:", task);
     try {
-      setIsDeleting(true);
-      await onConfirm();
-      setOpen(false);
+      const { error } = await handleDeleteTask(task.task_id);
+      console.log("Delete result:", error ? error : "Success");
+
+      if (!error) {
+        onOpenChange(false);
+
+        if (typeof window !== "undefined") {
+          toast.success(`"${task.name}" has been deleted successfully.`);
+        }
+
+        if (onSuccess) {
+          console.log("Executing onSuccess callback");
+          onSuccess();
+        }
+
+        if (redirectToList) {
+          console.log("Redirecting to task list");
+          router.push("/tasks");
+        }
+
+        router.refresh();
+      } else {
+        if (typeof window !== "undefined") {
+          toast.error("Failed to delete the task. Please try again.");
+        }
+      }
     } catch (error) {
-      console.error("Error in delete dialog:", error);
-    } finally {
-      setIsDeleting(false);
+      console.error("Error in delete handler:", error);
+      if (typeof window !== "undefined") {
+        toast.error("Failed to delete the task. Please try again.");
+      }
     }
   };
 
   return (
-    <>
-      <Button
-        variant="destructive"
-        size="sm"
-        className="hover:cursor-pointer h-7 w-auto px-1.5 text-xs"
-        onClick={() => setOpen(true)}
-        disabled={isProcessing}
-      >
-        <Trash2 className="h-3 w-3 mr-1" />
-        <span className="hidden xxs:inline">Delete</span>
-      </Button>
-
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Confirm Delete</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete the task &quot;{taskName}&quot;? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex flex-row justify-end gap-2 sm:justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={isDeleting}
-              className="hover:cursor-pointer"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="hover:cursor-pointer"
-            >
-                {isDeleting ?  <Loader2 className="mr-2" /> : "Delete"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+    <DeleteConfirmationDialog
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      onConfirm={handleDelete}
+      title="Delete Task"
+      description={`Are you sure you want to delete the task "${task.name}"? This action cannot be undone.`}
+      confirmText="Delete Task"
+    />
   );
 }
