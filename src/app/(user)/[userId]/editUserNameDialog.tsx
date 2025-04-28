@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
 import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { User } from "@/types/user.type"
 import { PencilIcon } from "lucide-react"
+import { UserProfileStates } from "./userProfileStates"
 
 export function EditUsername({ 
   user,
@@ -14,8 +14,7 @@ export function EditUsername({
   user: User;
   onSave: (updatedUser: User) => void; 
 }) {
-  const [isEditing, setIsEditing] = useState(false)
-  const [newName, setNewName] = useState(user.user_name)
+  const {isEditing, setIsEditing, newName, setNewName} = UserProfileStates()
 
   const handleSave = () => {
     if (!newName) {

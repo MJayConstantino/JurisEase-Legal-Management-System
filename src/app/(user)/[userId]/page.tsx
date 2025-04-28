@@ -1,33 +1,40 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { fetchUserInfoAction, fetchUsersAction } from '@/actions/users';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { User } from '@/types/user.type';
+import { ChangeAvatar } from './editAvatar';
 import { UserProfileActionHandlers } from '@/action-handlers/userProfile';
 import { EditUsername } from './editUserNameDialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { UserProfileStates } from './userProfileStates';
 
 export interface UserData {
   full_name: string;
-  avatar_url: string;
   user_email?: string;
+  avatar_url?: string;
 }
 
 export default function UserProfilePage() {
   const { userId } = useParams();
   const router = useRouter();
 
-  const [userList, setUserList] = useState<User[]>([]);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
-  const [userName, setUserName] = useState<string | null>(null)
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
-  const [userData, setUserData] = useState<UserData | null>(null)
-
+  const {
+    userList, setUserList, userEmail, setUserEmail, setLoading, setUserName,
+    userData, setUserData, isDeleteDialogOpen, setIsDeleteDialogOpen
+  } = UserProfileStates()
+  
   const { updateProfile, deleteProfile } = UserProfileActionHandlers();
 
   const currentUser = userList.find((u) => u.user_id === userId);
@@ -60,19 +67,8 @@ export default function UserProfilePage() {
     };
 
     fetchUserData();
-  }, [userId]);
-
-  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result as string)
-        // uploadAvatar(file)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
+  }, [userId, setLoading, setUserData, setUserEmail, setUserList, setUserName]);
+  
 
   return (
     <div className="h-screen w-screen bg-white dark:bg-gray-800 relative">
@@ -99,29 +95,8 @@ export default function UserProfilePage() {
           </div>
 
           <div className="flex justify-center mt-6">
-            <Avatar className="h-72 w-72">
-              <AvatarImage
-                src={avatarPreview || userData?.avatar_url || "/placeholder.svg?height=40&width=40"}
-                alt={userData?.full_name || "User"}
-              />
-              <AvatarFallback>{userData?.full_name?.[0] ?? '?'}</AvatarFallback>
-            </Avatar>
-          </div>
-
-          <div className="flex flex-col items-center mt-4">
-            <label
-              htmlFor="avatar-upload"
-              className="cursor-pointer text-blue-500 hover:text-blue-600"
-            >
-              Change Avatar
-            </label>
-            <input
-              id="avatar-upload"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleAvatarChange}
-            />
+            <ChangeAvatar userName={currentUser?.user_name || "User"} metadataAvatarUrl={userData?.avatar_url || "/placeholder.svg"}/>
+            
           </div>
 
           <div className="flex items-center justify-center gap-3 mt-4">
@@ -137,10 +112,42 @@ export default function UserProfilePage() {
             <Button
               variant="outline"
               className="h-8 px-4 md:h-10 md:px-6 bg-red-600 hover:bg-red-700 text-white font-semibold dark:bg-red-600"
-              onClick={() => currentUser && deleteProfile(currentUser)}
+              onClick={() => setIsDeleteDialogOpen(true)}
             >
               Delete Profile
             </Button>
+
+            {currentUser && (
+              <AlertDialog
+                open={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
+              >
+                <AlertDialogContent className="max-w-md dark:bg-gray-800 dark:border-gray-700">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-lg md:text-xl">
+                      Are you sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className="text-sm md:text-base dark:text-gray-300">
+                      This will permanently delete your profile.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="text-sm md:text-base dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600">
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      className="text-sm md:text-base bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600"
+                      onClick={async () => {
+                        await deleteProfile(currentUser);
+                        window.location.href = '/login';
+                      }}
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
           </div>
         </div>
       </div>

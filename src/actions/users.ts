@@ -110,7 +110,6 @@ export async function fetchUserInfoAction() {
   // Get full name and avatar_url from raw_user_meta_data
   const full_name = data.user.user_metadata.full_name
   const avatar_url = data.user.user_metadata.avatar_url
-  const user_email = data.user.email
 
-  return { full_name, avatar_url, user_email }
+  return { full_name, avatar_url }
 }

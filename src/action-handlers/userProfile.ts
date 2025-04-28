@@ -1,7 +1,7 @@
 "use client"
 
 import { toast } from "sonner";
-import { updateUsername, deleteUser} from "@/actions/userProfile";
+import { updateUsername, deleteUser, uploadAvatar} from "@/actions/userProfile";
 import { useState } from "react";
 import { User } from "@/types/user.type";
 
@@ -18,8 +18,8 @@ export function UserProfileActionHandlers(){
                         u.user_id === newProfileName.user_id ? newProfileName : u
                     )
                 );
-
-            toast.success("Profile updated successfully!");
+                window.location.reload();
+                toast.success("Profile updated successfully!");
         } catch (error) {
             console.error("Failed to update profile:", error);
             toast.error("Failed to update profile. Please try again.");
@@ -42,6 +42,6 @@ export function UserProfileActionHandlers(){
             setIsLoading(false);
         }
     };
-    
+
     return{updateProfile, deleteProfile}
 }
