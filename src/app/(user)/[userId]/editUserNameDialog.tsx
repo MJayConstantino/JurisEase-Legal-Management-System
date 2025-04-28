@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { User } from "@/types/user.type"
 import { PencilIcon } from "lucide-react"
 import { UserProfileStates } from "./userProfileStates"
+import { useState } from "react"
 
 export function EditUsername({ 
   user,
@@ -14,7 +15,8 @@ export function EditUsername({
   user: User;
   onSave: (updatedUser: User) => void; 
 }) {
-  const {isEditing, setIsEditing, newName, setNewName} = UserProfileStates()
+  const {isEditing, setIsEditing} = UserProfileStates()
+  const [newName, setNewName] = useState(user.user_name)
 
   const handleSave = () => {
     if (!newName) {

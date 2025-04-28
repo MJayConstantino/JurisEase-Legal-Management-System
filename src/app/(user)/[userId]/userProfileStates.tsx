@@ -18,7 +18,6 @@ export function UserProfileStates(){
 
     //edit username
     const [isEditing, setIsEditing] = useState(false)
-    const [newName, setNewName] = useState("")
     
     
     return{
@@ -27,6 +26,6 @@ export function UserProfileStates(){
 
         avatarUrl, setAvatarUrl, avatarPreview, setAvatarPreview, isLoading, setIsLoading,
 
-        isEditing, setIsEditing, newName, setNewName
+        isEditing, setIsEditing
     }
 }

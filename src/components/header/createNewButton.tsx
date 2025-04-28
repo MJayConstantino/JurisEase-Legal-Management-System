@@ -28,12 +28,11 @@ interface CreateNewButtonProps {
 
 export function CreateNewButton({
   defaultOpen = false,
-  matters: initialMatters = [],
   matterId,
   onTaskCreated,
 }: CreateNewButtonProps) {
   const [isAddMatterOpen, setIsAddMatterOpen] = useState(false);
-  const {setIsLoading, setMatters, isNewBillDialogOpen, setIsNewBillDialogOpen} = BillingStates()
+  const {matters, setIsLoading, setMatters, isNewBillDialogOpen, setIsNewBillDialogOpen} = BillingStates()
   const {addBill} = BillingsActionHandlers()
 
   useEffect(() => {
@@ -53,7 +52,6 @@ export function CreateNewButton({
     loadData();
   }, [setIsLoading, setMatters]);
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
-  const [matters] = useState<Matter[]>(initialMatters);
   const [isLoadingMatters] = useState(false);
 
   return (
@@ -69,12 +67,10 @@ export function CreateNewButton({
           <DropdownMenuItem onClick={() => setIsAddMatterOpen(true)}>
             New Matter
           </DropdownMenuItem>
-          <DropdownMenuItem>New Task</DropdownMenuItem>
           <DropdownMenuItem onClick={() => setIsNewBillDialogOpen(true)}>New Bill</DropdownMenuItem>
           <DropdownMenuItem onClick={() => setIsAddTaskOpen(true)}>
             New Task
           </DropdownMenuItem>
-          <DropdownMenuItem>New Bill</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
