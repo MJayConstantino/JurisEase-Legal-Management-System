@@ -93,7 +93,7 @@ export function BillingsItem({
       >
         {bill.name}
       </TableCell>
-      <TableCell>{formatAmount(bill.amount)}</TableCell>
+      <TableCell title={formatAmount(bill.amount)} className="overflow-hidden">{formatAmount(bill.amount)}</TableCell>
       <TableCell>{format(new Date(bill.created_at), "MMM d, yyyy")}</TableCell>
       <TableCell>
         <span

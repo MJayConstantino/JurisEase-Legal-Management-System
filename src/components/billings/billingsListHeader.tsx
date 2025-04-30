@@ -23,7 +23,7 @@ interface BillingsListHeaderProps {
 }
 
 export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChange,  matters, selectedMatterId, onMatterFilterChange, hideMatterFilter = false, }: BillingsListHeaderProps) {
-  const {isDropdownOpen, setIsDropdownOpen}= BillingStates()
+  const {isDropdownOpen, setIsDropdownOpen} = BillingStates()
 
   const statusOptions = [
     { value: "all", label: "All Bills" },

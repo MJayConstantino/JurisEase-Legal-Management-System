@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { LogOut, Plus, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +15,8 @@ import { Signout } from "./signout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchUserInfoAction } from "@/actions/users";
+import { useRouter } from 'next/navigation';
+import { createSupabaseClient } from "@/utils/supabase/client";
 
 interface AvatarDropdownMenuProps {
   isLoading?: boolean;
@@ -29,9 +31,26 @@ interface UserData {
 function AvatarDropdownMenu({
   isLoading: propIsLoading = false,
   defaultOpen = false,
-}: AvatarDropdownMenuProps) {
+}: AvatarDropdownMenuProps){
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
+  const router = useRouter();
+  const supabase = createSupabaseClient();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        setUserId(user.id);
+      }
+    };
+
+    getUser();
+  }, [supabase]);
 
   useEffect(() => {
     async function fetchUser() {
@@ -47,6 +66,15 @@ function AvatarDropdownMenu({
     }
     fetchUser();
   }, []);
+
+  const handleProfileClick = () => {
+    if (!userId) {
+      console.warn('User ID not available');
+      return;
+    }
+
+    router.push(`/${userId}`);
+  };
 
   // Combine any external loading state with our internal state.
   const isLoading = propIsLoading || loading;
@@ -87,18 +115,15 @@ function AvatarDropdownMenu({
           {isLoading ? <Skeleton className="w-24 h-4" /> : userData?.full_name}
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="border-gray-200 dark:border-gray-600" />
-        <DropdownMenuItem className="px-3 py-2 text-black dark:text-white">
-          Profile
-        </DropdownMenuItem>
-        <DropdownMenuItem className="px-3 py-2 text-black dark:text-white">
-          Settings
+        <DropdownMenuItem onClick={handleProfileClick} className="px-3 py-2 text-black dark:text-white">
+          <User/> Profile
         </DropdownMenuItem>
         <DropdownMenuItem className="md:hidden px-3 py-2 text-black dark:text-white">
           <Plus className="mr-2 h-4 w-4" />
           <span>Create New</span>
         </DropdownMenuItem>
         <DropdownMenuItem className="px-3 py-2 text-black dark:text-white">
-          <Signout />
+          <LogOut/><Signout />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
