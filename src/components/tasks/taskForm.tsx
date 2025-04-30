@@ -25,7 +25,7 @@ import type { Matter } from "@/types/matter.type";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
-import { handleCreateTask } from "@/action-handlers/tasks";
+import { handleCreateTask, handleUpdateTask } from "@/action-handlers/tasks";
 
 interface TaskFormProps {
   open: boolean;
@@ -99,10 +99,7 @@ export function TaskForm({
     return true;
   };
 
-  const handleTaskCreated = async (
-    newTask: Task,
-    keepFormOpen: boolean = false
-  ) => {
+  const handleSubmit = async (keepFormOpen: boolean = false) => {
     if (isSubmitting) {
       console.log("Submission in progress, skipping...");
       return;
@@ -113,22 +110,28 @@ export function TaskForm({
     }
 
     setIsSubmitting(true);
-    console.log("Submitting task:", newTask);
+    console.log(task.task_id ? "Updating task:" : "Creating task:", task);
+
     try {
-      const taskToCreate = {
-        ...newTask,
-        due_date: newTask.due_date ? new Date(newTask.due_date) : undefined,
-        matter_id: newTask.matter_id || undefined,
+      const taskToSubmit = {
+        ...task,
+        due_date: task.due_date ? new Date(task.due_date) : undefined,
+        matter_id: task.matter_id || undefined,
       };
 
-      console.log("Task to create:", taskToCreate);
-      const response = await handleCreateTask(taskToCreate);
+      const response = task.task_id
+        ? await handleUpdateTask(taskToSubmit)
+        : await handleCreateTask(taskToSubmit);
 
       console.log("API response:", response);
       if (response && !response.error && response.task) {
-        toast.success("Task created successfully");
+        toast.success(
+          task.task_id
+            ? "Task updated successfully"
+            : "Task created successfully"
+        );
 
-        if (keepFormOpen && onSaveAndCreateAnother) {
+        if (keepFormOpen && onSaveAndCreateAnother && !task.task_id) {
           console.log("Saving and keeping form open.");
           onSaveAndCreateAnother(response.task as Task);
           resetTaskForm();
@@ -320,7 +323,7 @@ export function TaskForm({
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <Button
               type="submit"
-              onClick={() => handleTaskCreated(task, false)}
+              onClick={() => handleSubmit(false)}
               disabled={isSubmitting}
             >
               {isSubmitting
@@ -332,7 +335,7 @@ export function TaskForm({
             {!task.task_id && (
               <Button
                 variant="outline"
-                onClick={() => handleTaskCreated(task, true)}
+                onClick={() => handleSubmit(true)}
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Saving..." : "Save and Create Another"}
