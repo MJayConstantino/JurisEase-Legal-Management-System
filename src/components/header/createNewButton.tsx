@@ -32,16 +32,20 @@ export function CreateNewButton({
   onTaskCreated,
 }: CreateNewButtonProps) {
   const [isAddMatterOpen, setIsAddMatterOpen] = useState(false);
-  const {matters, setIsLoading, setMatters, isNewBillDialogOpen, setIsNewBillDialogOpen} = BillingStates()
-  const {addBill} = BillingsActionHandlers()
+  const {
+    matters,
+    setIsLoading,
+    setMatters,
+    isNewBillDialogOpen,
+    setIsNewBillDialogOpen,
+  } = BillingStates();
+  const { addBill } = BillingsActionHandlers();
 
   useEffect(() => {
     async function loadData() {
       setIsLoading(true);
       try {
-        const [mattersData] = await Promise.all([
-          getMatters(),
-        ]);
+        const [mattersData] = await Promise.all([getMatters()]);
         setMatters(mattersData);
       } catch (error) {
         console.error("Failed to load data:", error);
@@ -63,11 +67,13 @@ export function CreateNewButton({
             <span className="hidden md:inline">Create New</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent className="dark:bg-gray-800" align="end">
           <DropdownMenuItem onClick={() => setIsAddMatterOpen(true)}>
             New Matter
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setIsNewBillDialogOpen(true)}>New Bill</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsNewBillDialogOpen(true)}>
+            New Bill
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setIsAddTaskOpen(true)}>
             New Task
           </DropdownMenuItem>
@@ -78,11 +84,11 @@ export function CreateNewButton({
         open={isAddMatterOpen}
         onOpenChange={setIsAddMatterOpen}
       />
-      <BillingsAddDialog 
-        open={isNewBillDialogOpen} 
-        onOpenChange={setIsNewBillDialogOpen} 
-        onSave={addBill} 
-        matters={matters} 
+      <BillingsAddDialog
+        open={isNewBillDialogOpen}
+        onOpenChange={setIsNewBillDialogOpen}
+        onSave={addBill}
+        matters={matters}
         matterBillingMatterId={""}
       />
 

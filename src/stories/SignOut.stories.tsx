@@ -1,26 +1,26 @@
-import { Meta, StoryObj } from '@storybook/react'
-import { Signout } from '../components/header/signout'
-import { within, userEvent } from '@storybook/testing-library'
-import { toast, Toaster } from 'sonner' // Import Toaster
-import { action } from '@storybook/addon-actions'
+import { Meta, StoryObj } from "@storybook/react";
+import { Signout } from "../components/header/signout";
+import { within, userEvent } from "@storybook/testing-library";
+import { toast, Toaster } from "sonner"; // Import Toaster
+import { action } from "@storybook/addon-actions";
 
 // Mock functions for sign-out scenarios
 const mockSignOutSuccess = async () => {
-  toast.success('Sign out Success!') // Trigger success toast
-  action('Sign Out Success')() // Log to Storybook actions
-}
+  toast.success("Sign out Success!"); // Trigger success toast
+  action("Sign Out Success")(); // Log to Storybook actions
+};
 
 const mockSignOutError = async () => {
-  toast.error('Error Signing Out') // Trigger error toast
-  action('Sign Out Error')() // Log to Storybook actions
-}
+  toast.error("Error Signing Out"); // Trigger error toast
+  action("Sign Out Error")(); // Log to Storybook actions
+};
 
 // Define meta for Storybook
 const meta: Meta<typeof Signout> = {
-  title: 'Header/Signout',
+  title: "Header/Signout",
   component: Signout,
   parameters: {
-    actions: { argTypesRegex: '^on.*' }, // Automatically capture "on*" props in Storybook actions
+    actions: { argTypesRegex: "^on.*" }, // Automatically capture "on*" props in Storybook actions
   },
   decorators: [
     (Story) => (
@@ -30,31 +30,18 @@ const meta: Meta<typeof Signout> = {
       </>
     ),
   ],
-}
+};
 
-export default meta
+export default meta;
 
-type Story = StoryObj<typeof Signout>
+type Story = StoryObj<typeof Signout>;
 
 // Default story (idle state)
 export const Default: Story = {
   args: {
     signOutfn: mockSignOutSuccess,
   },
-}
-
-// Story for the pending state
-export const Pending: Story = {
-  args: {
-    signOutfn: async () => new Promise((resolve) => setTimeout(resolve, 5000)), // Simulate delay
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const button = canvas.getByRole('button', { name: /sign out/i })
-    await userEvent.click(button) // Simulate button click
-    action('Pending Button Clicked')() // Log pending click
-  },
-}
+};
 
 // Story for success scenario
 export const Success: Story = {
@@ -62,12 +49,12 @@ export const Success: Story = {
     signOutfn: mockSignOutSuccess, // Mock function for success
   },
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const button = canvas.getByRole('button', { name: /sign out/i })
-    await userEvent.click(button) // Simulate success button click
-    action('Success Button Clicked')() // Log success click
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole("button", { name: /sign out/i });
+    await userEvent.click(button); // Simulate success button click
+    action("Success Button Clicked")(); // Log success click
   },
-}
+};
 
 // Story for error scenario
 export const Error: Story = {
@@ -75,9 +62,9 @@ export const Error: Story = {
     signOutfn: mockSignOutError, // Mock function for error
   },
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement)
-    const button = canvas.getByRole('button', { name: /sign out/i })
-    await userEvent.click(button) // Simulate error button click
-    action('Error Button Clicked')() // Log error click
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole("button", { name: /sign out/i });
+    await userEvent.click(button); // Simulate error button click
+    action("Error Button Clicked")(); // Log error click
   },
-}
+};
