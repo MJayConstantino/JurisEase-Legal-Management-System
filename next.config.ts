@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     dirs: ['src/app', 'src/components'],
   },
   images: {
-    domains: ['lh3.googleusercontent.com', 'ysvesegmxbtcjgivpwkl.supabase.co'],
+    domains: ['lh3.googleusercontent.com', 'ysvesegmxbtcjgivpwkl.supabase.co', 'touzjmfqvuprgzzahbvc.supabase.co'],
   },
 }
 

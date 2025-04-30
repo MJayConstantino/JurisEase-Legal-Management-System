@@ -109,7 +109,24 @@ export async function fetchUserInfoAction() {
 
   // Get full name and avatar_url from raw_user_meta_data
   const full_name = data.user.user_metadata.full_name
-  const avatar_url = data.user.user_metadata.avatar_url
+
+  // Checks if the storage has an image then returns that image if there is, otherwise uses default metadata
+  let avatar_url = data.user.user_metadata.avatar_url || null;
+
+  const { data: files, error: listError } = await supabase
+    .storage
+    .from('user')
+    .list(data.user.id, { limit: 1 });
+
+  if (!listError && files && files.length > 0) {
+    const fileName = files[0].name;
+    const filePath = `${data.user.id}/${fileName}`;
+
+    const { data: urlData } = supabase.storage.from('user').getPublicUrl(filePath);
+    if (urlData?.publicUrl) {
+      avatar_url = urlData.publicUrl;
+    }
+  }
 
   return { full_name, avatar_url }
 }

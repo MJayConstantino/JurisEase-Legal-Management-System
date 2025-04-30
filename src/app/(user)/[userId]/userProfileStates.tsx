@@ -12,7 +12,6 @@ export function UserProfileStates(){
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     
     // edit avatar
-    const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(false)
 
@@ -24,7 +23,7 @@ export function UserProfileStates(){
         userList, setUserList, userEmail, setUserEmail, loading, setLoading, userName, setUserName,
         userData, setUserData, isDeleteDialogOpen, setIsDeleteDialogOpen,
 
-        avatarUrl, setAvatarUrl, avatarPreview, setAvatarPreview, isLoading, setIsLoading,
+        avatarPreview, setAvatarPreview, isLoading, setIsLoading,
 
         isEditing, setIsEditing
     }
