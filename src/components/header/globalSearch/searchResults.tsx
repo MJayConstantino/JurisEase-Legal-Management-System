@@ -186,7 +186,7 @@ export function SearchResults({
                           </span>
                         </div>
                         <div className="flex items-center text-sm text-muted-foreground">
-                          <span className="text-xs bg-muted-foreground/20 px-1.5 py-0.5 rounded mr-2">
+                          <span className="text-xs bg-muted-foreground/20 px-1.5 py-0.5 rounded-3xl mr-2">
                             {result.type}
                           </span>
                           {result.subtitle}
