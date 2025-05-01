@@ -170,7 +170,7 @@ export function SearchResults({
                             {result.status && (
                               <span
                                 className={cn(
-                                  'text-xs px-2 mr-1 mb-1 py-0.5 rounded-3xl',
+                                  'text-xs px-2 mr-1 mb-1 py-0.5 rounded',
                                   getStatusBadgeClasses(
                                     result.type,
                                     result.status
@@ -186,7 +186,7 @@ export function SearchResults({
                           </span>
                         </div>
                         <div className="flex items-center text-sm text-muted-foreground">
-                          <span className="text-xs bg-muted-foreground/20 px-1.5 py-0.5 rounded-3xl mr-2">
+                          <span className="text-xs bg-muted-foreground/20 px-1.5 py-0.5 rounded mr-2">
                             {result.type}
                           </span>
                           {result.subtitle}
