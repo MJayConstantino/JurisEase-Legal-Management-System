@@ -46,7 +46,7 @@ export function BillingsRevenueHeader({
             <div className="text-base md:text-lg text-indigo-200 dark:text-indigo-100 mt-2 md:mt-3">
               As of {format(currentDateTime, "MMMM d, yyyy")} at {format(currentDateTime, "h:mm a")}
             </div>
-            <div className="text-2xl md:text-4xl font-bold">{formatAmount(totalRevenue)}</div>
+            <div className=" overflow-hidden text-2xl md:text-4xl font-bold" title={formatAmount(totalRevenue)}>{formatAmount(totalRevenue)}</div>
           </div>
         </div>
         <div
@@ -58,7 +58,7 @@ export function BillingsRevenueHeader({
           onClick={() => onFilterChange("today")}
         >
           <div className="text-base md:text-lg font-semibold">Revenue for: {format(today, "MMMM d, yyyy")}</div>
-          <div className="text-xl md:text-3xl font-bold mt-1 md:mt-2">{formatAmount(todayRevenue)}</div>
+          <div className="overflow-hidden text-xl md:text-3xl font-bold mt-1 md:mt-2" title={formatAmount(todayRevenue)}>{formatAmount(todayRevenue)}</div>
         </div>
 
   
@@ -71,7 +71,7 @@ export function BillingsRevenueHeader({
           onClick={() => onFilterChange("week")}
         >
           <div className="text-base md:text-lg font-semibold">Revenue for: {format(weekStart, "MMM d")} - {format(weekEnd, "MMM d, yyyy")}</div>
-          <div className="text-xl md:text-3xl font-bold mt-1 md:mt-2">{formatAmount(weekRevenue)}</div>
+          <div className="overflow-hidden text-xl md:text-3xl font-bold mt-1 md:mt-2" title={formatAmount(weekRevenue)}>{formatAmount(weekRevenue)}</div>
         </div>
 
 
@@ -84,7 +84,7 @@ export function BillingsRevenueHeader({
           onClick={() => onFilterChange("month")}
         >
           <div className="text-base md:text-lg font-semibold">Monthly Revenue for: {format(today, "MMMM yyyy")} </div>
-          <div className="text-xl md:text-3xl font-bold mt-1 md:mt-2">{formatAmount(monthRevenue)}</div>
+          <div className="overflow-hidden text-xl md:text-3xl font-bold mt-1 md:mt-2" title={formatAmount(monthRevenue)}>{formatAmount(monthRevenue)}</div>
         </div>
       </div>
     </div>
