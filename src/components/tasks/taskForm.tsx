@@ -26,6 +26,22 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
 import { handleCreateTask, handleUpdateTask } from "@/action-handlers/tasks";
+import { z } from "zod";
+
+const taskSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Task name is required")
+    .max(100, "Task name must be less than 100 characters"),
+  description: z
+    .string()
+    .max(500, "Description must be less than 500 characters")
+    .optional(),
+  due_date: z.coerce.date().optional(),
+  priority: z.enum(["low", "medium", "high"]),
+  status: z.enum(["in-progress", "completed"]),
+  matter_id: z.string().optional(),
+});
 
 interface TaskFormProps {
   open: boolean;
@@ -83,34 +99,37 @@ export function TaskForm({
     field: keyof Task,
     value: string | Date | undefined
   ) => {
-    console.log(`Field changed: ${field}, New value:`, value);
     setTask((prev) => ({
       ...prev,
       [field]: value,
     }));
   };
 
-  const validateForm = () => {
-    console.log("Validating form with task:", task);
-    if (!task.name.trim()) {
-      toast.error("Task name is required");
+  const validateTask = (): boolean => {
+    try {
+      // Convert Date objects to ISO strings for validation
+      const validationData = {
+        ...task,
+        due_date: task.due_date ? task.due_date : undefined,
+      };
+
+      taskSchema.parse(validationData);
+      return true;
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.errors[0].message);
+      } else {
+        toast.error("Validation failed. Please check your input.");
+      }
       return false;
     }
-    return true;
   };
 
   const handleSubmit = async (keepFormOpen: boolean = false) => {
-    if (isSubmitting) {
-      console.log("Submission in progress, skipping...");
-      return;
-    }
-    if (!validateForm()) {
-      console.log("Form validation failed.");
-      return;
-    }
+    if (isSubmitting) return;
+    if (!validateTask()) return;
 
     setIsSubmitting(true);
-    console.log(task.task_id ? "Updating task:" : "Creating task:", task);
 
     try {
       const taskToSubmit = {
@@ -123,7 +142,6 @@ export function TaskForm({
         ? await handleUpdateTask(taskToSubmit)
         : await handleCreateTask(taskToSubmit);
 
-      console.log("API response:", response);
       if (response && !response.error && response.task) {
         toast.success(
           task.task_id
@@ -132,11 +150,9 @@ export function TaskForm({
         );
 
         if (keepFormOpen && onSaveAndCreateAnother && !task.task_id) {
-          console.log("Saving and keeping form open.");
           onSaveAndCreateAnother(response.task as Task);
           resetTaskForm();
         } else if (onSave) {
-          console.log("Saving and closing form.");
           onSave(response.task as Task);
         }
 
@@ -147,7 +163,6 @@ export function TaskForm({
           }, 0);
         }
       } else {
-        console.error("Error response from API:", response.error);
         toast.error(response.error || "Failed to save task to the database.");
       }
     } catch (error) {
@@ -155,7 +170,6 @@ export function TaskForm({
       toast.error("Failed to save task to the database.");
     } finally {
       setIsSubmitting(false);
-      console.log("Submission process completed.");
     }
   };
 

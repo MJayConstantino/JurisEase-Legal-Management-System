@@ -61,18 +61,16 @@ export const handleSaveTask = async (
     setLocalTask(optimisticTask);
     onTaskUpdated(optimisticTask);
 
-    // Server update
-    const serverUpdatedTask = await updateTask(optimisticTask);
+      const serverUpdatedTask = await updateTask(optimisticTask);
     if (!serverUpdatedTask) throw new Error("Failed to update task on server");
 
-    // Sync with server response
     setLocalTask(serverUpdatedTask);
     onTaskUpdated(serverUpdatedTask);
 
     toast.success("Task updated successfully");
   } catch (error) {
     console.error("Error updating task:", error);
-    setLocalTask(task); // Revert on error
+    setLocalTask(task); 
     toast.error("Failed to update task");
   } finally {
     setIsProcessing(false);
@@ -92,7 +90,6 @@ export const handleDelete = async (
     const success = await deleteTask(taskId);
     if (!success) throw new Error("Failed to delete task on server");
 
-    toast.success("Task deleted successfully");
   } catch (error) {
     console.error("Error deleting task:", error);
     toast.error("Failed to delete task");
