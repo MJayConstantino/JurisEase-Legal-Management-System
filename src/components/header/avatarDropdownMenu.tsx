@@ -15,9 +15,9 @@ import { Signout } from "./signout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchUserInfoAction } from "@/actions/users";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { createSupabaseClient } from "@/utils/supabase/client";
-
+import { fetchUserName } from "@/actions/userProfile";
 interface AvatarDropdownMenuProps {
   isLoading?: boolean;
   defaultOpen?: boolean;
@@ -31,10 +31,11 @@ interface UserData {
 function AvatarDropdownMenu({
   isLoading: propIsLoading = false,
   defaultOpen = false,
-}: AvatarDropdownMenuProps){
+}: AvatarDropdownMenuProps) {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
   const router = useRouter();
   const supabase = createSupabaseClient();
 
@@ -46,6 +47,8 @@ function AvatarDropdownMenu({
 
       if (user) {
         setUserId(user.id);
+        const name = await fetchUserName(user.id);
+        setUserName(name);
       }
     };
 
@@ -55,7 +58,6 @@ function AvatarDropdownMenu({
   useEffect(() => {
     async function fetchUser() {
       try {
-        // Call the server action directly to get the user data.
         const data: UserData = await fetchUserInfoAction();
         setUserData(data);
       } catch (error) {
@@ -69,16 +71,17 @@ function AvatarDropdownMenu({
 
   const handleProfileClick = () => {
     if (!userId) {
-      console.warn('User ID not available');
+      console.warn("User ID not available");
       return;
     }
 
     router.push(`/${userId}`);
   };
 
-  // Combine any external loading state with our internal state.
   const isLoading = propIsLoading || loading;
-  const fallbackLetter = userData?.full_name
+  const fallbackLetter = userName
+    ? userName.charAt(0).toUpperCase()
+    : userData?.full_name
     ? userData.full_name.charAt(0).toUpperCase()
     : "U";
 
@@ -112,18 +115,26 @@ function AvatarDropdownMenu({
         className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-md"
       >
         <DropdownMenuLabel className="px-3 py-2 text-sm text-black dark:text-white">
-          {isLoading ? <Skeleton className="w-24 h-4" /> : userData?.full_name}
+          {isLoading ? (
+            <Skeleton className="w-24 h-4" />
+          ) : (
+            userName || userData?.full_name || "User"
+          )}
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="border-gray-200 dark:border-gray-600" />
-        <DropdownMenuItem onClick={handleProfileClick} className="px-3 py-2 text-black dark:text-white">
-          <User/> Profile
+        <DropdownMenuItem
+          onClick={handleProfileClick}
+          className="px-3 py-2 text-black dark:text-white"
+        >
+          <User /> Profile
         </DropdownMenuItem>
         <DropdownMenuItem className="md:hidden px-3 py-2 text-black dark:text-white">
           <Plus className="mr-2 h-4 w-4" />
           <span>Create New</span>
         </DropdownMenuItem>
         <DropdownMenuItem className="px-3 py-2 text-black dark:text-white">
-          <LogOut/><Signout />
+          <LogOut />
+          <Signout />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
