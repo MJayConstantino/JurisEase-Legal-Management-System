@@ -97,34 +97,42 @@ export async function fetchUsersAction() {
 
 export async function fetchUserInfoAction() {
   const supabase = await createSupabaseClient()
-  const { data, error } = await supabase.auth.getUser()
+  const { data: authData, error: authError } = await supabase.auth.getUser()
 
-  if (error) {
-    throw new Error('Error fetching user: ' + error.message)
+  if (authError) {
+    throw new Error('Error fetching user: ' + authError.message)
   }
 
-  if (!data.user) {
+  if (!authData.user) {
     throw new Error('User not found')
   }
 
-  // Get full name and avatar_url from raw_user_meta_data
-  const full_name = data.user.user_metadata.full_name
+  const { data: userData, error: userError } = await supabase
+    .from('users')
+    .select('user_name')
+    .eq('user_id', authData.user.id)
+    .single()
 
-  // Checks if the storage has an image then returns that image if there is, otherwise uses default metadata
-  let avatar_url = data.user.user_metadata.avatar_url || null;
+  if (userError) {
+    throw new Error('Error fetching user info: ' + userError.message)
+  }
+
+  const full_name = userData?.user_name || 'Unknown User'
+
+  let avatar_url = authData.user.user_metadata.avatar_url || null
 
   const { data: files, error: listError } = await supabase
     .storage
     .from('user')
-    .list(data.user.id, { limit: 1 });
+    .list(authData.user.id, { limit: 1 })
 
   if (!listError && files && files.length > 0) {
-    const fileName = files[0].name;
-    const filePath = `${data.user.id}/${fileName}`;
+    const fileName = files[0].name
+    const filePath = `${authData.user.id}/${fileName}`
 
-    const { data: urlData } = supabase.storage.from('user').getPublicUrl(filePath);
+    const { data: urlData } = supabase.storage.from('user').getPublicUrl(filePath)
     if (urlData?.publicUrl) {
-      avatar_url = urlData.publicUrl;
+      avatar_url = urlData.publicUrl
     }
   }
 

@@ -1,6 +1,8 @@
 
 import type { User } from "@/types/user.type"
 import { supabase } from "@/lib/supabase"
+// import { data } from "cypress/types/jquery";
+// import { userAgent } from "next/server";
 
 export async function updateUsername(user: User){
   const { data, error } = await supabase
@@ -87,3 +89,19 @@ export async function findExistingAvatar(userId: string) {
 
   return null;
 }
+
+export async function fetchUserName(userId: string): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("users")
+    .select("user_name")
+    .eq("user_id", userId)
+    .single();
+
+  if (error) {
+    console.error("Error fetching user name:", error);
+    return null;
+  }
+
+  return data?.user_name || null;
+}
+
