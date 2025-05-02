@@ -55,37 +55,17 @@ export const handleCreateTask = async (
 };
 
 export const handleUpdateTask = async (
-  taskId: string,
-  updateData: Partial<Task>,
-  optimisticTask?: Task
+  task: Task
 ): Promise<{ task?: Task; error: string | null }> => {
   try {
-    const processedUpdateData = { ...updateData };
-    if (updateData.due_date && typeof updateData.due_date === "string") {
-      processedUpdateData.due_date = new Date(updateData.due_date);
-    }
-
-    const result = await updateTask(
-      taskId,
-      { status: processedUpdateData.status || "in-progress" },
-      {
-        ...processedUpdateData,
-        task_id: taskId,
-      } as Task
-    );
-
-    if (!result) {
-      throw new Error("Failed to update task in database");
-    }
+    const updatedTask = await updateTask(task);
+    if (!updatedTask) throw new Error("Failed to update task");
 
     revalidatePath("/tasks");
-    return { task: result, error: null };
-  } catch (error: unknown) {
-    console.error("Error updating task:", error);
-    return {
-      error: error instanceof Error ? error.message : "Failed to update task",
-      task: optimisticTask,
-    };
+    return { task: updatedTask, error: null };
+  } catch (error: any) {
+    console.error("Error in handleUpdateTask:", error);
+    return { error: "Failed to update task." };
   }
 };
 

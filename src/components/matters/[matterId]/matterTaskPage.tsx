@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { TaskList } from "@/components/tasks/taskList";
 import type { Task } from "@/types/task.type";
-import { getTasksByMatterId } from "@/actions/tasks";
 import { toast } from "sonner";
+import { handleFetchTasksByMatterId } from "@/action-handlers/tasks";
 
 export function MatterTaskPage({
   initialTasks = [],
@@ -19,12 +19,14 @@ export function MatterTaskPage({
   useEffect(() => {
     if (initialTasks.length === 0) {
       const fetchTasks = async () => {
-        try {
-          const tasksData = await getTasksByMatterId(matterId);
-          setTasks(tasksData || []);
-        } catch (error) {
+        const { tasks: tasksData, error } = await handleFetchTasksByMatterId(
+          matterId
+        );
+        if (error) {
           console.error("Error fetching tasks:", error);
-          toast.error("Failed to load tasks");
+          toast.error(error);
+        } else {
+          setTasks(tasksData);
         }
       };
 

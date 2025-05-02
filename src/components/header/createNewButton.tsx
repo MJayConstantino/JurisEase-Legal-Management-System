@@ -17,7 +17,6 @@ import { getMatters } from "@/actions/matters";
 import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { AddTaskFormDialog } from "../addTaskDialog";
-import { getMattersDisplayNameByMatterId } from "@/utils/getMattersDisplayName";
 
 interface CreateNewButtonProps {
   defaultOpen?: boolean;
@@ -93,9 +92,6 @@ export function CreateNewButton({
         matterId={matterId}
         isLoadingMatters={isLoadingMatters}
         open={isAddTaskOpen}
-        getMatterNameDisplay={(id) =>
-          getMattersDisplayNameByMatterId(id, matters)
-        }
       />
     </>
   );

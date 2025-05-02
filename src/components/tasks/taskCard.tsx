@@ -27,8 +27,6 @@ interface TaskCardProps {
   onTaskUpdated: (updatedTask: Task) => void;
   onTaskDeleted: (deletedTaskId: string) => void;
   matters: Matter[];
-  isOverdue?: boolean;
-  setIsOverdue?: (isOverdue: boolean) => void;
   matterName?: string;
 }
 
@@ -49,10 +47,6 @@ export function TaskCard({
   const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
 
   const isTaskOverdueFlag = isTaskOverdue(localTask.due_date ?? undefined, localTask.status);
-
-  if (isTaskOverdueFlag && localTask.status !== "overdue") {
-    setLocalTask((prevTask) => ({ ...prevTask, status: "overdue" }));
-  }
 
   return (
     <>
@@ -111,9 +105,13 @@ export function TaskCard({
           <div className="flex items-center gap-2">
             <Badge
               variant="outline"
-              className={`text-xs ${getStatusColor(localTask.status)}`}
+              className={`text-xs ${
+                isTaskOverdueFlag
+                  ? "bg-red-500 text-white"
+                  : getStatusColor(localTask.status)
+              }`}
             >
-              {localTask.status}
+              {isTaskOverdueFlag ? "Overdue" : localTask.status}
             </Badge>
           </div>
 

@@ -36,11 +36,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
           throw new Error(result.error);
         }
 
-        const updatedTasks = result.tasks.map((task) => ({
-          ...task,
-          isOverdue: isTaskOverdue(task.due_date ?? undefined, task.status),
-        }));
-        setTasks(updatedTasks);
+        setTasks(result.tasks); // Removed isOverdue property assignment
       } catch (error) {
         console.error("Error fetching tasks:", error);
       } finally {
@@ -96,7 +92,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
     if (matterId && task.matter_id !== matterId) return false;
     if (statusFilter === "all") return true;
     if (statusFilter === "overdue") {
-      return isTaskOverdue(task.due_date ?? undefined, task.status);
+      return isTaskOverdue(task.due_date ?? undefined, task.status); // Dynamically calculate overdue
     }
     return task.status === statusFilter && !isTaskOverdue(task.due_date ?? undefined, task.status);
   });
@@ -128,7 +124,6 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
                 task={task}
                 matters={matters}
                 isLoadingMatters={isLoadingMatters}
-                isOverdue={isTaskOverdue(task.due_date ?? undefined, task.status)}
                 onTaskUpdated={handleTaskUpdated}
                 onTaskDeleted={handleTaskDeleted}
               />
@@ -142,7 +137,6 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
                 task={task}
                 matters={matters}
                 isLoadingMatters={isLoadingMatters}
-                isOverdue={isTaskOverdue(task.due_date ?? undefined, task.status)}
                 onTaskUpdated={handleTaskUpdated}
                 onTaskDeleted={handleTaskDeleted}
               />

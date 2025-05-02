@@ -1,6 +1,7 @@
 import type { Task, Status } from "@/types/task.type";
 import { toast } from "sonner";
 import { format, isBefore, parseISO } from "date-fns";
+import { updateTask, deleteTask } from "@/actions/tasks";
 
 export const handleComplete = async (
   task: Task,
@@ -20,10 +21,14 @@ export const handleComplete = async (
       ...localTask,
       status: newStatus,
     };
-
-    console.log("Updating task status to:", newStatus);
     setLocalTask(updatedTask);
     onTaskUpdated(updatedTask);
+
+    const serverUpdatedTask = await updateTask(updatedTask);
+    if (!serverUpdatedTask) throw new Error("Failed to update task on server");
+
+    setLocalTask(serverUpdatedTask);
+    onTaskUpdated(serverUpdatedTask);
 
     toast.success(
       newStatus === "completed"
@@ -47,18 +52,24 @@ export const handleSaveTask = async (
   setIsProcessing: (isProcessing: boolean) => void
 ) => {
   try {
+    setIsProcessing(true);
+
     const optimisticTask = {
       ...task,
       ...updatedTask,
     };
-    setIsProcessing(true);
-
     setLocalTask(optimisticTask);
-
     onTaskUpdated(optimisticTask);
+
+      const serverUpdatedTask = await updateTask(optimisticTask);
+    if (!serverUpdatedTask) throw new Error("Failed to update task on server");
+
+    setLocalTask(serverUpdatedTask);
+    onTaskUpdated(serverUpdatedTask);
+
   } catch (error) {
     console.error("Error updating task:", error);
-    setLocalTask(task);
+    setLocalTask(task); 
     toast.error("Failed to update task");
   } finally {
     setIsProcessing(false);
@@ -73,9 +84,11 @@ export const handleDelete = async (
   console.log("Deleting task:", taskId);
   try {
     setIsProcessing(true);
-
     onTaskDeleted(taskId);
-    toast.success("Task deleted successfully");
+
+    const success = await deleteTask(taskId);
+    if (!success) throw new Error("Failed to delete task on server");
+
   } catch (error) {
     console.error("Error deleting task:", error);
     toast.error("Failed to delete task");
@@ -95,14 +108,17 @@ export const formatDate = (date?: string | Date | null): string => {
   }
 };
 
-/**
- * Determines if a task is overdue based on its due date and status.
- * @param dueDate - The due date of the task.
- * @param status - The current status of the task.
- * @returns True if the task is overdue, otherwise false.
- */
-export const isTaskOverdue = (dueDate?: string | Date, status?: string): boolean => {
+export const isTaskOverdue = (
+  dueDate?: string | Date,
+  status?: string
+): boolean => {
   if (!dueDate || status === "completed") return false;
-  const parsedDueDate = typeof dueDate === "string" ? parseISO(dueDate) : dueDate;
-  return isBefore(parsedDueDate, new Date());
+
+  const parsedDueDate =
+    typeof dueDate === "string" ? parseISO(dueDate) : dueDate;
+
+  const endOfDueDate = new Date(parsedDueDate);
+  endOfDueDate.setHours(23, 59, 59, 999);
+
+  return isBefore(endOfDueDate, new Date());
 };
