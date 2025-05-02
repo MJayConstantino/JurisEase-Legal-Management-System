@@ -12,6 +12,15 @@ const userSchema = z.object({
 
 export type User = z.infer<typeof userSchema>
 
+async function isUserLocked(email: string) {
+  const supabase = await createSupabaseClient()
+  const { data: boolData, error: boolError } = await supabase.rpc(
+    'is_user_locked',
+    { user_email: email }
+  )
+  return boolData
+}
+
 export async function signinAction(formData: FormData) {
   const supabase = await createSupabaseClient()
   const data = Object.fromEntries(formData.entries()) as User
@@ -27,11 +36,20 @@ export async function signinAction(formData: FormData) {
         ).trim(),
     }
   }
-  const { error } = await supabase.auth.signInWithPassword(data)
-  if (error) {
-    return { error: 'Failed to log in: ' + error.message }
+  const userLockedOut = await isUserLocked(data.email)
+  if (userLockedOut) {
+    return {
+      error:
+        'Too many Log in attempts, please wait 5 minutes before trying again!',
+    }
   }
 
+  const { error } = await supabase.auth.signInWithPassword(data)
+  if (error) {
+    await supabase.rpc('increment_failed_attempts', { user_email: data.email })
+    return { error: 'Failed to log in: ' + error.message }
+  }
+  await supabase.rpc('reset_failed_attempts', { user_email: data.email })
   return { error: null }
 }
 
