@@ -35,6 +35,35 @@ export async function signinAction(formData: FormData) {
   return { error: null }
 }
 
+async function isEmailTaken(email: string) {
+  const supabase = await createSupabaseClient()
+  const { data: booleanData, error } = await supabase.rpc(
+    'check_email_exists',
+    { p_email: email }
+  )
+
+  if (error) {
+    console.error('Error checking email:', error.message)
+    return false
+  }
+
+  return booleanData // Returns `true` if email exists, `false` otherwise
+}
+
+async function checkEmailVerification(email: string) {
+  const supabase = await createSupabaseClient()
+  const { data, error } = await supabase.rpc('check_user_verification', {
+    user_email: email,
+  })
+
+  if (error) {
+    console.error('RPC Error:', error)
+    return null
+  }
+
+  return data // Returns true if awaiting verification false if not
+}
+
 export async function signUpAction(formData: FormData) {
   const supabaseStorageCDN =
     'https://ysvesegmxbtcjgivpwkl.supabase.co/storage/v1/object/public/users/'
@@ -54,6 +83,15 @@ export async function signUpAction(formData: FormData) {
         ).trim(),
     }
   }
+  const emailVerification = await checkEmailVerification(data.email)
+  const userExists = await isEmailTaken(data.email)
+  if (emailVerification) {
+    return { error: 'An email confirmation has already been sent.' }
+  }
+  if (!emailVerification && userExists) {
+    return { error: 'You already have an account. Try logging in instead.' }
+  }
+
   const { error } = await supabase.auth.signUp({
     email: data.email,
     password: data.password,
@@ -121,8 +159,7 @@ export async function fetchUserInfoAction() {
 
   let avatar_url = authData.user.user_metadata.avatar_url || null
 
-  const { data: files, error: listError } = await supabase
-    .storage
+  const { data: files, error: listError } = await supabase.storage
     .from('user')
     .list(authData.user.id, { limit: 1 })
 
@@ -130,7 +167,9 @@ export async function fetchUserInfoAction() {
     const fileName = files[0].name
     const filePath = `${authData.user.id}/${fileName}`
 
-    const { data: urlData } = supabase.storage.from('user').getPublicUrl(filePath)
+    const { data: urlData } = supabase.storage
+      .from('user')
+      .getPublicUrl(filePath)
     if (urlData?.publicUrl) {
       avatar_url = urlData.publicUrl
     }
