@@ -67,7 +67,6 @@ export const handleSaveTask = async (
     setLocalTask(serverUpdatedTask);
     onTaskUpdated(serverUpdatedTask);
 
-    toast.success("Task updated successfully");
   } catch (error) {
     console.error("Error updating task:", error);
     setLocalTask(task); 
@@ -114,7 +113,12 @@ export const isTaskOverdue = (
   status?: string
 ): boolean => {
   if (!dueDate || status === "completed") return false;
+
   const parsedDueDate =
     typeof dueDate === "string" ? parseISO(dueDate) : dueDate;
-  return isBefore(parsedDueDate, new Date());
+
+  const endOfDueDate = new Date(parsedDueDate);
+  endOfDueDate.setHours(23, 59, 59, 999);
+
+  return isBefore(endOfDueDate, new Date());
 };

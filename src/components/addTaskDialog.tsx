@@ -9,20 +9,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { TaskForm } from "@/components/tasks/taskForm";
-import { z } from "zod";
 import { toast } from "sonner";
 import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
-
-const taskSchema = z.object({
-  name: z.string().min(1, "Task name is required"),
-  description: z.string().optional(),
-  due_date: z.date().optional(),
-  priority: z.enum(["low", "medium", "high"]),
-  status: z.enum(["in-progress", "completed"]),
-  matter_id: z.string().optional(),
-  created_at: z.date(),
-});
 
 interface AddTaskFormDialogProps {
   open: boolean;
@@ -45,22 +34,8 @@ export function AddTaskFormDialog({
 }: AddTaskFormDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const validateTask = (task: Task) => {
-    try {
-      taskSchema.parse(task);
-      return true;
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const firstError = error.errors[0]?.message || "Validation failed";
-        toast.error(firstError);
-      }
-      return false;
-    }
-  };
-
   const handleSave = async (task: Task) => {
     if (isSubmitting) return;
-    if (!validateTask(task)) return;
 
     setIsSubmitting(true);
     try {
@@ -95,7 +70,7 @@ export function AddTaskFormDialog({
           onOpenChange={onOpenChange}
           getMatterNameDisplay={(matterId) =>
             matters.find((matter) => matter.matter_id === matterId)?.name ||
-            "Unknown"
+            "N/A"
           }
         />
         <DialogFooter>
