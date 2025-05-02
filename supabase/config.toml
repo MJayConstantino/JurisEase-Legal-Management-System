@@ -42,3 +42,25 @@ entrypoint = "./functions/matter-crud-actions/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/matter-crud-actions/*.html" ]
+
+[functions.tasks]
+enabled = true
+verify_jwt = true
+import_map = "./functions/tasks/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/tasks/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/tasks/*.html" ]
+
+[functions.task-crud-actions]
+enabled = true
+verify_jwt = true
+import_map = "./functions/task-crud-actions/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/task-crud-actions/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/task-crud-actions/*.html" ]

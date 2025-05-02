@@ -170,7 +170,7 @@ export function SearchResults({
                             {result.status && (
                               <span
                                 className={cn(
-                                  'text-xs px-2 mr-1 mb-1 py-0.5 rounded-3xl',
+                                  'text-xs px-2 mr-1 mb-1 py-0.5 rounded',
                                   getStatusBadgeClasses(
                                     result.type,
                                     result.status
