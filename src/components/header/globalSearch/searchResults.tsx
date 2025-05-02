@@ -117,7 +117,11 @@ export function SearchResults({
   }
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
+    <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className="w-full overflow-hidden text-ellipsis truncate"
+    >
       {/* Collapsible header/trigger with result count */}
       <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium text-foreground hover:bg-muted p-2 rounded-md">
         <div className="flex items-center justify-between w-full">
@@ -157,26 +161,29 @@ export function SearchResults({
                     <div
                       key={result.id}
                       className="flex items-center p-2 rounded-md hover:bg-muted cursor-pointer"
+                      title={`${result.type} Name: ${result.title}\nDetails:\n${result.subtitle}`}
                       onClick={() => onResultClick(result)}
                     >
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex items-center gap-3 flex-wrap">
                           <span className="font-medium text-foreground">
-                            {result.title}
+                            {result.status && (
+                              <span
+                                className={cn(
+                                  'text-xs px-2 mr-1 mb-1 py-0.5 rounded',
+                                  getStatusBadgeClasses(
+                                    result.type,
+                                    result.status
+                                  )
+                                )}
+                              >
+                                {result.status.toLowerCase()}
+                              </span>
+                            )}
+                            {result.title.length > 40
+                              ? result.title.slice(0, 40) + '...'
+                              : result.title}
                           </span>
-                          {result.status && (
-                            <span
-                              className={cn(
-                                'text-xs px-2 py-0.5 rounded-full',
-                                getStatusBadgeClasses(
-                                  result.type,
-                                  result.status
-                                )
-                              )}
-                            >
-                              {result.status.toLowerCase()}
-                            </span>
-                          )}
                         </div>
                         <div className="flex items-center text-sm text-muted-foreground">
                           <span className="text-xs bg-muted-foreground/20 px-1.5 py-0.5 rounded mr-2">

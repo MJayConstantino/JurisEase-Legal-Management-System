@@ -48,11 +48,11 @@ export async function search(
             id: matter.matter_id,
             type: 'Matter' as const,
             title: matter.name,
-            subtitle: `Client: ${matter.client}, Attorney: ${
+            subtitle: `Client: ${matter.client},\nAttorney: ${
               matter.attorney ? matter.attorney.user_name : 'N/A'
-            }, Opposing Council: ${
+            },\nOpposing Council: ${
               matter.opposing_council ? matter.opposing_council.name : 'N/A'
-            }, Court: ${matter.court ? matter.court.name : 'N/A'}`,
+            },\nCourt: ${matter.court ? matter.court.name : 'N/A'}`,
             status: matter.status as MatterStatus,
             route: `/matters/${matter.matter_id}`,
           })
