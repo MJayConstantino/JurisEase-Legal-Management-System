@@ -1,5 +1,7 @@
-import UserLoggedIn from "@/components/homepage/loggedIn/userLoggedIn";
+import UserLoggedIn from '@/components/homepage/loggedIn/userLoggedIn'
+import { protectRoute } from '@/utils/supabase/server'
 
-export default function LoggedInPage() {
-  return <UserLoggedIn />;
+export default async function LoggedInPage() {
+  await protectRoute()
+  return <UserLoggedIn />
 }
