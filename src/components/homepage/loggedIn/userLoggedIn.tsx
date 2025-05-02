@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import WelcomeHeader from "@/components/homepage/loggedIn/welcomeHeader";
 import UserProfile from "@/components/homepage/loggedIn/userProfile";
 import ActionButtons from "@/components/homepage/loggedIn/actionButtons";
+import { fetchUserInfoAction } from "@/actions/users";
 
 interface UserData {
   full_name: string;
@@ -29,15 +30,11 @@ export default function UserLoggedIn(props: any) {
     { label: "About", href: "#" },
   ];
 
+
   useEffect(() => {
     async function fetchUser() {
       try {
-        const fetchAction =
-          typeof (global as any).fetchUserInfoAction === "function"
-            ? (global as any).fetchUserInfoAction
-            : (await import("@/actions/users")).fetchUserInfoAction;
-  
-        const data: UserData = await fetchAction();
+        const data: UserData = await fetchUserInfoAction();
         setUserData(data);
       } catch (error) {
         console.error("Error fetching user info:", error);
@@ -45,10 +42,9 @@ export default function UserLoggedIn(props: any) {
         setLoadingUser(false);
       }
     }
-  
     fetchUser();
   }, []);
-  
+
 
   const handleSignOut = async () => {
     setSignOutLoading(true);
