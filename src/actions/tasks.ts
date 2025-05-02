@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { supabase } from "@/lib/supabase";
-import type { Status, Task } from "@/types/task.type";
+import type { Task } from "@/types/task.type";
 
 export async function getTasksByMatterId(matterId: string) {
   const { data, error } = await supabase
@@ -62,8 +62,7 @@ export async function getTaskById(task_id: string) {
   return data as Task;
 }
 
-export async function createTask(
-  task: Omit<Task, "task_id">) {
+export async function createTask(task: Omit<Task, "task_id">) {
   const { data, error } = await supabase.from("tasks").insert([task]).select();
 
   if (error) {
@@ -75,11 +74,7 @@ export async function createTask(
   return data ? (data[0] as Task) : null;
 }
 
-export async function updateTask(
-  id: string,
-  p0: { status: Status },
-  task: Task
-) {
+export async function updateTask(task: Task) {
   const { data, error } = await supabase
     .from("tasks")
     .update(task)
@@ -88,6 +83,7 @@ export async function updateTask(
 
   if (error) {
     console.error("Error updating task:", error);
+    return null;
   }
 
   revalidatePath("/tasks");

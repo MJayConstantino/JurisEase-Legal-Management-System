@@ -25,7 +25,6 @@ interface TaskRowProps {
   task: Task;
   matters: Matter[];
   isLoadingMatters: boolean;
-  isOverdue: boolean;
   onTaskUpdated: (updatedTask: Task) => void;
   onTaskDeleted: (deletedTaskId: string) => void;
 }
@@ -45,10 +44,6 @@ export function TaskRow({
   const matterId = params.matterId as string | undefined;
 
   const isTaskOverdueFlag = isTaskOverdue(localTask.due_date ?? undefined, localTask.status);
-  
-    if (isTaskOverdueFlag && localTask.status !== "overdue") {
-      setLocalTask((prevTask) => ({ ...prevTask, status: "overdue" }));
-    }
 
   const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
 

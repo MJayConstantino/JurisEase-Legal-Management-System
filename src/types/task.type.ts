@@ -11,7 +11,6 @@ export interface Task {
   status: Status;
   matter_id?: string;
   created_at: Date;
-  isOverdue?: boolean;
 }
 
 export type CreateTaskInput = {
