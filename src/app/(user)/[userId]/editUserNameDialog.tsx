@@ -56,10 +56,17 @@ export function EditUsername({
         </>
       ) : (
         <>
-          <h1 className="text-2xl font-bold">{user.user_name}</h1>
-          <Button className="bg-transparent hover:bg-indigo-500" onClick={() => setIsEditing(true)}>
-            <PencilIcon className="text-black dark:text-white"/>
-          </Button>
+          <div className="flex-1 flex flex-col md:flex-row justify-center items-center md:items-center gap-2">
+            <div className="max-w-auto truncate pr-5">
+              <h1 title={user.user_name} className="text-2xl font-bold">
+              {user.user_name.length > 35? `${user.user_name.slice(0, 35)}...`: user.user_name}
+              </h1>
+            </div>
+          
+            <Button className="bg-transparent hover:bg-indigo-500" onClick={() => setIsEditing(true)}>
+              <PencilIcon className="text-black dark:text-white"/>
+            </Button>
+          </div>
         </>
       )}
     </div>

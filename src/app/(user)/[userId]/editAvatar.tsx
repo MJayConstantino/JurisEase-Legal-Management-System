@@ -30,6 +30,7 @@ export function ChangeAvatar({ userName, metadataAvatarUrl }: ChangeAvatarProps)
             if (newAvatarUrl) {
               setAvatarPreview(newAvatarUrl);
             }
+            window.location.reload()
         
           } catch (error) {
             console.error('Error uploading avatar:', error);
@@ -41,7 +42,7 @@ export function ChangeAvatar({ userName, metadataAvatarUrl }: ChangeAvatarProps)
 
   return (
     <div className="flex flex-col items-center">
-      <Avatar className="h-72 w-72">
+      <Avatar className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-60 lg:h-60 xl:w-72 xl:h-72">
         <AvatarImage
           src={avatarPreview || metadataAvatarUrl || '/placeholder.svg'}
           alt={userName}
