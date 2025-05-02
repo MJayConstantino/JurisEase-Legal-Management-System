@@ -103,7 +103,7 @@ export async function signUpAction(formData: FormData) {
   }
   const emailVerification = await checkEmailVerification(data.email)
   const userExists = await isEmailTaken(data.email)
-  if (emailVerification) {
+  if (emailVerification && userExists) {
     return { error: 'An email confirmation has already been sent.' }
   }
   if (!emailVerification && userExists) {
