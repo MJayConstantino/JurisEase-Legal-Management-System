@@ -120,11 +120,8 @@ export function TasksHeader({
           if (onTaskCreated) onTaskCreated(newTask);
           setIsAddTaskOpen(false);
         }}
-        onSaveAndCreateAnother={(newTask) => {
-          if (onTaskCreated) onTaskCreated(newTask);
-        }}
+        onSaveAndCreateAnother={onTaskCreated}
         disableMatterSelect={!!matterId}
-        initialTask={undefined}
         matters={matters}
         isLoadingMatters={isLoadingMatters}
         getMatterNameDisplay={(matterId) =>

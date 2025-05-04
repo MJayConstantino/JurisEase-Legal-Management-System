@@ -44,37 +44,29 @@ export const handleComplete = async (
   }
 };
 
-export const handleSaveTask = async (
-  task: Task,
+export async function handleSaveTask(
+  originalTask: Task,
   updatedTask: Task,
   setLocalTask: (task: Task) => void,
-  onTaskUpdated: (updatedTask: Task) => void,
-  setIsProcessing: (isProcessing: boolean) => void
-) => {
+  onTaskUpdated: (task: Task) => void,
+  setIsProcessing: (loading: boolean) => void,
+  onDone?: () => void
+) {
   try {
     setIsProcessing(true);
 
-    const optimisticTask = {
-      ...task,
-      ...updatedTask,
-    };
-    setLocalTask(optimisticTask);
-    onTaskUpdated(optimisticTask);
+    const savedTask = { ...originalTask, ...updatedTask };
 
-      const serverUpdatedTask = await updateTask(optimisticTask);
-    if (!serverUpdatedTask) throw new Error("Failed to update task on server");
+    setLocalTask(savedTask);
+    onTaskUpdated(savedTask);
 
-    setLocalTask(serverUpdatedTask);
-    onTaskUpdated(serverUpdatedTask);
-
+    onDone?.();
   } catch (error) {
-    console.error("Error updating task:", error);
-    setLocalTask(task); 
-    toast.error("Failed to update task");
+    console.error("Failed to save task:", error);
   } finally {
     setIsProcessing(false);
   }
-};
+}
 
 export const handleDelete = async (
   taskId: string,
@@ -88,7 +80,6 @@ export const handleDelete = async (
 
     const success = await deleteTask(taskId);
     if (!success) throw new Error("Failed to delete task on server");
-
   } catch (error) {
     console.error("Error deleting task:", error);
     toast.error("Failed to delete task");
