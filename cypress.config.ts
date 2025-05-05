@@ -41,6 +41,15 @@ export default defineConfig({
           }
           return user.session
         },
+        resetLoginAttempts: async (email) => {
+          const { error } = await supabase.rpc('reset_failed_attempts', {
+            user_email: email,
+          })
+          if (error) {
+            throw new Error('Failed to reset login attempts')
+          }
+          return null
+        },
       })
 
       return config
