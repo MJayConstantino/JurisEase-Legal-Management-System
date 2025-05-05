@@ -54,27 +54,39 @@ export function MatterRow({
           {isLoading ? (
             <Skeleton className="w-24 h-4 items-center" />
           ) : (
-            matter.case_number
+            <div className="truncate max-w-[120px]">{matter.case_number}</div>
           )}
         </TableCell>
         <TableCell>
-          {isLoading ? <Skeleton className="w-32 h-4" /> : matter.name}
+          {isLoading ? (
+            <Skeleton className="w-32 h-4" />
+          ) : (
+            <div className="truncate max-w-[180px]">{matter.name}</div>
+          )}
         </TableCell>
         <TableCell>
-          {isLoading ? <Skeleton className="w-32 h-4" /> : matter.client}
+          {isLoading ? (
+            <Skeleton className="w-32 h-4" />
+          ) : (
+            <div className="truncate max-w-[150px]">{matter.client}</div>
+          )}
         </TableCell>
         <TableCell>
           {isLoading ? (
             <Skeleton className="w-24 h-4" />
           ) : (
-            getUserDisplayName(matter.assigned_attorney!, users)
+            <div className="truncate max-w-[140px]">
+              {getUserDisplayName(matter.assigned_attorney!, users)}
+            </div>
           )}
         </TableCell>
         <TableCell>
           {isLoading ? (
             <Skeleton className="w-24 h-4" />
           ) : (
-            getUserDisplayName(matter.assigned_staff!, users)
+            <div className="truncate max-w-[140px]">
+              {getUserDisplayName(matter.assigned_staff!, users)}
+            </div>
           )}
         </TableCell>
         <TableCell>

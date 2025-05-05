@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from "@storybook/react";
-import { Signout } from "../components/header/signout";
+import { Signout } from "../../components/header/signout";
 import { within, userEvent } from "@storybook/testing-library";
 import { toast, Toaster } from "sonner"; // Import Toaster
 import { action } from "@storybook/addon-actions";
@@ -25,7 +25,7 @@ const meta: Meta<typeof Signout> = {
   decorators: [
     (Story) => (
       <>
-        <Toaster position="top-center" /> {/* Add Toaster to render toasts */}
+        <Toaster position="top-center" />
         <Story />
       </>
     ),
