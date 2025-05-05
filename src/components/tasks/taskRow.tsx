@@ -43,7 +43,10 @@ export function TaskRow({
   const params = useParams();
   const matterId = params.matterId as string | undefined;
 
-  const isTaskOverdueFlag = isTaskOverdue(localTask.due_date ?? undefined, localTask.status);
+  const isTaskOverdueFlag = isTaskOverdue(
+    localTask.due_date ?? undefined,
+    localTask.status
+  );
 
   const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
 
@@ -60,22 +63,25 @@ export function TaskRow({
       >
         <Checkbox
           checked={localTask.status === "completed"}
-          onCheckedChange={() =>
-            handleComplete(
-              task,
-              localTask,
-              setLocalTask,
-              onTaskUpdated,
-              setIsProcessing
-            )
-          }
+          onCheckedChange={() => {
+            if (!isProcessing) {
+              handleComplete(
+                task,
+                localTask,
+                setLocalTask,
+                onTaskUpdated,
+                setIsProcessing,
+                isProcessing
+              );
+            }
+          }}
           disabled={isProcessing}
           id={`task-complete-${task.task_id}`}
-          className={`mr-3 h-4 w-4 border-2 border-gray-300 rounded hover:cursor-pointer shadow ${
+          className={`mr-1 h-7 w-8 border-2 border-gray-300 rounded-md hover:cursor-pointer shadow ${
             localTask.status === "completed"
               ? "dark:bg-green-700"
               : "dark:bg-gray-800"
-          }`}
+          } ${isProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
         />
         <div className="flex-1 min-w-0 mr-2 ">
           <div className="flex items-center gap-2 flex-wrap">

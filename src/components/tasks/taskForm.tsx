@@ -66,20 +66,24 @@ export function TaskForm({
   isLoadingMatters,
   matterId,
 }: TaskFormProps & { matterId?: string }) {
-  const [task, setTask] = useState<Task>(() => initializeTask(initialTask, matterId));
+  const [task, setTask] = useState<Task>(() =>
+    initializeTask(initialTask, matterId)
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   function initializeTask(task?: Task, defaultMatterId?: string): Task {
-    return task || {
-      task_id: "",
-      name: "",
-      description: "",
-      due_date: undefined,
-      priority: "low",
-      status: "in-progress",
-      matter_id: defaultMatterId || "",
-      created_at: new Date(),
-    };
+    return (
+      task || {
+        task_id: "",
+        name: "",
+        description: "",
+        due_date: undefined,
+        priority: "low",
+        status: "in-progress",
+        matter_id: defaultMatterId || "",
+        created_at: new Date(),
+      }
+    );
   }
 
   useEffect(() => {
@@ -139,8 +143,6 @@ export function TaskForm({
         : await handleCreateTask(taskToSubmit);
 
       if (response && !response.error && response.task) {
-        // Removed toast.success here since it's handled in action handlers
-
         if (!task.task_id && keepFormOpen && onSaveAndCreateAnother) {
           onSaveAndCreateAnother(response.task as Task);
           setTask(initializeTask(undefined, matterId));
@@ -152,11 +154,12 @@ export function TaskForm({
           onOpenChange(false);
         }
       } else {
-        toast.error(response.error || "Failed to save task to the database.");
+        // Error toast is handled in action handlers
+        console.error("Failed to save task:", response?.error);
       }
     } catch (error) {
       console.error("Error saving task:", error);
-      toast.error("Failed to save task to the database.");
+      // Error toast is handled in action handlers
     } finally {
       setIsSubmitting(false);
     }

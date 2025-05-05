@@ -46,7 +46,10 @@ export function TaskCard({
 
   const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
 
-  const isTaskOverdueFlag = isTaskOverdue(localTask.due_date ?? undefined, localTask.status);
+  const isTaskOverdueFlag = isTaskOverdue(
+    localTask.due_date ?? undefined,
+    localTask.status
+  );
 
   return (
     <>
@@ -125,22 +128,25 @@ export function TaskCard({
               </label>
               <Checkbox
                 checked={localTask.status === "completed"}
-                onCheckedChange={() =>
-                  handleComplete(
-                    task,
-                    localTask,
-                    setLocalTask,
-                    onTaskUpdated,
-                    setIsProcessing
-                  )
-                }
+                onCheckedChange={() => {
+                  if (!isProcessing) {
+                    handleComplete(
+                      task,
+                      localTask,
+                      setLocalTask,
+                      onTaskUpdated,
+                      setIsProcessing,
+                      isProcessing
+                    );
+                  }
+                }}
                 disabled={isProcessing}
                 id={`task-complete-${task.task_id}`}
                 className={`mr-1 h-7 w-8 border-2 border-gray-300 rounded-md hover:cursor-pointer shadow ${
                   localTask.status === "completed"
                     ? "dark:bg-green-700"
                     : "dark:bg-gray-800"
-                }`}
+                } ${isProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
               />
             </div>
             <Button
