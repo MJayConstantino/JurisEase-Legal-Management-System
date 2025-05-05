@@ -1,6 +1,5 @@
 import { toast } from "sonner";
-import type { Matter } from "@/types/matter.type";
-import type { MatterStatus } from "@/types/matter.type";
+import type { Matter, MatterStatus } from "@/types/matter.type";
 import {
   createMatter,
   updateMatter,

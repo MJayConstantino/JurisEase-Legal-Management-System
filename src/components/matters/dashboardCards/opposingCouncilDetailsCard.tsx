@@ -8,6 +8,7 @@ import {
   handleCancelMatter,
 } from "@/action-handlers/matters";
 import { OpposingCouncilDetailsForm } from "./opposingCouncilDetailsForm";
+import { opposingCouncilSchema } from "@/validation/matter";
 
 interface OpposingCouncilDetailsCardProps {
   matter: Matter;
@@ -19,6 +20,7 @@ export function OpposingCouncilDetailsCard({
   onUpdate,
 }: OpposingCouncilDetailsCardProps) {
   const [editedMatter, setEditedMatter] = useState({ ...matter });
+  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
   const handleNestedChange = (
     field: keyof NonNullable<Matter["opposing_council"]>,
@@ -31,23 +33,40 @@ export function OpposingCouncilDetailsCard({
         [field]: value,
       },
     }));
+    setFormErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  const saveChanges = async () => {
+  const saveChanges = async (): Promise<boolean> => {
+    const result = opposingCouncilSchema.safeParse(
+      editedMatter.opposing_council
+    );
+
+    if (!result.success) {
+      const fieldErrors: { [key: string]: string } = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0]) fieldErrors[err.path[0]] = err.message;
+      });
+      setFormErrors(fieldErrors);
+      return false; // Validation failed
+    }
+
     const { matter: updatedMatter, error } = await handleSaveMatter(
       editedMatter
     );
     if (!error && updatedMatter) {
       onUpdate?.(updatedMatter);
+      return true; // Save succeeded
     } else {
       const { matter: original } = handleCancelMatter(matter);
       setEditedMatter(original);
+      return false; // Save failed
     }
   };
 
   const cancelChanges = () => {
     const { matter: original } = handleCancelMatter(matter);
     setEditedMatter(original);
+    setFormErrors({});
   };
 
   return (
@@ -68,6 +87,7 @@ export function OpposingCouncilDetailsCard({
           }
           isEditing={isEditing}
           onChange={handleNestedChange}
+          errors={formErrors}
         />
       )}
     </EditableCard>

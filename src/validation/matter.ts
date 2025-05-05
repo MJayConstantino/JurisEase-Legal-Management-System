@@ -28,7 +28,7 @@ export const caseSchema = z.object({
 
 // Opposing Council Schema
 export const opposingCouncilSchema = z.object({
-  name: z.string().max(30, "Max 30 characters"),
+  name: z.string().max(50, "Max 50 characters").optional(),
   phone: z.string().max(20, "Max 20 characters").optional(),
   email: z.string().email("Invalid email").optional(),
   address: z.string().max(200, "Max 200 characters").optional(),
@@ -36,7 +36,7 @@ export const opposingCouncilSchema = z.object({
 
 // Court Schema
 export const courtSchema = z.object({
-  name: z.string().max(30, "Max 30 characters").optional(),
+  name: z.string().max(50, "Max 50 characters").optional(),
   phone: z.string().max(20, "Max 20 characters").optional(),
   email: z.string().email("Invalid email").optional(),
 });
