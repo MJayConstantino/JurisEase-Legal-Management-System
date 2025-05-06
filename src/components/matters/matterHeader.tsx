@@ -25,7 +25,10 @@ export function MatterHeader({ matter }: MatterHeaderProps) {
         </Link>
 
         <div className="flex flex-wrap items-center gap-2 min-w-0">
-          <h1 className="text-xl sm:text-2xl font-bold truncate max-w-[60vw] sm:max-w-[40vw]">
+          <h1
+            title={`Matter Name: ${matter.name}`}
+            className="text-xl sm:text-2xl font-bold truncate max-w-[60vw] sm:max-w-[40vw]"
+          >
             {matter.name}
           </h1>
           <Badge className={getStatusColor(matter.status)} variant="outline">

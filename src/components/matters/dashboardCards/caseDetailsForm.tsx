@@ -55,7 +55,27 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
     : null;
 
   return (
-    <form className="space-y-6">
+    <form
+      title={`
+        Name: ${matter.name}
+        Case Number: ${matter.case_number}
+        Status: ${matter.status}
+        Open Date: ${formatDateForDisplay(matter.date_opened)}
+        Close Date: ${formatDateForDisplay(matter.date_closed)}
+        Client: ${matter.client}
+        Client Phone: ${matter.client_phone}
+        Client Email: ${matter.client_email}
+        Client Address: ${matter.client_address}
+        Assigned Attorney: ${getUserDisplayName(
+          matter.assigned_attorney || "",
+          users
+        )}
+        Assigned Staff: ${getUserDisplayName(
+          matter.assigned_staff || "",
+          users
+        )}`}
+      className="space-y-6"
+    >
       {/* Main Case Information */}
       <div className="space-y-4">
         {/* Title */}

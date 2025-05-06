@@ -18,7 +18,14 @@ export const OpposingCouncilDetailsForm: React.FC<
   };
 
   return (
-    <div className="space-y-4">
+    <form
+      title={`
+      Opposing Council: ${opposingCouncil.name}
+      Phone: ${opposingCouncil.phone}
+      Email: ${opposingCouncil.email}
+    `}
+      className="space-y-4"
+    >
       {/* Name */}
       <div className="w-full">
         <h4 className="text-sm font-medium text-muted-foreground mb-1">Name</h4>
@@ -125,6 +132,6 @@ export const OpposingCouncilDetailsForm: React.FC<
           )}
         </div>
       </div>
-    </div>
+    </form>
   );
 };

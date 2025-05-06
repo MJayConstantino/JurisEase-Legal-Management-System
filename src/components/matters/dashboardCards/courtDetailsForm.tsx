@@ -19,7 +19,13 @@ export const CourtDetailsForm: React.FC<CourtDetailsFormProps> = ({
   const handleChange = (field: keyof Court, v: string) => onChange(field, v);
 
   return (
-    <form className="space-y-4">
+    <form
+      title={`
+      Court Name: ${court.name}
+      Phone: ${court.phone}
+      Email: ${court.email}`}
+      className="space-y-4"
+    >
       {/* Court Name */}
       <div>
         <h4 className="text-sm font-medium text-muted-foreground mb-1">
