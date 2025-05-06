@@ -110,11 +110,11 @@ export function TaskCard({
               variant="outline"
               className={`text-xs ${
                 isTaskOverdueFlag
-                  ? "bg-red-500 text-white"
+                  ? getStatusColor("overdue")
                   : getStatusColor(localTask.status)
               }`}
             >
-              {isTaskOverdueFlag ? "Overdue" : localTask.status}
+              {isTaskOverdueFlag ? "overdue" : localTask.status}
             </Badge>
           </div>
 

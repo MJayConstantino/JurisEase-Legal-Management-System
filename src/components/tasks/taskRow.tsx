@@ -4,193 +4,147 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Matter } from "@/types/matter.type";
 import { Edit, Trash2Icon } from "lucide-react";
-import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
-import { TaskForm } from "./taskForm";
-import { getStatusColor } from "@/utils/getStatusColor";
 import type { Task } from "@/types/task.type";
-import { Skeleton } from "../ui/skeleton";
-import { TaskDeleteDialog } from "./taskDeleteDialog";
-import { useParams } from "next/navigation";
-import {
-  handleComplete,
-  handleSaveTask,
-  handleDelete,
-  isTaskOverdue,
-  formatDate,
-} from "@/utils/taskHandlers";
+import { Skeleton } from "@/components/ui/skeleton";
+import { isTaskOverdue, formatDate } from "@/utils/taskHandlers";
+import { getStatusColor } from "@/utils/getStatusColor";
 
 interface TaskRowProps {
   task: Task;
   matters: Matter[];
   isLoadingMatters: boolean;
-  onTaskUpdated: (updatedTask: Task) => void;
-  onTaskDeleted: (deletedTaskId: string) => void;
+  getMatterName: (matterId: string) => string;
+  onEdit: (task: Task) => void;
+  onDelete: (task: Task) => void;
+  onStatusChange: (task: Task) => void;
+  isProcessing: boolean;
 }
 
 export function TaskRow({
   task,
-  matters,
   isLoadingMatters,
-  onTaskUpdated,
-  onTaskDeleted,
+  getMatterName,
+  onEdit,
+  onDelete,
+  onStatusChange,
+  isProcessing,
 }: TaskRowProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [localTask, setLocalTask] = useState<Task>(task);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const params = useParams();
-  const matterId = params.matterId as string | undefined;
-
   const isTaskOverdueFlag = isTaskOverdue(
-    localTask.due_date ?? undefined,
-    localTask.status
+    task.due_date ?? undefined,
+    task.status
   );
+  const matterName = getMatterName(task.matter_id || "");
 
-  const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
+  const backgroundClasses = isTaskOverdueFlag
+    ? "bg-red-50 dark:bg-red-950"
+    : task.status === "completed"
+    ? "bg-green-50 dark:bg-green-950"
+    : "bg-white dark:bg-gray-800";
 
   return (
-    <>
-      <div
-        className={`flex items-center my-2 rounded-lg justify-between p-3 sm:p-4 border ${
-          isTaskOverdueFlag
-            ? "border-red-500 bg-red-50 dark:bg-red-950"
-            : localTask.status === "completed"
-            ? "border-green-500 bg-green-50 dark:bg-green-950"
-            : "bg-white dark:bg-gray-800 dark:border-gray-700"
-        }`}
-      >
-        <Checkbox
-          checked={localTask.status === "completed"}
-          onCheckedChange={() => {
-            if (!isProcessing) {
-              handleComplete(
-                task,
-                localTask,
-                setLocalTask,
-                onTaskUpdated,
-                setIsProcessing,
-                isProcessing
-              );
-            }
-          }}
-          disabled={isProcessing}
-          id={`task-complete-${task.task_id}`}
-          className={`mr-1 h-7 w-8 border-2 border-gray-300 rounded-md hover:cursor-pointer shadow ${
-            localTask.status === "completed"
-              ? "dark:bg-green-700"
-              : "dark:bg-gray-800"
-          } ${isProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
-        />
-        <div className="flex-1 min-w-0 mr-2 ">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="font-medium text-sm sm:text-base line-clamp-2 dark:text-white">
-              {localTask.name}
+    <div className={`${backgroundClasses} w-full`}>
+      <div className="grid grid-cols-12 gap-2 px-2 py-2 items-center sm:gap-4 sm:px-4 w-full">
+        {/* Checkbox Column - Always visible */}
+        <div className="col-span-1 flex justify-center">
+          <Checkbox
+            checked={task.status === "completed"}
+            onCheckedChange={() => onStatusChange(task)}
+            disabled={isProcessing}
+            id={`task-complete-${task.task_id}`}
+            className={`h-5 w-5 border-gray-300 rounded hover:cursor-pointer shadow ${
+              task.status === "completed"
+                ? "dark:bg-green-700"
+                : "dark:bg-gray-800"
+            } ${isProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
+          />
+        </div>
+
+        {/* Task Name - Takes more space on mobile */}
+        <div className="col-span-5 sm:col-span-3">
+          <div className="flex flex-col">
+            <h3 className="font-medium text-sm sm:text-base line-clamp-1 dark:text-white">
+              {task.name}
             </h3>
-            {localTask.priority && (
-              <Badge
-                variant="outline"
-                className={`text-xs ${getStatusColor(localTask.priority)}`}
-              >
-                {localTask.priority}
-              </Badge>
-            )}
-          </div>
-          <div className="text-xs sm:text-sm text-muted-foreground truncate">
-            {localTask.matter_id && (
-              <div className="text-xs sm:text-sm font-medium mb-2 truncate dark:text-gray-300">
-                Matter:{" "}
-                <span className="font-normal">
-                  {isLoadingMatters ? (
-                    <Skeleton className="inline-block w-24 h-4 rounded" />
-                  ) : (
-                    matterName || "No matter assigned"
-                  )}
-                </span>
-              </div>
-            )}
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0 dark:text-gray-400">
-          <div className="text-xs sm:text-sm hidden sm:block">
-            <span className="text-xs sm:text-sm line-clamp-1 ext-muted-foreground dark:text-gray-400">
-              {formatDate(localTask.due_date)}
+        {/* Matter - Hidden on small screens unless hovered */}
+        <div className="hidden sm:block col-span-2">
+          {task.matter_id ? (
+            isLoadingMatters ? (
+              <Skeleton className="inline-block w-24 h-4 rounded" />
+            ) : (
+              <span className="text-sm dark:text-gray-300 truncate">
+                {matterName || "No matter assigned"}
+              </span>
+            )
+          ) : (
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              None
             </span>
-          </div>
+          )}
+        </div>
 
-          <div className="w-16 sm:w-24">
-            <Badge
+        {/* Status - Always visible */}
+        <div className="col-span-3 sm:col-span-2 flex justify-center">
+          <Badge
+            variant="outline"
+            className={`text-xs w-auto text-center ${
+              isTaskOverdueFlag
+                ? getStatusColor("overdue")
+                : getStatusColor(task.status)
+            }`}
+          >
+            {isTaskOverdueFlag ? "overdue" : task.status}
+          </Badge>
+        </div>
+
+        {/* Due Date - Always visible */}
+        <div className="col-span-3 sm:col-span-2">
+          <span className="text-xs sm:text-sm line-clamp-1 dark:text-gray-400">
+            {formatDate(task.due_date)}
+          </span>
+        </div>
+
+        {/* Priority - Hidden on small screens */}
+        <div className="hidden sm:flex sm:col-span-1 justify-center">
+          <Badge
+            variant="outline"
+            className={`text-xs w-auto text-center ${getStatusColor(
+              task.priority
+            )}`}
+          >
+            {task.priority}
+          </Badge>
+        </div>
+
+        {/* Actions - Always visible but smaller on mobile */}
+        <div className="col-span-3 sm:col-span-1 flex justify-end items-center">
+          <div className="flex items-center gap-1 sm:gap-2 justify-end">
+            <Button
               variant="outline"
-              className={`text-xs ${getStatusColor(localTask.status)}`}
+              size="icon"
+              className="h-6 w-6 sm:h-7 sm:w-7 flex justify-center items-center"
+              onClick={() => onEdit(task)}
+              disabled={isProcessing}
             >
-              {localTask.status}
-            </Badge>
+              <Edit className="h-3 w-3" />
+              <span className="sr-only">Edit</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-6 w-6 sm:h-7 sm:w-7 flex justify-center items-center"
+              onClick={() => onDelete(task)}
+              disabled={isProcessing}
+            >
+              <Trash2Icon className="h-3 w-3" />
+              <span className="sr-only">Delete</span>
+            </Button>
           </div>
-
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-7 w-7 md:h-9 md:w-9"
-            onClick={() => setIsEditing(true)}
-            disabled={isProcessing}
-          >
-            <Edit className="h-3 w-3 md:h-4 md:w-4" />
-            <span className="sr-only">Edit</span>
-          </Button>
-
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-7 w-7 md:h-9 md:w-9"
-            onClick={() => setIsDeleteDialogOpen(true)}
-            disabled={isProcessing}
-          >
-            <Trash2Icon className="h-3 w-3 md:h-4 md:w-4" />
-            <span className="sr-only">Delete</span>
-          </Button>
         </div>
       </div>
-
-      <TaskForm
-        open={isEditing}
-        onOpenChange={setIsEditing}
-        disableMatterSelect={!!matterId}
-        onSave={(updatedTask) =>
-          handleSaveTask(
-            task,
-            updatedTask,
-            setLocalTask,
-            onTaskUpdated,
-            setIsProcessing
-          )
-        }
-        onSaveAndCreateAnother={(updatedTask) =>
-          handleSaveTask(
-            task,
-            updatedTask,
-            setLocalTask,
-            onTaskUpdated,
-            setIsProcessing
-          )
-        }
-        initialTask={localTask}
-        matters={matters}
-        isLoadingMatters={isLoadingMatters}
-        getMatterNameDisplay={(matterId) =>
-          getMattersDisplayName(matterId, matters)
-        }
-      />
-
-      <TaskDeleteDialog
-        isOpen={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        task={task}
-        onSuccess={() =>
-          handleDelete(task.task_id, onTaskDeleted, setIsProcessing)
-        }
-      />
-    </>
+    </div>
   );
 }
