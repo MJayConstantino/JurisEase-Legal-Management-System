@@ -6,7 +6,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { MatterForm, MatterData } from "./addMatterForm";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { matterSchema } from "@/validation/matter";
 import { handleCreateMatter } from "@/action-handlers/matters";
@@ -18,12 +18,15 @@ interface AddMatterDialogProps {
 
 export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
   const router = useRouter();
-  const initialData: MatterData = {
-    name: "",
-    client: "",
-    case_number: "",
-    status: "open",
-  };
+  const initialData = useMemo<MatterData>(
+    () => ({
+      name: "",
+      client: "",
+      case_number: "",
+      status: "open",
+    }),
+    []
+  );
   const [data, setData] = useState<MatterData>(initialData);
   const [errors, setErrors] = useState<
     Partial<Record<keyof MatterData, string>>
@@ -36,7 +39,7 @@ export function AddMatterDialog({ open, onOpenChange }: AddMatterDialogProps) {
       setErrors({});
       setIsSubmitting(false);
     }
-  }, [open]);
+  }, [open, initialData]);
 
   const handleChange = (field: keyof MatterData, value: string) => {
     setData((prev) => ({ ...prev, [field]: value }));
