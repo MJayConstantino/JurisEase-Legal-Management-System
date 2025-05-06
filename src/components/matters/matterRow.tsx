@@ -54,34 +54,79 @@ export function MatterRow({
           {isLoading ? (
             <Skeleton className="w-24 h-4 items-center" />
           ) : (
-            matter.case_number
+            <div
+              title={`Case#: ${matter.case_number}`}
+              className="truncate max-w-[120px]"
+            >
+              {matter.case_number}
+            </div>
           )}
         </TableCell>
         <TableCell>
-          {isLoading ? <Skeleton className="w-32 h-4" /> : matter.name}
+          {isLoading ? (
+            <Skeleton className="w-32 h-4" />
+          ) : (
+            <div
+              title={`Matter Name: ${matter.name}`}
+              className="truncate max-w-[180px]"
+            >
+              {matter.name}
+            </div>
+          )}
         </TableCell>
         <TableCell>
-          {isLoading ? <Skeleton className="w-32 h-4" /> : matter.client}
+          {isLoading ? (
+            <Skeleton className="w-32 h-4" />
+          ) : (
+            <div
+              title={`Client: ${matter.client}`}
+              className="truncate max-w-[150px]"
+            >
+              {matter.client}
+            </div>
+          )}
         </TableCell>
         <TableCell>
           {isLoading ? (
             <Skeleton className="w-24 h-4" />
           ) : (
-            getUserDisplayName(matter.assigned_attorney!, users)
+            <div
+              title={`Assigend Attorney: ${getUserDisplayName(
+                matter.assigned_attorney!,
+                users
+              )}`}
+              className="truncate max-w-[140px]"
+            >
+              {getUserDisplayName(matter.assigned_attorney!, users)}
+            </div>
           )}
         </TableCell>
         <TableCell>
           {isLoading ? (
             <Skeleton className="w-24 h-4" />
           ) : (
-            getUserDisplayName(matter.assigned_staff!, users)
+            <div
+              title={`Assigend Staff: ${getUserDisplayName(
+                matter.assigned_staff!,
+                users
+              )}`}
+              className="truncate max-w-[140px]"
+            >
+              {getUserDisplayName(matter.assigned_staff!, users)}
+            </div>
           )}
         </TableCell>
         <TableCell>
           {isLoading ? (
             <Skeleton className="w-12 h-4" />
           ) : (
-            <Badge className={getStatusColor(matter.status)} variant="outline">
+            <Badge
+              title={`Status: ${
+                matter.status.charAt(0).toUpperCase() + matter.status.slice(1)
+              }`}
+              className={getStatusColor(matter.status)}
+              variant="outline"
+            >
               {matter.status.charAt(0).toUpperCase() + matter.status.slice(1)}
             </Badge>
           )}

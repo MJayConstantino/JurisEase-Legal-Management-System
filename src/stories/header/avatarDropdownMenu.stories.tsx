@@ -1,8 +1,12 @@
 import { Meta, StoryObj } from "@storybook/react";
 import AvatarDropdownMenu from "@/components/header/avatarDropdownMenu";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const meta: Meta<typeof AvatarDropdownMenu> = {
   title: "Header/AvatarDropdownMenu",
+  parameters: {
+    nextjs: { appDirectory: true },
+  },
   component: AvatarDropdownMenu,
 };
 
@@ -10,37 +14,49 @@ export default meta;
 type Story = StoryObj<typeof AvatarDropdownMenu>;
 
 export const Default: Story = {
-  render: () => <AvatarDropdownMenu />,
+  render: () => (
+    <ThemeProvider attribute="class" defaultTheme="light">
+      <AvatarDropdownMenu />
+    </ThemeProvider>
+  ),
 };
 
 export const DarkMode: Story = {
   render: () => (
-    <div className="dark">
+    <ThemeProvider attribute="class" defaultTheme="dark">
       <AvatarDropdownMenu />
-    </div>
+    </ThemeProvider>
   ),
 };
 
 export const Loading: Story = {
-  render: () => <AvatarDropdownMenu isLoading />,
+  render: () => (
+    <ThemeProvider attribute="class" defaultTheme="light">
+      <AvatarDropdownMenu isLoading />
+    </ThemeProvider>
+  ),
 };
 
 export const LoadingDarkMode: Story = {
   render: () => (
-    <div className="dark">
+    <ThemeProvider attribute="class" defaultTheme="dark">
       <AvatarDropdownMenu isLoading />
-    </div>
+    </ThemeProvider>
   ),
 };
 
 export const DropdownOpen: Story = {
-  render: () => <AvatarDropdownMenu defaultOpen />,
+  render: () => (
+    <ThemeProvider attribute="class" defaultTheme="light">
+      <AvatarDropdownMenu defaultOpen />
+    </ThemeProvider>
+  ),
 };
 
 export const DropdownOpenDarkMode: Story = {
   render: () => (
-    <div className="dark">
+    <ThemeProvider attribute="class" defaultTheme="dark">
       <AvatarDropdownMenu defaultOpen />
-    </div>
+    </ThemeProvider>
   ),
 };

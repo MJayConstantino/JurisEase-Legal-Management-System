@@ -11,7 +11,6 @@ interface MatterConfirmDeletionDialogProps {
   onOpenChange: (open: boolean) => void;
   matter: Matter;
   onSuccess?: () => void;
-  redirectToList?: boolean;
 }
 
 export function MatterConfirmDeletionDialog({
@@ -19,10 +18,8 @@ export function MatterConfirmDeletionDialog({
   onOpenChange,
   matter,
   onSuccess,
-  redirectToList = false,
 }: MatterConfirmDeletionDialogProps) {
   const router = useRouter();
-
   const handleDelete = async () => {
     const { error } = await handleDeleteMatter(matter.matter_id);
     if (!error) {
@@ -30,9 +27,7 @@ export function MatterConfirmDeletionDialog({
       if (onSuccess) {
         onSuccess();
       }
-      if (redirectToList) {
-        router.push("/matters");
-      }
+      router.refresh();
     } else {
       toast.error("Failed to delete matter. Please try again.");
     }
