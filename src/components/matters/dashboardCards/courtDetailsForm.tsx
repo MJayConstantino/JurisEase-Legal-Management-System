@@ -11,7 +11,7 @@ export interface CourtDetailsFormProps {
 }
 
 export const CourtDetailsForm: React.FC<CourtDetailsFormProps> = ({
-  court,
+  court = { name: "", phone: "", email: "" },
   isEditing,
   onChange,
   errors = {},
@@ -30,7 +30,7 @@ export const CourtDetailsForm: React.FC<CourtDetailsFormProps> = ({
           {isEditing ? (
             <div className="flex-grow">
               <Input
-                value={court.name}
+                value={court.name ?? ""}
                 onChange={(e) => handleChange("name", e.target.value)}
                 placeholder="Court Name"
                 maxLength={50}
@@ -55,7 +55,7 @@ export const CourtDetailsForm: React.FC<CourtDetailsFormProps> = ({
           {isEditing ? (
             <div className="flex-grow">
               <Input
-                value={court.phone}
+                value={court.phone ?? ""}
                 onChange={(e) => handleChange("phone", e.target.value)}
                 placeholder="Phone"
                 maxLength={30}
@@ -81,7 +81,7 @@ export const CourtDetailsForm: React.FC<CourtDetailsFormProps> = ({
             <div className="flex-grow">
               <Input
                 type="email"
-                value={court.email}
+                value={court.email ?? ""}
                 onChange={(e) => handleChange("email", e.target.value)}
                 placeholder="Email address"
               />

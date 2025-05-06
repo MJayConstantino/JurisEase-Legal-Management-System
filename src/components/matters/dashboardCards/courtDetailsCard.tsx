@@ -15,7 +15,9 @@ interface CourtDetailsCardProps {
 }
 
 export function CourtDetailsCard({ matter, onUpdate }: CourtDetailsCardProps) {
-  const [editedMatter, setEditedMatter] = useState({ ...matter });
+  const [editedMatter, setEditedMatter] = useState<Matter>({
+    ...matter,
+  });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleNestedChange = (
@@ -67,7 +69,7 @@ export function CourtDetailsCard({ matter, onUpdate }: CourtDetailsCardProps) {
     >
       {(isEditing) => (
         <CourtDetailsForm
-          court={editedMatter.court!}
+          court={editedMatter.court || { name: "", phone: "", email: "" }}
           isEditing={isEditing}
           onChange={handleNestedChange}
           errors={errors}
