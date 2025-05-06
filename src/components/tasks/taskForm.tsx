@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { toast } from "sonner";
@@ -40,7 +40,7 @@ const taskSchema = z.object({
   due_date: z.coerce.date().optional(),
   priority: z.enum(["low", "medium", "high"]),
   status: z.enum(["in-progress", "completed"]),
-  matter_id: z.string().optional(),
+  matter_id: z.string().optional().nullable(),
 });
 
 interface TaskFormProps {
@@ -66,34 +66,35 @@ export function TaskForm({
   isLoadingMatters,
   matterId,
 }: TaskFormProps & { matterId?: string }) {
-  const [task, setTask] = useState<Task>(
-    () =>
-      initialTask || {
+  const [task, setTask] = useState<Task>(() =>
+    initializeTask(initialTask, matterId)
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  function initializeTask(task?: Task, defaultMatterId?: string): Task {
+    return (
+      task || {
         task_id: "",
         name: "",
         description: "",
         due_date: undefined,
         priority: "low",
         status: "in-progress",
-        matter_id: matterId || "",
+        matter_id: defaultMatterId || "",
         created_at: new Date(),
       }
-  );
+    );
+  }
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const resetTaskForm = () => {
-    setTask({
-      task_id: "",
-      name: "",
-      description: "",
-      due_date: undefined,
-      priority: "low",
-      status: "in-progress",
-      matter_id: matterId || "",
-      created_at: new Date(),
-    });
-  };
+  useEffect(() => {
+    if (open) {
+      if (initialTask) {
+        setTask(initialTask);
+      } else {
+        setTask(initializeTask(undefined, matterId));
+      }
+    }
+  }, [open, initialTask, matterId]);
 
   const handleChange = (
     field: keyof Task,
@@ -107,7 +108,6 @@ export function TaskForm({
 
   const validateTask = (): boolean => {
     try {
-      // Convert Date objects to ISO strings for validation
       const validationData = {
         ...task,
         due_date: task.due_date ? task.due_date : undefined,
@@ -143,31 +143,23 @@ export function TaskForm({
         : await handleCreateTask(taskToSubmit);
 
       if (response && !response.error && response.task) {
-        toast.success(
-          task.task_id
-            ? "Task updated successfully"
-            : "Task created successfully"
-        );
-
-        if (keepFormOpen && onSaveAndCreateAnother && !task.task_id) {
+        if (!task.task_id && keepFormOpen && onSaveAndCreateAnother) {
           onSaveAndCreateAnother(response.task as Task);
-          resetTaskForm();
+          setTask(initializeTask(undefined, matterId));
         } else if (onSave) {
           onSave(response.task as Task);
-        }
-
-        if (!keepFormOpen) {
-          setTimeout(() => {
-            onOpenChange(false);
-            resetTaskForm();
-          }, 0);
+          if (task.task_id) {
+            setTask(response.task as Task);
+          }
+          onOpenChange(false);
         }
       } else {
-        toast.error(response.error || "Failed to save task to the database.");
+        // Error toast is handled in action handlers
+        console.error("Failed to save task:", response?.error);
       }
     } catch (error) {
       console.error("Error saving task:", error);
-      toast.error("Failed to save task to the database.");
+      // Error toast is handled in action handlers
     } finally {
       setIsSubmitting(false);
     }
