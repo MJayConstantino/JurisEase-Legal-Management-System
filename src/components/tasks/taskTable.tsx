@@ -12,9 +12,9 @@ import {
   handleDelete,
 } from "@/utils/taskHandlers";
 import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
-import { TaskTableHeader } from "./taskTableHeader";
 import { TaskRow } from "./taskRow";
-
+import { Table, TableBody } from "@/components/ui/table";
+import { TaskTableHeader } from "./taskTableHeader";
 interface TaskTableProps {
   tasks: Task[];
   matters: Matter[];
@@ -112,35 +112,42 @@ export function TaskTable({
 
   return (
     <>
-      <div className="overflow-x-auto dark:border-gray-700">
-        <div className="min-w-[600px]">
-          <TaskTableHeader
-            sortField={sortField}
-            sortDirection={sortDirection}
-            onSort={handleSort}
-          />
-          <div className="divide-y divide-gray-200 dark:divide-gray-700">
-            {sortedTasks.map((task) => (
-              <TaskRow
-                key={task.task_id}
-                task={task}
-                matters={matters}
-                isLoadingMatters={isLoadingMatters}
-                getMatterName={(matterId) =>
-                  getMattersDisplayName(matterId, matters)
-                }
-                onEdit={handleEditTask}
-                onDelete={handleDeleteTask}
-                onStatusChange={handleStatusChange}
-                isProcessing={processingTaskId === task.task_id}
-              />
-            ))}
-          </div>
-          {sortedTasks.length === 0 && (
-            <div className="p-6 text-center text-muted-foreground">
-              No tasks found.
-            </div>
-          )}
+      <div className="w-full border dark:border-gray-700 overflow-hidden">
+        <div className="relative w-full overflow-auto">
+          <Table>
+            <TaskTableHeader
+              sortField={sortField}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
+            <TableBody>
+              {sortedTasks.map((task) => (
+                <TaskRow
+                  key={task.task_id}
+                  task={task}
+                  matters={matters}
+                  isLoadingMatters={isLoadingMatters}
+                  getMatterName={(matterId) =>
+                    getMattersDisplayName(matterId, matters)
+                  }
+                  onEdit={handleEditTask}
+                  onDelete={handleDeleteTask}
+                  onStatusChange={handleStatusChange}
+                  isProcessing={processingTaskId === task.task_id}
+                />
+              ))}
+              {sortedTasks.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="p-6 text-center text-muted-foreground"
+                  >
+                    No tasks found.
+                  </td>
+                </tr>
+              )}
+            </TableBody>
+          </Table>
         </div>
       </div>
 

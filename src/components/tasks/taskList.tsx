@@ -101,7 +101,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
   });
 
   return (
-    <div className="w-full container mx-auto py-4 pt-2 h-full flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md">
+    <div className="border w-full container mx-auto py-4 pt-2 h-full flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md">
       <TasksHeader
         onStatusChange={setStatusFilter}
         onViewChange={setView}
@@ -110,7 +110,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
         matters={matters}
         matterId={matterId}
       />
-      <div className="flex-grow overflow-y-auto">
+      <div className="flex-grow overflow-y-auto w-full">
         {isLoadingTasks ? (
           <div className="flex justify-center items-center h-64">
             <p className="text-muted-foreground">Loading tasks...</p>
@@ -133,7 +133,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
             ))}
           </div>
         ) : (
-          <div className="w-full overflow-x-auto">
+          <div className="w-full">
             <TaskTable
               tasks={filteredTasks}
               matters={matters}

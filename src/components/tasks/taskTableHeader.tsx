@@ -3,6 +3,7 @@
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { SortDirection, SortField } from "@/types/task.type";
+import { TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 interface TaskTableHeaderProps {
   sortField: SortField;
@@ -17,12 +18,14 @@ export function TaskTableHeader({
 }: TaskTableHeaderProps) {
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) {
-      return <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />;
+      return (
+        <ArrowUpDown className="ml-1 h-3 w-3 md:ml-2 md:h-4 md:w-4 opacity-50" />
+      );
     }
     return sortDirection === "asc" ? (
-      <ArrowUp className="ml-2 h-4 w-4" />
+      <ArrowUp className="ml-1 h-3 w-3 md:ml-2 md:h-4 md:w-4" />
     ) : (
-      <ArrowDown className="ml-2 h-4 w-4" />
+      <ArrowDown className="ml-1 h-3 w-3 md:ml-2 md:h-4 md:w-4" />
     );
   };
 
@@ -30,34 +33,36 @@ export function TaskTableHeader({
     <Button
       variant="ghost"
       onClick={() => onSort(field)}
-      className=" text-sm items-center hover:bg-transparent dark:hover:bg-transparent dark:text-gray-300"
+      className="p-0 h-auto text-xs md:text-sm font-medium hover:bg-transparent focus:bg-transparent dark:hover:bg-transparent dark:focus:bg-transparent dark:text-gray-300 whitespace-nowrap flex items-center"
     >
-      {label} {getSortIcon(field)}
+      <span className="max-w-[60px] md:max-w-none truncate">{label}</span>{" "}
+      {getSortIcon(field)}
     </Button>
   );
 
   return (
-    <div className="border-b-1 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 overflow-x-auto">
-      <div className="grid grid-cols-12 gap-3 py-0 min-w-[600px]">
-        <div className="col-span-1">
-          <span className="sr-only">Status</span>
-        </div>
-        <div className="col-span-3 truncate">
+    <TableHeader className="bg-gray-50 dark:bg-gray-900">
+      <TableRow className="hover:bg-transparent">
+        <TableHead className="w-10 md:w-12 text-center">
+          <span className="sr-only">Checkbox</span>
+        </TableHead>
+        <TableHead className="w-[20%] md:w-[20%]">
           {renderSortableHeader("name", "Task Name")}
-        </div>
-        <div className="hidden md:block col-span-2 truncate">
+        </TableHead>
+        <TableHead className="w-[20%] text-center  md:table-cell">
           {renderSortableHeader("matter_id", "Matter")}
-        </div>
-        <div className="col-span-2 sm:col-span-2 text-center truncate">
+        </TableHead>
+        <TableHead className="w-[20%] text-center">
           {renderSortableHeader("status", "Status")}
-        </div>
-        <div className="hidden sm:block col-span-2 truncate">
+        </TableHead>
+        <TableHead className="w-[15%] text-center sm:table-cell">
           {renderSortableHeader("due_date", "Due Date")}
-        </div>
-        <div className="col-span-2 sm:col-span-1 text-center truncate">
+        </TableHead>
+        <TableHead className="w-[15%] text-center">
           {renderSortableHeader("priority", "Priority")}
-        </div>
-      </div>
-    </div>
+        </TableHead>
+        <TableHead className="w-[20%] text-right">Actions</TableHead>
+      </TableRow>
+    </TableHeader>
   );
 }
