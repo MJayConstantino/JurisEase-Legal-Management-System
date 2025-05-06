@@ -12,6 +12,15 @@ const userSchema = z.object({
 
 export type User = z.infer<typeof userSchema>
 
+async function isUserLocked(email: string) {
+  const supabase = await createSupabaseClient()
+  const { data: boolData, error: boolError } = await supabase.rpc(
+    'is_user_locked',
+    { user_email: email }
+  )
+  return boolData
+}
+
 export async function signinAction(formData: FormData) {
   const supabase = await createSupabaseClient()
   const data = Object.fromEntries(formData.entries()) as User
@@ -27,12 +36,50 @@ export async function signinAction(formData: FormData) {
         ).trim(),
     }
   }
-  const { error } = await supabase.auth.signInWithPassword(data)
-  if (error) {
-    return { error: 'Failed to log in: ' + error.message }
+  const userLockedOut = await isUserLocked(data.email)
+  if (userLockedOut) {
+    return {
+      error:
+        'Too many Log in attempts, please wait 5 minutes before trying again!',
+    }
   }
 
+  const { error } = await supabase.auth.signInWithPassword(data)
+  if (error) {
+    await supabase.rpc('increment_failed_attempts', { user_email: data.email })
+    return { error: 'Failed to log in: ' + error.message }
+  }
+  await supabase.rpc('reset_failed_attempts', { user_email: data.email })
   return { error: null }
+}
+
+async function isEmailTaken(email: string) {
+  const supabase = await createSupabaseClient()
+  const { data: booleanData, error } = await supabase.rpc(
+    'check_email_exists',
+    { p_email: email }
+  )
+
+  if (error) {
+    console.error('Error checking email:', error.message)
+    return false
+  }
+
+  return booleanData // Returns `true` if email exists, `false` otherwise
+}
+
+async function checkEmailVerification(email: string) {
+  const supabase = await createSupabaseClient()
+  const { data, error } = await supabase.rpc('check_user_verification', {
+    user_email: email,
+  })
+
+  if (error) {
+    console.error('RPC Error:', error)
+    return null
+  }
+
+  return data // Returns true if awaiting verification false if not
 }
 
 export async function signUpAction(formData: FormData) {
@@ -54,6 +101,15 @@ export async function signUpAction(formData: FormData) {
         ).trim(),
     }
   }
+  const emailVerification = await checkEmailVerification(data.email)
+  const userExists = await isEmailTaken(data.email)
+  if (emailVerification && userExists) {
+    return { error: 'An email confirmation has already been sent.' }
+  }
+  if (!emailVerification && userExists) {
+    return { error: 'You already have an account. Try logging in instead.' }
+  }
+
   const { error } = await supabase.auth.signUp({
     email: data.email,
     password: data.password,
@@ -121,8 +177,7 @@ export async function fetchUserInfoAction() {
 
   let avatar_url = authData.user.user_metadata.avatar_url || null
 
-  const { data: files, error: listError } = await supabase
-    .storage
+  const { data: files, error: listError } = await supabase.storage
     .from('user')
     .list(authData.user.id, { limit: 1 })
 
@@ -130,7 +185,9 @@ export async function fetchUserInfoAction() {
     const fileName = files[0].name
     const filePath = `${authData.user.id}/${fileName}`
 
-    const { data: urlData } = supabase.storage.from('user').getPublicUrl(filePath)
+    const { data: urlData } = supabase.storage
+      .from('user')
+      .getPublicUrl(filePath)
     if (urlData?.publicUrl) {
       avatar_url = urlData.publicUrl
     }
