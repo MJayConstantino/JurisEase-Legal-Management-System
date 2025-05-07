@@ -162,7 +162,7 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
           {isEditing ? (
             <div className="space-y-1">
               <Textarea
-                value={matter.description || ""}
+                value={matter.description ?? ""}
                 onChange={(e) => onChange("description", e.target.value)}
                 rows={3}
                 maxLength={200}
@@ -173,7 +173,7 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
             </div>
           ) : (
             <p className="text-sm line-clamp-3">
-              {matter.description || "N/A"}
+              {matter.description || "No case description provided."}
             </p>
           )}
         </div>
@@ -209,7 +209,7 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
                   type="date"
                   value={formatDateForInput(matter.date_closed)}
                   onChange={(e) =>
-                    onChange("date_closed", e.target.value || null)
+                    onChange("date_closed", e.target.value ?? null)
                   }
                   className="w-full"
                   disabled={matter.status !== "closed"}
@@ -244,7 +244,7 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
                   )}
                 </div>
               ) : (
-                <p className="font-medium truncate">{matter.client || "N/A"}</p>
+                <p className="font-medium truncate">{matter.client}</p>
               )}
             </div>
             <div>
@@ -260,7 +260,7 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
                         value={matter.client_phone ?? ""}
                         placeholder="Client Phone"
                         onChange={(e) =>
-                          onChange("client_phone", e.target.value ?? "")
+                          onChange("client_phone", e.target.value)
                         }
                         maxLength={30}
                       />
@@ -272,7 +272,7 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
                     </div>
                   ) : (
                     <p className="truncate max-w-full">
-                      {matter.client_phone || "N/A"}
+                      {matter.client_phone ?? "No phone provided"}
                     </p>
                   )}
                 </div>
@@ -287,7 +287,7 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
                         type="email"
                         value={matter.client_email ?? ""}
                         onChange={(e) =>
-                          onChange("client_email", e.target.value ?? "")
+                          onChange("client_email", e.target.value)
                         }
                         placeholder="Client Email"
                       />
@@ -299,7 +299,7 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
                     </div>
                   ) : (
                     <p className="truncate max-w-full">
-                      {matter.client_email || "N/A"}
+                      {matter.client_email ?? "No email provided"}
                     </p>
                   )}
                 </div>
@@ -324,7 +324,7 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
                     </div>
                   ) : (
                     <p className="truncate max-w-full">
-                      {matter.client_address || "N/A"}
+                      {matter.client_address ?? "No address provided"}
                     </p>
                   )}
                 </div>
@@ -402,9 +402,9 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
                     <Briefcase className="h-4 w-4 mr-2 text-muted-foreground" />
                     <p className="truncate max-w-full">
                       {getUserDisplayName(
-                        matter.assigned_attorney || "",
+                        matter.assigned_attorney ?? "",
                         users
-                      ) || "N/A"}
+                      )}
                     </p>
                   </div>
                 )}
@@ -473,8 +473,7 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
                   <div className="flex items-center">
                     <User className="h-4 w-4 mr-2 text-muted-foreground" />
                     <p className="truncate max-w-full">
-                      {getUserDisplayName(matter.assigned_staff || "", users) ||
-                        "N/A"}
+                      {getUserDisplayName(matter.assigned_staff ?? "", users)}
                     </p>
                   </div>
                 )}
