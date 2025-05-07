@@ -95,7 +95,7 @@ export function TasksHeader({
           <Button
             variant={view === "grid" ? "blue" : "ghost"}
             size="sm"
-            className="px-3 h-9 text-xs font-medium rounded-md"
+            className="cursor-pointer px-3 h-9 text-xs font-medium rounded-md"
             onClick={() => handleViewToggle("grid")}
           >
             <Grid className="h-5 w-5 mr-2" />
@@ -104,7 +104,7 @@ export function TasksHeader({
           <Button
             variant={view === "table" ? "blue" : "ghost"}
             size="sm"
-            className="px-3 h-9 text-xs font-medium rounded-md"
+            className="cursor-pointer px-3 h-9 text-xs font-medium rounded-md"
             onClick={() => handleViewToggle("table")}
           >
             <List className="h-5 w-5 mr-2" />

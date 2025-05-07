@@ -15,6 +15,7 @@ import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
 import { TaskRow } from "./taskRow";
 import { Table, TableBody } from "@/components/ui/table";
 import { TaskTableHeader } from "./taskTableHeader";
+import type { SortField } from "@/types/task.type";
 interface TaskTableProps {
   tasks: Task[];
   matters: Matter[];
@@ -23,8 +24,6 @@ interface TaskTableProps {
   onTaskDeleted: (deletedTaskId: string) => void;
 }
 
-type SortField = "name" | "matter_id" | "due_date" | "status" | "priority";
-
 export function TaskTable({
   tasks,
   matters,
@@ -32,8 +31,8 @@ export function TaskTable({
   onTaskUpdated,
   onTaskDeleted,
 }: TaskTableProps) {
-  const [sortField, setSortField] = useState<SortField>("name");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [sortField, setSortField] = useState<SortField>("created_at");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deletingTask, setDeletingTask] = useState<Task | null>(null);
@@ -112,7 +111,7 @@ export function TaskTable({
 
   return (
     <>
-      <div className="w-full border dark:border-gray-700 overflow-hidden">
+      <div className="w-full dark:border-gray-700 dark:bg-gray-800 overflow-hidden">
         <div className="relative w-full overflow-auto">
           <Table>
             <TaskTableHeader
