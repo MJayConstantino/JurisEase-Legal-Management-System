@@ -27,8 +27,6 @@ interface TaskCardProps {
   onTaskUpdated: (updatedTask: Task) => void;
   onTaskDeleted: (deletedTaskId: string) => void;
   matters: Matter[];
-  isOverdue?: boolean;
-  setIsOverdue?: (isOverdue: boolean) => void;
   matterName?: string;
 }
 
@@ -48,11 +46,10 @@ export function TaskCard({
 
   const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
 
-  const isTaskOverdueFlag = isTaskOverdue(localTask.due_date ?? undefined, localTask.status);
-
-  if (isTaskOverdueFlag && localTask.status !== "overdue") {
-    setLocalTask((prevTask) => ({ ...prevTask, status: "overdue" }));
-  }
+  const isTaskOverdueFlag = isTaskOverdue(
+    localTask.due_date ?? undefined,
+    localTask.status
+  );
 
   return (
     <>
@@ -111,9 +108,13 @@ export function TaskCard({
           <div className="flex items-center gap-2">
             <Badge
               variant="outline"
-              className={`text-xs ${getStatusColor(localTask.status)}`}
+              className={`text-xs ${
+                isTaskOverdueFlag
+                  ? getStatusColor("overdue")
+                  : getStatusColor(localTask.status)
+              }`}
             >
-              {localTask.status}
+              {isTaskOverdueFlag ? "overdue" : localTask.status}
             </Badge>
           </div>
 
@@ -127,22 +128,25 @@ export function TaskCard({
               </label>
               <Checkbox
                 checked={localTask.status === "completed"}
-                onCheckedChange={() =>
-                  handleComplete(
-                    task,
-                    localTask,
-                    setLocalTask,
-                    onTaskUpdated,
-                    setIsProcessing
-                  )
-                }
+                onCheckedChange={() => {
+                  if (!isProcessing) {
+                    handleComplete(
+                      task,
+                      localTask,
+                      setLocalTask,
+                      onTaskUpdated,
+                      setIsProcessing,
+                      isProcessing
+                    );
+                  }
+                }}
                 disabled={isProcessing}
                 id={`task-complete-${task.task_id}`}
                 className={`mr-1 h-7 w-8 border-2 border-gray-300 rounded-md hover:cursor-pointer shadow ${
                   localTask.status === "completed"
                     ? "dark:bg-green-700"
                     : "dark:bg-gray-800"
-                }`}
+                } ${isProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
               />
             </div>
             <Button

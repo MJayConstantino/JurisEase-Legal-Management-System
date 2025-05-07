@@ -48,7 +48,7 @@ export const ActiveSidebar: Story = {
   render: () => <AppSidebar />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const calendarLink = await canvas.findByRole("link", { name: /calendar/i });
+    const calendarLink = await canvas.findByRole("link", { name: /matters/i });
     calendarLink.classList.add("active");
   },
 };
@@ -58,7 +58,7 @@ export const ActiveSidebarDarkMode: Story = {
   render: () => <AppSidebar />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const calendarLink = await canvas.findByRole("link", { name: /calendar/i });
+    const calendarLink = await canvas.findByRole("link", { name: /matters/i });
     calendarLink.classList.add("active");
   },
 };

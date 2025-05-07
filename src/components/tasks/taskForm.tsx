@@ -19,13 +19,29 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
-import { handleCreateTask } from "@/action-handlers/tasks";
+import { handleCreateTask, handleUpdateTask } from "@/action-handlers/tasks";
+import { z } from "zod";
+
+const taskSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Task name is required")
+    .max(100, "Task name must be less than 100 characters"),
+  description: z
+    .string()
+    .max(500, "Description must be less than 500 characters")
+    .optional(),
+  due_date: z.coerce.date().optional(),
+  priority: z.enum(["low", "medium", "high"]),
+  status: z.enum(["in-progress", "completed"]),
+  matter_id: z.string().optional().nullable(),
+});
 
 interface TaskFormProps {
   open: boolean;
@@ -50,109 +66,102 @@ export function TaskForm({
   isLoadingMatters,
   matterId,
 }: TaskFormProps & { matterId?: string }) {
-  const [task, setTask] = useState<Task>(
-    () =>
-      initialTask || {
+  const [task, setTask] = useState<Task>(() =>
+    initializeTask(initialTask, matterId)
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  function initializeTask(task?: Task, defaultMatterId?: string): Task {
+    return (
+      task || {
         task_id: "",
         name: "",
         description: "",
         due_date: undefined,
         priority: "low",
         status: "in-progress",
-        matter_id: matterId || "",
+        matter_id: defaultMatterId || "",
         created_at: new Date(),
       }
-  );
+    );
+  }
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const resetTaskForm = () => {
-    setTask({
-      task_id: "",
-      name: "",
-      description: "",
-      due_date: undefined,
-      priority: "low",
-      status: "in-progress",
-      matter_id: matterId || "",
-      created_at: new Date(),
-    });
-  };
+  useEffect(() => {
+    if (open) {
+      if (initialTask) {
+        setTask(initialTask);
+      } else {
+        setTask(initializeTask(undefined, matterId));
+      }
+    }
+  }, [open, initialTask, matterId]);
 
   const handleChange = (
     field: keyof Task,
     value: string | Date | undefined
   ) => {
-    console.log(`Field changed: ${field}, New value:`, value);
     setTask((prev) => ({
       ...prev,
       [field]: value,
     }));
   };
 
-  const validateForm = () => {
-    console.log("Validating form with task:", task);
-    if (!task.name.trim()) {
-      toast.error("Task name is required");
-      return false;
-    }
-    return true;
-  };
-
-  const handleTaskCreated = async (
-    newTask: Task,
-    keepFormOpen: boolean = false
-  ) => {
-    if (isSubmitting) {
-      console.log("Submission in progress, skipping...");
-      return;
-    }
-    if (!validateForm()) {
-      console.log("Form validation failed.");
-      return;
-    }
-
-    setIsSubmitting(true);
-    console.log("Submitting task:", newTask);
+  const validateTask = (): boolean => {
     try {
-      const taskToCreate = {
-        ...newTask,
-        due_date: newTask.due_date ? new Date(newTask.due_date) : undefined,
-        matter_id: newTask.matter_id || undefined,
+      const validationData = {
+        ...task,
+        due_date: task.due_date ? task.due_date : undefined,
       };
 
-      console.log("Task to create:", taskToCreate);
-      const response = await handleCreateTask(taskToCreate);
+      taskSchema.parse(validationData);
+      return true;
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        toast.error(error.errors[0].message);
+      } else {
+        toast.error("Validation failed. Please check your input.");
+      }
+      return false;
+    }
+  };
 
-      console.log("API response:", response);
+  const handleSubmit = async (keepFormOpen: boolean = false) => {
+    if (isSubmitting) return;
+    if (!validateTask()) return;
+
+    setIsSubmitting(true);
+
+    try {
+      const taskToSubmit = {
+        ...task,
+        due_date: task.due_date ? new Date(task.due_date) : undefined,
+        matter_id: task.matter_id || undefined,
+      };
+
+      const response = task.task_id
+        ? await handleUpdateTask(taskToSubmit)
+        : await handleCreateTask(taskToSubmit);
+
       if (response && !response.error && response.task) {
-        toast.success("Task created successfully");
-
-        if (keepFormOpen && onSaveAndCreateAnother) {
-          console.log("Saving and keeping form open.");
+        if (!task.task_id && keepFormOpen && onSaveAndCreateAnother) {
           onSaveAndCreateAnother(response.task as Task);
-          resetTaskForm();
+          setTask(initializeTask(undefined, matterId));
         } else if (onSave) {
-          console.log("Saving and closing form.");
           onSave(response.task as Task);
-        }
-
-        if (!keepFormOpen) {
-          setTimeout(() => {
-            onOpenChange(false);
-            resetTaskForm();
-          }, 0);
+          if (task.task_id) {
+            setTask(response.task as Task);
+          }
+          onOpenChange(false);
         }
       } else {
-        console.error("Error response from API:", response.error);
-        toast.error(response.error || "Failed to save task to the database.");
+        // Error toast is handled in action handlers
+        console.error("Failed to save task:", response?.error);
       }
     } catch (error) {
       console.error("Error saving task:", error);
-      toast.error("Failed to save task to the database.");
+      // Error toast is handled in action handlers
     } finally {
       setIsSubmitting(false);
-      console.log("Submission process completed.");
     }
   };
 
@@ -320,7 +329,7 @@ export function TaskForm({
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <Button
               type="submit"
-              onClick={() => handleTaskCreated(task, false)}
+              onClick={() => handleSubmit(false)}
               disabled={isSubmitting}
             >
               {isSubmitting
@@ -332,7 +341,7 @@ export function TaskForm({
             {!task.task_id && (
               <Button
                 variant="outline"
-                onClick={() => handleTaskCreated(task, true)}
+                onClick={() => handleSubmit(true)}
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Saving..." : "Save and Create Another"}

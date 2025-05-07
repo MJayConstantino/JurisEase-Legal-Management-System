@@ -1,8 +1,7 @@
 "use client";
 
-import type React from "react";
-
 import { useState } from "react";
+import type React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Edit, Check, X } from "lucide-react";
@@ -10,7 +9,7 @@ import { Edit, Check, X } from "lucide-react";
 interface EditableCardProps {
   title: string;
   children: React.ReactNode | ((isEditing: boolean) => React.ReactNode);
-  onSave?: () => void;
+  onSave?: () => Promise<boolean>;
   onCancel?: () => void;
   editable?: boolean;
 }
@@ -24,9 +23,13 @@ export function EditableCard({
 }: EditableCardProps) {
   const [isEditing, setIsEditing] = useState(false);
 
-  const handleSave = () => {
-    setIsEditing(false);
-    onSave?.();
+  const handleSaveClick = async () => {
+    if (onSave) {
+      const ok = await onSave();
+      if (ok) setIsEditing(false);
+    } else {
+      setIsEditing(false);
+    }
   };
 
   const handleCancel = () => {
@@ -36,34 +39,36 @@ export function EditableCard({
 
   return (
     <Card className="dark:bg-gray-800">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
+      <CardHeader className="flex items-center justify-between pb-2">
         <CardTitle>{title}</CardTitle>
         {editable && (
-          <div>
+          <div className="flex gap-2">
             {isEditing ? (
-              <div className="flex gap-2">
+              <>
+                {/* this button triggers saveChanges directly */}
                 <Button
-                  variant="ghost"
+                  type="button"
                   size="sm"
-                  aria-label="check"
-                  onClick={handleSave}
+                  variant="ghost"
+                  aria-label="Save"
+                  onClick={handleSaveClick}
                 >
                   <Check className="h-4 w-4" />
                 </Button>
                 <Button
-                  variant="ghost"
                   size="sm"
-                  aria-label="x"
+                  variant="ghost"
+                  aria-label="Cancel"
                   onClick={handleCancel}
                 >
                   <X className="h-4 w-4" />
                 </Button>
-              </div>
+              </>
             ) : (
               <Button
                 variant="ghost"
-                aria-label="edit"
                 size="sm"
+                aria-label="Edit"
                 onClick={() => setIsEditing(true)}
               >
                 <Edit className="h-4 w-4" />

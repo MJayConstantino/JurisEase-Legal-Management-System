@@ -19,7 +19,7 @@ describe('User Auth Process', () => {
     after(() => {})
     it('should raise an error when no fields are filled', () => {
       cy.contains('Sign Up').click()
-      cy.wait(800).contains('Invalid data Inputted:').should('be.visible')
+      cy.wait(1200).contains('Invalid data Inputted:').should('be.visible')
     })
 
     it('should raise an error if invalid email', () => {
@@ -27,7 +27,7 @@ describe('User Auth Process', () => {
       cy.get('#email').type('invalid-email')
       cy.get('#password').type('testPassword')
       cy.contains('Sign Up').click()
-      cy.wait(800).contains('Invalid data Inputted:').should('be.visible')
+      cy.wait(1200).contains('Invalid data Inputted:').should('be.visible')
     })
 
     it('should raise an error if password is less than 5', () => {
@@ -35,7 +35,7 @@ describe('User Auth Process', () => {
       cy.get('#email').type('Test@test.com')
       cy.get('#password').type('tes')
       cy.contains('Sign Up').click()
-      cy.wait(800).contains('Invalid data Inputted:').should('be.visible')
+      cy.wait(1200).contains('Invalid data Inputted:').should('be.visible')
     })
 
     it('should sign up user if provided right credentials', () => {
@@ -47,9 +47,33 @@ describe('User Auth Process', () => {
       cy.wait(2000)
         .contains('Sign Up Succesful! Confirm your Emeil!')
         .should('be.visible')
+    })
+    it('should throw an error if the user tries to sign up with the same credentials while the confirmation email was not confirmed ', () => {
+      cy.get('#name').type('Test User')
+      //for some reason auth is really so strict with this bruh
+      cy.get('#email').type('test@testdomain.com')
+      cy.get('#password').type('testPassword')
+      cy.contains('Sign Up').click()
+      cy.wait(2000)
+        .contains(/email confirmation/i)
+        .should('be.visible')
 
       // call rpc to confirm the email
+
       cy.task('confirmUserEmail', 'test@testdomain.com')
+
+      //
+    })
+    it('should throw an error if the user tries to sign up with exisiting user credentials ', () => {
+      cy.get('#name').type('Test User')
+      //for some reason auth is really so strict with this bruh
+      cy.get('#email').type('test@testdomain.com')
+      cy.get('#password').type('testPassword')
+      cy.contains('Sign Up').click()
+      cy.wait(2000)
+        .contains(/have an account/i)
+        .should('be.visible')
+
       //
     })
   })
@@ -59,30 +83,45 @@ describe('User Auth Process', () => {
       cy.visit('/login')
     })
 
-    it('should raise an error if provided wrong credentials', () => {
-      cy.get('#email').type('test@testdomain.com')
-      cy.get('#password').type('wrongpassword')
-      cy.get('button[type="submit"]').click()
-      cy.wait(800)
-        .contains(/failed to log in/i)
-        .should('be.visible')
-    })
-
     it('should raise an error if invalid email', () => {
       cy.get('#email').type('invalid-email')
       cy.get('#password').type('wrongpassword')
       cy.get('button[type="submit"]').click()
-      cy.wait(800)
+      cy.wait(1500)
         .contains(/invalid/i)
         .should('be.visible')
     })
+    it('should raise an error if provided wrong credentials', () => {
+      cy.get('#email').type('test@testdomain.com')
+      cy.get('#password').type('wrongpassword')
+      cy.get('button[type="submit"]').click()
+      cy.wait(1500)
+        .contains(/failed to log in/i)
+        .should('be.visible')
+    })
+    it('should lock user out if exceeded 5 tries with wrong credentials', () => {
+      let i = 1
+
+      while (i <= 5) {
+        cy.wait(1500)
+        cy.get('#email').type('test@testdomain.com')
+        cy.get('#password').type('wrongpassword')
+        cy.get('button[type="submit"]').click()
+        i++
+      }
+      cy.wait(1000)
+        .contains(/too many /i)
+        .should('be.visible')
+      cy.wait(2000)
+    })
 
     it('should sign in user if provided right credentials', () => {
+      cy.task('resetLoginAttempts', 'test@testdomain.com')
       cy.get('#email').type('test@testdomain.com')
       cy.get('#password').type('testPassword')
       cy.get('button[type="submit"]').click()
       //verify user session
-      cy.wait(5000)
+      cy.wait(3000)
         .contains(/welcome to jurisease/i)
         .should('be.visible')
     })
@@ -104,7 +143,9 @@ describe('User Auth Process', () => {
       cy.wait(3000)
       cy.contains(/welcome/i).should('be.visible')
     })
-
+    // please delete this when testing stuff like matters
+    // you can use the data from this when testing still so we can all
+    // just delete the data after the global search test
     after(() => {
       cy.task('deleteUser', 'test@testdomain.com')
     })

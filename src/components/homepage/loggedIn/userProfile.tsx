@@ -1,13 +1,11 @@
 import { User, Loader2 } from "lucide-react";
 import Image from "next/image";
 
-interface UserData {
-  full_name: string;
-  avatar_url: string;
-}
-
 interface UserProfileProps {
-  userData: UserData | null;
+  userData: {
+    full_name: string;
+    avatar_url: string | null;
+  } | null;
   loadingUser: boolean;
 }
 
@@ -30,6 +28,7 @@ export default function UserProfile({
                   src={userData.avatar_url}
                   alt={userData.full_name}
                   className="rounded-full object-cover border-2 border-[#2D336B] dark:border-[#8A91D9] transition-colors duration-200"
+                  style={{ width: "64px", height: "64px", objectFit: "cover" }}
                 />
               ) : (
                 <div className="w-16 h-16 rounded-full bg-[#2D336B]/10 dark:bg-[#8A91D9]/20 flex items-center justify-center transition-colors duration-200">

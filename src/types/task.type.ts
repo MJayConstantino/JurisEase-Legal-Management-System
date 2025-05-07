@@ -11,7 +11,6 @@ export interface Task {
   status: Status;
   matter_id?: string;
   created_at: Date;
-  isOverdue?: boolean;
 }
 
 export type CreateTaskInput = {
@@ -22,3 +21,6 @@ export type CreateTaskInput = {
   due_date?: Date | string | null;
   matter_id?: string;
 };
+
+export type SortField = "name" | "matter_id" | "due_date" | "status" | "priority";
+export type SortDirection = "asc" | "desc";
