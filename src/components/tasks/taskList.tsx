@@ -73,7 +73,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
   }, []);
 
   const handleTaskCreated = (newTask: Task) => {
-    setTasks((prev) => [...prev, newTask]);
+    setTasks((prev) => [newTask, ...prev]);
   };
 
   const handleTaskUpdated = (updatedTask: Task) => {

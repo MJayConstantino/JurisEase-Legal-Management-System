@@ -75,7 +75,7 @@ export function TaskRow({
           isLoadingMatters ? (
             <Skeleton className="inline-block w-12 sm:w-16 md:w-20 h-4 rounded" />
           ) : (
-            <span className="text-xs md:text-sm dark:text-gray-300 truncate max-w-[40px] sm:max-w-[60px] md:max-w-full inline-block">
+            <span className="text-xs md:text-sm dark:text-gray-white truncate max-w-[40px] sm:max-w-[60px] md:max-w-full inline-block">
               {matterName || "None"}
             </span>
           )
@@ -102,7 +102,7 @@ export function TaskRow({
 
       {/* Due Date */}
       <TableCell className="p-1 md:p-2">
-        <span className="text-[10px] sm:text-xs md:text-sm inline-flex items-center gap-1 justify-center dark:text-gray-400 truncate">
+        <span className="text-[10px] sm:text-xs md:text-sm inline-flex items-center gap-1 justify-center dark:text-white truncate">
           {formatDate(task.due_date)}
         </span>
       </TableCell>
