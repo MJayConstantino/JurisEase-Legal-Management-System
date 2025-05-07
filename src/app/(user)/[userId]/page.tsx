@@ -84,14 +84,14 @@ export default function UserProfilePage() {
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-white opacity-10 text-6xl font-bold leading-loose rotate-[-20deg] whitespace-nowrap">
               {Array.from({ length: 8 }).map((_, index) => (
-                <p key={index}>JurisEase JurisEase JurisEase JurisEase JurisEase JurisEase</p>
+                <p key={index}>JurisEase JurisEase JurisEase JurisEase JurisEase JurisEase JurisEase JurisEase JurisEase JurisEase</p>
               ))}
               </div>
             </div>
           </div>
         </div>
         <div className="flex items-center justify-center h-full w-full relative z-10 px-4">
-          <div className="overflow-hidden w-full max-w-4xl max-h-[80vh] bg-white dark:bg-gray-800 dark:shadow-[0_10px_15px_-3px_rgba(255,255,255,0.4)] shadow-md rounded-xl p-6 flex flex-col overflow-y-auto">
+          <div className="overflow-hidden w-full max-w-4xl max-h-[80vh] max-w-[95vh] bg-white dark:bg-gray-800 dark:shadow-[0_10px_15px_-3px_rgba(255,255,255,0.4)] shadow-md rounded-xl p-3 flex flex-col">
             <div className="flex items-center justify-between z-10">
               <Button
                 onClick={() => router.back()}
@@ -101,7 +101,7 @@ export default function UserProfilePage() {
               </Button>
             </div>
 
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center">
               <ChangeAvatar userName={currentUser?.user_name || "User"} metadataAvatarUrl={userData?.avatar_url || "/placeholder.svg"}/>
               
             </div>
@@ -115,7 +115,7 @@ export default function UserProfilePage() {
             <p className="text-center text-muted-foreground mt-1">{userEmail}</p>
 
             <div className="flex-grow" />
-            <div className="flex items-center justify-center pt-8">
+            <div className="flex items-center justify-center pt-2">
               <Button
                 variant="outline"
                 className="h-8 px-4 md:h-10 md:px-6 bg-red-600 hover:bg-red-700 text-white font-semibold dark:bg-red-600"
