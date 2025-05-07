@@ -29,7 +29,6 @@ export function EditUsername({
       user_name: newName
     })
 
-    toast.success("Name updated!")
     setIsEditing(false)
   }
 

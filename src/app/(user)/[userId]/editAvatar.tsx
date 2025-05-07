@@ -4,6 +4,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { useParams } from 'next/navigation'
 import { findExistingAvatar, uploadAvatar } from '@/actions/userProfile'
 import { UserProfileStates } from './userProfileStates'
+import { toast } from 'sonner'
 
 interface ChangeAvatarProps {
   userName: string
@@ -31,7 +32,7 @@ export function ChangeAvatar({ userName, metadataAvatarUrl }: ChangeAvatarProps)
               setAvatarPreview(newAvatarUrl);
             }
             window.location.reload()
-        
+            toast.success("User Avatar updated successfully")
           } catch (error) {
             console.error('Error uploading avatar:', error);
           } finally {
