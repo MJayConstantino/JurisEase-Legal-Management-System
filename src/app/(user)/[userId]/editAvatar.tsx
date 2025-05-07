@@ -16,11 +16,15 @@ export function ChangeAvatar({ userName, metadataAvatarUrl }: ChangeAvatarProps)
   
   const { userId } = useParams();
 
-
     async function handleAvatarChange( event: React.ChangeEvent<HTMLInputElement>) {
         const file = event.target.files?.[0]
         if (!file || !userId) return
 
+        const fileSizeLimit = 5
+        const screenSizePixels = 1024
+        const convertFileSizeToMB = file.size / (screenSizePixels * screenSizePixels);
+
+        if(convertFileSizeToMB <= fileSizeLimit){
           try {
             setIsLoading(true);
 
@@ -38,6 +42,9 @@ export function ChangeAvatar({ userName, metadataAvatarUrl }: ChangeAvatarProps)
           } finally {
             setIsLoading(false);
           }
+        }else{
+          toast.error("File is too large. Cannot upload avatar.")
+        }
 
        }
 
