@@ -11,7 +11,7 @@ export interface CourtDetailsFormProps {
 }
 
 export const CourtDetailsForm: React.FC<CourtDetailsFormProps> = ({
-  court = { name: "", phone: "", email: "" },
+  court,
   isEditing,
   onChange,
   errors = {},

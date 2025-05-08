@@ -19,13 +19,8 @@ interface CaseDetailsCardProps {
 }
 
 export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
-  // 1) Initialize editedMatter with safe defaults for nullable fields:
   const [editedMatter, setEditedMatter] = useState<Matter>({
     ...matter,
-    client: matter.client ?? "",
-    client_phone: matter.client_phone ?? "",
-    client_email: matter.client_email ?? "",
-    client_address: matter.client_address ?? "",
   });
 
   const [users, setUsers] = useState<UserType[]>([]);
@@ -55,8 +50,16 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
   };
 
   const saveChanges = async (): Promise<boolean> => {
-    // 2) Validate against your Zod schema first:
-    const result = caseSchema.safeParse(editedMatter);
+    // If client name is empty or only whitespace, set it to "To be determined"
+    const matterToSave = {
+      ...editedMatter,
+      client:
+        !editedMatter.client || editedMatter.client.trim() === ""
+          ? "To be determined"
+          : editedMatter.client,
+    };
+
+    const result = caseSchema.safeParse(matterToSave);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
       result.error.errors.forEach((err) => {
@@ -68,14 +71,12 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
     }
     setErrors({});
 
-    // 3) Only call your save handler if validation passed
-    const { matter: updated, error } = await handleSaveMatter(editedMatter);
+    const { matter: updated, error } = await handleSaveMatter(matterToSave);
     if (!error && updated) {
       onUpdate?.(updated);
       return true;
     }
 
-    // 4) On failure, revert
     setEditedMatter(handleCancelMatter(matter).matter);
     return false;
   };
