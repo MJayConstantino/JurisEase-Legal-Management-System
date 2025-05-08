@@ -55,7 +55,7 @@ export function MatterRow({
             <Skeleton className="w-24 h-4 items-center" />
           ) : (
             <div
-              title={`Case#: ${matter.case_number}`}
+              title={`Case # ${matter.case_number}`}
               className="truncate max-w-[120px]"
             >
               {matter.case_number}
