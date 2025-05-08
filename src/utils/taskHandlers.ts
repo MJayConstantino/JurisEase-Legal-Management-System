@@ -44,8 +44,8 @@ export const handleComplete = async function (
 
     toast.success(
       newStatus === "completed"
-        ? "Task marked as completed"
-        : "Task marked as in-progress"
+        ? `Task "${serverUpdatedTask.name}" marked as complete` 
+        : `Task "${serverUpdatedTask.name}" unmark as complete`
     );
 
   } catch (error) {
@@ -85,8 +85,6 @@ export async function handleSaveTask(
 
     setLocalTask(serverUpdatedTask);
     onTaskUpdated(serverUpdatedTask);
-
-    toast.success("Task saved successfully");
 
     onDone?.();
   } catch (error) {

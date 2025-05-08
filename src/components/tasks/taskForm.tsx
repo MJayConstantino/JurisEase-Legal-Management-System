@@ -138,28 +138,37 @@ export function TaskForm({
         matter_id: task.matter_id || undefined,
       };
 
-      const response = task.task_id
-        ? await handleUpdateTask(taskToSubmit)
-        : await handleCreateTask(taskToSubmit);
+      const isNewTask = !task.task_id;
+      const response = isNewTask
+        ? await handleCreateTask(taskToSubmit)
+        : await handleUpdateTask(taskToSubmit);
 
       if (response && !response.error && response.task) {
-        if (!task.task_id && keepFormOpen && onSaveAndCreateAnother) {
+        toast.success(
+          isNewTask
+            ? `Task "${response.task.name}" created successfully`
+            : `Task "${response.task.name}" updated successfully`
+        );
+
+        if (isNewTask && keepFormOpen && onSaveAndCreateAnother) {
           onSaveAndCreateAnother(response.task as Task);
           setTask(initializeTask(undefined, matterId));
         } else if (onSave) {
           onSave(response.task as Task);
-          if (task.task_id) {
+          if (!isNewTask) {
             setTask(response.task as Task);
           }
           onOpenChange(false);
         }
       } else {
-        // Error toast is handled in action handlers
-        console.error("Failed to save task:", response?.error);
+        toast.error(response?.error || "Failed to save task");
       }
     } catch (error) {
       console.error("Error saving task:", error);
-      // Error toast is handled in action handlers
+      toast.error(
+        "Failed to save task: " +
+          (error instanceof Error ? error.message : "Unknown error")
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -177,11 +186,13 @@ export function TaskForm({
     >
       <DialogContent className="sm:max-w-[500px] w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700 p-6">
         <DialogHeader>
-          <DialogTitle className="dark:text-gray-100">
-            {task.task_id ? "Edit Task" : "New Task"}
+          <DialogTitle className="dark:text-gray-100 font-semibold">
+            {task.task_id ? "Edit Task" : "Add New Task"}
           </DialogTitle>
-          <DialogDescription className="sr-only">
-            Task creation form
+          <DialogDescription>
+            {task.task_id
+              ? "Edit the details below to update the task."
+              : "Fill in the details below to create a new task."}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4">
@@ -208,7 +219,7 @@ export function TaskForm({
               >
                 <SelectTrigger
                   id="priority"
-                  className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                  className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 w-full"
                 >
                   <SelectValue placeholder="Select priority" />
                 </SelectTrigger>
@@ -235,71 +246,50 @@ export function TaskForm({
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div>
-              <Label htmlFor="assignedMatter" className="dark:text-gray-200">
-                Assigned Matter
-              </Label>
-              <Select
-                value={task.matter_id || ""}
-                onValueChange={(value) => handleChange("matter_id", value)}
-                disabled={disableMatterSelect || !!matterId || isLoadingMatters}
-              >
-                <SelectTrigger className="mt-2 w-full dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
-                  <SelectValue
-                    placeholder={
-                      isLoadingMatters
-                        ? "Loading matters..."
-                        : "Select a matter"
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
-                  {isLoadingMatters ? (
-                    <SelectItem value="loading" disabled>
-                      Loading matters...
-                    </SelectItem>
-                  ) : matters.length > 0 ? (
-                    matters.map((matter) => {
-                      return (
-                        <SelectItem
-                          key={matter.matter_id}
-                          value={matter.matter_id}
-                        >
-                          {getMattersDisplayName(matter.matter_id, matters)}
-                        </SelectItem>
-                      );
-                    })
-                  ) : (
-                    <SelectItem value="none" disabled>
-                      No matters available
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="taskStatus" className="dark:text-gray-200">
-                Task Status
-              </Label>
-              <Select
-                value={task.status}
-                onValueChange={(value: "in-progress" | "completed") =>
-                  handleChange("status", value)
-                }
-              >
-                <SelectTrigger className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
-                  <SelectItem value="in-progress">In-Progress</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div>
+            <Label htmlFor="assignedMatter" className="dark:text-gray-200">
+              Assigned Matter
+            </Label>
+            <Select
+              value={task.matter_id || ""}
+              onValueChange={(value) => handleChange("matter_id", value)}
+              disabled={disableMatterSelect || !!matterId || isLoadingMatters}
+            >
+              <SelectTrigger className="mt-2 w-full dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
+                <SelectValue
+                  placeholder={
+                    isLoadingMatters ? "Loading matters..." : "Select a matter"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
+                {isLoadingMatters ? (
+                  <SelectItem value="loading" disabled>
+                    Loading matters...
+                  </SelectItem>
+                ) : matters.length > 0 ? (
+                  matters.map((matter) => {
+                    return (
+                      <SelectItem
+                        key={matter.matter_id}
+                        value={matter.matter_id}
+                      >
+                        {getMattersDisplayName(matter.matter_id, matters)}
+                      </SelectItem>
+                    );
+                  })
+                ) : (
+                  <SelectItem value="none" disabled>
+                    No matters available
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
           </div>
+        </div>
 
-          {/* Due Date */}
+        {/* Due Date */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
             <Label htmlFor="dueDate" className="dark:text-gray-200">
               Due Date
@@ -307,7 +297,7 @@ export function TaskForm({
             <Input
               id="dueDate"
               type="date"
-              className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+              className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 w-full"
               value={
                 task.due_date
                   ? format(new Date(task.due_date), "yyyy-MM-dd")
@@ -322,6 +312,25 @@ export function TaskForm({
               }
             />
           </div>
+          <div>
+            <Label htmlFor="taskStatus" className="dark:text-gray-200">
+              Task Status
+            </Label>
+            <Select
+              value={task.status}
+              onValueChange={(value: "in-progress" | "completed") =>
+                handleChange("status", value)
+              }
+            >
+              <SelectTrigger className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 w-full">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
+                <SelectItem value="in-progress">In-Progress</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Footer Buttons */}
@@ -331,6 +340,7 @@ export function TaskForm({
               type="submit"
               onClick={() => handleSubmit(false)}
               disabled={isSubmitting}
+              className={isSubmitting ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}
             >
               {isSubmitting
                 ? "Saving..."
@@ -340,19 +350,19 @@ export function TaskForm({
             </Button>
             {!task.task_id && (
               <Button
-                variant="outline"
                 onClick={() => handleSubmit(true)}
                 disabled={isSubmitting}
+                className={isSubmitting ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}
               >
                 {isSubmitting ? "Saving..." : "Save and Create Another"}
               </Button>
             )}
           </div>
           <Button
-            variant="ghost"
+            variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isSubmitting}
-          >
+            className="cursor-pointer w-full sm:w-auto">
             Cancel
           </Button>
         </DialogFooter>

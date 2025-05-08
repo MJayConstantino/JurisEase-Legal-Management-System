@@ -44,7 +44,9 @@ export function TaskRow({
     : "";
 
   return (
-    <TableRow className={`${backgroundClasses}`}>
+    <TableRow
+      className={`${backgroundClasses} hover:bg-gray-50/muted dark:hover:bg-gray-900/muted cursor-default`}
+    >
       {/* Checkbox Column */}
       <TableCell className="p-1 md:p-2 ">
         <Checkbox
@@ -52,7 +54,7 @@ export function TaskRow({
           onCheckedChange={() => onStatusChange(task)}
           disabled={isProcessing}
           id={`task-complete-${task.task_id}`}
-          className={`h-4 w-4 md:h-5 md:w-5 border-gray-300 hover:cursor-pointer shadow ${
+          className={`h-4 w-4 md:h-5 md:w-5 border-gray-300 hover:cursor-pointer ${
             task.status === "completed"
               ? "dark:bg-green-700"
               : "dark:bg-gray-800"
@@ -61,7 +63,7 @@ export function TaskRow({
       </TableCell>
 
       {/* Task Name */}
-      <TableCell className="p-1 md:p-2">
+      <TableCell className="p-1 md:p-2" title={`Task Name: ${task.name}`}>
         <div className="flex flex-col">
           <h3 className="font-medium text-xs sm:text-sm md:text-base truncate dark:text-white max-w-[80px] sm:max-w-[120px] md:max-w-full">
             {task.name}
@@ -70,12 +72,12 @@ export function TaskRow({
       </TableCell>
 
       {/* Matter */}
-      <TableCell className="p-1 md:p-2">
+      <TableCell className="p-1 md:p-2" title={`Matter: ${matterName}`}>
         {task.matter_id ? (
           isLoadingMatters ? (
             <Skeleton className="inline-block w-12 sm:w-16 md:w-20 h-4 rounded" />
           ) : (
-            <span className="text-xs md:text-sm dark:text-gray-white truncate max-w-[40px] sm:max-w-[60px] md:max-w-full inline-block">
+            <span className="text-xs md:text-sm dark:text-gray-white truncate max-w-[100px] sm:max-w-[80px] md:max-w-full inline-block">
               {matterName || "None"}
             </span>
           )
@@ -87,7 +89,7 @@ export function TaskRow({
       </TableCell>
 
       {/* Status */}
-      <TableCell className="p-1 md:p-2">
+      <TableCell className="p-1 md:p-2" title={`Status: ${task.status}`}>
         <Badge
           variant="outline"
           className={`text-[10px] sm:text-xs w-auto inline-flex justify-center px-1 sm:px-2 ${
@@ -101,14 +103,23 @@ export function TaskRow({
       </TableCell>
 
       {/* Due Date */}
-      <TableCell className="p-1 md:p-2">
-        <span className="text-[10px] sm:text-xs md:text-sm inline-flex items-center gap-1 justify-center dark:text-white truncate">
-          {formatDate(task.due_date)}
-        </span>
+      <TableCell
+        className="p-1 md:p-2"
+        title={`Due Date: ${formatDate(task.due_date)}`}
+      >
+        {task.due_date ? (
+          <span className="text-[10px] sm:text-xs md:text-sm inline-flex items-center gap-1 justify-center dark:text-white truncate">
+            {formatDate(task.due_date)}
+          </span>
+        ) : (
+          <span className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
+            No date
+          </span>
+        )}
       </TableCell>
 
       {/* Priority */}
-      <TableCell className="p-1 md:p-2 ">
+      <TableCell className="p-1 md:p-2" title={`Priority: ${task.priority}`}>
         <Badge
           variant="outline"
           className={`text-[10px] sm:text-xs w-auto inline-flex justify-center px-1 sm:px-2 ${getStatusColor(

@@ -19,7 +19,7 @@ export interface TaskListProps {
 export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [view, setView] = useState<"grid" | "table">("grid");
+  const [view, setView] = useState<"grid" | "table">("table");
   const [matters, setMatters] = useState<Matter[]>([]);
   const [isLoadingMatters, setIsLoadingMatters] = useState(true);
   const [isLoadingTasks, setIsLoadingTasks] = useState(false);
@@ -101,7 +101,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
   });
 
   return (
-    <div className="border w-full container mx-auto py-4 pt-2 h-full flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md">
+    <div className="border w-full container mx-auto h-full flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900 rounded-lg shadow">
       <TasksHeader
         onStatusChange={setStatusFilter}
         onViewChange={setView}
