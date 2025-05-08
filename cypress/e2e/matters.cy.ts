@@ -59,39 +59,39 @@ describe("Matters E2E Interactions", () => {
       cy.wait(500);
       cy.contains("Open Matter Test").should("be.visible");
     });
-
-    it("should create a pending matter", () => {
-      cy.get('input[placeholder="Case Name"]').type("Pending Matter Test", {
-        delay: 100,
-      });
-      cy.get('input[placeholder="Case Number"]').type("PENDING-123", {
-        delay: 100,
-      });
-      cy.get("#status").click();
-      cy.wait(300);
-      cy.get('[role="option"]').contains("Pending").click();
-      cy.get('button[type="submit"]').contains("Create Matter").click();
-      cy.wait(500);
-      cy.contains("Pending Matter Test").should("be.visible");
-    });
-
-    it("should create a closed matter", () => {
-      cy.get('input[placeholder="Case Name"]').type("Closed Matter Test", {
-        delay: 100,
-      });
-      cy.get('input[placeholder="Case Number"]').type("CLOSED-123", {
-        delay: 100,
-      });
-      cy.get("#status").click();
-      cy.wait(300);
-      cy.get('[role="option"]').contains("Closed").click();
-      cy.get('button[type="submit"]').contains("Create Matter").click();
-      cy.wait(500);
-      cy.contains("Closed Matter Test").should("be.visible");
-    });
   });
 
-  describe("Creating matters with client information", () => {
+  it("should create a pending matter", () => {
+    cy.get('input[placeholder="Case Name"]').type("Pending Matter Test", {
+      delay: 100,
+    });
+    cy.get('input[placeholder="Case Number"]').type("PENDING-123", {
+      delay: 100,
+    });
+    cy.get("#status").click();
+    cy.wait(300);
+    cy.get('[role="option"]').contains("Pending").click();
+    cy.get('button[type="submit"]').contains("Create Matter").click();
+    cy.wait(500);
+    cy.contains("Pending Matter Test").should("be.visible");
+  });
+
+  it("should create a closed matter", () => {
+    cy.get('input[placeholder="Case Name"]').type("Closed Matter Test", {
+      delay: 100,
+    });
+    cy.get('input[placeholder="Case Number"]').type("CLOSED-123", {
+      delay: 100,
+    });
+    cy.get("#status").click();
+    cy.wait(300);
+    cy.get('[role="option"]').contains("Closed").click();
+    cy.get('button[type="submit"]').contains("Create Matter").click();
+    cy.wait(500);
+    cy.contains("Closed Matter Test").should("be.visible");
+  });
+
+  describe.only("Creating matters with client information", () => {
     beforeEach(() => {
       cy.contains("Add Matter").click();
       cy.wait(300);
@@ -242,20 +242,329 @@ describe("Matters E2E Interactions", () => {
     });
   });
 
-  after(() => {
-    // Clean up all test matters
-    const mattersToDelete = [
-      "Open Matter Test",
-      "Pending Matter Test",
-      "Closed Matter Test",
-      "Matter with Client",
-      "Matter Without Client",
-      "Create New Button Matter",
-      "Task Page Matter",
-      "Billings Page Matter",
-    ];
-    mattersToDelete.forEach((matterName) => {
-      cy.task("deleteMatter", matterName);
+  describe("When updating existing matters", () => {
+    describe("Status and date changes", () => {
+      it("should update open matter to closed and show close date", () => {
+        cy.contains("Open Matter Test").click();
+        cy.wait(1000); // Wait for matter details to load
+
+        // Find Case Details card and click its edit button
+        cy.contains("Case Details")
+          .parent()
+          .find('button[aria-label="Edit"]')
+          .should("be.visible")
+          .click();
+        cy.wait(500); // Wait for edit mode
+
+        // Change status to closed
+        cy.get(
+          ":nth-child(2) > :nth-child(2) > .space-y-1 > .border-input"
+        ).click();
+        cy.wait(200);
+        cy.get('[role="option"]').contains("Closed").click();
+
+        // Save changes
+        cy.wait(500); // Wait before saving
+        cy.get('button[aria-label="Save"]').click();
+        cy.wait(1000); // Wait for save to complete
+
+        // Verify status change and close date in Case Details card
+        cy.get('span[data-slot="badge"]')
+          .contains("Closed")
+          .should("have.class", "bg-gray-100")
+          .and("have.class", "text-gray-800");
+
+        const today = new Date().toLocaleDateString();
+        cy.contains("Close Date")
+          .parent()
+          .should("be.visible")
+          .find("p")
+          .should("contain", today);
+      });
+    });
+
+    describe("Client information validation", () => {
+      beforeEach(() => {
+        cy.contains("Matter with Client").click();
+        cy.contains("Case Details")
+          .parent()
+          .find('button[aria-label="Edit"]')
+          .should("be.visible")
+          .click();
+        cy.wait(500);
+      });
+
+      it("should show error for invalid email format", () => {
+        cy.get('input[placeholder="Client Email"]')
+          .clear()
+          .type("invalid-email");
+        cy.get('button[aria-label="Save"]').click();
+        cy.contains("Invalid email").should("be.visible");
+      });
+
+      it("should show error for invalid phone format", () => {
+        cy.get('input[placeholder="Client Phone"]')
+          .clear()
+          .type("invalid-phone");
+        cy.get('button[aria-label="Save"]').click();
+        cy.contains(
+          "Phone can only contain numbers and symbols, max 15 characters"
+        ).should("be.visible");
+      });
+    });
+
+    describe("Client information updates", () => {
+      it("should update 'To be determined' client to actual client", () => {
+        cy.contains("Matter Without Client").click();
+
+        cy.contains("Case Details")
+          .parent()
+          .find('button[aria-label="Edit"]')
+          .should("be.visible")
+          .click();
+        cy.wait(500);
+
+        // Update client information
+        cy.get('input[placeholder="Client Name"]').clear().type("John Smith");
+        cy.get('input[placeholder="Client Phone"]').type("123-456-7890");
+        cy.get('input[placeholder="Client Email"]').type("john@example.com");
+        cy.get('input[placeholder="Client Address"]').type("123 Main St");
+
+        // Save changes
+        cy.get('button[aria-label="Save"]').click();
+
+        // Verify updates
+        cy.contains("John Smith").should("be.visible");
+        cy.contains("123-456-7890").should("be.visible");
+        cy.contains("john@example.com").should("be.visible");
+        cy.contains("123 Main St").should("be.visible");
+      });
+
+      describe("Opposing council information validation", () => {
+        beforeEach(() => {
+          cy.contains("Matter with Client").click();
+          cy.contains("Opposing Council")
+            .parent()
+            .find('button[aria-label="Edit"]')
+            .should("be.visible")
+            .click();
+          cy.wait(500);
+        });
+
+        it("should show error for invalid email format", () => {
+          cy.get('input[placeholder="Email address"]')
+            .clear()
+            .type("invalid-email");
+          cy.get('button[aria-label="Save"]').click();
+          cy.contains("Invalid email").should("be.visible");
+        });
+
+        it("should show error for invalid phone format", () => {
+          cy.get('input[placeholder="Phone number"]')
+            .clear()
+            .type("invalid-phone");
+          cy.get('button[aria-label="Save"]').click();
+          cy.contains(
+            "Phone can only contain numbers and symbols, max 15 characters"
+          ).should("be.visible");
+        });
+      });
+
+      describe("Court details validation", () => {
+        beforeEach(() => {
+          cy.contains("Matter with Client").click();
+          cy.contains("Court Details")
+            .parent()
+            .find('button[aria-label="Edit"]')
+            .should("be.visible")
+            .click();
+          cy.wait(500);
+        });
+
+        it("should show error for invalid phone format", () => {
+          cy.get('input[placeholder="Phone"]').clear().type("invalid-phone");
+          cy.get('button[aria-label="Save"]').click();
+          cy.contains(
+            "Phone can only contain numbers and symbols, max 15 characters"
+          ).should("be.visible");
+        });
+
+        it("should show error for invalid email format", () => {
+          cy.get('input[placeholder="Email address"]')
+            .clear()
+            .type("invalid-email");
+          cy.get('button[aria-label="Save"]').click();
+          cy.contains("Invalid email").should("be.visible");
+        });
+      });
+
+      describe.only("Complete matter information updates", () => {
+        beforeEach(() => {
+          cy.contains("Matter with Client").click();
+          cy.wait(500);
+        });
+
+        it("should update court details successfully", () => {
+          // Edit court details
+          cy.contains("Court Details")
+            .parent()
+            .find('button[aria-label="Edit"]')
+            .should("be.visible")
+            .click();
+          cy.wait(500);
+
+          cy.get('input[placeholder="Court Name"]')
+            .clear()
+            .type("Superior Court");
+          cy.get('input[placeholder="Phone"]').clear().type("555-123-4567");
+          cy.get('input[placeholder="Email address"]')
+            .clear()
+            .type("court@example.gov");
+
+          cy.get('button[aria-label="Save"]').click();
+          cy.wait(500);
+
+          // Verify updates
+          cy.contains("Superior Court").should("be.visible");
+          cy.contains("555-123-4567").should("be.visible");
+          cy.contains("court@example.gov").should("be.visible");
+        });
+
+        it("should update opposing council details successfully", () => {
+          // Edit opposing council details
+          cy.contains("Opposing Council")
+            .parent()
+            .find('button[aria-label="Edit"]')
+            .should("be.visible")
+            .click();
+          cy.wait(500);
+
+          cy.get('input[placeholder="Opposing council name"]')
+            .clear()
+            .type("Jane Smith, Esq.");
+          cy.get('input[placeholder="Phone number"]')
+            .clear()
+            .type("555-987-6543");
+          cy.get('input[placeholder="Email address"]')
+            .clear()
+            .type("jsmith@lawfirm.com");
+          cy.get('input[placeholder="Address"]').clear().type("789 Legal Blvd");
+
+          cy.get('button[aria-label="Save"]').click();
+          cy.wait(500);
+
+          // Verify updates
+          cy.contains("Jane Smith, Esq.").should("be.visible");
+          cy.contains("555-987-6543").should("be.visible");
+          cy.contains("jsmith@lawfirm.com").should("be.visible");
+          cy.contains("789 Legal Blvd").should("be.visible");
+        });
+
+        it("should update all matter details comprehensively", () => {
+          // Update case details first
+          cy.contains("Case Details")
+            .parent()
+            .find('button[aria-label="Edit"]')
+            .should("be.visible")
+            .click();
+          cy.wait(500);
+
+          // Update client information
+          cy.get('input[placeholder="Client Name"]')
+            .clear()
+            .type("Robert Johnson");
+          cy.get('input[placeholder="Client Phone"]')
+            .clear()
+            .type("555-111-2222");
+          cy.get('input[placeholder="Client Email"]')
+            .clear()
+            .type("rjohnson@email.com");
+          cy.get('input[placeholder="Client Address"]')
+            .clear()
+            .type("123 Client St");
+
+          cy.get('button[aria-label="Save"]').click();
+          cy.wait(1000);
+
+          // Update opposing council details
+          cy.contains("Opposing Council")
+            .parent()
+            .find('button[aria-label="Edit"]')
+            .should("be.visible")
+            .click();
+          cy.wait(500);
+
+          cy.get('input[placeholder="Opposing council name"]')
+            .clear()
+            .type("Patricia Lee, Esq.");
+          cy.get('input[placeholder="Phone number"]')
+            .clear()
+            .type("555-333-4444");
+          cy.get('input[placeholder="Email address"]')
+            .clear()
+            .type("plee@lawfirm.com");
+          cy.get('input[placeholder="Address"]')
+            .clear()
+            .type("456 Attorney Ave");
+
+          cy.get('button[aria-label="Save"]').click();
+          cy.wait(1000);
+
+          // Update court details
+          cy.contains("Court Details")
+            .parent()
+            .find('button[aria-label="Edit"]')
+            .should("be.visible")
+            .click();
+          cy.wait(500);
+
+          cy.get('input[placeholder="Court Name"]')
+            .clear()
+            .type("District Court");
+          cy.get('input[placeholder="Phone"]').clear().type("555-555-6666");
+          cy.get('input[placeholder="Email address"]')
+            .clear()
+            .type("district@courts.gov");
+
+          cy.get('button[aria-label="Save"]').click();
+          cy.wait(1000);
+
+          // Verify all updates
+          // Client information
+          cy.contains("Robert Johnson").should("be.visible");
+          cy.contains("555-111-2222").should("be.visible");
+          cy.contains("rjohnson@email.com").should("be.visible");
+          cy.contains("123 Client St").should("be.visible");
+
+          // Opposing council information
+          cy.contains("Patricia Lee, Esq.").should("be.visible");
+          cy.contains("555-333-4444").should("be.visible");
+          cy.contains("plee@lawfirm.com").should("be.visible");
+          cy.contains("456 Attorney Ave").should("be.visible");
+
+          // Court information
+          cy.contains("District Court").should("be.visible");
+          cy.contains("555-555-6666").should("be.visible");
+          cy.contains("district@courts.gov").should("be.visible");
+        });
+      });
+
+      after(() => {
+        // Clean up all test matters
+        const mattersToDelete = [
+          "Open Matter Test",
+          "Pending Matter Test",
+          "Closed Matter Test",
+          "Matter with Client",
+          "Matter Without Client",
+          "Create New Button Matter",
+          "Task Page Matter",
+          "Billings Page Matter",
+        ];
+        mattersToDelete.forEach((matterName) => {
+          cy.task("deleteMatter", matterName);
+        });
+      });
     });
   });
 });
