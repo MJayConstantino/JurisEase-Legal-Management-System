@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { AddMatterDialog } from "@/components/matters/addMatterDialog";
-import { userEvent, within } from "@storybook/testing-library";
 import { action } from "@storybook/addon-actions";
 import { ThemeProvider } from "@/components/theme-provider";
 import React from "react";
@@ -9,6 +8,9 @@ const meta: Meta<typeof AddMatterDialog> = {
   title: "Matters/AddMatterDialog",
   component: AddMatterDialog,
   parameters: {
+    nextjs: {
+      appDirectory: true,
+    },
     layout: "centered",
     themes: {
       default: "light",

@@ -1,5 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 import CreateNewButton from "@/components/header/createNewButton";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const meta: Meta<typeof CreateNewButton> = {
   title: "Header/CreateNewButton",
@@ -17,25 +18,33 @@ export default meta;
 type Story = StoryObj<typeof CreateNewButton>;
 
 export const Default: Story = {
-  render: () => <CreateNewButton matters={[]} />,
+  render: () => (
+    <ThemeProvider attribute="class" defaultTheme="light">
+      <CreateNewButton matters={[]} />,
+    </ThemeProvider>
+  ),
 };
 
 export const DarkMode: Story = {
   render: () => (
-    <div className="dark">
+    <ThemeProvider attribute="class" defaultTheme="dark">
       <CreateNewButton matters={[]} />
-    </div>
+    </ThemeProvider>
   ),
 };
 
 export const DropdownOpen: Story = {
-  render: () => <CreateNewButton defaultOpen matters={[]} />,
+  render: () => (
+    <ThemeProvider attribute="class" defaultTheme="light">
+      <CreateNewButton defaultOpen matters={[]} />,
+    </ThemeProvider>
+  ),
 };
 
 export const DropdownOpenDarkMode: Story = {
   render: () => (
-    <div className="dark">
+    <ThemeProvider attribute="class" defaultTheme="dark">
       <CreateNewButton defaultOpen matters={[]} />
-    </div>
+    </ThemeProvider>
   ),
 };
