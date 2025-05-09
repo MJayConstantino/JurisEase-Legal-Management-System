@@ -16,6 +16,7 @@ import { TaskRow } from "./taskRow";
 import { Table, TableBody } from "@/components/ui/table";
 import { TaskTableHeader } from "./taskTableHeader";
 import type { SortField } from "@/types/task.type";
+
 interface TaskTableProps {
   tasks: Task[];
   matters: Matter[];
@@ -70,8 +71,6 @@ export function TaskTable({
         const dateA = a.due_date ? new Date(a.due_date).getTime() : 0;
         const dateB = b.due_date ? new Date(b.due_date).getTime() : 0;
         return direction * (dateA - dateB);
-      case "status":
-        return direction * a.status.localeCompare(b.status);
       case "priority":
         const priorityA =
           priorityOrder[a.priority as keyof typeof priorityOrder] || 0;
@@ -133,6 +132,8 @@ export function TaskTable({
                   onDelete={handleDeleteTask}
                   onStatusChange={handleStatusChange}
                   isProcessing={processingTaskId === task.task_id}
+                  onTaskUpdated={onTaskUpdated}
+                  onTaskDeleted={onTaskDeleted}
                 />
               ))}
               {sortedTasks.length === 0 && (

@@ -13,6 +13,7 @@ import { getStatusColor } from "@/utils/getStatusColor";
 import { Skeleton } from "../ui/skeleton";
 import { TaskDeleteDialog } from "./taskDeleteDialog";
 import { useParams } from "next/navigation";
+import { TaskDetails } from "./taskDetails";
 import {
   handleComplete,
   handleSaveTask,
@@ -38,6 +39,7 @@ export function TaskCard({
   isLoadingMatters = false,
 }: TaskCardProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isViewingDetails, setIsViewingDetails] = useState(false);
   const [task, setTask] = useState<Task>(initialTask);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -61,6 +63,7 @@ export function TaskCard({
             ? "border-green-500 bg-green-50 dark:bg-green-950"
             : "bg-white dark:bg-gray-800 dark:border-gray-700"
         }`}
+        onClick={() => setIsViewingDetails(true)}
       >
         <div
           className="mb-2 flex justify-between items-start gap-2 "
@@ -120,6 +123,7 @@ export function TaskCard({
         <div
           className="flex flex-wrap items-center justify-between mt-2 pt-2 border-t dark:border-gray-700 gap-y-2"
           title={`Status: ${task.status}`}
+          onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center gap-2">
             <Badge
@@ -171,7 +175,10 @@ export function TaskCard({
               variant="outline"
               size="icon"
               className="h-7 w-7 md:h-9 md:w-9 cursor-pointer"
-              onClick={() => setIsEditing(true)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditing(true);
+              }}
               disabled={isProcessing}
             >
               <Edit className="h-3 w-3 md:h-4 md:w-4" />
@@ -181,7 +188,10 @@ export function TaskCard({
               variant="outline"
               size="icon"
               className="h-7 w-7 md:h-9 md:w-9 cursor-pointer"
-              onClick={() => setIsDeleteDialogOpen(true)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsDeleteDialogOpen(true);
+              }}
               disabled={isProcessing}
             >
               <Trash2Icon className="h-3 w-3 md:h-4 md:w-4" />
@@ -228,6 +238,19 @@ export function TaskCard({
         onSuccess={() =>
           handleDelete(initialTask.task_id, onTaskDeleted, setIsProcessing)
         }
+      />
+
+      <TaskDetails
+        open={isViewingDetails}
+        onOpenChange={setIsViewingDetails}
+        task={task}
+        matters={matters}
+        isLoadingMatters={isLoadingMatters}
+        onTaskUpdated={(updatedTask) => {
+          setTask(updatedTask);
+          onTaskUpdated(updatedTask);
+        }}
+        onTaskDeleted={onTaskDeleted}
       />
     </div>
   );

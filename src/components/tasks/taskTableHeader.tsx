@@ -46,20 +46,22 @@ export function TaskTableHeader({
         <TableHead className="w-10 md:w-12 text-center">
           <span className="sr-only">Checkbox</span>
         </TableHead>
-        <TableHead className="w-[20%] md:w-[20%]">
+        <TableHead className="w-[25%] md:w-[30%]">
           {renderSortableHeader("name", "Task Name")}
         </TableHead>
         <TableHead className="w-[20%] text-center  md:table-cell">
           {renderSortableHeader("matter_id", "Matter")}
         </TableHead>
-        <TableHead className="w-[20%] text-center">
-          {renderSortableHeader("status", "Status")}
-        </TableHead>
-        <TableHead className="w-[15%] text-center sm:table-cell">
-          {renderSortableHeader("due_date", "Due Date")}
+        <TableHead className="w-[15%]">
+          <span className="text-xs md:text-sm font-medium whitespace-nowrap">
+            Status
+          </span>
         </TableHead>
         <TableHead className="w-[15%] text-center">
           {renderSortableHeader("priority", "Priority")}
+        </TableHead>
+        <TableHead className="w-[15%] text-center sm:table-cell">
+          {renderSortableHeader("due_date", "Due Date")}
         </TableHead>
         <TableHead className="w-[20%] text-right">Actions</TableHead>
       </TableRow>
