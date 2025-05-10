@@ -21,3 +21,6 @@ export type CreateTaskInput = {
   due_date?: Date | string | null;
   matter_id?: string;
 };
+
+export type SortField = "name" | "matter_id" | "due_date" | "status" | "priority" | "created_at";
+export type SortDirection = "asc" | "desc";

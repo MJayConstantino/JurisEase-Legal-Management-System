@@ -20,7 +20,7 @@ export function BillingsActionHandlers(){
           if (newBill) {
             setBills((prev) => [...prev, newBill]);
           }
-          toast.success("Bill added successfully!");
+          setTimeout(() => { window.location.reload() }, 500);
         } catch (error) {
           console.error("Failed to add bill:", error);
           toast.error("Failed to add bill. Please try again.");
@@ -40,7 +40,7 @@ export function BillingsActionHandlers(){
               )
             );
           }
-          toast.success("Bill updated successfully!");
+          setTimeout(() => { window.location.reload() }, 500);
         } catch (error) {
           console.error("Failed to update bill:", error);
           toast.error("Failed to update bill. Please try again.");
@@ -56,7 +56,8 @@ export function BillingsActionHandlers(){
           if (success) {
             setBills((prev) => prev.filter((bill) => bill.bill_id !== id));
           }
-          toast.success("Bill deleted successfully!");
+          toast.success("Bill deleted successfully!")
+          setTimeout(() => { window.location.reload() }, 500);
         } catch (error) {
           console.error("Failed to delete bill:", error);
           toast.error("Failed to delete bill. Please try again.");

@@ -4,7 +4,6 @@ import { MatterConfirmDeletionDialog } from "@/components/matters/matterConfirmD
 import { action } from "@storybook/addon-actions";
 import { mockMatters } from "./mockMatters";
 import { ThemeProvider } from "@/components/theme-provider";
-import { userEvent, within } from "@storybook/testing-library";
 
 const sampleMatter = mockMatters[0];
 
@@ -35,7 +34,6 @@ export const OpenDialog: Story = {
     onOpenChange: action("onOpenChange"),
     matter: sampleMatter,
     onSuccess: action("onSuccess"),
-    redirectToList: false,
   },
   decorators: [
     (Story) => (
@@ -58,7 +56,6 @@ export const DarkMode: Story = {
     onOpenChange: action("onOpenChange"),
     matter: sampleMatter,
     onSuccess: action("onSuccess"),
-    redirectToList: false,
   },
   parameters: {
     backgrounds: { default: "dark" },

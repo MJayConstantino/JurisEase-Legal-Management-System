@@ -20,13 +20,36 @@ export async function updateUsername(user: User){
 }
 
 export async function deleteUser(user: User) {
-  const { error } = await supabase
+  const { error: deleteUserError } = await supabase
   .from("users")
   .delete()
   .eq("user_id", user.user_id)
   
-  if (error) {
-    throw new Error('Failed to delete user: ' + error.message)
+  if (deleteUserError) {
+    throw new Error('Failed to delete user: ' + deleteUserError.message)
+  }
+
+  const bucketName = "user";
+  const folderPath = `${user.user_id}/`;
+
+  const { data: files, error: listError } = await supabase.storage
+    .from(bucketName)
+    .list(folderPath, { limit: 100 });
+
+  if (listError) {
+    throw new Error("Failed to list files: " + listError.message);
+  }
+
+  if (files && files.length > 0) {
+    const filePaths = files.map(file => `${folderPath}${file.name}`);
+
+    const { error: deleteFilesError } = await supabase.storage
+      .from(bucketName)
+      .remove(filePaths);
+
+    if (deleteFilesError) {
+      throw new Error("Failed to delete user files: " + deleteFilesError.message);
+    }
   }
 }
 

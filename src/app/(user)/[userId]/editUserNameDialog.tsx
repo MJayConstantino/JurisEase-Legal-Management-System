@@ -8,6 +8,10 @@ import { PencilIcon } from "lucide-react"
 import { UserProfileStates } from "./userProfileStates"
 import { useState } from "react"
 
+interface UsernameProps {
+  username: string;
+}
+
 export function EditUsername({ 
   user,
   onSave
@@ -29,7 +33,6 @@ export function EditUsername({
       user_name: newName
     })
 
-    toast.success("Name updated!")
     setIsEditing(false)
   }
 
@@ -38,28 +41,52 @@ export function EditUsername({
     setIsEditing(false)
   }
 
+  
+  const truncateUsername = (username: string, maxLength: number): string => {
+    return username.length > maxLength ? `${username.slice(0, maxLength)}...` : username;
+  };
+
+  function UsernameDisplay({ username }: UsernameProps) {
+    const maxLength = typeof window !== "undefined" && window.innerWidth < 600 ? 15 : 35;
+  
+    return (
+      <h1 title={username} className="text-2xl font-bold">
+        {truncateUsername(username, maxLength)}
+      </h1>
+    );
+  }
+  
   return (
     <div className="flex items-center gap-4 mt-4">
       {isEditing ? (
         <>
-          <Input
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            className="w-64"
-          />
-          <Button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-500">
-            Save
-          </Button>
-          <Button variant="outline" onClick={handleCancel}>
-            Cancel
-          </Button>
+          <div className="flex-1 flex flex-col md:flex-row justify-center items-center md:items-center gap-2">
+            <Input
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              className="w-64"
+            />
+            <div>
+              <Button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-500">
+                Save
+              </Button>
+              <Button variant="outline" onClick={handleCancel}>
+                Cancel
+              </Button>
+            </div>
+          </div>
         </>
       ) : (
         <>
-          <h1 className="text-2xl font-bold">{user.user_name}</h1>
-          <Button className="bg-transparent hover:bg-indigo-500" onClick={() => setIsEditing(true)}>
-            <PencilIcon className="text-black dark:text-white"/>
-          </Button>
+          <div className="flex-1 flex flex-col md:flex-row justify-center items-center md:items-center gap-2">
+            <div className="max-w-auto truncate pr-5">
+              <UsernameDisplay username={user.user_name}/>
+            </div>
+          
+            <Button className="bg-transparent hover:bg-indigo-500" onClick={() => setIsEditing(true)}>
+              <PencilIcon className="text-black dark:text-white"/>
+            </Button>
+          </div>
         </>
       )}
     </div>
