@@ -4,8 +4,8 @@ import type React from "react";
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { LayoutDashboard, CheckSquare, DollarSign } from "lucide-react";
-import { MatterTaskPage } from "./[matterId]/matterTaskPage";
-import { MatterBillingPage } from "./[matterId]/matterBillingPage";
+import { MatterTaskPage } from "./matterTabsPage/matterTaskPage";
+import { MatterBillingPage } from "./matterTabsPage/matterBillingPage";
 
 interface MatterTabsProps {
   children: React.ReactNode;
