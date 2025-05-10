@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Matter } from "@/types/matter.type";
-import { Edit, Eye, MoreVertical, Trash2Icon } from "lucide-react";
+import { Edit, Eye, MoreHorizontal, Trash2Icon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { Task } from "@/types/task.type";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -32,6 +32,7 @@ interface TaskRowProps {
   isProcessing: boolean;
   onTaskUpdated: (updatedTask: Task) => void;
   onTaskDeleted: (deletedTaskId: string) => void;
+  hideMatterColumn?: boolean;
 }
 
 export function TaskRow({
@@ -45,6 +46,7 @@ export function TaskRow({
   isProcessing,
   onTaskUpdated,
   onTaskDeleted,
+  hideMatterColumn = false,
 }: TaskRowProps) {
   const [isViewingDetails, setIsViewingDetails] = useState(false);
   const isTaskOverdueFlag = isTaskOverdue(
@@ -62,7 +64,7 @@ export function TaskRow({
   return (
     <>
       <TableRow
-        className={`${backgroundClasses} hover:bg-gray-50/muted dark:hover:bg-gray-900/muted cursor-pointer`}
+        className={`${backgroundClasses} hover:bg-gray-50/muted dark:hover:bg-gray-900/muted hover:cursor-pointer`}
         onClick={() => setIsViewingDetails(true)}
       >
         {/* Checkbox Column */}
@@ -83,28 +85,36 @@ export function TaskRow({
         {/* Task Name */}
         <TableCell className="p-1 md:p-2" title={`Task Name: ${task.name}`}>
           <div className="flex flex-col">
-            <h3 className="font-medium text-xs sm:text-sm md:text-base truncate dark:text-white max-w-[80px] sm:max-w-[120px] md:max-w-full">
+            <h3
+              className={`font-medium text-xs sm:text-sm md:text-base truncate dark:text-white max-w-[80px] sm:max-w-[120px] md:max-w-full ${
+                hideMatterColumn
+                  ? "max-w-[150px] sm:max-w-[180px] md:max-w-[350px]"
+                  : ""
+              }`}
+            >
               {task.name}
             </h3>
           </div>
         </TableCell>
 
-        {/* Matter */}
-        <TableCell className="p-1 md:p-2" title={`Matter: ${matterName}`}>
-          {task.matter_id ? (
-            isLoadingMatters ? (
-              <Skeleton className="inline-block w-12 sm:w-16 md:w-20 h-4 rounded" />
+        {/* Matter Column - Only show if not in a matter-specific page */}
+        {!hideMatterColumn && (
+          <TableCell className="p-1 md:p-2" title={`Matter: ${matterName}`}>
+            {task.matter_id ? (
+              isLoadingMatters ? (
+                <Skeleton className="inline-block w-12 sm:w-16 md:w-20 h-4 rounded" />
+              ) : (
+                <span className="text-xs md:text-sm dark:text-gray-white truncate max-w-[100px] sm:max-w-[80px] md:max-w-full inline-block">
+                  {matterName || "None"}
+                </span>
+              )
             ) : (
-              <span className="text-xs md:text-sm dark:text-gray-white truncate max-w-[100px] sm:max-w-[80px] md:max-w-full inline-block">
-                {matterName || "None"}
+              <span className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
+                None
               </span>
-            )
-          ) : (
-            <span className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
-              None
-            </span>
-          )}
-        </TableCell>
+            )}
+          </TableCell>
+        )}
 
         {/* Status */}
         <TableCell className="p-1 md:p-2" title={`Status: ${task.status}`}>
@@ -158,10 +168,10 @@ export function TaskRow({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 md:h-8 md:w-8"
+                className="h-6 w-6 md:h-8 md:w-8 hover:cursor-pointerB"
                 disabled={isProcessing}
               >
-                <MoreVertical className="h-3 w-3 md:h-4 md:w-4" />
+                <MoreHorizontal className="h-3 w-3 md:h-4 md:w-4" />
                 <span className="sr-only">Open menu</span>
               </Button>
             </DropdownMenuTrigger>
@@ -171,6 +181,7 @@ export function TaskRow({
               <DropdownMenuItem
                 onClick={() => setIsViewingDetails(true)}
                 disabled={isProcessing}
+                className="hover:cursor-pointer"
               >
                 <Eye className="mr-2 h-4 w-4" />
                 View Details
@@ -178,6 +189,7 @@ export function TaskRow({
               <DropdownMenuItem
                 onClick={() => onEdit(task)}
                 disabled={isProcessing}
+                className="hover:cursor-pointer"
               >
                 <Edit className="mr-2 h-4 w-4" />
                 Edit Task
@@ -185,6 +197,7 @@ export function TaskRow({
               <DropdownMenuItem
                 onClick={() => onStatusChange(task)}
                 disabled={isProcessing}
+                className="hover:cursor-pointer"
               >
                 <Checkbox
                   className="mr-2 h-4 w-4"
@@ -196,7 +209,7 @@ export function TaskRow({
               <DropdownMenuItem
                 onClick={() => onDelete(task)}
                 disabled={isProcessing}
-                className="text-red-600 focus:text-red-600"
+                className="text-red-600 focus:text-red-600 hover:cursor-pointer"
               >
                 <Trash2Icon className="mr-2 h-4 w-4" />
                 Delete Task

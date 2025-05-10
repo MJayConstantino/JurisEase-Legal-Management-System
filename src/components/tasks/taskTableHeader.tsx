@@ -9,12 +9,14 @@ interface TaskTableHeaderProps {
   sortField: SortField;
   sortDirection: SortDirection;
   onSort: (field: SortField) => void;
+  hideMatterColumn?: boolean;
 }
 
 export function TaskTableHeader({
   sortField,
   sortDirection,
   onSort,
+  hideMatterColumn = false,
 }: TaskTableHeaderProps) {
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) {
@@ -46,12 +48,20 @@ export function TaskTableHeader({
         <TableHead className="w-10 md:w-12 text-center">
           <span className="sr-only">Checkbox</span>
         </TableHead>
-        <TableHead className="w-[25%] md:w-[30%]">
+        <TableHead
+          className={`${
+            hideMatterColumn ? "w-[40%] md:w-[45%]" : "w-[25%] md:w-[30%]"
+          }`}
+        >
           {renderSortableHeader("name", "Task Name")}
         </TableHead>
-        <TableHead className="w-[20%] text-center  md:table-cell">
-          {renderSortableHeader("matter_id", "Matter")}
-        </TableHead>
+
+        {!hideMatterColumn && (
+          <TableHead className="w-[20%] text-center md:table-cell">
+            {renderSortableHeader("matter_id", "Matter")}
+          </TableHead>
+        )}
+
         <TableHead className="w-[15%]">
           <span className="text-xs md:text-sm font-medium whitespace-nowrap">
             Status

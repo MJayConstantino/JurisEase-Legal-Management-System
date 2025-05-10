@@ -109,6 +109,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
         onTaskCreated={handleTaskCreated}
         matters={matters}
         matterId={matterId}
+        
       />
       <div className="flex-grow overflow-y-auto w-full">
         {isLoadingTasks ? (

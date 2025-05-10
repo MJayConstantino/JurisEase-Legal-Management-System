@@ -54,7 +54,7 @@ export function TaskCard({
   );
 
   return (
-    <div className="cursor-default">
+    <div className="cursor-pointer">
       <div
         className={`border rounded-lg p-3 h-full flex flex-col ${
           isTaskOverdueFlag
@@ -87,7 +87,7 @@ export function TaskCard({
 
         {task.description && (
           <p
-            className="text-xs sm:text-sm mb-2 line-clamp-2 overflow-y-auto text-muted-foreground dark:text-gray-400"
+            className="text-xs mb-2 h-20 sm:text-sm line-clamp-2 overflow-y-auto text-muted-foreground dark:text-gray-400"
             title={`Description: ${task.description}`}
           >
             {task.description}
@@ -164,7 +164,7 @@ export function TaskCard({
                 }}
                 disabled={isProcessing}
                 id={`task-complete-${initialTask.task_id}`}
-                className={`mr-1 h-7 w-8 border-2 border-gray-300 rounded-md hover:cursor-pointer shadow ${
+                className={`mr-1 h-9 w-9 border-2 dark:border-gray-700 rounded-md hover:cursor-pointer ${
                   task.status === "completed"
                     ? "dark:bg-green-700"
                     : "dark:bg-gray-800"

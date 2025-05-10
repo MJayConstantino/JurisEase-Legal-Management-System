@@ -117,6 +117,7 @@ export function TaskTable({
               sortField={sortField}
               sortDirection={sortDirection}
               onSort={handleSort}
+              hideMatterColumn={!!matterId}
             />
             <TableBody>
               {sortedTasks.map((task) => (
@@ -134,12 +135,13 @@ export function TaskTable({
                   isProcessing={processingTaskId === task.task_id}
                   onTaskUpdated={onTaskUpdated}
                   onTaskDeleted={onTaskDeleted}
+                  hideMatterColumn={!!matterId}
                 />
               ))}
               {sortedTasks.length === 0 && (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={!!matterId ? 6 : 7}
                     className="p-6 text-center text-muted-foreground"
                   >
                     No tasks found.
@@ -151,6 +153,7 @@ export function TaskTable({
         </div>
       </div>
 
+      {/* Task forms and dialogs */}
       {editingTask && (
         <TaskForm
           open={!!editingTask}

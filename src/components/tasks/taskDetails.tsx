@@ -56,7 +56,7 @@ export function TaskDetails({
         <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold flex items-center justify-between dark:text-white">
-              <span className="pr-4">{task.name}</span>
+              <span className="pr-4 font-bold">{task.name}</span>
             </DialogTitle>
             <div className="flex items-center gap-2">
               <Badge
