@@ -9,6 +9,7 @@ export async function getTasksByMatterId(matterId: string) {
     .from("tasks")
     .select("*")
     .eq("matter_id", matterId)
+    .order("created_at", { ascending: false });
 
   if (error) {
     console.error("Error fetching tasks for matter:", error);
