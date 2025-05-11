@@ -37,7 +37,7 @@ export function MattersHeader({ onStatusChange }: MattersHeaderProps) {
           <Button
             variant={activeFilter === "all" ? "blue" : "ghost"}
             size="sm"
-            className="px-3 py-1 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none hover:cursor-pointer"
+            className="px-3 py-1 h-9 text-xs font-semibold rounded-md flex-1 sm:flex-none hover:cursor-pointer"
             onClick={() => handleFilterChange("all")}
           >
             All Matters
@@ -45,7 +45,7 @@ export function MattersHeader({ onStatusChange }: MattersHeaderProps) {
           <Button
             variant={activeFilter === "open" ? "blue" : "ghost"}
             size="sm"
-            className="px-3 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none hover:cursor-pointer"
+            className="px-3 h-9 text-xs font-semibold rounded-md flex-1 sm:flex-none hover:cursor-pointer"
             onClick={() => handleFilterChange("open")}
           >
             Open
@@ -53,7 +53,7 @@ export function MattersHeader({ onStatusChange }: MattersHeaderProps) {
           <Button
             variant={activeFilter === "pending" ? "blue" : "ghost"}
             size="sm"
-            className="px-3 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none hover:cursor-pointer"
+            className="px-3 h-9 text-xs font-semibold rounded-md flex-1 sm:flex-none hover:cursor-pointer"
             onClick={() => handleFilterChange("pending")}
           >
             Pending
@@ -61,7 +61,7 @@ export function MattersHeader({ onStatusChange }: MattersHeaderProps) {
           <Button
             variant={activeFilter === "closed" ? "blue" : "ghost"}
             size="sm"
-            className="px-3 h-9 text-xs font-medium rounded-md flex-1 sm:flex-none hover:cursor-pointer"
+            className="px-3 h-9 text-xs font-semibold rounded-md flex-1 sm:flex-none hover:cursor-pointer"
             onClick={() => handleFilterChange("closed")}
           >
             Closed

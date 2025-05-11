@@ -5,6 +5,7 @@ import {
   updateMatter,
   deleteMatter,
   getMatters,
+  getMatterById,
 } from "@/actions/matters";
 
 interface CreateMatterInput {
@@ -104,5 +105,20 @@ export const handleFetchMatters = async (): Promise<{
     console.error("Error in handleFetchMatters:", error);
     toast.error("Failed to fetch matters. Please try again.");
     return { matters: [], error: "Failed to fetch matters." };
+  }
+};
+
+export const handleFetchMatterById = async (
+  matterId: string
+): Promise<{ matter?: Matter; error: string | null }> => {
+  try {
+    const matter = await getMatterById(matterId);
+    
+    if (!matter) throw new Error("Matter not found");
+    
+    return { matter, error: null };
+  } catch (error: any) {
+    console.error("Error in handleFetchMatterById:", error);
+    return { error: "Failed to fetch matter." };
   }
 };

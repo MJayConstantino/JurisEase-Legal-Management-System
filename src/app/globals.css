@@ -141,42 +141,42 @@
 
 @font-face {
   font-family: "Aileron";
-  src: url("/public/assets/fonts/Aileron-Regular.otf") format("opentype");
+  src: url("/assets/fonts/Aileron-Regular.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Aileron";
-  src: url("/public/assets/fonts/Aileron-Italic.otf") format("opentype");
+  src: url("/assets/fonts/Aileron-Italic.otf") format("opentype");
   font-weight: 400;
   font-style: italic;
 }
 
 @font-face {
   font-family: "Aileron";
-  src: url("/public/assets/fonts/Aileron-SemiBold.otf") format("opentype");
+  src: url("/assets/fonts/Aileron-SemiBold.otf") format("opentype");
   font-weight: 600;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Aileron";
-  src: url("/public/assets/fonts/Aileron-Heavy.otf") format("opentype");
+  src: url("/assets/fonts/Aileron-Heavy.otf") format("opentype");
   font-weight: 700;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Aileron";
-  src: url("/public/assets/fonts/Aileron-Bold.otf") format("opentype");
+  src: url("/assets/fonts/Aileron-Bold.otf") format("opentype");
   font-weight: 800;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Aileron";
-  src: url("/public/assets/fonts/Aileron-Black.otf") format("opentype");
+  src: url("/assets/fonts/Aileron-Black.otf") format("opentype");
   font-weight: 900;
   font-style: normal;
 }
