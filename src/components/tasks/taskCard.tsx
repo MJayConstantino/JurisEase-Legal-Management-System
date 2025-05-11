@@ -13,6 +13,7 @@ import { getStatusColor } from "@/utils/getStatusColor";
 import { Skeleton } from "../ui/skeleton";
 import { TaskDeleteDialog } from "./taskDeleteDialog";
 import { useParams } from "next/navigation";
+import { TaskDetails } from "./taskDetails";
 import {
   handleComplete,
   handleSaveTask,
@@ -31,61 +32,73 @@ interface TaskCardProps {
 }
 
 export function TaskCard({
-  task,
+  task: initialTask,
   onTaskUpdated,
   onTaskDeleted,
   matters = [],
   isLoadingMatters = false,
 }: TaskCardProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [localTask, setLocalTask] = useState<Task>(task);
+  const [isViewingDetails, setIsViewingDetails] = useState(false);
+  const [task, setTask] = useState<Task>(initialTask);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const params = useParams();
   const matterId = params.matterId as string | undefined;
 
-  const matterName = getMattersDisplayName(localTask.matter_id || "", matters);
+  const matterName = getMattersDisplayName(task.matter_id || "", matters);
 
   const isTaskOverdueFlag = isTaskOverdue(
-    localTask.due_date ?? undefined,
-    localTask.status
+    task.due_date ?? undefined,
+    task.status
   );
 
   return (
-    <>
+    <div className="cursor-pointer">
       <div
-        className={`border rounded-lg p-3 shadow-sm h-full flex flex-col ${
+        className={`border rounded-lg p-3 h-full flex flex-col ${
           isTaskOverdueFlag
             ? "border-red-500 bg-red-50 dark:bg-red-950"
-            : localTask.status === "completed"
+            : task.status === "completed"
             ? "border-green-500 bg-green-50 dark:bg-green-950"
             : "bg-white dark:bg-gray-800 dark:border-gray-700"
         }`}
+        onClick={() => setIsViewingDetails(true)}
       >
-        <div className="mb-2 flex justify-between items-start gap-2">
+        <div
+          className="mb-2 flex justify-between items-start gap-2 "
+          title={`Task Name: ${task.name}`}
+        >
           <h3 className="font-medium text-sm sm:text-base line-clamp-2 dark:text-white">
-            {localTask.name}
+            {task.name}
           </h3>
-          {localTask.priority && (
+          {task.priority && (
             <Badge
               variant="outline"
               className={`text-xs whitespace-nowrap flex-shrink-0 ${getStatusColor(
-                localTask.priority
+                task.priority
               )}`}
+              title={`Priority: ${task.priority}`}
             >
-              {localTask.priority}
+              {task.priority}
             </Badge>
           )}
         </div>
 
-        {localTask.description && (
-          <p className="text-xs sm:text-sm mb-2 line-clamp-2 overflow-y-auto text-muted-foreground dark:text-gray-400">
-            {localTask.description}
+        {task.description && (
+          <p
+            className="text-xs mb-2 h-20 sm:text-sm line-clamp-2 overflow-y-auto text-muted-foreground dark:text-gray-400"
+            title={`Description: ${task.description}`}
+          >
+            {task.description}
           </p>
         )}
 
-        {localTask.matter_id && !matterId && (
-          <div className="text-xs sm:text-sm font-medium mb-2 truncate dark:text-gray-300">
+        {task.matter_id && !matterId && (
+          <div
+            className="text-xs sm:text-sm font-medium mb-2 truncate dark:text-gray-300"
+            title={`Matter: ${matterName}`}
+          >
             Matter:{" "}
             <span className="font-normal">
               {isLoadingMatters ? (
@@ -97,45 +110,52 @@ export function TaskCard({
           </div>
         )}
 
-        <div className="flex items-center text-xs sm:text-sm text-muted-foreground mb-auto dark:text-gray-400">
+        <div
+          className="flex items-center text-xs sm:text-sm text-muted-foreground mb-auto dark:text-gray-400"
+          title={`Due Date: ${formatDate(task.due_date)}`}
+        >
           <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
           <span className="text-xs sm:text-sm line-clamp-1 ext-muted-foreground dark:text-gray-400">
-            Due: {formatDate(localTask.due_date)}
+            Due: {formatDate(task.due_date)}
           </span>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between mt-2 pt-2 border-t dark:border-gray-700 gap-y-2">
+        <div
+          className="flex flex-wrap items-center justify-between mt-2 pt-2 border-t dark:border-gray-700 gap-y-2"
+          title={`Status: ${task.status}`}
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="flex items-center gap-2">
             <Badge
               variant="outline"
               className={`text-xs ${
                 isTaskOverdueFlag
                   ? getStatusColor("overdue")
-                  : getStatusColor(localTask.status)
+                  : getStatusColor(task.status)
               }`}
             >
-              {isTaskOverdueFlag ? "overdue" : localTask.status}
+              {isTaskOverdueFlag ? "overdue" : task.status}
             </Badge>
           </div>
 
           <div className="flex flex-wrap gap-1">
             <div className="flex items-center">
               <label
-                htmlFor={`task-complete-${task.task_id}`}
+                htmlFor={`task-complete-${initialTask.task_id}`}
                 className="text-xs cursor-pointer select-none mr-3 font-medium text-muted-foreground dark:text-gray-400"
               >
-                {localTask.status === "completed"
+                {task.status === "completed"
                   ? "Unmark as Complete"
                   : "Mark as Complete"}
               </label>
               <Checkbox
-                checked={localTask.status === "completed"}
+                checked={task.status === "completed"}
                 onCheckedChange={() => {
                   if (!isProcessing) {
                     handleComplete(
+                      initialTask,
                       task,
-                      localTask,
-                      setLocalTask,
+                      setTask,
                       onTaskUpdated,
                       setIsProcessing,
                       isProcessing
@@ -143,9 +163,9 @@ export function TaskCard({
                   }
                 }}
                 disabled={isProcessing}
-                id={`task-complete-${task.task_id}`}
-                className={`mr-1 h-7 w-8 border-2 border-gray-300 rounded-md hover:cursor-pointer shadow ${
-                  localTask.status === "completed"
+                id={`task-complete-${initialTask.task_id}`}
+                className={`mr-1 h-9 w-9 border-2 dark:border-gray-700 rounded-md hover:cursor-pointer ${
+                  task.status === "completed"
                     ? "dark:bg-green-700"
                     : "dark:bg-gray-800"
                 } ${isProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
@@ -155,7 +175,10 @@ export function TaskCard({
               variant="outline"
               size="icon"
               className="h-7 w-7 md:h-9 md:w-9 cursor-pointer"
-              onClick={() => setIsEditing(true)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditing(true);
+              }}
               disabled={isProcessing}
             >
               <Edit className="h-3 w-3 md:h-4 md:w-4" />
@@ -165,7 +188,10 @@ export function TaskCard({
               variant="outline"
               size="icon"
               className="h-7 w-7 md:h-9 md:w-9 cursor-pointer"
-              onClick={() => setIsDeleteDialogOpen(true)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsDeleteDialogOpen(true);
+              }}
               disabled={isProcessing}
             >
               <Trash2Icon className="h-3 w-3 md:h-4 md:w-4" />
@@ -181,23 +207,23 @@ export function TaskCard({
         disableMatterSelect={!!matterId}
         onSave={(updatedTask) =>
           handleSaveTask(
-            task,
+            initialTask,
             updatedTask,
-            setLocalTask,
+            setTask,
             onTaskUpdated,
             setIsProcessing
           )
         }
         onSaveAndCreateAnother={(updatedTask) =>
           handleSaveTask(
-            task,
+            initialTask,
             updatedTask,
-            setLocalTask,
+            setTask,
             onTaskUpdated,
             setIsProcessing
           )
         }
-        initialTask={localTask}
+        initialTask={task}
         matters={matters}
         isLoadingMatters={isLoadingMatters}
         getMatterNameDisplay={(matterId) =>
@@ -208,11 +234,24 @@ export function TaskCard({
       <TaskDeleteDialog
         isOpen={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        task={task}
+        task={initialTask}
         onSuccess={() =>
-          handleDelete(task.task_id, onTaskDeleted, setIsProcessing)
+          handleDelete(initialTask.task_id, onTaskDeleted, setIsProcessing)
         }
       />
-    </>
+
+      <TaskDetails
+        open={isViewingDetails}
+        onOpenChange={setIsViewingDetails}
+        task={task}
+        matters={matters}
+        isLoadingMatters={isLoadingMatters}
+        onTaskUpdated={(updatedTask) => {
+          setTask(updatedTask);
+          onTaskUpdated(updatedTask);
+        }}
+        onTaskDeleted={onTaskDeleted}
+      />
+    </div>
   );
 }

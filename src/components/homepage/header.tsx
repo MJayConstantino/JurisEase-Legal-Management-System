@@ -1,35 +1,43 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Menu, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import Link from "next/link";
+import { Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 interface NavItem {
-  label: string
-  href: string
+  label: string;
+  href: string;
 }
 
 interface HeaderProps {
-  logoText: string
-  navItems: NavItem[]
+  logoText: string;
+  navItems: NavItem[];
 }
 
-export default function Header({ logoText, navItems }: HeaderProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+export default function Header({ navItems }: HeaderProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
-  }
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   return (
     <header className="bg-white shadow-sm">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold text-[#2D336B]">
-            {logoText}
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/assets/logo/3.png"
+              alt="JurisEase Logo"
+              width={180}
+              height={20}
+              priority
+            />
           </Link>
-
+    
+          
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navItems.map((item, index) => (
@@ -41,7 +49,7 @@ export default function Header({ logoText, navItems }: HeaderProps) {
                 {item.label}
               </Link>
             ))}
-            <Button className="bg-[#2D336B] hover:bg-[#1B1E4B] text-white">Get Started</Button>
+            <Button className="bg-[#2D336B] hover:bg-[#1B1E4B] text-white hover:cursor-pointer">Get Started</Button>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -70,6 +78,5 @@ export default function Header({ logoText, navItems }: HeaderProps) {
         )}
       </div>
     </header>
-  )
+  );
 }
-
