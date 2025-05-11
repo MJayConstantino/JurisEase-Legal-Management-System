@@ -182,61 +182,72 @@ Deno.serve(async (req) => {
 
     if (action === "RUN_TESTS") {
       const affectedIds: string[] = [];
+      const mockMatter = {
+      matter_id: "12345678-abcd-4efg-hijk-9876543210lm",
+      name: "Corporate Merger Case",
+      client: "John Smith",
+      status: "in-progress",
+      created_at: "2025-02-01T00:00:00.000Z",
+      date_opened: "2025-02-02T00:00:00.000Z",
+      description: "Legal case for a corporate merger.",
+      case_number: "CM-2025-001"
+      };
+
       const mockTask = {
-        task_id: "24ebc6ee-c5e8-45d5-a8b1-02a9e2271be1",
-        name: "Prepare Deposition",
-        description: "Prepare deposition for witness",
-        status: "in-progress",
-        priority: "high",
-        matter_id: "32440999-bd80-47ed-91ed-a5341d6e73d7",
-        due_date: "2023-09-01T00:00:00.000Z"
+      task_id: "24ebc6ee-c5e8-45d5-a8b1-02a9e2271be1",
+      name: "Draft Contract",
+      description: "Draft a contract for the client",
+      status: "pending",
+      priority: "medium",
+      matter_id: mockMatter.matter_id,
+      due_date: "2023-10-15T00:00:00.000Z"
       };
 
       // INSERT
       const { data: inserted, error: insertError } = await supabase
-        .from(table || defaultTable)
-        .insert(mockTask)
-        .select("*");
+      .from(table || defaultTable)
+      .insert(mockTask)
+      .select("*");
       if (insertError)
-        throw new Error("Insert Test Error: " + insertError.message);
+      throw new Error("Insert Test Error: " + insertError.message);
 
       const insertedId = inserted[0].task_id;
       affectedIds.push(insertedId);
 
       // GET_ONE
       const { error: selectOneError } = await supabase
-        .from(table || defaultTable)
-        .select("*")
-        .eq("task_id", insertedId)
-        .single();
+      .from(table || defaultTable)
+      .select("*")
+      .eq("task_id", insertedId)
+      .single();
       if (selectOneError)
-        throw new Error("Select Test Error: " + selectOneError.message);
+      throw new Error("Select Test Error: " + selectOneError.message);
 
       // UPDATE_ONE
       const { error: updateError } = await supabase
-        .from(table || defaultTable)
-        .update({
-          name: "Updated Task Name",
-          description: "Updated Task Description",
-          status: "completed",
-          priority: "low",
-        })
-        .eq("task_id", insertedId);
+      .from(table || defaultTable)
+      .update({
+        name: "Updated Task Name",
+        description: "Updated Task Description",
+        status: "completed",
+        priority: "low",
+      })
+      .eq("task_id", insertedId);
       if (updateError)
-        throw new Error("Update Test Error: " + updateError.message);
+      throw new Error("Update Test Error: " + updateError.message);
 
       // DELETE_ONE
       const { error: deleteError } = await supabase
-        .from(table || defaultTable)
-        .delete()
-        .eq("task_id", insertedId);
+      .from(table || defaultTable)
+      .delete()
+      .eq("task_id", insertedId);
       if (deleteError)
-        throw new Error("Delete Test Error: " + deleteError.message);
+      throw new Error("Delete Test Error: " + deleteError.message);
 
       // CLEANUP
       await cleanupTestCases(affectedIds, table || defaultTable);
       return new Response(
-        "All test cases executed and cleaned up successfully."
+      "All test cases executed and cleaned up successfully."
       );
     }
 
