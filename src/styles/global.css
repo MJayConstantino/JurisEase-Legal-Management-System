@@ -1,8 +1,41 @@
 @font-face {
-  font-family: 'Aileron';
-  src: url('/assets/fonts/Aileron-Regular.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
+  font-family: "Aileron";
+  src: url("/assets/fonts/Aileron-Regular.otf") format("opentype");
+  font-weight: 400;
 }
 
-/* Add your existing global styles here */
+@font-face {
+  font-family: "Aileron";
+  src: url("/assets/fonts/Aileron-Black.otf") format("opentype");
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: "Aileron";
+  src: url("/assets/fonts/Aileron-Heavy.otf") format("opentype");
+  font-weight: 800;
+}
+
+@font-face {
+  font-family: "Aileron";
+  src: url("/assets/fonts/Aileron-Medium.otf") format("opentype");
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: "Aileron";
+  src: url("/assets/fonts/Aileron-Light.otf") format("opentype");
+  font-weight: 300;
+} 
+
+@font-face {
+  font-family: "Aileron";
+  src: url("/assets/fonts/Aileron-Thin.otf") format("opentype");
+  font-weight: 200;
+}
+
+@font-face {
+  font-family: "Aileron";
+  src: url("/assets/fonts/Aileron-ExtraLight.otf") format("opentype");
+  font-weight: 100;
+}

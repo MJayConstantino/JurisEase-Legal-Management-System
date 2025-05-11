@@ -35,7 +35,7 @@ export function TaskTableHeader({
     <Button
       variant="ghost"
       onClick={() => onSort(field)}
-      className="p-0 h-auto text-xs md:text-sm font-medium hover:bg-transparent focus:bg-transparent dark:hover:bg-transparent dark:focus:bg-transparent dark:text-gray-white whitespace-nowrap flex items-center"
+      className="p-0 h-auto text-xs md:text-sm font-semibold hover:bg-transparent focus:bg-transparent dark:hover:bg-transparent dark:focus:bg-transparent dark:text-gray-white whitespace-nowrap flex items-center"
     >
       <span className="max-w-[60px] md:max-w-none truncate">{label}</span>{" "}
       {getSortIcon(field)}
@@ -63,7 +63,7 @@ export function TaskTableHeader({
         )}
 
         <TableHead className="w-[15%]">
-          <span className="text-xs md:text-sm font-medium whitespace-nowrap">
+          <span className="text-xs md:text-sm font-semibold whitespace-nowrap">
             Status
           </span>
         </TableHead>
