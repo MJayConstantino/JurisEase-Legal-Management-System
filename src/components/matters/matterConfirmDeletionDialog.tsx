@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { DeleteConfirmationDialog } from "@/components/deleteConfirmationDialog";
 import type { Matter } from "@/types/matter.type";
 import { handleDeleteMatter } from "@/action-handlers/matters";
@@ -23,13 +22,13 @@ export function MatterConfirmDeletionDialog({
   const handleDelete = async () => {
     const { error } = await handleDeleteMatter(matter.matter_id);
     if (!error) {
-      toast.success(`"${matter.name}" has been deleted successfully.`);
+      console.log(`"${matter.name}" has been deleted successfully.`);
       if (onSuccess) {
         onSuccess();
       }
       router.refresh();
     } else {
-      toast.error("Failed to delete matter. Please try again.");
+      console.log("Failed to delete matter. Please try again.");
     }
   };
 

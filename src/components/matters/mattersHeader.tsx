@@ -2,8 +2,16 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Menu } from "lucide-react";
 import { AddMatterDialog } from "./addMatterDialog";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 interface MattersHeaderProps {
   onStatusChange: (status: string) => void;
@@ -12,15 +20,54 @@ interface MattersHeaderProps {
 export function MattersHeader({ onStatusChange }: MattersHeaderProps) {
   const [isAddMatterOpen, setIsAddMatterOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string>("all");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleFilterChange = (filter: string) => {
     setActiveFilter(filter);
     onStatusChange(filter);
+    setMenuOpen(false);
   };
 
   return (
     <div className="p-4 border-b bg-gray-50 dark:bg-gray-900 dark:border-gray-700 rounded-t-lg">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      {/* Mobile View */}
+      <div className="flex items-center justify-between lg:hidden mb-4">
+        <Button
+          variant="blue"
+          size="sm"
+          onClick={() => setIsAddMatterOpen(true)}
+        >
+          <Plus className="h-3 w-3 mr-1" />
+          <span className="text-xs">Add Matter</span>
+        </Button>
+
+        <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon">
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Open filters</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuLabel>Filter Matters</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {["all", "open", "pending", "closed"].map((filter) => (
+              <DropdownMenuItem
+                key={filter}
+                className={
+                  activeFilter === filter ? "bg-[#1B1E4B] text-white" : ""
+                }
+                onClick={() => handleFilterChange(filter)}
+              >
+                {filter.charAt(0).toUpperCase() + filter.slice(1)}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* Desktop View */}
+      <div className="hidden lg:flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         {/* Add Matter Button */}
         <Button
           variant="blue"
