@@ -1,31 +1,37 @@
 "use client";
 
-import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { LayoutDashboard, CheckSquare, DollarSign } from "lucide-react";
-import { MatterTaskPage } from "./[matterId]/matterTaskPage";
-import { MatterBillingPage } from "./[matterId]/matterBillingPage";
+import { MatterTaskPage } from "./matterTabsPage/matterTaskPage";
+import { MatterBillingPage } from "./matterTabsPage/matterBillingPage";
 
 interface MatterTabsProps {
   children: React.ReactNode;
   matterId: string;
 }
 
-export function MatterTabs({ children }: MatterTabsProps) {
-  const [activeTab, setActiveTab] = useState("dashboard");
+export function MatterTabs({ children, matterId }: MatterTabsProps) {
+  const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
 
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-  };
+  useEffect(() => {
+    const saved =
+      window.localStorage.getItem(`matter-${matterId}-tab`) || "dashboard";
+    setActiveTab(saved);
+  }, [matterId]);
+
+  useEffect(() => {
+    if (activeTab) {
+      window.localStorage.setItem(`matter-${matterId}-tab`, activeTab);
+    }
+  }, [activeTab, matterId]);
+
+  if (!activeTab) {
+    return null;
+  }
 
   return (
-    <Tabs
-      defaultValue="dashboard"
-      value={activeTab}
-      onValueChange={handleTabChange}
-      className="w-full"
-    >
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
       <div className="bg-white dark:bg-gray-800 rounded-lg border shadow">
         <TabsList className="w-full justify-start border-b rounded-none p-0 h-auto bg-transparent dark:bg-transparent">
           <TabsTrigger
@@ -34,7 +40,7 @@ export function MatterTabs({ children }: MatterTabsProps) {
               data-[state=active]:border-b-2 data-[state=active]:border-primary 
               data-[state=active]:bg-primary/5 dark:data-[state=active]:bg-primary/10
               data-[state=active]:text-primary dark:data-[state=active]:text-white
-            dark:text-gray-300 dark:hover:text-white"
+              dark:text-gray-300"
           >
             <LayoutDashboard className="h-4 w-4" />
             <span className="hidden sm:inline">Dashboard</span>
@@ -45,7 +51,7 @@ export function MatterTabs({ children }: MatterTabsProps) {
               data-[state=active]:border-b-2 data-[state=active]:border-primary 
               data-[state=active]:bg-primary/5 dark:data-[state=active]:bg-primary/10
               data-[state=active]:text-primary dark:data-[state=active]:text-white
-              dark:text-gray-300 dark:hover:text-white"
+              dark:text-gray-300"
           >
             <CheckSquare className="h-4 w-4" />
             <span className="hidden sm:inline">Tasks</span>
@@ -56,7 +62,7 @@ export function MatterTabs({ children }: MatterTabsProps) {
               data-[state=active]:border-b-2 data-[state=active]:border-primary 
               data-[state=active]:bg-primary/5 dark:data-[state=active]:bg-primary/10
               data-[state=active]:text-primary dark:data-[state=active]:text-white
-            dark:text-gray-300 dark:hover:text-white"
+              dark:text-gray-300"
           >
             <DollarSign className="h-4 w-4" />
             <span className="hidden sm:inline">Billing</span>

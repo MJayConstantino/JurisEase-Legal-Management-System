@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { createSupabaseClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-import Header from "@/components/homepage/header";
 import { Card, CardContent } from "@/components/ui/card";
 import WelcomeHeader from "@/components/homepage/loggedIn/welcomeHeader";
 import UserProfile from "@/components/homepage/loggedIn/userProfile";
@@ -23,13 +22,6 @@ export default function UserLoggedIn(props: any) {
   const [dashboardLoading, setDashboardLoading] = useState(override.dashboardLoading ?? false);
   const [userData, setUserData] = useState<UserData | null>(override.userData ?? null);
   const [loadingUser, setLoadingUser] = useState(override.loadingUser ?? true);
-
-  const navItems = [
-    { label: "Home", href: "#" },
-    { label: "Services", href: "#" },
-    { label: "About", href: "#" },
-  ];
-
 
   useEffect(() => {
     async function fetchUser() {
@@ -74,8 +66,6 @@ export default function UserLoggedIn(props: any) {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
-      <Header logoText="JurisEase" navItems={navItems} />
-
       <main className="flex-1 container mx-auto px-4 py-12 flex items-center justify-center">
         <Card className="w-full max-w-3xl shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-colors duration-200">
           <CardContent className="p-6 sm:p-8">

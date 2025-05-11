@@ -9,11 +9,11 @@ export async function getTasksByMatterId(matterId: string) {
     .from("tasks")
     .select("*")
     .eq("matter_id", matterId)
-    .order("due_date", { ascending: true });
+    .order("created_at", { ascending: false });
 
   if (error) {
     console.error("Error fetching tasks for matter:", error);
-    return null;
+    return [];
   }
 
   return data as Task[];
