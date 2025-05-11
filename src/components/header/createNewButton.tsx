@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,8 +17,8 @@ import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { Plus, FileText, Receipt, ClipboardList } from "lucide-react";
 import { handleFetchMatters } from "@/action-handlers/matters";
-import { TaskForm } from "../tasks/taskForm"; // Add this import
-import { getMattersDisplayName } from "@/utils/getMattersDisplayName"; // Add this import if needed
+import { TaskForm } from "@/components/tasks/taskForm";
+import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
 
 interface CreateNewButtonProps {
   defaultOpen?: boolean;
@@ -46,61 +46,49 @@ export function CreateNewButton({
   const [isLoadingMatters, setIsLoadingMatters] = useState(false);
   const [taskMatters, setTaskMatters] = useState<Matter[]>([]);
 
+  // Load matters for billing
   useEffect(() => {
-    const loadBillingData = async () => {
+    async function loadBillingData() {
       setIsLoading(true);
       try {
-        const mattersData = await getMatters();
+        const [mattersData] = await Promise.all([getMatters()]);
         setBillingMatters(mattersData);
       } catch (error) {
         console.error("Failed to load billing matters data:", error);
       } finally {
         setIsLoading(false);
       }
-    };
+    }
     loadBillingData();
   }, [setIsLoading, setBillingMatters]);
 
-  const loadMattersForTasks = useCallback(async () => {
-    if (taskMatters.length > 0) return;
-
-    setIsLoadingMatters(true);
-    try {
-      const result = await handleFetchMatters();
-      if (result.error) {
-        throw new Error(result.error);
+  useEffect(() => {
+    async function loadAllMatters() {
+      if (!isAddTaskOpen) return;
+      console.log("Fetching all matters for task creation");
+      setIsLoadingMatters(true);
+      try {
+        const result = await handleFetchMatters();
+        if (result.error) {
+          throw new Error(result.error);
+        }
+        console.log(
+          `Fetched ${result.matters.length} matters for task creation`
+        );
+        setTaskMatters(result.matters);
+      } catch (error) {
+        console.error("Failed to load matters for task creation:", error);
+      } finally {
+        setIsLoadingMatters(false);
       }
-      setTaskMatters(result.matters);
-    } catch (error) {
-      console.error("Failed to load matters for task creation:", error);
-    } finally {
-      setIsLoadingMatters(false);
     }
-  }, [taskMatters.length]);
 
-  const handleOpenAddTask = useCallback(() => {
+    loadAllMatters();
+  }, [isAddTaskOpen]);
+
+  const handleOpenAddTask = () => {
     setIsAddTaskOpen(true);
-    loadMattersForTasks();
-  }, [loadMattersForTasks]);
-
-  const handleTaskSaved = useCallback(
-    (newTask: Task) => {
-      if (onTaskCreated) {
-        onTaskCreated(newTask);
-      }
-      setIsAddTaskOpen(false);
-    },
-    [onTaskCreated]
-  );
-
-  const handleSaveAndCreateAnother = useCallback(
-    (newTask: Task) => {
-      if (onTaskCreated) {
-        onTaskCreated(newTask);
-      }
-    },
-    [onTaskCreated]
-  );
+  };
 
   return (
     <>
@@ -142,15 +130,18 @@ export function CreateNewButton({
       <TaskForm
         open={isAddTaskOpen}
         onOpenChange={setIsAddTaskOpen}
-        onSave={handleTaskSaved}
+        onSave={(newTask) => {
+          if (onTaskCreated) onTaskCreated(newTask);
+          setIsAddTaskOpen(false);
+        }}
+        onSaveAndCreateAnother={onTaskCreated}
+        disableMatterSelect={!!matterId}
         matters={taskMatters}
         isLoadingMatters={isLoadingMatters}
-        matterId={matterId}
         getMatterNameDisplay={(matterId) =>
           getMattersDisplayName(matterId, taskMatters)
         }
-        disableMatterSelect={!!matterId}
-        onSaveAndCreateAnother={handleSaveAndCreateAnother}
+        matterId={matterId}
       />
     </>
   );

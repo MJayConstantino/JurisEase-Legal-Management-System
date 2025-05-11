@@ -66,7 +66,7 @@ export function TaskForm({
   isLoadingMatters,
   matterId,
 }: TaskFormProps & { matterId?: string }) {
-  // Memoize the initial task to prevent unnecessary recreations
+
   const defaultTask = useMemo<Task>(
     () => ({
       task_id: "",
@@ -84,7 +84,6 @@ export function TaskForm({
   const [task, setTask] = useState<Task>(() => initialTask || defaultTask);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Reset form when dialog opens and initialTask/matterId changes
   useEffect(() => {
     if (open) {
       setTask(
@@ -98,7 +97,6 @@ export function TaskForm({
     }
   }, [open, initialTask, matterId, defaultTask]);
 
-  // Memoized change handler to avoid recreating on every render
   const handleChange = useCallback(
     (field: keyof Task, value: string | Date | undefined) => {
       setTask((prev) => ({ ...prev, [field]: value }));
@@ -189,7 +187,6 @@ export function TaskForm({
     ]
   );
 
-  // Use useMemo for the formatted due date to avoid recalculating on every render
   const formattedDueDate = useMemo(() => {
     return task.due_date ? format(new Date(task.due_date), "yyyy-MM-dd") : "";
   }, [task.due_date]);

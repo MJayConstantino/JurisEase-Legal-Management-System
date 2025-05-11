@@ -20,10 +20,12 @@ import { TaskTable } from "./taskTable";
 export interface TaskListProps {
   initialTasks: Task[];
   matterId?: string;
+  tasks?: Task[];
+  onTaskCreated?: (newTask: Task) => void; 
 }
 
-export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+export function TaskList({ initialTasks = [], matterId, tasks: externalTasks, onTaskCreated }: TaskListProps) {
+  const [tasks, setTasks] = useState<Task[]>(externalTasks ?? initialTasks);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [view, setView] = useState<"grid" | "table">("table");
   const [matters, setMatters] = useState<Matter[]>([]);
@@ -97,9 +99,15 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
     fetchMatters();
   }, [fetchTasks, fetchMatters]);
 
+  // If externalTasks is provided, sync it to local state
+  useEffect(() => {
+    if (externalTasks) setTasks(externalTasks);
+  }, [externalTasks]);
+
   const handleTaskCreated = useCallback((newTask: Task) => {
     setTasks((prev) => [newTask, ...prev]);
-  }, []);
+    if (onTaskCreated) onTaskCreated(newTask); // propagate up if needed
+  }, [onTaskCreated]);
 
   const handleTaskUpdated = useCallback((updatedTask: Task) => {
     setTasks((prev) =>
