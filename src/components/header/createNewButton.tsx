@@ -15,8 +15,10 @@ import { BillingsActionHandlers } from "@/action-handlers/billings";
 import { getMatters } from "@/actions/matters";
 import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
-import { AddTaskFormDialog } from "../addTaskDialog";
 import { Plus, FileText, Receipt, ClipboardList } from "lucide-react";
+import { handleFetchMatters } from "@/action-handlers/matters";
+import { TaskForm } from "@/components/tasks/taskForm";
+import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
 
 interface CreateNewButtonProps {
   defaultOpen?: boolean;
@@ -32,30 +34,61 @@ export function CreateNewButton({
 }: CreateNewButtonProps) {
   const [isAddMatterOpen, setIsAddMatterOpen] = useState(false);
   const {
-    matters,
+    matters: billingMatters,
     setIsLoading,
-    setMatters,
+    setMatters: setBillingMatters,
     isNewBillDialogOpen,
     setIsNewBillDialogOpen,
   } = BillingStates();
   const { addBill } = BillingsActionHandlers();
 
+  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [isLoadingMatters, setIsLoadingMatters] = useState(false);
+  const [taskMatters, setTaskMatters] = useState<Matter[]>([]);
+
+  // Load matters for billing
   useEffect(() => {
-    async function loadData() {
+    async function loadBillingData() {
       setIsLoading(true);
       try {
         const [mattersData] = await Promise.all([getMatters()]);
-        setMatters(mattersData);
+        setBillingMatters(mattersData);
       } catch (error) {
-        console.error("Failed to load data:", error);
+        console.error("Failed to load billing matters data:", error);
       } finally {
         setIsLoading(false);
       }
     }
-    loadData();
-  }, [setIsLoading, setMatters]);
-  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
-  const [isLoadingMatters] = useState(false);
+    loadBillingData();
+  }, [setIsLoading, setBillingMatters]);
+
+  useEffect(() => {
+    async function loadAllMatters() {
+      if (!isAddTaskOpen) return;
+      console.log("Fetching all matters for task creation");
+      setIsLoadingMatters(true);
+      try {
+        const result = await handleFetchMatters();
+        if (result.error) {
+          throw new Error(result.error);
+        }
+        console.log(
+          `Fetched ${result.matters.length} matters for task creation`
+        );
+        setTaskMatters(result.matters);
+      } catch (error) {
+        console.error("Failed to load matters for task creation:", error);
+      } finally {
+        setIsLoadingMatters(false);
+      }
+    }
+
+    loadAllMatters();
+  }, [isAddTaskOpen]);
+
+  const handleOpenAddTask = () => {
+    setIsAddTaskOpen(true);
+  };
 
   return (
     <>
@@ -71,7 +104,7 @@ export function CreateNewButton({
             <FileText className="h-4 w-4 mr-2" />
             New Matter
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setIsAddTaskOpen(true)}>
+          <DropdownMenuItem onClick={handleOpenAddTask}>
             <ClipboardList className="h-4 w-4 mr-2" />
             New Task
           </DropdownMenuItem>
@@ -90,17 +123,25 @@ export function CreateNewButton({
         open={isNewBillDialogOpen}
         onOpenChange={setIsNewBillDialogOpen}
         onSave={addBill}
-        matters={matters}
+        matters={billingMatters}
         matterBillingMatterId={""}
       />
 
-      <AddTaskFormDialog
-        onSave={onTaskCreated}
-        onOpenChange={setIsAddTaskOpen}
-        matters={matters}
-        matterId={matterId}
-        isLoadingMatters={isLoadingMatters}
+      <TaskForm
         open={isAddTaskOpen}
+        onOpenChange={setIsAddTaskOpen}
+        onSave={(newTask) => {
+          if (onTaskCreated) onTaskCreated(newTask);
+          setIsAddTaskOpen(false);
+        }}
+        onSaveAndCreateAnother={onTaskCreated}
+        disableMatterSelect={!!matterId}
+        matters={taskMatters}
+        isLoadingMatters={isLoadingMatters}
+        getMatterNameDisplay={(matterId) =>
+          getMattersDisplayName(matterId, taskMatters)
+        }
+        matterId={matterId}
       />
     </>
   );

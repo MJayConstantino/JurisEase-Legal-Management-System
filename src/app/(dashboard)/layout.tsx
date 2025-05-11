@@ -3,7 +3,6 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/sidebar/appSidebar'
 import { Header } from '@/components/header/header'
-import { ToastProvider } from '@/components/toast-provider'
 import { ActiveLinkScript } from '@/components/active-link-script'
 import '../globals.css'
 import { protectRoute } from '@/utils/supabase/server'
@@ -35,7 +34,6 @@ export default async function DashboardLayout({
           </div>
         </div>
         <ActiveLinkScript />
-        <ToastProvider />
       </SidebarProvider>
     </ThemeProvider>
   )
