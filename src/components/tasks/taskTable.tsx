@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import type { Matter } from "@/types/matter.type";
 import type { Task } from "@/types/task.type";
 import { TaskForm } from "./taskForm";
@@ -42,47 +42,50 @@ export function TaskTable({
   const params = useParams();
   const matterId = params.matterId as string | undefined;
 
-  const handleSort = (field: SortField) => {
+  const handleSort = useCallback((field: SortField) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
       setSortDirection("asc");
     }
-  };
+  }, [sortField, sortDirection]);
 
-  const priorityOrder = {
+  const priorityOrder = useMemo(() => ({
     high: 3,
     medium: 2,
     low: 1,
-  };
+  }), []);
 
-  const sortedTasks = [...tasks].sort((a, b) => {
-    const direction = sortDirection === "asc" ? 1 : -1;
+  const sortedTasks = useMemo(() => {
+    return [...tasks].sort((a, b) => {
+      const direction = sortDirection === "asc" ? 1 : -1;
 
-    switch (sortField) {
-      case "name":
-        return direction * a.name.localeCompare(b.name);
-      case "matter_id":
-        const matterA = getMattersDisplayName(a.matter_id || "", matters) || "";
-        const matterB = getMattersDisplayName(b.matter_id || "", matters) || "";
-        return direction * matterA.localeCompare(matterB);
-      case "due_date":
-        const dateA = a.due_date ? new Date(a.due_date).getTime() : 0;
-        const dateB = b.due_date ? new Date(b.due_date).getTime() : 0;
-        return direction * (dateA - dateB);
-      case "priority":
-        const priorityA =
-          priorityOrder[a.priority as keyof typeof priorityOrder] || 0;
-        const priorityB =
-          priorityOrder[b.priority as keyof typeof priorityOrder] || 0;
-        return direction * (priorityA - priorityB);
-      default:
-        return 0;
-    }
-  });
+      switch (sortField) {
+        case "name":
+          return direction * a.name.localeCompare(b.name);
+        case "matter_id":
+          const matterA = getMattersDisplayName(a.matter_id || "", matters) || "";
+          const matterB = getMattersDisplayName(b.matter_id || "", matters) || "";
+          return direction * matterA.localeCompare(matterB);
+        case "due_date":
+          const dateA = a.due_date ? new Date(a.due_date).getTime() : 0;
+          const dateB = b.due_date ? new Date(b.due_date).getTime() : 0;
+          return direction * (dateA - dateB);
+        case "priority":
+          const priorityA = priorityOrder[a.priority as keyof typeof priorityOrder] || 0;
+          const priorityB = priorityOrder[b.priority as keyof typeof priorityOrder] || 0;
+          return direction * (priorityA - priorityB);
+        default:
+          // Default to sort by created_at
+          const createdAtA = a.created_at ? new Date(a.created_at).getTime() : 0;
+          const createdAtB = b.created_at ? new Date(b.created_at).getTime() : 0;
+          return direction * (createdAtA - createdAtB);
+      }
+    });
+  }, [tasks, sortField, sortDirection, matters, priorityOrder]);
 
-  const handleStatusChange = (task: Task) => {
+  const handleStatusChange = useCallback((task: Task) => {
     if (processingTaskId !== task.task_id) {
       setProcessingTaskId(task.task_id);
       handleComplete(
@@ -97,16 +100,16 @@ export function TaskTable({
         false
       );
     }
-  };
+  }, [processingTaskId, onTaskUpdated]);
 
-  const handleEditTask = (task: Task) => {
+  const handleEditTask = useCallback((task: Task) => {
     setEditingTask(task);
-  };
+  }, []);
 
-  const handleDeleteTask = (task: Task) => {
+  const handleDeleteTask = useCallback((task: Task) => {
     setDeletingTask(task);
     setIsDeleteDialogOpen(true);
-  };
+  }, []);
 
   return (
     <>

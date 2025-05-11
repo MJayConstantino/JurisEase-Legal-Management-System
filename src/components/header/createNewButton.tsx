@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,8 +15,10 @@ import { BillingsActionHandlers } from "@/action-handlers/billings";
 import { getMatters } from "@/actions/matters";
 import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
-import { AddTaskFormDialog } from "../addTaskDialog";
 import { Plus, FileText, Receipt, ClipboardList } from "lucide-react";
+import { handleFetchMatters } from "@/action-handlers/matters";
+import { TaskForm } from "../tasks/taskForm"; // Add this import
+import { getMattersDisplayName } from "@/utils/getMattersDisplayName"; // Add this import if needed
 
 interface CreateNewButtonProps {
   defaultOpen?: boolean;
@@ -32,30 +34,73 @@ export function CreateNewButton({
 }: CreateNewButtonProps) {
   const [isAddMatterOpen, setIsAddMatterOpen] = useState(false);
   const {
-    matters,
+    matters: billingMatters,
     setIsLoading,
-    setMatters,
+    setMatters: setBillingMatters,
     isNewBillDialogOpen,
     setIsNewBillDialogOpen,
   } = BillingStates();
   const { addBill } = BillingsActionHandlers();
 
+  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [isLoadingMatters, setIsLoadingMatters] = useState(false);
+  const [taskMatters, setTaskMatters] = useState<Matter[]>([]);
+
   useEffect(() => {
-    async function loadData() {
+    const loadBillingData = async () => {
       setIsLoading(true);
       try {
-        const [mattersData] = await Promise.all([getMatters()]);
-        setMatters(mattersData);
+        const mattersData = await getMatters();
+        setBillingMatters(mattersData);
       } catch (error) {
-        console.error("Failed to load data:", error);
+        console.error("Failed to load billing matters data:", error);
       } finally {
         setIsLoading(false);
       }
+    };
+    loadBillingData();
+  }, [setIsLoading, setBillingMatters]);
+
+  const loadMattersForTasks = useCallback(async () => {
+    if (taskMatters.length > 0) return;
+
+    setIsLoadingMatters(true);
+    try {
+      const result = await handleFetchMatters();
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      setTaskMatters(result.matters);
+    } catch (error) {
+      console.error("Failed to load matters for task creation:", error);
+    } finally {
+      setIsLoadingMatters(false);
     }
-    loadData();
-  }, [setIsLoading, setMatters]);
-  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
-  const [isLoadingMatters] = useState(false);
+  }, [taskMatters.length]);
+
+  const handleOpenAddTask = useCallback(() => {
+    setIsAddTaskOpen(true);
+    loadMattersForTasks();
+  }, [loadMattersForTasks]);
+
+  const handleTaskSaved = useCallback(
+    (newTask: Task) => {
+      if (onTaskCreated) {
+        onTaskCreated(newTask);
+      }
+      setIsAddTaskOpen(false);
+    },
+    [onTaskCreated]
+  );
+
+  const handleSaveAndCreateAnother = useCallback(
+    (newTask: Task) => {
+      if (onTaskCreated) {
+        onTaskCreated(newTask);
+      }
+    },
+    [onTaskCreated]
+  );
 
   return (
     <>
@@ -71,7 +116,7 @@ export function CreateNewButton({
             <FileText className="h-4 w-4 mr-2" />
             New Matter
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setIsAddTaskOpen(true)}>
+          <DropdownMenuItem onClick={handleOpenAddTask}>
             <ClipboardList className="h-4 w-4 mr-2" />
             New Task
           </DropdownMenuItem>
@@ -90,17 +135,22 @@ export function CreateNewButton({
         open={isNewBillDialogOpen}
         onOpenChange={setIsNewBillDialogOpen}
         onSave={addBill}
-        matters={matters}
+        matters={billingMatters}
         matterBillingMatterId={""}
       />
 
-      <AddTaskFormDialog
-        onSave={onTaskCreated}
-        onOpenChange={setIsAddTaskOpen}
-        matters={matters}
-        matterId={matterId}
-        isLoadingMatters={isLoadingMatters}
+      <TaskForm
         open={isAddTaskOpen}
+        onOpenChange={setIsAddTaskOpen}
+        onSave={handleTaskSaved}
+        matters={taskMatters}
+        isLoadingMatters={isLoadingMatters}
+        matterId={matterId}
+        getMatterNameDisplay={(matterId) =>
+          getMattersDisplayName(matterId, taskMatters)
+        }
+        disableMatterSelect={!!matterId}
+        onSaveAndCreateAnother={handleSaveAndCreateAnother}
       />
     </>
   );

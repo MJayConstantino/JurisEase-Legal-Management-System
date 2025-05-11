@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { TaskCard } from "./taskCard";
@@ -30,121 +30,103 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
   const [isLoadingMatters, setIsLoadingMatters] = useState(true);
   const [isLoadingTasks, setIsLoadingTasks] = useState(false);
 
-  useEffect(() => {
-    console.log(
-      "Fetching tasks...",
-      matterId ? `for matter: ${matterId}` : "all tasks"
-    );
-    async function fetchTasks() {
-      try {
-        setIsLoadingTasks(true);
-        let result;
+  // Improved fetch tasks with useCallback to prevent unnecessary rerenders
+  const fetchTasks = useCallback(async () => {
+    if (initialTasks.length > 0) return;
 
-        if (matterId) {
-          console.log(`Fetching tasks for specific matter ID: ${matterId}`);
-          result = await handleFetchTasksByMatterId(matterId);
-        } else {
-          console.log("Fetching all tasks");
-          result = await handleFetchTasks();
-        }
+    try {
+      setIsLoadingTasks(true);
+      let result;
 
-        if (result.error) {
-          throw new Error(result.error);
-        }
-
-        console.log("Tasks fetched successfully:", result.tasks);
-        console.log(`Total tasks fetched: ${result.tasks.length}`);
-        setTasks(result.tasks);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      } finally {
-        setIsLoadingTasks(false);
+      if (matterId) {
+        result = await handleFetchTasksByMatterId(matterId);
+      } else {
+        result = await handleFetchTasks();
       }
-    }
 
-    if (!initialTasks || initialTasks.length === 0) {
-      fetchTasks();
-    } else {
-      console.log("Using initialTasks:", initialTasks);
-      console.log(`Total initial tasks: ${initialTasks.length}`);
-    }
-  }, [initialTasks, matterId]);
-
-  // Optimize matter fetching based on context
-  useEffect(() => {
-    console.log("Fetching matters...");
-    async function fetchMatters() {
-      try {
-        setIsLoadingMatters(true);
-        if (matterId) {
-          console.log(`Fetching specific matter with ID: ${matterId}`);
-          const { matter, error } = await handleFetchMatterById(matterId);
-
-          if (error) {
-            throw new Error(error);
-          }
-
-          if (matter) {
-            console.log("Specific matter fetched:", matter);
-            setMatters([matter]);
-          }
-        } else {
-          console.log("Fetching all matters");
-          const { matters: matterData } = await handleFetchMatters();
-          console.log("All matters fetched:", matterData);
-
-          const uniqueMatters = matterData.filter(
-            (matter, index, self) =>
-              index === self.findIndex((m) => m.matter_id === matter.matter_id)
-          );
-          console.log(`Total unique matters: ${uniqueMatters.length}`);
-          setMatters(uniqueMatters);
-        }
-      } catch (error) {
-        console.error("Error fetching matters:", error);
-        toast.error("Failed to load matters");
-      } finally {
-        setIsLoadingMatters(false);
+      if (result.error) {
+        throw new Error(result.error);
       }
-    }
 
-    fetchMatters();
+      setTasks(result.tasks);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    } finally {
+      setIsLoadingTasks(false);
+    }
+  }, [initialTasks.length, matterId]);
+
+  // Only fetch matters once, with proper dependency tracking
+  const fetchMatters = useCallback(async () => {
+    try {
+      setIsLoadingMatters(true);
+      if (matterId) {
+        const { matter, error } = await handleFetchMatterById(matterId);
+        if (error) {
+          throw new Error(error);
+        }
+        if (matter) {
+          setMatters([matter]);
+        }
+      } else {
+        const { matters: matterData, error } = await handleFetchMatters();
+        if (error) {
+          throw new Error(error);
+        }
+        // Use Set to ensure uniqueness by matter_id
+        const uniqueMatterIds = new Set();
+        const uniqueMatters = matterData.filter((matter) => {
+          if (uniqueMatterIds.has(matter.matter_id)) return false;
+          uniqueMatterIds.add(matter.matter_id);
+          return true;
+        });
+
+        setMatters(uniqueMatters);
+      }
+    } catch (error) {
+      console.error("Error fetching matters:", error);
+      toast.error("Failed to load matters");
+    } finally {
+      setIsLoadingMatters(false);
+    }
   }, [matterId]);
 
-  const handleTaskCreated = (newTask: Task) => {
-    console.log("New task created:", newTask);
-    setTasks((prev) => [newTask, ...prev]);
-  };
+  // Load data on mount
+  useEffect(() => {
+    fetchTasks();
+    fetchMatters();
+  }, [fetchTasks, fetchMatters]);
 
-  const handleTaskUpdated = (updatedTask: Task) => {
-    console.log("Task updated:", updatedTask);
+  const handleTaskCreated = useCallback((newTask: Task) => {
+    setTasks((prev) => [newTask, ...prev]);
+  }, []);
+
+  const handleTaskUpdated = useCallback((updatedTask: Task) => {
     setTasks((prev) =>
       prev.map((task) =>
         task.task_id === updatedTask.task_id ? updatedTask : task
       )
     );
-  };
+  }, []);
 
-  const handleTaskDeleted = (taskId: string) => {
-    console.log("Task deleted:", taskId);
+  const handleTaskDeleted = useCallback((taskId: string) => {
     setTasks((prev) => prev.filter((t) => t.task_id !== taskId));
-  };
+  }, []);
 
-  const filteredTasks = tasks.filter((task) => {
-    if (matterId && task.matter_id !== matterId) return false;
-    if (statusFilter === "all") return true;
-    if (statusFilter === "overdue") {
-      return isTaskOverdue(task.due_date ?? undefined, task.status);
-    }
-    return (
-      task.status === statusFilter &&
-      !isTaskOverdue(task.due_date ?? undefined, task.status)
-    );
-  });
-
-  console.log(
-    `Filtered tasks: ${filteredTasks.length} of ${tasks.length} total tasks`
-  );
+  // Use useMemo for expensive filtering operation
+  const filteredTasks = useMemo(() => {
+    return tasks.filter((task) => {
+      if (matterId && task.matter_id !== matterId) return false;
+      if (statusFilter === "all") return true;
+      if (statusFilter === "overdue") {
+        return isTaskOverdue(task.due_date ?? undefined, task.status);
+      }
+      return (
+        task.status === statusFilter &&
+        !isTaskOverdue(task.due_date ?? undefined, task.status)
+      );
+    });
+  }, [tasks, statusFilter, matterId]);
 
   return (
     <div className="border w-full container mx-auto h-full flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900 rounded-lg shadow">

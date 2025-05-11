@@ -6,6 +6,10 @@ import {
   handleDeleteTask as serverDeleteTask,
 } from "@/action-handlers/tasks";
 
+// Use a debounce mechanism to prevent multiple rapid calls
+const taskProcessingMap = new Map<string, boolean>();
+const DEBOUNCE_TIME = 1000; // 1 second
+
 export const handleComplete = async function (
   task: Task,
   localTask: Task,
@@ -14,18 +18,21 @@ export const handleComplete = async function (
   setIsProcessing: (isProcessing: boolean) => void,
   isProcessing: boolean
 ) {
-  if (isProcessing) {
+  // Check if already processing this task
+  if (isProcessing || taskProcessingMap.get(task.task_id)) {
     toast.error("Please wait, task is being processed");
     return;
   }
 
-  console.log("Toggling task completion for:", localTask);
-
   try {
+    // Set the task as processing in our map and UI
+    taskProcessingMap.set(task.task_id, true);
     setIsProcessing(true);
+
     const newStatus: Status =
       localTask.status === "completed" ? "in-progress" : "completed";
 
+    // Optimistically update UI
     const updatedTask = {
       ...localTask,
       status: newStatus,
@@ -33,35 +40,41 @@ export const handleComplete = async function (
     setLocalTask(updatedTask);
     onTaskUpdated(updatedTask);
 
+    // Send update to server
     const { task: serverUpdatedTask, error } = await serverUpdateTask(
       updatedTask
     );
-    if (error || !serverUpdatedTask)
-      throw new Error(error || "Failed to update task on server");
 
+    if (error || !serverUpdatedTask) {
+      throw new Error(error || "Failed to update task on server");
+    }
+
+    // Apply server response
     setLocalTask(serverUpdatedTask);
     onTaskUpdated(serverUpdatedTask);
 
     toast.success(
       newStatus === "completed"
-        ? `Task "${serverUpdatedTask.name}" marked as complete` 
-        : `Task "${serverUpdatedTask.name}" unmark as complete`
+        ? `Task "${serverUpdatedTask.name}" marked as complete`
+        : `Task "${serverUpdatedTask.name}" unmarked as complete`
     );
-
   } catch (error) {
     console.error("Error updating task status:", error);
+    // Revert to original state on error
     setLocalTask(task);
+    onTaskUpdated(task);
+
     toast.error(
       "Failed to update task status: " +
         (error instanceof Error ? error.message : "Unknown error")
     );
-    setIsProcessing(false);
-  }
-  finally {
+  } finally {
+    // Clear processing state with a delay to prevent rapid clicking
     setTimeout(() => {
+      taskProcessingMap.delete(task.task_id);
       setIsProcessing(false);
-    }, 1000);  }
-    console.log("Task completion toggled for:", localTask);
+    }, DEBOUNCE_TIME);
+  }
 };
 
 export async function handleSaveTask(
@@ -72,29 +85,49 @@ export async function handleSaveTask(
   setIsProcessing: (loading: boolean) => void,
   onDone?: () => void
 ) {
+  if (taskProcessingMap.get(originalTask.task_id)) {
+    toast.error("Please wait, task is being processed");
+    return;
+  }
+
   try {
+    taskProcessingMap.set(originalTask.task_id, true);
     setIsProcessing(true);
 
+    // Optimistically update UI
     const savedTask = { ...originalTask, ...updatedTask };
+    setLocalTask(savedTask);
+    onTaskUpdated(savedTask);
+
+    // Send update to server
     const { task: serverUpdatedTask, error } = await serverUpdateTask(
       savedTask
     );
 
-    if (error || !serverUpdatedTask)
+    if (error || !serverUpdatedTask) {
       throw new Error(error || "Failed to save task");
+    }
 
+    // Apply server response
     setLocalTask(serverUpdatedTask);
     onTaskUpdated(serverUpdatedTask);
 
     onDone?.();
   } catch (error) {
     console.error("Failed to save task:", error);
+    // Revert on error
+    setLocalTask(originalTask);
+    onTaskUpdated(originalTask);
+
     toast.error(
       "Failed to save task: " +
         (error instanceof Error ? error.message : "Unknown error")
     );
   } finally {
-    setIsProcessing(false);
+    setTimeout(() => {
+      taskProcessingMap.delete(originalTask.task_id);
+      setIsProcessing(false);
+    }, DEBOUNCE_TIME);
   }
 }
 
@@ -103,8 +136,13 @@ export const handleDelete = async (
   onTaskDeleted: (deletedTaskId: string) => void,
   setIsProcessing: (isProcessing: boolean) => void
 ) => {
-  console.log("Deleting task:", taskId);
+  if (taskProcessingMap.get(taskId)) {
+    toast.error("Please wait, task is being processed");
+    return;
+  }
+
   try {
+    taskProcessingMap.set(taskId, true);
     setIsProcessing(true);
 
     const { error } = await serverDeleteTask(taskId);
@@ -118,20 +156,41 @@ export const handleDelete = async (
         (error instanceof Error ? error.message : "Unknown error")
     );
   } finally {
-    setIsProcessing(false);
+    setTimeout(() => {
+      taskProcessingMap.delete(taskId);
+      setIsProcessing(false);
+    }, DEBOUNCE_TIME);
   }
 };
 
+// Memoize formatted dates
+const dateCache = new Map<string, string>();
+
 export const formatDate = (date?: string | Date | null): string => {
   if (!date) return "No date";
+
   try {
+    const dateString = date instanceof Date ? date.toISOString() : String(date);
+
+    // Check cache first
+    if (dateCache.has(dateString)) {
+      return dateCache.get(dateString)!;
+    }
+
     const parsedDate = typeof date === "string" ? new Date(date) : date;
-    return format(parsedDate, "MMM dd, yyyy");
+    const formatted = format(parsedDate, "MMM dd, yyyy");
+
+    // Store in cache
+    dateCache.set(dateString, formatted);
+    return formatted;
   } catch (error) {
     console.error("Error formatting date:", error);
     return "Invalid date";
   }
 };
+
+// Memoize overdue calculations
+const overdueCache = new Map<string, boolean>();
 
 export const isTaskOverdue = (
   dueDate?: string | Date,
@@ -139,11 +198,30 @@ export const isTaskOverdue = (
 ): boolean => {
   if (!dueDate || status === "completed") return false;
 
+  const dueDateString =
+    dueDate instanceof Date ? dueDate.toISOString() : String(dueDate);
+  const cacheKey = `${dueDateString}-${status}`;
+
+  // Check cache first
+  if (overdueCache.has(cacheKey)) {
+    return overdueCache.get(cacheKey)!;
+  }
+
   const parsedDueDate =
     typeof dueDate === "string" ? parseISO(dueDate) : dueDate;
 
   const endOfDueDate = new Date(parsedDueDate);
   endOfDueDate.setHours(23, 59, 59, 999);
 
-  return isBefore(endOfDueDate, new Date());
+  const result = isBefore(endOfDueDate, new Date());
+
+  // Store in cache
+  overdueCache.set(cacheKey, result);
+  return result;
 };
+
+// Clear caches periodically to avoid memory issues
+setInterval(() => {
+  dateCache.clear();
+  overdueCache.clear();
+}, 5 * 60 * 1000); // Every 5 minutes

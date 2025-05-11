@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { toast } from "sonner";
@@ -66,47 +66,47 @@ export function TaskForm({
   isLoadingMatters,
   matterId,
 }: TaskFormProps & { matterId?: string }) {
-  const [task, setTask] = useState<Task>(() =>
-    initializeTask(initialTask, matterId)
+  // Memoize the initial task to prevent unnecessary recreations
+  const defaultTask = useMemo<Task>(
+    () => ({
+      task_id: "",
+      name: "",
+      description: "",
+      due_date: undefined,
+      priority: "low" as "low" | "medium" | "high",
+      status: "in-progress" as "in-progress" | "completed",
+      matter_id: matterId || "",
+      created_at: new Date(),
+    }),
+    [matterId]
   );
+
+  const [task, setTask] = useState<Task>(() => initialTask || defaultTask);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function initializeTask(task?: Task, defaultMatterId?: string): Task {
-    return (
-      task || {
-        task_id: "",
-        name: "",
-        description: "",
-        due_date: undefined,
-        priority: "low",
-        status: "in-progress",
-        matter_id: defaultMatterId || "",
-        created_at: new Date(),
-      }
-    );
-  }
-
+  // Reset form when dialog opens and initialTask/matterId changes
   useEffect(() => {
     if (open) {
-      if (initialTask) {
-        setTask(initialTask);
-      } else {
-        setTask(initializeTask(undefined, matterId));
-      }
+      setTask(
+        initialTask
+          ? { ...initialTask }
+          : {
+              ...defaultTask,
+              matter_id: matterId || defaultTask.matter_id,
+            }
+      );
     }
-  }, [open, initialTask, matterId]);
+  }, [open, initialTask, matterId, defaultTask]);
 
-  const handleChange = (
-    field: keyof Task,
-    value: string | Date | undefined
-  ) => {
-    setTask((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+  // Memoized change handler to avoid recreating on every render
+  const handleChange = useCallback(
+    (field: keyof Task, value: string | Date | undefined) => {
+      setTask((prev) => ({ ...prev, [field]: value }));
+    },
+    []
+  );
 
-  const validateTask = (): boolean => {
+  const validateTask = useCallback((): boolean => {
     try {
       const validationData = {
         ...task,
@@ -123,56 +123,76 @@ export function TaskForm({
       }
       return false;
     }
-  };
+  }, [task]);
 
-  const handleSubmit = async (keepFormOpen: boolean = false) => {
-    if (isSubmitting) return;
-    if (!validateTask()) return;
+  const handleSubmit = useCallback(
+    async (keepFormOpen: boolean = false) => {
+      if (isSubmitting) return;
+      if (!validateTask()) return;
 
-    setIsSubmitting(true);
+      setIsSubmitting(true);
 
-    try {
-      const taskToSubmit = {
-        ...task,
-        due_date: task.due_date ? new Date(task.due_date) : undefined,
-        matter_id: task.matter_id || undefined,
-      };
+      try {
+        const taskToSubmit = {
+          ...task,
+          due_date: task.due_date ? new Date(task.due_date) : undefined,
+          matter_id: task.matter_id || undefined,
+        };
 
-      const isNewTask = !task.task_id;
-      const response = isNewTask
-        ? await handleCreateTask(taskToSubmit)
-        : await handleUpdateTask(taskToSubmit);
+        const isNewTask = !task.task_id;
+        const response = isNewTask
+          ? await handleCreateTask(taskToSubmit)
+          : await handleUpdateTask(taskToSubmit);
 
-      if (response && !response.error && response.task) {
-        toast.success(
-          isNewTask
-            ? `Task "${response.task.name}" created successfully`
-            : `Task "${response.task.name}" updated successfully`
-        );
+        if (response && !response.error && response.task) {
+          toast.success(
+            isNewTask
+              ? `Task "${response.task.name}" created successfully`
+              : `Task "${response.task.name}" updated successfully`
+          );
 
-        if (isNewTask && keepFormOpen && onSaveAndCreateAnother) {
-          onSaveAndCreateAnother(response.task as Task);
-          setTask(initializeTask(undefined, matterId));
-        } else if (onSave) {
-          onSave(response.task as Task);
-          if (!isNewTask) {
-            setTask(response.task as Task);
+          if (isNewTask && keepFormOpen && onSaveAndCreateAnother) {
+            onSaveAndCreateAnother(response.task as Task);
+            setTask({
+              ...defaultTask,
+              matter_id: matterId || task.matter_id, // Keep the same matter
+            });
+          } else if (onSave) {
+            onSave(response.task as Task);
+            if (!isNewTask) {
+              setTask(response.task as Task);
+            }
+            onOpenChange(false);
           }
-          onOpenChange(false);
+        } else {
+          toast.error(response?.error || "Failed to save task");
         }
-      } else {
-        toast.error(response?.error || "Failed to save task");
+      } catch (error) {
+        console.error("Error saving task:", error);
+        toast.error(
+          "Failed to save task: " +
+            (error instanceof Error ? error.message : "Unknown error")
+        );
+      } finally {
+        setIsSubmitting(false);
       }
-    } catch (error) {
-      console.error("Error saving task:", error);
-      toast.error(
-        "Failed to save task: " +
-          (error instanceof Error ? error.message : "Unknown error")
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    },
+    [
+      isSubmitting,
+      validateTask,
+      task,
+      defaultTask,
+      matterId,
+      onSaveAndCreateAnother,
+      onSave,
+      onOpenChange,
+    ]
+  );
+
+  // Use useMemo for the formatted due date to avoid recalculating on every render
+  const formattedDueDate = useMemo(() => {
+    return task.due_date ? format(new Date(task.due_date), "yyyy-MM-dd") : "";
+  }, [task.due_date]);
 
   return (
     <Dialog
@@ -196,6 +216,7 @@ export function TaskForm({
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4">
+          {/* Form content - unchanged */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="sm:col-span-2">
               <Label htmlFor="name" className="dark:text-gray-200">
@@ -298,11 +319,7 @@ export function TaskForm({
               id="dueDate"
               type="date"
               className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 w-full"
-              value={
-                task.due_date
-                  ? format(new Date(task.due_date), "yyyy-MM-dd")
-                  : ""
-              }
+              value={formattedDueDate}
               min={format(new Date(), "yyyy-MM-dd")}
               onChange={(e) =>
                 handleChange(
@@ -340,7 +357,11 @@ export function TaskForm({
               type="submit"
               onClick={() => handleSubmit(false)}
               disabled={isSubmitting}
-              className={isSubmitting ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}
+              className={
+                isSubmitting
+                  ? "opacity-70 cursor-not-allowed"
+                  : "cursor-pointer"
+              }
             >
               {isSubmitting
                 ? "Saving..."
@@ -352,7 +373,11 @@ export function TaskForm({
               <Button
                 onClick={() => handleSubmit(true)}
                 disabled={isSubmitting}
-                className={isSubmitting ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}
+                className={
+                  isSubmitting
+                    ? "opacity-70 cursor-not-allowed"
+                    : "cursor-pointer"
+                }
               >
                 {isSubmitting ? "Saving..." : "Save and Create Another"}
               </Button>
@@ -362,7 +387,8 @@ export function TaskForm({
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isSubmitting}
-            className="cursor-pointer w-full sm:w-auto">
+            className="cursor-pointer w-full sm:w-auto"
+          >
             Cancel
           </Button>
         </DialogFooter>
