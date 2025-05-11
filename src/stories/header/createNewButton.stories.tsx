@@ -5,6 +5,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 const meta: Meta<typeof CreateNewButton> = {
   title: "Header/CreateNewButton",
   component: CreateNewButton,
+  parameters: {
+    nextjs: { appDirectory: true },
+  },
   decorators: [
     (Story) => (
       <div className="flex items-center justify-center h-screen w- screen dark:bg-black">
