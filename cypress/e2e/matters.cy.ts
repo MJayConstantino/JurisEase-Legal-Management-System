@@ -2,9 +2,8 @@ describe("Matters E2E Interactions", () => {
   // Common setup for all tests
   beforeEach(() => {
     cy.login("test@testdomain.com", "testPassword");
-    cy.visit("/matters");
-    // Add initial delay to ensure page is fully loaded
-    cy.wait(500);
+    cy.wait(5000);
+    cy.visit("/matters").wait(5000);
   });
 
   describe("Creating matters with validation", () => {
@@ -59,39 +58,39 @@ describe("Matters E2E Interactions", () => {
       cy.wait(500);
       cy.contains("Open Matter Test").should("be.visible");
     });
+
+    it("should create a pending matter", () => {
+      cy.get('input[placeholder="Case Name"]').type("Pending Matter Test", {
+        delay: 100,
+      });
+      cy.get('input[placeholder="Case Number"]').type("PENDING-123", {
+        delay: 100,
+      });
+      cy.get("#status").click();
+      cy.wait(300);
+      cy.get('[role="option"]').contains("Pending").click();
+      cy.get('button[type="submit"]').contains("Create Matter").click();
+      cy.wait(500);
+      cy.contains("Pending Matter Test").should("be.visible");
+    });
+
+    it("should create a closed matter", () => {
+      cy.get('input[placeholder="Case Name"]').type("Closed Matter Test", {
+        delay: 100,
+      });
+      cy.get('input[placeholder="Case Number"]').type("CLOSED-123", {
+        delay: 100,
+      });
+      cy.get("#status").click();
+      cy.wait(300);
+      cy.get('[role="option"]').contains("Closed").click();
+      cy.get('button[type="submit"]').contains("Create Matter").click();
+      cy.wait(500);
+      cy.contains("Closed Matter Test").should("be.visible");
+    });
   });
 
-  it("should create a pending matter", () => {
-    cy.get('input[placeholder="Case Name"]').type("Pending Matter Test", {
-      delay: 100,
-    });
-    cy.get('input[placeholder="Case Number"]').type("PENDING-123", {
-      delay: 100,
-    });
-    cy.get("#status").click();
-    cy.wait(300);
-    cy.get('[role="option"]').contains("Pending").click();
-    cy.get('button[type="submit"]').contains("Create Matter").click();
-    cy.wait(500);
-    cy.contains("Pending Matter Test").should("be.visible");
-  });
-
-  it("should create a closed matter", () => {
-    cy.get('input[placeholder="Case Name"]').type("Closed Matter Test", {
-      delay: 100,
-    });
-    cy.get('input[placeholder="Case Number"]').type("CLOSED-123", {
-      delay: 100,
-    });
-    cy.get("#status").click();
-    cy.wait(300);
-    cy.get('[role="option"]').contains("Closed").click();
-    cy.get('button[type="submit"]').contains("Create Matter").click();
-    cy.wait(500);
-    cy.contains("Closed Matter Test").should("be.visible");
-  });
-
-  describe.only("Creating matters with client information", () => {
+  describe("Creating matters with client information", () => {
     beforeEach(() => {
       cy.contains("Add Matter").click();
       cy.wait(300);
@@ -202,6 +201,9 @@ describe("Matters E2E Interactions", () => {
   });
 
   describe("Interacting with existing matters", () => {
+    beforeEach(() => {
+      cy.wait(5000);
+    });
     it("should show matter details with Open status", () => {
       cy.contains("Open Matter Test").click();
       cy.wait(500);
@@ -246,7 +248,7 @@ describe("Matters E2E Interactions", () => {
     describe("Status and date changes", () => {
       it("should update open matter to closed and show close date", () => {
         cy.contains("Open Matter Test").click();
-        cy.wait(1000); // Wait for matter details to load
+        cy.wait(5000); // Wait for matter details to load
 
         // Find Case Details card and click its edit button
         cy.contains("Case Details")
@@ -398,8 +400,9 @@ describe("Matters E2E Interactions", () => {
         });
       });
 
-      describe.only("Complete matter information updates", () => {
+      describe("Complete matter information updates", () => {
         beforeEach(() => {
+          cy.wait(5000);
           cy.contains("Matter with Client").click();
           cy.wait(500);
         });
@@ -546,6 +549,123 @@ describe("Matters E2E Interactions", () => {
           cy.contains("District Court").should("be.visible");
           cy.contains("555-555-6666").should("be.visible");
           cy.contains("district@courts.gov").should("be.visible");
+        });
+      });
+
+      describe("Attorney and staff assignments", () => {
+        beforeEach(() => {
+          cy.contains("Matter with Client").click();
+          cy.wait(5000);
+        });
+
+        it("should assign and remove attorneys and staff members", () => {
+          // Open Case Details for editing
+          cy.contains("Case Details")
+            .parent()
+            .find('button[aria-label="Edit"]')
+            .should("be.visible")
+            .click();
+          cy.wait(500);
+
+          // Assign attorney
+          cy.get(":nth-child(1) > .flex-col > .border-input").click();
+          cy.wait(300);
+          cy.get('[role="option"]').contains("Test User").click();
+
+          // Assign staff
+          cy.get(":nth-child(2) > .flex-col > .border-input").click();
+          cy.wait(300);
+          cy.get('[role="option"]').contains("Test User").click();
+
+          // Save changes
+          cy.get('button[aria-label="Save"]').click();
+          cy.wait(1000);
+
+          // Verify assignments on matter details
+          cy.contains("Test User").should("be.visible");
+
+          // Return to matters list and verify
+          cy.visit("/matters");
+          cy.wait(500);
+          cy.contains("Matter with Client").click();
+          cy.wait(500);
+
+          // Verify assignments persist
+          cy.contains("Test User").should("be.visible");
+
+          // Remove assignments
+          cy.contains("Case Details")
+            .parent()
+            .find('button[aria-label="Edit"]')
+            .should("be.visible")
+            .click();
+          cy.wait(500);
+
+          // Remove attorney
+          cy.get(
+            ":nth-child(1) > .flex-col > .mb-2 > .rounded-md > .inline-flex"
+          ).click();
+          cy.wait(300);
+
+          // Remove staff
+          cy.get(
+            ":nth-child(2) > .flex-col > .mb-2 > .rounded-md > .inline-flex"
+          ).click();
+          cy.wait(300);
+
+          // Save changes
+          cy.get('button[aria-label="Save"]').click();
+          cy.wait(1000);
+
+          // Verify removals
+          cy.contains("No one assigned").should("be.visible");
+
+          // Return to matters list and verify again
+          cy.visit("/matters");
+          cy.wait(500);
+          cy.contains("Matter with Client").click();
+          cy.wait(500);
+
+          // Final verification
+          cy.contains("No one assigned").should("be.visible");
+        });
+      });
+
+      describe("Matter deletion", () => {
+        beforeEach(() => {
+          // Create a matter to be deleted
+          cy.contains("Add Matter").click();
+          cy.wait(300);
+
+          cy.get('input[placeholder="Case Name"]').type("Matter To Delete", {
+            delay: 100,
+          });
+          cy.get('input[placeholder="Case Number"]').type("DELETE-123", {
+            delay: 100,
+          });
+          cy.get("#status").click();
+          cy.wait(300);
+          cy.get('[role="option"]').contains("Open").click();
+          cy.get('button[type="submit"]').contains("Create Matter").click();
+          cy.wait(500);
+          cy.contains("Matter To Delete").should("be.visible");
+        });
+
+        it("should delete a matter and show confirmation", () => {
+          // Click delete button
+          cy.get("#radix-«ra»").click();
+          cy.wait(300);
+
+          cy.get(".text-red-600").click();
+
+          // Confirm deletion in dialog
+          cy.get("button.bg-red-600")
+            .contains("Delete Matter")
+            .should("be.visible")
+            .click();
+          cy.wait(5000);
+
+          cy.contains("Matter To Delete").should("not.exist");
         });
       });
 
