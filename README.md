@@ -1,6 +1,6 @@
-# Dianson Law Firm Legal Management System
+# JurisEase Legal Management System
 
-A comprehensive legal case management system built with Next.js, Supabase, and modern UI components to streamline law firm operations.
+A comprehensive legal case tracking system built with Next.js, Supabase, and modern UI components to streamline law firm operations.
 
 ![Next.js](https://img.shields.io/badge/Next.js-15.2.1-black)
 ![Supabase](https://img.shields.io/badge/Supabase-latest-green)
@@ -8,13 +8,12 @@ A comprehensive legal case management system built with Next.js, Supabase, and m
 
 ## Features
 
-- **Case Management**: Organize and track legal matters efficiently
+- **Case Tracking**: Organize and track legal matters efficiently
 - **Client Management**: Maintain comprehensive client records
-- **Document Management**: Store and organize case-related documents
 - **Staff Management**: Assign attorneys and support staff to cases
 - **User Roles & Permissions**: Control access based on user roles
 - **Modern UI**: Built with Radix UI components and Tailwind CSS
-- **Comprehensive Testing**: Frontend, backend, and E2E tests with Jest and Cypress
+- **Comprehensive Testing**: Frontend, backend, and E2E tests with Stroybook, Deno, Jest and Cypress
 - **Component Documentation**: Storybook integration for UI component testing and documentation
 
 ## Table of Contents
