@@ -1,5 +1,7 @@
 # JurisEase Legal Management System
 
+![image](https://github.com/user-attachments/assets/1bfc18a0-b302-41de-9f75-d5eb944c04a4)
+
 A comprehensive legal case tracking system built with Next.js, Supabase, and modern UI components to streamline law firm operations.
 
 ![Next.js](https://img.shields.io/badge/Next.js-15.2.1-black)
