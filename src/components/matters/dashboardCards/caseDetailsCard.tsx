@@ -1,11 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { EditableCard } from "../editableCard";
 import type { Matter } from "@/types/matter.type";
-import { fetchUsersAction } from "@/actions/users";
 import type { User as UserType } from "@/types/user.type";
-import { CaseDetailsCardSkeleton } from "./caseDetailsCardSkeleton";
 import {
   handleSaveMatter,
   handleCancelMatter,
@@ -15,24 +13,20 @@ import { caseSchema } from "@/validation/matter";
 
 interface CaseDetailsCardProps {
   matter: Matter;
+  users: UserType[];
   onUpdate?: (matter: Matter) => void;
 }
 
-export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
+export function CaseDetailsCard({
+  matter,
+  users,
+  onUpdate,
+}: CaseDetailsCardProps) {
   const [editedMatter, setEditedMatter] = useState<Matter>({
     ...matter,
   });
 
-  const [users, setUsers] = useState<UserType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    fetchUsersAction()
-      .then((data) => setUsers(data))
-      .catch(console.error)
-      .finally(() => setIsLoading(false));
-  }, []);
 
   const handleChange = (field: keyof Matter, value: any) => {
     setEditedMatter((prev) => {
@@ -85,8 +79,6 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
     setEditedMatter(handleCancelMatter(matter).matter);
     setErrors({});
   };
-
-  if (isLoading) return <CaseDetailsCardSkeleton />;
 
   return (
     <EditableCard
