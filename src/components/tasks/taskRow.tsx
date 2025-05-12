@@ -99,12 +99,12 @@ export function TaskRow({
 
         {/* Matter Column - Only show if not in a matter-specific page */}
         {!hideMatterColumn && (
-          <TableCell className="p-1 md:p-2" title={`Matter: ${matterName}`}>
+          <TableCell className="p-1 md:p-2 w-32 md:w-40" title={`Matter: ${matterName}`}>
             {task.matter_id ? (
               isLoadingMatters ? (
-                <Skeleton className="inline-block w-12 sm:w-16 md:w-20 h-4 rounded" />
+                <Skeleton className="inline-block w-20 md:w-28 h-4 rounded" />
               ) : (
-                <span className="text-xs md:text-sm dark:text-gray-white truncate max-w-[100px] sm:max-w-[80px] md:max-w-full inline-block">
+                <span className="font-medium text-xs sm:text-sm md:text-base truncate dark:text-white max-w-[80px] sm:max-w-[120px] md:max-w-full ">
                   {matterName || "None"}
                 </span>
               )
@@ -148,7 +148,7 @@ export function TaskRow({
           title={`Due Date: ${formatDate(task.due_date)}`}
         >
           {task.due_date ? (
-            <span className="text-[10px] sm:text-xs md:text-sm inline-flex items-center gap-1 justify-center dark:text-white truncate">
+            <span className="text-xs sm:text-sm md:text-base truncate dark:text-white max-w-[80px] sm:max-w-[120px] md:max-w-full ">
               {formatDate(task.due_date)}
             </span>
           ) : (
