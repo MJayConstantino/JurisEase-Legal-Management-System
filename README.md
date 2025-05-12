@@ -329,38 +329,59 @@ yarn start
 ├── src/
 │   ├── app/                         # Next.js app directory
 │   │   ├── (dashboard)/             # Dashboard routes (protected)
-│   │   │   ├── cases/               # Case management routes
-│   │   │   ├── clients/             # Client management routes
-│   │   │   ├── documents/           # Document management routes
-│   │   │   ├── staff/               # Staff management routes
+│   │   │   └── matters/             # Matter management routes
+│   │   │       └──[matterId]        # Dynamic Route for a specific matter
+│   │   │   ├── tasks/               # Task management routes
+│   │   │   ├── billings/            # Billings management routes
+│   │   │   ├── error.tsx            # Error page
 │   │   │   └── layout.tsx           # Dashboard layout
 │   │   ├── (auth)/                  # Authentication routes
 │   │   │   ├── login/               # Login page
-│   │   │   ├── register/            # Registration page
-│   │   │   └── layout.tsx           # Auth layout
-│   │   ├── api/                     # API routes
+│   │   │   └── signup/              # Signup Page
+│   │   ├── (user)/                  # User page routes
+│   │   │   └──[matterId]            # Dynamic Route for a specific user
+│   │   ├── error/                   # Error route
+│   │   ├── global.css               # Global themes
 │   │   ├── page.tsx                 # Landing page
 │   │   └── layout.tsx               # Root layout
 │   ├── components/                  # Reusable UI components
 │   │   ├── ui/                      # UI components from Radix
-│   │   ├── cases/                   # Case-specific components
-│   │   ├── clients/                 # Client-specific components
-│   │   ├── documents/               # Document-specific components
-│   │   ├── staff/                   # Staff-specific components
-│   │   └── layouts/                 # Layout components
+│   │   ├── auth/                    # Auth-specific components
+│   │   ├── billings/                # Biiling-specific components
+│   │   ├── dashboard/               # Dashboard-specific components
+│   │   ├── header/                  # Header-specific components
+│   │   ├── homepage/                # Landing Page-specific components
+│   │   ├── matters/                 # Matter-specific components
+│   │   ├── sidebar/                 # Sidebar-specific components
+│   │   └── tasks/                   # Task-specific layout
 │   ├── actions/                     # Server actions
-│   │   ├── auth.ts                  # Authentication actions
-│   │   ├── cases.ts                 # Case management actions
-│   │   ├── clients.ts               # Client management actions
-│   │   └── documents.ts             # Document management actions
+│   │   ├── billing.ts               # Authentication and user actions
+│   │   ├── globalSearch.ts          # Global Search actions
+│   │   ├── matters.ts               # Matter actions
+│   │   ├── routing.ts               # Routing actions
+│   │   ├── sample.ts                # Just a sample file
+│   │   ├── tasks.ts                 # Tasks actions
+│   │   ├── userProfile.ts           # User Profile actions
+│   │   └── users.tsx                # User actions
+│   ├── actions-handlers/            # Action handlers
+│   │   ├── billing.ts               # Authentication and user actions
+│   │   ├── matters.ts               # Matter action handlers
+│   │   ├── tasks.ts                 # Tasks action handlers
+│   │   ├── userProfile.ts           # User Profile action handlers
+│   │   └── users.tsx                # User action handlers
 │   ├── lib/                         # Shared libraries
-│   │   ├── supabase/                # Supabase client configuration
-│   │   ├── utils/                   # Utility functions
+│   │   ├── supabase.ts              # Supabase client configuration
+│   │   ├── utils.ts                 # Utility functions
 │   │   └── constants.ts             # Constant values
+│   ├── stories/                     # Storybook stories
 │   ├── styles/                      # Global styles
-│   └── types/                       # TypeScript type definitions
+│   ├── types/                       # TypeScript type definitions
+│   ├── utils/                       # Utility functions
+│   │   └── supabase/                # Supabase and server configurations
+|   └── validation/                  # Zod validation schemas
 ├── public/                          # Static assets
-├── stories/                         # Storybook stories
+├── supabase/                        # Contains edge functions using deno (api endpoint tests)
+│   └── functions/                   # API endpoint tests
 ├── tests/                           # Test files
 │   ├── frontend/                    # Frontend tests
 │   ├── backend/                     # Backend tests
