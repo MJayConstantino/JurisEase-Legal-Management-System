@@ -2,7 +2,6 @@
 
 A comprehensive legal case management system built with Next.js, Supabase, and modern UI components to streamline law firm operations.
 
-![GitHub](https://img.shields.io/github/license/MJayConstantino/dianson-law-firm-legal-management-system)
 ![Next.js](https://img.shields.io/badge/Next.js-15.2.1-black)
 ![Supabase](https://img.shields.io/badge/Supabase-latest-green)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
@@ -24,6 +23,7 @@ A comprehensive legal case management system built with Next.js, Supabase, and m
 - [Installation](#installation)
 - [Environment Setup](#environment-setup)
 - [Running the Application](#running-the-application)
+- [Scripts](#scripts)
 - [Testing](#testing)
   - [Jest Tests](#jest-tests)
   - [Cypress Tests](#cypress-tests)
@@ -31,17 +31,26 @@ A comprehensive legal case management system built with Next.js, Supabase, and m
 - [Project Structure](#project-structure)
 - [Deployment](#deployment)
 - [Folder Structure](#folder-structure)
-- [Contributing](#contributing)
-- [License](#license)
+- [Pull Request Process](#pull-request-process)
+- [Linting](#linting)
 
 ## Prerequisites
 
-Ensure you have the following installed:
+Ensure you have the following installed and set up before proceeding:
 
-- [Node.js](https://nodejs.org/) (v18.x or higher)
-- [npm](https://www.npmjs.com/), [yarn](https://yarnpkg.com/), [pnpm](https://pnpm.io/) or [bun](https://bun.sh/)
-- [Deno](https://deno.land/) (for specific scripts)
-- [Git](https://git-scm.com/)
+- [**Node.js**](https://nodejs.org/) (v18.x or higher) and one of the following package managers for JavaScript dependency management:
+  - [npm](https://www.npmjs.com/)
+  - [yarn](https://yarnpkg.com/)
+  - [pnpm](https://pnpm.io/)
+  - [bun](https://bun.sh/)
+- [**Git**](https://git-scm.com/) for cloning the repository.
+- [**Deno**](https://deno.land/) (for specific scripts)
+- [**Postman**](https://www.postman.com/) for testing API endpoints and Deno functions.
+- [**Docker**](https://www.docker.com/) (Docker Desktop or CLI) to build and deploy the Deno function containers into Supabase Edge Functions.
+
+> **Note:** You do _not_ need to install Deno locally. Docker will handle running your Deno-based functions when deployed to Supabase.
+
+---
 
 ## Installation
 
@@ -64,26 +73,6 @@ pnpm install
 bun install
 ```
 
-3. Install Deno:
-
-**For macOS and Linux:**
-
-```bash
-curl -fsSL https://deno.land/x/install/install.sh | sh
-```
-
-**For Windows (using PowerShell):**
-
-```powershell
-iwr https://deno.land/x/install/install.ps1 -useb | iex
-```
-
-Verify the installation:
-
-```bash
-deno --version
-```
-
 ## Environment Setup
 
 The project uses different environment files for different environments:
@@ -99,7 +88,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 # Application Configuration
 NEXT_PUBLIC_SITE_URL=http://localhost:3007
-SUPABASE_SERVICE_ROLE_KEY=http://localhost:3007/api
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
 
 ### `.env.test` (Testing)
@@ -122,7 +111,7 @@ NEXT_PUBLIC_SUPABASE_URL=your_production_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_production_supabase_anon_key
 
 # Application Configuration
-NEXT_PUBLIC_SITE_URL=http://localhost:3007
+NEXT_PUBLIC_SITE_URL=https://your-production-domain.com
 POSTMAN_URL=your_postman_url
 ```
 
@@ -284,12 +273,17 @@ The project follows a standard Next.js structure with some additional directorie
 │   │   ├── ui/             # Basic UI components (buttons, inputs, etc.)
 │   │   └── [feature]/      # Feature-specific components
 │   ├── actions/            # Server actions and API utilities
+│   ├── actions-handlers/   # Action handlers for server actions
 │   ├── lib/                # Shared libraries and utilities
 │   ├── styles/             # Global styles
 │   ├── types/              # TypeScript type definitions
-│   └── utils/              # Helper functions and Supabase files
+│   ├── stories/            # Storybook stories (add your stories in this folder)
+│   ├── utils/              # Helper functions
+│   │   └── supabase/       # Supabase and server configurations
+│   └── validation/         # Zod validation schemas
 ├── public/                 # Static assets
-├── stories/                # Storybook stories
+├── supabase/               # Contains edge functions using deno (api endpoint tests)
+│   └── functions/          # API endpoint tests
 ├── tests/                  # Test files
 │   ├── frontend/           # Frontend tests
 │   ├── backend/            # Backend tests
@@ -298,10 +292,29 @@ The project follows a standard Next.js structure with some additional directorie
 │   ├── e2e/                # End-to-end tests
 │   ├── fixtures/           # Test fixtures
 │   └── support/            # Support files
-├── .env.local              # Local environment variables
+├── .github/                # GitHub workflows and PR templates
+├── .env                    # Development environment variables
 ├── .env.test               # Test environment variables
 ├── .env.production         # Production environment variables
 └── ...config files
+```
+
+### SUPABASE FUNCTIONS COMMAND (CLI - use npx if no CLI installed npx supabase)
+
+```bash
+MAKE NEW EDGE FUNCTION:
+supabase functions new <function name>
+
+DEPLOY FUNCTION
+supabase functions deploy <name>
+supabase functions deploy user-crud-actions --project-ref <PROJECT-REF>
+
+SET ENV
+supabase secrets --env-file ./supabase/functions/ env file path
+
+SET PASSWORD:
+supabase link --project-ref <PROJECT-REF> -p password
+
 ```
 
 ## Deployment
@@ -388,9 +401,35 @@ yarn start
 │   └── newman/                      # API tests
 ├── cypress/                         # Cypress tests
 ├── .storybook/                      # Storybook configuration
-├── .github/                         # GitHub workflows
-├── .env.local                       # Local environment variables
+├── .github/                         # GitHub workflows and PR templates
+├── .env                             # Local environment variables
 ├── .env.test                        # Test environment variables
 ├── .env.production                  # Production environment variables
 └── ...config files
+```
+
+### Pull Request Process
+
+1. Ensure your code follows the project's coding standards and passes all tests
+2. Make sure to fill out all sections of the PR template in the `.github` folder
+3. Update the README.md or documentation with details of changes if applicable
+4. Your PR will be reviewed by maintainers, who may request changes
+5. Once approved, your PR will be merged
+
+### Linting
+
+The project uses ESLint for code quality checks. Run linting before creating a PR:
+
+```bash
+npm run lint
+# or
+yarn lint
+```
+
+If there are linting errors, fix them before submitting your PR. You can also use the `--fix` flag to automatically fix some issues:
+
+```bash
+npm run lint -- --fix
+# or
+yarn lint --fix
 ```
