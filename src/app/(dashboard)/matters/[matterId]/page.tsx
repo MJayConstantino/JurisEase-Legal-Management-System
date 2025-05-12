@@ -3,6 +3,7 @@ import { MatterHeader } from "@/components/matters/matterHeader";
 import { MatterTabs } from "@/components/matters/matterTabs";
 import { MatterDashboard } from "@/components/matters/matterDashboard";
 import { getMatterById } from "@/actions/matters";
+import { fetchUsersAction } from "@/actions/users";
 
 export async function generateMetadata({
   params,
@@ -38,7 +39,10 @@ export default async function MatterDetailPage({
 }) {
   try {
     const { matterId } = await params;
-    const matter = await getMatterById(matterId);
+    const [matter, users] = await Promise.all([
+      getMatterById(matterId),
+      fetchUsersAction(),
+    ]);
 
     if (!matter) {
       notFound();
@@ -48,7 +52,7 @@ export default async function MatterDetailPage({
       <div className="flex flex-col gap-6 h-full">
         <MatterHeader matter={matter} />
         <MatterTabs matterId={matter.matter_id}>
-          <MatterDashboard matter={matter} />
+          <MatterDashboard matter={matter} users={users} />
         </MatterTabs>
       </div>
     );

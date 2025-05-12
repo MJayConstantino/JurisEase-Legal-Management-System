@@ -1,0 +1,132 @@
+        describe("Attorney and staff assignments", () => {
+          beforeEach(() => {
+            cy.contains("Matter with Client").click();
+            cy.get('button[aria-label="Edit"]').click();
+          });
+
+          it("should assign and remove attorney", () => {
+            // Assign attorney
+            cy.get('select[aria-label="Select attorney"]').select("John Doe");
+            cy.get('button[aria-label="Save"]').click();
+            cy.contains("John Doe").should("be.visible");
+
+            // Remove attorney
+            cy.get('button[aria-label="Edit"]').click();
+            cy.get('button[aria-label="Remove attorney"]').click();
+            cy.get('button[aria-label="Save"]').click();
+            cy.contains("No attorney assigned").should("be.visible");
+          });
+
+          it("should assign and remove staff", () => {
+            // Assign staff
+            cy.get('select[aria-label="Select staff"]').select("Jane Smith");
+            cy.get('button[aria-label="Save"]').click();
+            cy.contains("Jane Smith").should("be.visible");
+
+            // Remove staff
+            cy.get('button[aria-label="Edit"]').click();
+            cy.get('button[aria-label="Remove staff"]').click();
+            cy.get('button[aria-label="Save"]').click();
+            cy.contains("No staff assigned").should("be.visible");
+          });
+        });
+
+        describe("Opposing council details validation", () => {
+          beforeEach(() => {
+            cy.contains("Matter with Client").click();
+          });
+
+          it("should validate opposing council email and phone", () => {
+            cy.contains("Opposing Council")
+              .parent()
+              .find('button[aria-label="Edit"]')
+              .click();
+
+            // Try invalid email
+            cy.get('input[placeholder="Email address"]').type("invalid-email");
+
+            // Try invalid phone
+            cy.get('input[placeholder="Phone number"]').type("invalid-phone");
+
+            cy.get('button[aria-label="Save"]').click();
+
+            // Verify validation errors
+            cy.contains("Invalid email format").should("be.visible");
+            cy.contains("Invalid phone number format").should("be.visible");
+          });
+        });
+
+        describe("Court details validation", () => {
+          beforeEach(() => {
+            cy.contains("Matter with Client").click();
+          });
+
+          it("should validate court email and phone", () => {
+            cy.contains("Court Details")
+              .parent()
+              .find('button[aria-label="Edit"]')
+              .click();
+
+            // Try invalid email
+            cy.get('input[placeholder="Email"]').type("invalid-email");
+
+            // Try invalid phone
+            cy.get('input[placeholder="Phone"]').type("invalid-phone");
+
+            cy.get('button[aria-label="Save"]').click();
+
+            // Verify validation errors
+            cy.contains("Invalid email format").should("be.visible");
+            cy.contains("Invalid phone number format").should("be.visible");
+          });
+        });
+
+        describe("Complete matter update", () => {
+          it("should update all matter details successfully", () => {
+            cy.contains("Matter with Client").click();
+
+            // Update case details
+            cy.get('button[aria-label="Edit"]').click();
+            cy.get('input[placeholder="Case Name"]')
+              .clear()
+              .type("Updated Full Matter");
+            cy.get('input[placeholder="Case Number"]').clear().type("UPD-123");
+            cy.get('textarea[placeholder="Case Description"]').type(
+              "This is a fully updated matter with all details."
+            );
+            cy.get('select[aria-label="Select attorney"]').select("John Doe");
+            cy.get('select[aria-label="Select staff"]').select("Jane Smith");
+            cy.get('button[aria-label="Save"]').click();
+
+            // Update opposing council details
+            cy.contains("Opposing Council")
+              .parent()
+              .find('button[aria-label="Edit"]')
+              .click();
+            cy.get('input[placeholder="Opposing council name"]').type("Bob Wilson");
+            cy.get('input[placeholder="Phone number"]').type("555-0123");
+            cy.get('input[placeholder="Email address"]').type("bob@law.com");
+            cy.get('input[placeholder="Address"]').type("456 Law St");
+            cy.get('button[aria-label="Save"]').click();
+
+            // Update court details
+            cy.contains("Court Details")
+              .parent()
+              .find('button[aria-label="Edit"]')
+              .click();
+            cy.get('input[placeholder="Court Name"]').type("Superior Court");
+            cy.get('input[placeholder="Phone"]').type("555-9876");
+            cy.get('input[placeholder="Email"]').type("court@gov.com");
+            cy.get('button[aria-label="Save"]').click();
+
+            // Verify all updates
+            cy.contains("Updated Full Matter").should("be.visible");
+            cy.contains("UPD-123").should("be.visible");
+            cy.contains("This is a fully updated matter").should("be.visible");
+            cy.contains("John Doe").should("be.visible");
+            cy.contains("Jane Smith").should("be.visible");
+            cy.contains("Bob Wilson").should("be.visible");
+            cy.contains("Superior Court").should("be.visible");
+          });
+        });
+      });
