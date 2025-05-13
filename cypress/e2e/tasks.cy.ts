@@ -250,8 +250,8 @@ describe("Tasks E2E Interactions", () => {
     });
   });
 
-  describe.only("Dropdown Interaction", () => {
-    it("viwe tasks by Grid", () => {
+  describe("Dropdown Interaction", () => {
+    it("view tasks by Grid", () => {
       cy.get(
         'button[id="radix-«R99tqdel7»"][data-slot="dropdown-menu-trigger"]'
       ).click();
@@ -324,7 +324,6 @@ describe("Tasks E2E Interactions", () => {
       cy.get(
         'button[id="radix-«R99tqdel7»"][data-slot="dropdown-menu-trigger"]'
       ).click();
-
       cy.get(
         'div[id^="radix-«R99tqdel7H1»"][data-slot="dropdown-menu-content"]'
       )
@@ -341,6 +340,72 @@ describe("Tasks E2E Interactions", () => {
           .and("not.contain", "in-progress")
           .and("not.contain", "overdue");
       });
+    });
+  });
+
+  describe("Mark task as complete in table view", () => {
+    it("should mark a task as complete directly from the table", () => {
+      cy.contains("tr", "okay okay").within(() => {
+        cy.get('button[role="checkbox"][data-slot="checkbox"]').click();
+      });
+      cy.contains('Task "okay okay" marked as complete').should("exist");
+    });
+
+    it("should mark a task as incomplete directly from the table", () => {
+      cy.contains("tr", "okay okay").within(() => {
+        cy.get('button[role="checkbox"][data-slot="checkbox"]').click();
+      });
+      cy.contains('Task "okay okay" unmarked as complete').should("exist");
+    });
+
+    it("should mark task as complete in grid view", () => {
+      cy.get(
+        'button[id="radix-«R99tqdel7»"][data-slot="dropdown-menu-trigger"]'
+      ).click();
+      cy.get(
+        'div[id^="radix-«R99tqdel7H1»"][data-slot="dropdown-menu-content"]'
+      )
+        .should("be.visible")
+        .should("contain", "Filter Tasks");
+
+      cy.get('div[id^="radix-"][data-slot="dropdown-menu-content"]')
+        .find('div[role="menuitem"]')
+        .contains("Grid")
+        .click();
+
+      cy.get("#task-complete-7742a3bb-09cc-4001-842b-2615c0224186").click();
+      cy.contains('Task "okay okay" marked as complete').should("exist");
+    });
+
+    it("should unmark task as complete in grid view", () => {
+      cy.get(
+        'button[id="radix-«R99tqdel7»"][data-slot="dropdown-menu-trigger"]'
+      ).click();
+      cy.get(
+        'div[id^="radix-«R99tqdel7H1»"][data-slot="dropdown-menu-content"]'
+      )
+        .should("be.visible")
+        .should("contain", "Filter Tasks");
+
+      cy.get('div[id^="radix-"][data-slot="dropdown-menu-content"]')
+        .find('div[role="menuitem"]')
+        .contains("Grid")
+        .click();
+
+      cy.get("#task-complete-7742a3bb-09cc-4001-842b-2615c0224186").click();
+      cy.contains('Task "okay okay" unmarked as complete').should("exist");
+    });
+  });
+
+  describe("actions button", () => {
+    it("should open the actions menu", () => {
+      cy.get(
+        'button[id^="radix-«Reiphtqdel7»"][data-slot="dropdown-menu-trigger"]'
+      ).click();
+      cy.get('div[role="menuitem"]').contains("View Details");
+      cy.get('div[role="menuitem"]').contains("Edit Task");
+      cy.get('div[role="menuitem"]').contains("Mark as Complete");
+      cy.get('div[role="menuitem"]').contains("Delete Task");
     });
   });
 });
