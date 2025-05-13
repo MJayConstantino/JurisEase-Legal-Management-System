@@ -128,10 +128,6 @@ function AvatarDropdownMenu({
         >
           <User /> Profile
         </DropdownMenuItem>
-        <DropdownMenuItem className="md:hidden px-3 py-2 text-black dark:text-white">
-          <Plus className="mr-2 h-4 w-4" />
-          <span>Create New</span>
-        </DropdownMenuItem>
         <DropdownMenuItem className="px-3 py-2 text-black dark:text-white">
           <LogOut />
           <Signout />
