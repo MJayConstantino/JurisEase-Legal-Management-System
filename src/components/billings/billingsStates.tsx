@@ -15,6 +15,13 @@ export function BillingStates(){
     const [matter_id, setMatterId] = useState("")
     const [dateString, setDateString] = useState(format(new Date(), "yyyy-MM-dd"))
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [negativeAmountError, setNegativeAmountError] = useState(false)
+    const [isMaxFieldError, setIsMaxFieldError] = useState(false)
+    const [visibleMatters, setVisibleMatters] = useState<Matter[]>([])
+    const [currentPage, setCurrentPage] = useState(1)
+    const [nameError, setNameError] = useState(false)
+    const [amountError, setAmountError] = useState(false)
+    const [matterError, setMatterError] = useState(false)
 
     // billing items
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -43,7 +50,10 @@ export function BillingStates(){
 
     return{
         name, setName, remarks, setRemarks, amount, setAmount, created_at, setCreated_at, 
-        status, setStatus, matter_id, setMatterId, dateString, setDateString, isSubmitting, setIsSubmitting,
+        status, setStatus, matter_id, setMatterId, dateString, setDateString, isSubmitting, 
+        setIsSubmitting, visibleMatters, setVisibleMatters, currentPage, setCurrentPage,
+        isMaxFieldError, setIsMaxFieldError, nameError, setNameError, amountError, setAmountError,
+        matterError, setMatterError, negativeAmountError, setNegativeAmountError,
         
         isEditDialogOpen, setIsEditDialogOpen, isDeleteDialogOpen, setIsDeleteDialogOpen,
 

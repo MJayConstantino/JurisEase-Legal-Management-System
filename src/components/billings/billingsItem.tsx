@@ -73,6 +73,12 @@ export function BillingsItem({
         {index}
       </TableCell>
 
+      <TableCell
+        className="font-medium max-w-[200px] truncate"
+        title={bill.name}
+      >
+        {bill.name}
+      </TableCell>
       {!hideMatterColumn && (
         <TableCell
           className="font-medium max-w-[150px] truncate"
@@ -87,14 +93,15 @@ export function BillingsItem({
             : `Matter ID: ${bill.matter_id}`}
         </TableCell>
       )}
-      <TableCell
-        className="font-medium max-w-[200px] truncate"
-        title={bill.name}
-      >
-        {bill.name}
-      </TableCell>
       <TableCell title={formatAmount(bill.amount)} className="overflow-hidden">{formatAmount(bill.amount)}</TableCell>
-      <TableCell>{format(new Date(bill.created_at), "MMM d, yyyy")}</TableCell>
+      <TableCell
+        className={`${
+          hideMatterColumn ? "max-w-[250px]" : "max-w-[200px]"
+        } truncate`}
+        title={bill.remarks || "-"}
+      >
+        {bill.remarks || "-"}
+      </TableCell>
       <TableCell>
         <span
           className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium ${getStatusStyles(
@@ -104,14 +111,7 @@ export function BillingsItem({
           {bill.status}
         </span>
       </TableCell>
-      <TableCell
-        className={`${
-          hideMatterColumn ? "max-w-[250px]" : "max-w-[200px]"
-        } truncate`}
-        title={bill.remarks || "-"}
-      >
-        {bill.remarks || "-"}
-      </TableCell>
+      <TableCell>{format(new Date(bill.created_at), "MMM d, yyyy")}</TableCell>
       <TableCell className="text-right">
         <BillingsButtons
           onEdit={() => setIsEditDialogOpen(true)}

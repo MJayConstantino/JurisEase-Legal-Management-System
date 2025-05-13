@@ -22,6 +22,7 @@ export async function getBills() {
   const { data, error } = await supabase
     .from("billings")
     .select("*")
+    .order("created_at", { ascending: false });
 
   if (error) {
     console.error("Error fetching bills:", error)

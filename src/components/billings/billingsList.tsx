@@ -38,6 +38,14 @@ export function BillingsList({
           <TableHeader className="bg-gray-100 dark:bg-gray-900">
             <TableRow className="text-sm md:text-base">
               <TableHead className="w-[5%] text-center text-sm md:text-base">#</TableHead>
+              <TableHead className="w-[15%]">
+                <div className="flex items-center cursor-pointer" onClick={() => onSortChange("name")}>
+                  Bill Name
+                  <ArrowUpDown
+                    className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "name" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
+                  />
+                </div>
+              </TableHead>
               {!hideMatterColumn && (
                 <TableHead className="w-[20%]">
                 <div className="flex items-center cursor-pointer" onClick={() => onSortChange("matterName")}>
@@ -48,15 +56,6 @@ export function BillingsList({
                   </div>
                 </TableHead>
               )}
-              <TableHead className="w-[15%]">
-                <div className="flex items-center cursor-pointer" onClick={() => onSortChange("name")}>
-                  Bill Name
-                  <ArrowUpDown
-                    className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "name" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
-                  />
-
-                </div>
-              </TableHead>
               <TableHead className="w-[10%]">
                 <div className="flex items-center cursor-pointer" onClick={() => onSortChange("amount")}>
                   Amount
@@ -66,13 +65,12 @@ export function BillingsList({
                   
                 </div>
               </TableHead>
-              <TableHead className="w-[10%]">
-                <div className="flex items-center cursor-pointer" onClick={() => onSortChange("created_at")}>
-                  Created At
+              <TableHead className={`${hideMatterColumn ? "w-[20%]" : "w-[15%]"}`}>
+                <div className="flex items-center cursor-pointer" onClick={() => onSortChange("remarks")}>
+                  Remarks
                   <ArrowUpDown
-                    className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "created_at" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
+                    className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "remarks" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
                   />
-                 
                 </div>
               </TableHead>
               <TableHead className="w-[10%]">
@@ -81,16 +79,14 @@ export function BillingsList({
                   <ArrowUpDown
                     className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "status" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
                   />
-                 
                 </div>
               </TableHead>
-              <TableHead className={`${hideMatterColumn ? "w-[20%]" : "w-[15%]"}`}>
-                <div className="flex items-center cursor-pointer" onClick={() => onSortChange("remarks")}>
-                  Remarks
+              <TableHead className="w-[10%]">
+                <div className="flex items-center cursor-pointer" onClick={() => onSortChange("created_at")}>
+                  Date Billed
                   <ArrowUpDown
-                    className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "remarks" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
+                    className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "created_at" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
                   />
-                  
                 </div>
               </TableHead>
               <TableHead className="w-[13%] text-right">Actions</TableHead>

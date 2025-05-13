@@ -1,50 +1,33 @@
-"use client";
+"use client"
 
-import { useEffect, useRef } from "react";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import type { Bill, BillStatus } from "@/types/billing.type";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { BillingStates } from "./billingsStates";
-import { Textarea } from "../ui/textarea";
-import { Matter } from "@/types/matter.type";
+import type React from "react"
+
+import { useEffect, useRef} from "react"
+import { format } from "date-fns"
+import { CalendarIcon } from "lucide-react"
+import { useMediaQuery } from "@/hooks/use-media-query"
+import type { Bill, BillStatus } from "@/types/billing.type"
+import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { BillingStates } from "./billingsStates"
+import { Textarea } from "@/components/ui/textarea"
+import type { Matter } from "@/types/matter.type"
 
 interface BillingsEditDialogProps {
-  bill: Bill;
-  matters: Matter[];
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSave: (bill: Bill) => void;
-  onSuccess?: () => void;
-  onError?: (error: Error) => void;
+  bill: Bill
+  matters: Matter[]
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSave: (bill: Bill) => void
+  onSuccess?: () => void
+  onError?: (error: Error) => void
 }
 
-export function BillingsEditDialog({
-  bill,
-  open,
-  onOpenChange,
-  onSave,
-  onSuccess,
-  onError
-}: BillingsEditDialogProps) {
+export function BillingsEditDialog({ bill, open, onOpenChange, onSave, onSuccess, onError }: BillingsEditDialogProps) {
   const {
     name,
     setName,
@@ -61,22 +44,32 @@ export function BillingsEditDialog({
     setMatterId,
     matter_id,
     isSubmitting,
-    setIsSubmitting
-  } = BillingStates();
+    setIsSubmitting,
+    nameError,
+    setNameError,
+    amountError,
+    setAmountError,
+    negativeAmountError,
+    setNegativeAmountError
+  } = BillingStates()
 
   const dateInputRef = useRef<HTMLInputElement>(null)
 
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isDesktop = useMediaQuery("(min-width: 768px)")
 
   useEffect(() => {
     if (open) {
-      setMatterId(bill.matter_id);
-      setName(bill.name);
-      setAmount(bill.amount.toString());
-      setCreated_at(new Date(bill.created_at));
-      setStatus(bill.status);
-      setRemarks(bill.remarks || "");
-      setIsSubmitting(false);
+      setMatterId(bill.matter_id)
+      setName(bill.name)
+      setAmount(bill.amount.toString())
+      setCreated_at(new Date(bill.created_at))
+      setDateString(format(new Date(bill.created_at), "yyyy-MM-dd"))
+      setStatus(bill.status)
+      setRemarks(bill.remarks || "")
+      setIsSubmitting(false)
+      setNameError(false)
+      setAmountError(false)
+      setNegativeAmountError(false)
     }
   }, [
     bill,
@@ -85,20 +78,39 @@ export function BillingsEditDialog({
     setName,
     setAmount,
     setCreated_at,
+    setDateString,
     setStatus,
     setRemarks,
     setIsSubmitting,
-  ]);
+  ])
+
+  useEffect(() => {
+    if (name) setNameError(false)
+  }, [name])
+
+  useEffect(() => {
+    if (amount) setAmountError(false)
+  }, [amount])
+
 
   const handleSave = () => {
-    if (!name || !amount || !matter_id){
-      toast.error("Please fill in all required fields.")
-      return;
+    let hasError = false
+
+    if (!name) {
+      setNameError(true)
+      hasError = true
     }
+
+    if (!amount) {
+      setAmountError(true)
+      hasError = true
+    }
+
+    if (hasError) return
 
     setIsSubmitting(true)
 
-    try{
+    try {
       const updatedBill: Bill = {
         ...bill,
         matter_id,
@@ -107,24 +119,21 @@ export function BillingsEditDialog({
         created_at: created_at.toISOString(),
         status,
         remarks,
-      };
+      }
 
-      onSave(updatedBill);
+      onSave(updatedBill)
       toast.success("Bill edited successfully.")
 
       if (onSuccess) onSuccess()
       onOpenChange(false)
-
-    }catch (error) {
-
+    } catch (error) {
       toast.error("Failed to edit bill. Please try again.")
 
       if (onError && error instanceof Error) onError(error)
     } finally {
       setIsSubmitting(false)
     }
-    
-  };
+  }
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDateString = e.target.value
@@ -156,47 +165,57 @@ export function BillingsEditDialog({
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
-          <div
-            className={`grid ${
-              isDesktop ? "grid-cols-2" : "grid-cols-1"
-            } gap-4`}
-          >
+          <div className={`grid ${isDesktop ? "grid-cols-2" : "grid-cols-1"} gap-4`}>
             <div className="space-y-4">
-              <div className="grid gap-2">
+              <div className="grid gap-2 overflow-hidden mb-6">
                 <Label htmlFor="edit-name" className="text-base md:text-lg">
                   Bill Name
+                  <sup className="text-red-600 ml-1">*</sup>
                 </Label>
                 <Input
                   id="edit-name"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    if (value.length > 30) {
+                      toast.error("Bill name cannot exceed 30 characters")
+                      return
+                    }
+                    setName(value)
+                  }}
+                  maxLength={30}
                   className="text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:border-gray-600"
                 />
+                {nameError && <p className="text-red-600 mt-2 text-[0.85rem]">Bill name is required.</p>}
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid gap-2 overflow-hidden mb-6">
                 <Label htmlFor="edit-amount" className="text-base md:text-lg">
                   Amount
+                  <sup className="text-red-600 ml-1">*</sup>
                 </Label>
                 <Input
                   id="edit-amount"
                   type="number"
                   value={amount}
                   onChange={(e) => {
-                    const value = e.target.value;
-                    if(Number(value) < 0){
-                      toast.error("Invalid amount format.")
-                    }else if(Number(value) >= 0 || value === ""){
-                      setAmount(e.target.value)}
+                    const value = e.target.value
+                    if (Number(value) < 0) {
+                      setNegativeAmountError(true)
+                    } else if (Number(value) >= 0 || value === "") {
+                      setNegativeAmountError(false)
+                      setAmount(e.target.value)
                     }
-                  }
+                  }}
                   className="text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:border-gray-600"
                 />
+                {negativeAmountError && <p className="text-red-600 mt-2 text-[0.85rem]">Amount cannot be negative.</p>}
+                {amountError && <p className="text-red-600 mt-2 text-[0.85rem]">Amount is required.</p>}
               </div>
 
               <div className="grid gap-2">
                 <Label htmlFor="date-display" className="text-base md:text-lg">
-                Date Billed
+                  Date Billed
                 </Label>
                 <div className="relative">
                   <Input
@@ -218,6 +237,7 @@ export function BillingsEditDialog({
                   />
 
                   <Button
+                    name="dateBtn"
                     type="button"
                     variant="ghost"
                     size="icon"
@@ -232,35 +252,27 @@ export function BillingsEditDialog({
 
             <div className="flex flex-col">
               <div className="grid gap-2 mb-4 space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <Select
-                  defaultValue="pending"
-                  value={status}
-                  onValueChange={(value) => setStatus(value as BillStatus)}
-                >
+                <Label htmlFor="status" className="text-base md:text-lg">
+                  Status
+                </Label>
+                <Select defaultValue="pending" value={status} onValueChange={(value) => setStatus(value as BillStatus)}>
                   <SelectTrigger
                     id="edit-status"
                     className="text-sm md:text-base dark:bg-gray-700 dark:border-gray-600"
                   >
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-[200px] overflow-y-auto dark:bg-gray-700 dark:border-gray-600">
+                  <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
                     <SelectItem value="active" className="text-sm md:text-base">
                       Active
                     </SelectItem>
                     <SelectItem value="paid" className="text-sm md:text-base">
                       Paid
                     </SelectItem>
-                    <SelectItem
-                      value="pending"
-                      className="text-sm md:text-base"
-                    >
+                    <SelectItem value="pending" className="text-sm md:text-base">
                       Pending
                     </SelectItem>
-                    <SelectItem
-                      value="overdue"
-                      className="text-sm md:text-base"
-                    >
+                    <SelectItem value="overdue" className="text-sm md:text-base">
                       Overdue
                     </SelectItem>
                   </SelectContent>
@@ -269,10 +281,7 @@ export function BillingsEditDialog({
 
               <div className="flex flex-col flex-grow">
                 <div className="flex items-center justify-between mb-0">
-                  <Label
-                    htmlFor="edit-remarks"
-                    className="text-base md:text-lg"
-                  >
+                  <Label htmlFor="edit-remarks" className="text-base md:text-lg">
                     Remarks
                   </Label>
                 </div>
@@ -300,7 +309,7 @@ export function BillingsEditDialog({
           </Button>
           <Button
             id="saveBtn"
-            className="bg-indigo-900 hover:bg-indigo-800 dark:bg-indigo-700 dark:hover:bg-indigo-600 text-sm md:text-base h-9 md:h-10"
+            className="bg-secondary-foreground hover:bg-indigo-800 dark:bg-indigo-700 dark:hover:bg-indigo-600 text-sm md:text-base h-9 md:h-10"
             onClick={handleSave}
             disabled={isSubmitting}
           >
@@ -309,5 +318,5 @@ export function BillingsEditDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
