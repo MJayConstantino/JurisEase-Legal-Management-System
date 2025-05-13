@@ -3,6 +3,7 @@ import {
     createBill as addBillToDb,
     updateBill as updateBillInDb,
     deleteBill as deleteBillFromDb,
+    getBills,
   } from "@/actions/billing";
 import { Bill } from "@/types/billing.type";
 import { toast } from "sonner";
@@ -20,7 +21,7 @@ export function BillingsActionHandlers(){
           if (newBill) {
             setBills((prev) => [...prev, newBill]);
           }
-          setTimeout(() => { window.location.reload() }, 500);
+          // setTimeout(() => { window.location.reload() }, 500);
         } catch (error) {
           console.error("Failed to add bill:", error);
           toast.error("Failed to add bill. Please try again.");
@@ -40,7 +41,7 @@ export function BillingsActionHandlers(){
               )
             );
           }
-          setTimeout(() => { window.location.reload() }, 500);
+          // setTimeout(() => { window.location.reload() }, 500);
         } catch (error) {
           console.error("Failed to update bill:", error);
           toast.error("Failed to update bill. Please try again.");
@@ -57,7 +58,7 @@ export function BillingsActionHandlers(){
             setBills((prev) => prev.filter((bill) => bill.bill_id !== id));
           }
           toast.success("Bill deleted successfully!")
-          setTimeout(() => { window.location.reload() }, 500);
+          // setTimeout(() => { window.location.reload() }, 500);
         } catch (error) {
           console.error("Failed to delete bill:", error);
           toast.error("Failed to delete bill. Please try again.");
@@ -69,6 +70,20 @@ export function BillingsActionHandlers(){
 
       return{addBill, updateBill, deleteBill}
 }
+
+export const handleFetchBills = async (): Promise<{
+  bills: Bill[];
+  error: string | null;
+}> => {
+  try {
+    const bills = await getBills();
+    return { bills, error: null };
+  } catch (error: any) {
+    console.error("Error in handleFetchMatters:", error);
+    toast.error("Failed to fetch matters. Please try again.");
+    return { bills: [], error: "Failed to fetch matters." };
+  }
+};
 
 
 

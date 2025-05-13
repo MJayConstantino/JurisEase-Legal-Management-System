@@ -9,14 +9,19 @@ import { BillingsAddDialog } from "@/components/billings/billingsAddDialog"
 import { BillingsListHeader } from "@/components/billings/billingsListHeader"
 import type { Bill, SortDirection, SortField, StatusFilter } from "@/types/billing.type"
 import { BillingStates } from "./billingsStates"
-import { getMatters } from "@/actions/matters"
-import { getBills } from "@/actions/billing"
 import { BillingsActionHandlers } from "@/action-handlers/billings"
+import { Matter } from "@/types/matter.type"
 
-export function BillingInterface() {
+interface BillWithMatter extends Bill {
+  matter?: Matter
+}
+
+interface BillingsPageProps{
+  bills: BillWithMatter[]
+}
+
+export function BillingInterface({ bills }: BillingsPageProps) {
   const {
-    bills,
-    setBills,
     filteredBills,
     setFilteredBills,
     currentDateTime,
@@ -24,7 +29,6 @@ export function BillingInterface() {
     isNewBillDialogOpen,
     setIsNewBillDialogOpen,
     isLoading,
-    setIsLoading,
     timeFilter,
     setTimeFilter,
     sortField,
@@ -33,8 +37,7 @@ export function BillingInterface() {
     setSortDirection,
     statusFilter,
     setStatusFilter,
-    matters,
-    setMatters,
+    setBills,
     selectedMatterId,
     setSelectedMatterId,
   } = BillingStates()
@@ -42,20 +45,17 @@ export function BillingInterface() {
   const { addBill, updateBill, deleteBill } = BillingsActionHandlers()
 
   useEffect(() => {
-    async function loadData() {
-      setIsLoading(true)
-      try {
-        const [billsData, mattersData] = await Promise.all([getBills(), getMatters()])
-        setBills(billsData)
-        setMatters(mattersData)
-      } catch (error) {
-        console.error("Failed to load data:", error)
-      } finally {
-        setIsLoading(false)
-      }
+    if (bills && bills.length > 0) {
+      const mattersList = bills.reduce((acc: Matter[], bill) => {
+        if (bill.matter && !acc.some((m) => m.matter_id === bill.matter?.matter_id)) {
+          acc.push(bill.matter)
+        }
+        return acc
+      }, [])
+
+      setBills(bills)
     }
-    loadData()
-  }, [setBills, setIsLoading, setMatters])
+  }, [bills, setBills])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -64,15 +64,14 @@ export function BillingInterface() {
     return () => clearInterval(interval)
   }, [setCurrentDateTime])
 
-  const sortBills = useCallback(
-    (billsToSort: Bill[], field: SortField, direction: SortDirection) => {
+   const sortBills = useCallback((billsToSort: BillWithMatter[], field: SortField, direction: SortDirection) => {
       return [...billsToSort].sort((a, b) => {
         let comparison = 0
 
         switch (field) {
           case "matterName":
-            const matterA = matters.find((m) => m.matter_id === a.matter_id)?.name || ""
-            const matterB = matters.find((m) => m.matter_id === b.matter_id)?.name || ""
+            const matterA = a.matter?.name || ""
+            const matterB = b.matter?.name || ""
             comparison = matterA.localeCompare(matterB)
             break
           case "name":
@@ -95,7 +94,7 @@ export function BillingInterface() {
         return direction === "asc" ? comparison : -comparison
       })
     },
-    [matters],
+    [],
   )
 
   useEffect(() => {
@@ -170,6 +169,18 @@ export function BillingInterface() {
     setSelectedMatterId(matterId === "all" ? null : matterId)
   }
 
+  const mattersList = useMemo(() => {
+    const mattersMap = new Map<string, Matter>()
+
+    bills.forEach((bill) => {
+      if (bill.matter && !mattersMap.has(bill.matter.matter_id)) {
+        mattersMap.set(bill.matter.matter_id, bill.matter)
+      }
+    })
+
+    return Array.from(mattersMap.values())
+  }, [bills])
+
   const totalRevenue = useMemo(() => {
     return filteredBills.reduce((sum, bill) => sum + Number(bill.amount), 0)
   }, [filteredBills])
@@ -222,7 +233,9 @@ export function BillingInterface() {
           activeFilter={timeFilter}
           onFilterChange={setTimeFilter}
           activeMatterFilter={
-            selectedMatterId ? matters.find((m) => m.matter_id === selectedMatterId)?.name || selectedMatterId : ""
+            selectedMatterId
+              ? mattersList.find((m) => m.matter_id === selectedMatterId)?.name || selectedMatterId
+              : ""
           }
           matterFilteredRevenues={{
             total: totalRevenue,
@@ -271,7 +284,7 @@ export function BillingInterface() {
             onNewBill={() => setIsNewBillDialogOpen(true)}
             statusFilter={statusFilter}
             onStatusFilterChange={setStatusFilter}
-            matters={matters}
+            matters={mattersList}
             selectedMatterId={selectedMatterId || "all"}
             onMatterFilterChange={handleMatterFilterChange}
           />
@@ -279,7 +292,7 @@ export function BillingInterface() {
           <div className="max-h-[600px] overflow-y-auto">
             <BillingsList
               bills={filteredBills}
-              matters={matters}
+              matters={mattersList}
               onUpdate={updateBill}
               onDelete={deleteBill}
               isLoading={isLoading}
@@ -293,7 +306,7 @@ export function BillingInterface() {
           open={isNewBillDialogOpen}
           onOpenChange={setIsNewBillDialogOpen}
           onSave={addBill}
-          matters={matters}
+          matters={mattersList}
           matterBillingMatterId={""}
         />
       </div>

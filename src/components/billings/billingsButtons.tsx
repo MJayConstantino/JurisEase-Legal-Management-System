@@ -13,7 +13,7 @@ export function BillingsButtons({ onEdit, onDelete }: BillingsButtonsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-7 w-7 md:h-9 md:w-9">
+        <Button variant="ghost" size="icon" className="h-7 w-7 cursor-pointer md:h-9 md:w-9">
           <MoreHorizontal className="h-3 w-3 md:h-4 md:w-4" />
           <span className="sr-only">More options</span>
         </Button>
@@ -23,8 +23,8 @@ export function BillingsButtons({ onEdit, onDelete }: BillingsButtonsProps) {
           <Edit className="h-3.5 w-3.5 mr-2" />
           Edit
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={onDelete} className="cursor-pointer text-destructive focus:text-destructive">
-          <Trash2 className="h-3.5 w-3.5 mr-2" />
+        <DropdownMenuItem onClick={onDelete} className="cursor-pointer dark:text-destructive-foreground text-destructive focus:text-destructive">
+          <Trash2 className="h-3.5 w-3.5 mr-2 " />
           Delete
         </DropdownMenuItem>
       </DropdownMenuContent>

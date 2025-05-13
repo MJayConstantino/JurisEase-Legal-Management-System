@@ -20,9 +20,8 @@ import { BillingStates } from "./billingsStates";
 import { Matter } from "@/types/matter.type";
 
 interface BillingsItemProps {
-  bill: Bill;
-  matter?: Matter;
-  matters?: Matter[];
+  bill: Bill & { matter?: Matter }
+  matters?: Matter[]
   onUpdate: (bill: Bill) => void;
   onDelete: (id: string) => void;
   index: number;
@@ -31,7 +30,7 @@ interface BillingsItemProps {
 
 export function BillingsItem({
   bill,
-  matter,
+  matters = [],
   onUpdate,
   onDelete,
   index,
@@ -69,35 +68,24 @@ export function BillingsItem({
 
   return (
     <TableRow className="text-sm md:text-base dark:border-gray-700">
-      <TableCell className="text-center text-gray-500 dark:text-gray-400 font-medium w-12">
-        {index}
-      </TableCell>
+      <TableCell className="text-center text-gray-500 dark:text-gray-400 font-medium w-12">{index}</TableCell>
 
-      <TableCell
-        className="font-medium max-w-[200px] truncate"
-        title={bill.name}
-      >
+      <TableCell className="font-medium max-w-[200px] truncate" title={bill.name}>
         {bill.name}
       </TableCell>
       {!hideMatterColumn && (
         <TableCell
           className="font-medium max-w-[150px] truncate"
-          title={
-            matter
-              ? `${matter.name} [${matter.case_number}]`
-              : `Matter ID: ${bill.matter_id}`
-          }
+          title={bill.matter ? `${bill.matter.name} [${bill.matter.case_number}]` : `Matter ID: ${bill.matter_id}`}
         >
-          {matter
-            ? `${matter.name} [${matter.case_number}]`
-            : `Matter ID: ${bill.matter_id}`}
+          {bill.matter ? `${bill.matter.name} [${bill.matter.case_number}]` : `Matter ID: ${bill.matter_id}`}
         </TableCell>
       )}
-      <TableCell title={formatAmount(bill.amount)} className="overflow-hidden">{formatAmount(bill.amount)}</TableCell>
+      <TableCell title={formatAmount(bill.amount)} className="overflow-hidden">
+        {formatAmount(bill.amount)}
+      </TableCell>
       <TableCell
-        className={`${
-          hideMatterColumn ? "max-w-[250px]" : "max-w-[200px]"
-        } truncate`}
+        className={`${hideMatterColumn ? "max-w-[250px]" : "max-w-[200px]"} truncate`}
         title={bill.remarks || "-"}
       >
         {bill.remarks || "-"}
@@ -105,7 +93,7 @@ export function BillingsItem({
       <TableCell>
         <span
           className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium ${getStatusStyles(
-            bill.status
+            bill.status,
           )}`}
         >
           {bill.status}
@@ -113,28 +101,20 @@ export function BillingsItem({
       </TableCell>
       <TableCell>{format(new Date(bill.created_at), "MMM d, yyyy")}</TableCell>
       <TableCell className="text-right">
-        <BillingsButtons
-          onEdit={() => setIsEditDialogOpen(true)}
-          onDelete={() => setIsDeleteDialogOpen(true)}
-        />
+        <BillingsButtons onEdit={() => setIsEditDialogOpen(true)} onDelete={() => setIsDeleteDialogOpen(true)} />
 
         <BillingsEditDialog
           bill={bill}
           open={isEditDialogOpen}
           onOpenChange={setIsEditDialogOpen}
           onSave={onUpdate}
-          matters={[]}
+          matters={matters}
         />
 
-        <AlertDialog
-          open={isDeleteDialogOpen}
-          onOpenChange={setIsDeleteDialogOpen}
-        >
+        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <AlertDialogContent className="max-w-md dark:bg-gray-800 dark:border-gray-700">
             <AlertDialogHeader>
-              <AlertDialogTitle className="text-lg md:text-xl">
-                Are you sure?
-              </AlertDialogTitle>
+              <AlertDialogTitle className="text-lg md:text-xl">Are you sure?</AlertDialogTitle>
               <AlertDialogDescription className="text-sm md:text-base dark:text-gray-300">
                 This will permanently delete the bill &quot;{bill.name}&quot;.
               </AlertDialogDescription>
@@ -154,5 +134,5 @@ export function BillingsItem({
         </AlertDialog>
       </TableCell>
     </TableRow>
-  );
+  )
 }

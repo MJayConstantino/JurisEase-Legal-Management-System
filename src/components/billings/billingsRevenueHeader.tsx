@@ -47,7 +47,7 @@ export function BillingsRevenueHeader({
     <div className="grid grid-cols-1 gap-3 mt-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div
-          className="bg-indigo-900 dark:bg-indigo-800 text-white p-4 md:p-6 rounded-md cursor-pointer transition-all hover:bg-indigo-800 dark:hover:bg-indigo-700 md:col-span-1"
+          className="bg-[#2D336B] hover:bg-[#1B1E4B] dark:bg-[#2D336B] text-white p-4 md:p-6 rounded-md cursor-pointer transition-all dark:hover:bg-[#1B1E4B] md:col-span-1"
           onClick={() => onFilterChange("all")}
         >
           <div className="flex flex-col">

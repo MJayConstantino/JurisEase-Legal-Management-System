@@ -1,3 +1,4 @@
+"use client"
 
 import { useState } from "react"
 import { Bill, BillStatus, SortDirection, SortField, StatusFilter, TimeFilter } from  "@/types/billing.type"
