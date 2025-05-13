@@ -44,55 +44,6 @@ export const WithContent: Story = {
   render: () => <AppSidebar />,
 };
 
-export const ActiveSidebar: Story = {
-  render: () => <AppSidebar />,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const calendarLink = await canvas.findByRole("link", { name: /matters/i });
-    calendarLink.classList.add("active");
-  },
-};
-
-export const ActiveSidebarDarkMode: Story = {
-  decorators: [(Story) => <div className="dark">{Story()}</div>],
-  render: () => <AppSidebar />,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const calendarLink = await canvas.findByRole("link", { name: /matters/i });
-    calendarLink.classList.add("active");
-  },
-};
-
-export const ActiveSwitchingThroughPages: Story = {
-  render: () => <AppSidebar />,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const navLinks = await canvas.findAllByRole("link");
-    for (const link of navLinks) {
-      navLinks.forEach((l) => l.classList.remove("active"));
-      link.classList.add("active");
-      await new Promise((r) => setTimeout(r, 500));
-    }
-  },
-};
-
-export const ActiveSwitchingThroughPagesDarkMode: Story = {
-  render: () => (
-    <div className="dark">
-      <AppSidebar />
-    </div>
-  ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const navLinks = await canvas.findAllByRole("link");
-    for (const link of navLinks) {
-      navLinks.forEach((l) => l.classList.remove("active"));
-      link.classList.add("active");
-      await new Promise((r) => setTimeout(r, 500));
-    }
-  },
-};
-
 export const CollapsedSidebar: Story = {
   render: () => (
     <div>
@@ -106,50 +57,5 @@ export const CollapsedSidebar: Story = {
       name: /toggle sidebar/i,
     });
     await userEvent.click(toggleButton);
-  },
-};
-
-export const CollapsedSidebarSwitchingThroughPages: Story = {
-  render: () => (
-    <div>
-      <SidebarTrigger />
-      <AppSidebar />
-    </div>
-  ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const toggleButton = await canvas.findByRole("button", {
-      name: /toggle sidebar/i,
-    });
-    await userEvent.click(toggleButton);
-    const navLinks = await canvas.findAllByRole("link");
-    for (const link of navLinks) {
-      navLinks.forEach((l) => l.classList.remove("active"));
-      link.classList.add("active");
-      await new Promise((r) => setTimeout(r, 500));
-    }
-  },
-};
-
-export const CollapsedDarkModeSwitchingThroughPages: Story = {
-  decorators: [(Story) => <div className="dark">{Story()}</div>],
-  render: () => (
-    <div>
-      <SidebarTrigger />
-      <AppSidebar />
-    </div>
-  ),
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const toggleButton = await canvas.findByRole("button", {
-      name: /toggle sidebar/i,
-    });
-    await userEvent.click(toggleButton);
-    const navLinks = await canvas.findAllByRole("link");
-    for (const link of navLinks) {
-      navLinks.forEach((l) => l.classList.remove("active"));
-      link.classList.add("active");
-      await new Promise((r) => setTimeout(r, 500));
-    }
   },
 };
