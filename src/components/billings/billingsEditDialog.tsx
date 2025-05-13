@@ -309,7 +309,7 @@ export function BillingsEditDialog({ bill, open, onOpenChange, onSave, onSuccess
           </Button>
           <Button
             id="saveBtn"
-            className="bg-secondary-foreground hover:bg-indigo-800 dark:bg-indigo-700 dark:hover:bg-indigo-600 text-sm md:text-base h-9 md:h-10"
+            className="dark:bg-indigo-700 dark:hover:bg-indigo-600 text-sm md:text-base h-9 md:h-10"
             onClick={handleSave}
             disabled={isSubmitting}
           >

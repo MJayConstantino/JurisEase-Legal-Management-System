@@ -11,6 +11,13 @@ interface CombinedRevenueHeaderProps {
   currentDateTime: Date
   activeFilter: TimeFilter
   onFilterChange: (filter: TimeFilter) => void
+  activeMatterFilter: string
+  matterFilteredRevenues: {
+    total: number
+    today: number
+    week: number
+    month: number
+  }
 }
 
 export function BillingsRevenueHeader({
@@ -21,6 +28,8 @@ export function BillingsRevenueHeader({
   currentDateTime,
   activeFilter,
   onFilterChange,
+  activeMatterFilter,
+  matterFilteredRevenues,
 }: CombinedRevenueHeaderProps) {
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -42,11 +51,18 @@ export function BillingsRevenueHeader({
           onClick={() => onFilterChange("all")}
         >
           <div className="flex flex-col">
-            <div className="text-lg md:text-xl font-bold mb-1">Total Revenue:</div>
+            <div className="text-lg md:text-xl font-bold mb-1">
+              Total Revenue:{activeMatterFilter ? ` (${activeMatterFilter})` : ""}
+            </div>
             <div className="text-base md:text-lg text-indigo-200 dark:text-indigo-100 mt-2 md:mt-3">
               As of {format(currentDateTime, "MMMM d, yyyy")} at {format(currentDateTime, "h:mm a")}
             </div>
-            <div className=" overflow-hidden text-2xl md:text-4xl font-bold" title={formatAmount(totalRevenue)}>{formatAmount(totalRevenue)}</div>
+            <div
+              className=" overflow-hidden text-2xl md:text-4xl font-bold"
+              title={formatAmount(activeMatterFilter ? matterFilteredRevenues.total : totalRevenue)}
+            >
+              {formatAmount(activeMatterFilter ? matterFilteredRevenues.total : totalRevenue)}
+            </div>
           </div>
         </div>
         <div
@@ -58,10 +74,14 @@ export function BillingsRevenueHeader({
           onClick={() => onFilterChange("today")}
         >
           <div className="text-base md:text-lg font-semibold">Revenue for: {format(today, "MMMM d, yyyy")}</div>
-          <div className="overflow-hidden text-xl md:text-3xl font-bold mt-1 md:mt-2" title={formatAmount(todayRevenue)}>{formatAmount(todayRevenue)}</div>
+          <div
+            className="overflow-hidden text-xl md:text-3xl font-bold mt-1 md:mt-2"
+            title={formatAmount(activeMatterFilter ? matterFilteredRevenues.today : todayRevenue)}
+          >
+            {formatAmount(activeMatterFilter ? matterFilteredRevenues.today : todayRevenue)}
+          </div>
         </div>
 
-  
         <div
           className={`bg-white dark:bg-gray-800 border dark:border-gray-700 text-gray-800 dark:text-gray-100 p-4 rounded-md flex-1 cursor-pointer transition-all shadow-sm ${
             activeFilter === "week"
@@ -70,10 +90,16 @@ export function BillingsRevenueHeader({
           }`}
           onClick={() => onFilterChange("week")}
         >
-          <div className="text-base md:text-lg font-semibold">Revenue for: {format(weekStart, "MMM d")} - {format(weekEnd, "MMM d, yyyy")}</div>
-          <div className="overflow-hidden text-xl md:text-3xl font-bold mt-1 md:mt-2" title={formatAmount(weekRevenue)}>{formatAmount(weekRevenue)}</div>
+          <div className="text-base md:text-lg font-semibold">
+            Revenue for: {format(weekStart, "MMM d")} - {format(weekEnd, "MMM d, yyyy")}
+          </div>
+          <div
+            className="overflow-hidden text-xl md:text-3xl font-bold mt-1 md:mt-2"
+            title={formatAmount(activeMatterFilter ? matterFilteredRevenues.week : weekRevenue)}
+          >
+            {formatAmount(activeMatterFilter ? matterFilteredRevenues.week : weekRevenue)}
+          </div>
         </div>
-
 
         <div
           className={`bg-white dark:bg-gray-800 border dark:border-gray-700 text-gray-800 dark:text-gray-100 p-4 rounded-md flex-1 cursor-pointer transition-all shadow-sm ${
@@ -84,10 +110,14 @@ export function BillingsRevenueHeader({
           onClick={() => onFilterChange("month")}
         >
           <div className="text-base md:text-lg font-semibold">Monthly Revenue for: {format(today, "MMMM yyyy")} </div>
-          <div className="overflow-hidden text-xl md:text-3xl font-bold mt-1 md:mt-2" title={formatAmount(monthRevenue)}>{formatAmount(monthRevenue)}</div>
+          <div
+            className="overflow-hidden text-xl md:text-3xl font-bold mt-1 md:mt-2"
+            title={formatAmount(activeMatterFilter ? matterFilteredRevenues.month : monthRevenue)}
+          >
+            {formatAmount(activeMatterFilter ? matterFilteredRevenues.month : monthRevenue)}
+          </div>
         </div>
       </div>
     </div>
   )
 }
-

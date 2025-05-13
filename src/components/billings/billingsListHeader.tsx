@@ -42,7 +42,7 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
       <div className="flex items-center w-full md:w-auto mb-3 md:mb-0">
         <Button
           onClick={onNewBill}
-          className="bg-indigo-900 hover:bg-indigo-800 dark:bg-indigo-700 dark:hover:bg-indigo-600 text-white text-sm md:text-base py-2 px-3 md:py-4 md:px-4 mr-3 md:mr-6 whitespace-nowrap"
+          className="dark:bg-indigo-700 dark:hover:bg-indigo-600 text-sm md:text-base py-2 px-3 md:py-4 md:px-4 mr-3 md:mr-6 whitespace-nowrap"
         >
           <Plus className="h-4 w-4 md:mr-2" />
           <span className="hidden md:inline">New Bill</span>
