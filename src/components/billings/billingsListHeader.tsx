@@ -189,25 +189,3 @@ export function BillingsListHeader({ onNewBill, onStatusFilterChange,  matters, 
   )
 }
 
-
-interface TabButtonProps {
-  isActive: boolean
-  onClick: () => void
-  children: React.ReactNode
-}
-
-function TabButton({ isActive, onClick, children }: TabButtonProps) {
-  return (
-    <button
-      onClick={onClick}
-      className={`px-3 py-1.5 text-sm md:text-base rounded-md transition-colors ${
-        isActive
-          ? "bg-indigo-100 text-indigo-900 dark:bg-indigo-900 dark:text-indigo-100 font-medium"
-          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-      }`}
-    >
-      {children}
-    </button>
-  )
-}
-

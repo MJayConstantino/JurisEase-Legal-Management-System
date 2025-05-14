@@ -31,7 +31,7 @@ export function MatterBillingPage() {
     } finally {
       setIsLoadingBills(false)
     }
-  }, [paramsMatterId])
+  }, [paramsMatterId, setBills, setIsLoadingBills])
 
   const fetchMatters = useCallback(async () => {
     try {
@@ -44,7 +44,7 @@ export function MatterBillingPage() {
     } finally {
       setIsLoadingMatters(false)
     }
-  }, [])
+  }, [setIsLoadingMatters, setMatters])
 
   useEffect(() => {
     fetchBills()
@@ -56,7 +56,7 @@ export function MatterBillingPage() {
       setCurrentDateTime(new Date())
     }, 60000)
     return () => clearInterval(interval)
-  }, [])
+  }, [setCurrentDateTime])
 
   const sortBills = useCallback(
     (billsToSort: Bill[], field: SortField, direction: SortDirection) => {
@@ -119,7 +119,7 @@ export function MatterBillingPage() {
 
   useEffect(() => {
     setFilteredBills(getFilteredBills)
-  }, [getFilteredBills])
+  }, [getFilteredBills, setFilteredBills])
 
   const handleBillCreated = useCallback(async (newBill: Omit<Bill, 'bill_id'>) => {
   const { data, error } = await supabase
@@ -135,15 +135,15 @@ export function MatterBillingPage() {
   if (data && data[0]) {
     setBills((prev) => [data[0], ...prev]);
   }
-}, []);
+}, [setBills]);
 
   const handleBillUpdated = useCallback((updatedBill: Bill) => {
     setBills((prev) => prev.map((bill) => (bill.bill_id === updatedBill.bill_id ? updatedBill : bill)))
-  }, [])
+  }, [setBills])
 
   const handleBillDeleted = useCallback((billId: string) => {
     setBills((prev) => prev.filter((b) => b.bill_id !== billId))
-  }, [])
+  }, [setBills])
 
   const handleSortChange = (field: SortField) => {
     if (sortField === field) {
@@ -155,12 +155,12 @@ export function MatterBillingPage() {
   }
 
   return (
-    <div className="pb-4 md:pb-8 px-0 pt-0 overflow-auto">
-      <div className="max-w-auto mx-auto">
+    <div className="pb-4 md:pb-8 px-0 pt-0 w-full mx-auto overflow-auto">
+      <div className="w-full mx-auto">
         <div className="border dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 mt-0">
           <BillingsListHeader
             statusFilter={statusFilter}
-            onStatusFilterChange={setStatusFilter}
+            onStatusFilterChange={(filter) => setStatusFilter(filter as StatusFilter)}
             onNewBill={() => setIsNewBillDialogOpen(true)}
             matters={matters}
             selectedMatterId={paramsMatterId}
@@ -177,8 +177,8 @@ export function MatterBillingPage() {
               isLoading={isLoadingBills}
               sortField={sortField}
               onSortChange={handleSortChange}
-              hideMatterColumn={true}
-            />
+              hideMatterColumn={true} 
+              sortDirection={sortDirection}            />
           </div>
         </div>
 

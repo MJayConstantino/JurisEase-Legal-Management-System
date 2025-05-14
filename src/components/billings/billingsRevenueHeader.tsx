@@ -102,7 +102,7 @@ export function BillingsRevenueHeader({
             }`}
             onClick={() => onFilterChange("today")}
           >
-            <div className="text-base md:text-lg font-semibold">Today's Revenue</div>
+            <div className="text-base md:text-lg font-semibold">Today&apos;s Revenue</div>
             <div className="text-sm text-gray-500 dark:text-gray-400">{format(today, "MMMM d, yyyy")}</div>
             <div
               className="overflow-hidden text-xl md:text-3xl font-bold mt-1 md:mt-2 text-[#2D336B] dark:text-indigo-300"

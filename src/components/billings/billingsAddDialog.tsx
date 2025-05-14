@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { BillingStates } from "./billingsStates"
 import { Textarea } from "@/components/ui/textarea"
 import type { Matter } from "@/types/matter.type"
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useCallback } from "react"
 
 export interface BillingsAddDialogProps {
   open: boolean
@@ -72,19 +72,20 @@ export function BillingsAddDialog({
     }
   }, [open, matterBillingMatterId])
 
+  const updateVisibleMatters = useCallback((page: number) => {
+  const startIndex = (page - 1) * mattersPerPage
+  const endIndex = Math.min(page * mattersPerPage, matters.length)
+    setVisibleMatters(matters.slice(startIndex, endIndex))
+    setCurrentPage(page)
+  }, [matters, mattersPerPage, setCurrentPage, setVisibleMatters ])
+
   useEffect(() => {
     if (matters.length > 0) {
       updateVisibleMatters(1)
     }
-  }, [matters])
+  }, [matters, updateVisibleMatters ])
 
-  const updateVisibleMatters = (page: number) => {
-    const startIndex = (page - 1) * mattersPerPage
-    const endIndex = Math.min(page * mattersPerPage, matters.length)
-    setVisibleMatters(matters.slice(startIndex, endIndex))
-    setCurrentPage(page)
-  }
-
+  
   const goToNextPage = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()

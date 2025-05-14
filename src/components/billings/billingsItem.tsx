@@ -33,7 +33,6 @@ export function BillingsItem({
   matters = [],
   onUpdate,
   onDelete,
-  index,
   hideMatterColumn = false,
 }: BillingsItemProps) {
   const {
