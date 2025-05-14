@@ -345,17 +345,17 @@ describe("Tasks E2E Interactions", () => {
 
   describe("Mark task as complete in table view", () => {
     it("should mark a task as complete directly from the table", () => {
-      cy.contains("tr", "okay okay").within(() => {
+      cy.contains("tr", "Updated Task").within(() => {
         cy.get('button[role="checkbox"][data-slot="checkbox"]').click();
       });
-      cy.contains('Task "okay okay" marked as complete').should("exist");
+      cy.contains('Task "Updated Task" marked as complete').should("exist");
     });
 
     it("should mark a task as incomplete directly from the table", () => {
-      cy.contains("tr", "okay okay").within(() => {
+      cy.contains("tr", "Updated Task").within(() => {
         cy.get('button[role="checkbox"][data-slot="checkbox"]').click();
       });
-      cy.contains('Task "okay okay" unmarked as complete').should("exist");
+      cy.contains('Task "Updated Task" unmarked as complete').should("exist");
     });
 
     it("should mark task as complete in grid view", () => {
@@ -374,7 +374,7 @@ describe("Tasks E2E Interactions", () => {
         .click();
 
       cy.get("#task-complete-7742a3bb-09cc-4001-842b-2615c0224186").click();
-      cy.contains('Task "okay okay" marked as complete').should("exist");
+      cy.contains('Task "Updated Task" marked as complete').should("exist");
     });
 
     it("should unmark task as complete in grid view", () => {
@@ -393,7 +393,7 @@ describe("Tasks E2E Interactions", () => {
         .click();
 
       cy.get("#task-complete-7742a3bb-09cc-4001-842b-2615c0224186").click();
-      cy.contains('Task "okay okay" unmarked as complete').should("exist");
+      cy.contains('Task "Updated Task" unmarked as complete').should("exist");
     });
   });
 
@@ -407,5 +407,150 @@ describe("Tasks E2E Interactions", () => {
       cy.get('div[role="menuitem"]').contains("Mark as Complete");
       cy.get('div[role="menuitem"]').contains("Delete Task");
     });
+  });
+
+  describe("should delete a task", () => {
+    it("should delete a task", () => {
+      cy.contains("Updated Task").click();
+      cy.get('button[data-slot="button"]').contains("Delete").click();
+      cy.get('button[type="button"].bg-red-600.hover\\:bg-red-700')
+        .contains("Delete Task")
+        .click();
+      cy.contains('"Updated Task" has been deleted successfully.').should("exist");
+    });
+  });
+
+  describe("Tasks in Matter page", () => {
+    beforeEach(() => {
+      cy.login("test@testdomain.com", "testPassword");
+      cy.wait(2000);
+      cy.visit("/matters");
+      cy.contains("Test Matter").click();
+      cy.get('button[role="tab"][aria-controls*="content-tasks"]')
+        .contains("Tasks")
+        .click();
+    });
+
+    it("should create a task in matter tabs page", () => {
+      cy.get('button[data-slot="button"]').contains("Add Task").click();
+      cy.get('input[placeholder="Task name"]').type("Task in Matter");
+      cy.get('textarea[data-slot="textarea"][id="description"]')
+        .should("have.attr", "placeholder", "Optional")
+        .type("Task in Matter Description");
+      cy.get('button[type="submit"]').contains("Save Task").click();
+      cy.contains('"Task in Matter" created successfully').should("exist");
+    });
+
+    it("should edit a task in matter tabs page", () => {
+      cy.contains("Task in Matter")
+        .closest("tr")
+        .find('button[data-slot="dropdown-menu-trigger"]')
+        .click();
+
+      cy.get('div[role="menuitem"]').contains("Edit Task").click();
+
+      cy.get('input[placeholder="Task name"]')
+        .clear()
+        .type("Edited Matter Task");
+      cy.get('textarea[data-slot="textarea"][id="description"]')
+        .clear()
+        .type("This task was edited in the matter page");
+
+      cy.get("button#priority").click();
+      cy.get("[role='option']").contains("High").click();
+
+      cy.get('button[type="submit"]').contains("Update Task").click();
+
+      cy.contains('"Edited Matter Task" updated successfully').should("exist");
+    });
+
+    it("should delete a task in matter tabs page", () => {
+      cy.contains("Edited Matter Task")
+        .closest("tr")
+        .find('button[data-slot="dropdown-menu-trigger"]')
+        .click();
+
+      cy.get('div[role="menuitem"]').contains("Delete Task").click();
+      cy.get('button[type="button"].bg-red-600')
+        .contains("Delete Task")
+        .click();
+      cy.contains('"Edited Matter Task" has been deleted successfully').should(
+        "exist"
+      );
+    });
+  });
+
+  after(() => {
+    cy.log("Starting cleanup process to delete all test tasks");
+    
+    // Login and navigate to tasks page
+    cy.login("test@testdomain.com", "testPassword");
+    cy.wait(2000);
+    cy.visit("/tasks").wait(2000);
+    
+    // List of task names created in the tests
+    const tasksToDelete = [
+      "Low Priority Task",
+      "Medium Priority Task",
+      "High Priority Task",
+      "In-Progress Task",
+      "Completed Task",
+      "No Due Date Task",
+      "Task without Matter",
+      "Edited Matter Task"
+    ];
+    
+    // Function to delete a single task if it exists
+    const deleteTaskIfExists = (taskName) => {
+      cy.get('body').then($body => {
+        // Check if task exists
+        if ($body.text().includes(taskName)) {
+          cy.log(`Deleting task: ${taskName}`);
+          
+          // Try-catch to handle potential errors
+          try {
+            // Open actions menu for the task
+            cy.contains('tr', taskName)
+              .find('button[data-slot="dropdown-menu-trigger"]')
+              .click({force: true});
+            
+            // Click delete option
+            cy.get('div[role="menuitem"]').contains('Delete Task').click({force: true});
+            
+            // Confirm deletion in modal
+            cy.get('button.bg-red-600').contains('Delete Task').click({force: true});
+            
+            // Wait for deletion to complete
+            cy.wait(500);
+          } catch (e) {
+            cy.log(`Error deleting task "${taskName}": ${e.message}`);
+            // Try alternative method - clicking on task name first
+            try {
+              cy.contains(taskName).click({force: true});
+              cy.get('button[data-slot="button"]').contains('Delete').click({force: true});
+              cy.get('button.bg-red-600').contains('Delete Task').click({force: true});
+              cy.wait(500);
+            } catch (e2) {
+              cy.log(`Alternative method also failed: ${e2.message}`);
+            }
+          }
+        } else {
+          cy.log(`Task "${taskName}" not found, skipping deletion`);
+        }
+      });
+    };
+    
+    // Process each task in the list
+    tasksToDelete.forEach(taskName => {
+      deleteTaskIfExists(taskName);
+    });
+    
+    // Final verification - reload page and check if tasks are gone
+    cy.reload();
+    cy.wait(2000);
+    
+    // Log completion message
+    cy.log("Task cleanup process complete");
+    
   });
 });
