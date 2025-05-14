@@ -113,12 +113,10 @@ export function BillingsList({
               </TableRow>
             ) : (
               bills.map((bill, index) => {
-                const currentMatter = matters.find((m) => m.matter_id === bill.matter_id)
                 return (
                   <BillingsItem
                     key={bill.bill_id}
                     bill={bill}
-                    currentMatter={currentMatter}
                     matters={matters}
                     onUpdate={onUpdate}
                     onDelete={onDelete}

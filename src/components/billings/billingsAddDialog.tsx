@@ -56,15 +56,7 @@ export function BillingsAddDialog({
     visibleMatters,
     setVisibleMatters,
     currentPage,
-    setCurrentPage,
-    nameError,
-    setNameError,
-    amountError,
-    setAmountError,
-    matterError,
-    setMatterError,
-    negativeAmountError,
-    setNegativeAmountError
+    setCurrentPage
   } = BillingStates()
 
   const [matter_id, setMatterId] = useState(matterBillingMatterId || "")
@@ -77,24 +69,8 @@ export function BillingsAddDialog({
   useEffect(() => {
     if (open) {
       setMatterId(matterBillingMatterId)
-      setNameError(false)
-      setAmountError(false)
-      setMatterError(false)
-      setNegativeAmountError(false)
     }
   }, [open, matterBillingMatterId])
-
-  useEffect(() => {
-    if (name) setNameError(false)
-  }, [name])
-
-  useEffect(() => {
-    if (amount) setAmountError(false)
-  }, [amount])
-
-  useEffect(() => {
-    if (matter_id) setMatterError(false)
-  }, [matter_id])
 
   useEffect(() => {
     if (matters.length > 0) {
@@ -129,18 +105,17 @@ export function BillingsAddDialog({
     let hasError = false
 
     if (!matter_id) {
-      setMatterError(true)
+      toast.error("Matter is required. Please select a matter.")
       hasError = true
     }
 
     if (!name) {
-      setNameError(true)
+      toast.error("Name is required. Please enter a bill name.")
       hasError = true
     }
 
     if (!amount) {
-      setAmountError(true)
-      setNegativeAmountError(false)
+      toast.error("Amount is required. Please enter an amount.")
       hasError = true
     }
     
@@ -185,10 +160,6 @@ export function BillingsAddDialog({
     setDateString(format(new Date(), "yyyy-MM-dd"))
     setStatus(BillStatus.pending)
     setRemarks("")
-    setNameError(false)
-    setAmountError(false)
-    setMatterError(false)
-    setNegativeAmountError(false)
     updateVisibleMatters(1)
   }
 
@@ -287,7 +258,6 @@ export function BillingsAddDialog({
                     )}
                   </SelectContent>
                 </Select>
-                {matterError && <p className="text-red-600 mt-2 text-[0.85rem]">Matter is required.</p>}
               </div>
               <div className="grid gap-2 overflow-hidden mb-6">
                 <div className="flex items-center space-x-1">
@@ -311,7 +281,6 @@ export function BillingsAddDialog({
                   className="text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:border-gray-600"
                   maxLength={30}
                 />
-                {nameError && <p className="text-red-600 mt-2 text-[0.85rem]">Bill name is required.</p>}
               </div>
 
               <div className="grid gap-2 overflow-hidden mb-6">
@@ -323,29 +292,29 @@ export function BillingsAddDialog({
                 </div>
                 <Input
                   id="amount"
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
+                  pattern="^\d+(\.\d{1,2})?$"
                   value={amount}
                   onChange={(e) => {
-                    const value = e.target.value
-                    if (Number(value) < 0) {
-                      setNegativeAmountError(true)
-                      setAmountError(false)
-                    } else if (Number(value) >= 0 || value === "") {
-                      setNegativeAmountError(false)
-                      setAmount(e.target.value)
+                    const value = e.target.value;
+                    if (value === "") {
+                      setAmount(value);
+                      return;
+                    }
+                    if (/^\d+(\.\d{0,2})?$/.test(value)) {
+                      setAmount(value);
                     }
                   }}
                   placeholder="Enter amount"
                   className="text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:border-gray-600"
                   maxLength={15}
                 />
-                {negativeAmountError && <p className="text-red-600 mt-2 text-[0.85rem]">Amount cannot be negative.</p>}
-                {amountError && <p className="text-red-600 mt-2 text-[0.85rem]">Amount is required.</p>}
               </div>
 
               <div className="grid gap-2">
                 <Label htmlFor="date-display" className="text-base md:text-lg">
-                  Date Billed
+                  Date Billed 
                 </Label>
                 <div className="relative">
                   <Input

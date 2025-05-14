@@ -44,13 +44,7 @@ export function BillingsEditDialog({ bill, open, onOpenChange, onSave, onSuccess
     setMatterId,
     matter_id,
     isSubmitting,
-    setIsSubmitting,
-    nameError,
-    setNameError,
-    amountError,
-    setAmountError,
-    negativeAmountError,
-    setNegativeAmountError
+    setIsSubmitting
   } = BillingStates()
 
   const dateInputRef = useRef<HTMLInputElement>(null)
@@ -67,9 +61,6 @@ export function BillingsEditDialog({ bill, open, onOpenChange, onSave, onSuccess
       setStatus(bill.status)
       setRemarks(bill.remarks || "")
       setIsSubmitting(false)
-      setNameError(false)
-      setAmountError(false)
-      setNegativeAmountError(false)
     }
   }, [
     bill,
@@ -84,25 +75,16 @@ export function BillingsEditDialog({ bill, open, onOpenChange, onSave, onSuccess
     setIsSubmitting,
   ])
 
-  useEffect(() => {
-    if (name) setNameError(false)
-  }, [name])
-
-  useEffect(() => {
-    if (amount) setAmountError(false)
-  }, [amount])
-
-
   const handleSave = () => {
     let hasError = false
 
     if (!name) {
-      setNameError(true)
+      toast.error("Name is required. Please enter a bill name.")
       hasError = true
     }
 
     if (!amount) {
-      setAmountError(true)
+      toast.error("Amount is required. Please enter an amount.")
       hasError = true
     }
 
@@ -186,7 +168,6 @@ export function BillingsEditDialog({ bill, open, onOpenChange, onSave, onSuccess
                   maxLength={30}
                   className="text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:border-gray-600"
                 />
-                {nameError && <p className="text-red-600 mt-2 text-[0.85rem]">Bill name is required.</p>}
               </div>
 
               <div className="grid gap-2 overflow-hidden mb-6">
@@ -195,22 +176,25 @@ export function BillingsEditDialog({ bill, open, onOpenChange, onSave, onSuccess
                   <sup className="text-red-600 ml-1">*</sup>
                 </Label>
                 <Input
-                  id="edit-amount"
-                  type="number"
+                  id="amount"
+                  type="text"
+                  inputMode="decimal"
+                  pattern="^\d+(\.\d{1,2})?$"
                   value={amount}
                   onChange={(e) => {
-                    const value = e.target.value
-                    if (Number(value) < 0) {
-                      setNegativeAmountError(true)
-                    } else if (Number(value) >= 0 || value === "") {
-                      setNegativeAmountError(false)
-                      setAmount(e.target.value)
+                    const value = e.target.value;
+                    if (value === "") {
+                      setAmount(value);
+                      return;
+                    }
+                    if (/^\d+(\.\d{0,2})?$/.test(value)) {
+                      setAmount(value);
                     }
                   }}
+                  placeholder="Enter amount"
                   className="text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:border-gray-600"
+                  maxLength={15}
                 />
-                {negativeAmountError && <p className="text-red-600 mt-2 text-[0.85rem]">Amount cannot be negative.</p>}
-                {amountError && <p className="text-red-600 mt-2 text-[0.85rem]">Amount is required.</p>}
               </div>
 
               <div className="grid gap-2">

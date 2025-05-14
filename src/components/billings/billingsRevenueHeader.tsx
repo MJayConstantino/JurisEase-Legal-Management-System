@@ -54,7 +54,7 @@ export function BillingsRevenueHeader({
   return (
     <div className="mt-4">
       <div
-        className="bg-[#2D336B] text-white p-4 md:p-6 rounded-t-md cursor-pointer transition-all hover:bg-[#1B1E4B] dark:bg-[#2D336B] dark:hover:bg-[#1B1E4B]"
+        className="bg-[#1B1E4B] text-white p-4 md:p-6 rounded-t-md cursor-pointer transition-all hover:bg-[#1B1E4B] dark:bg-[var(--totalrev)] dark:hover:bg-[var(--totalrev-hover)]"
         onClick={toggleExpand}
       >
         <div className="flex justify-between items-center">
@@ -81,10 +81,10 @@ export function BillingsRevenueHeader({
       {isExpanded && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-x border-b rounded-b-md overflow-hidden">
           <div
-            className={`bg-white dark:bg-gray-800 border-r dark:border-gray-700 text-gray-800 dark:text-gray-100 p-4 cursor-pointer transition-all ${
+            className={`border-r dark:border-gray-700 text-gray-800 dark:text-gray-100 p-4 cursor-pointer transition-all ${
               activeFilter === "today"
-                ? "ring-2 ring-indigo-500 dark:ring-indigo-400"
-                : "hover:bg-gray-50 dark:hover:bg-gray-700"
+                 ? "bg-indigo-100 dark:bg-[var(--selectrev)] text-indigo-900 dark:text-white"
+                : "bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
             }`}
             onClick={() => onFilterChange("today")}
           >
@@ -99,10 +99,10 @@ export function BillingsRevenueHeader({
           </div>
 
           <div
-            className={`bg-white dark:bg-gray-800 border-r dark:border-gray-700 text-gray-800 dark:text-gray-100 p-4 cursor-pointer transition-all ${
+            className={`border-r dark:border-gray-700 text-gray-800 dark:text-gray-100 p-4 cursor-pointer transition-all ${
               activeFilter === "week"
-                ? "ring-2 ring-indigo-500 dark:ring-indigo-400"
-                : "hover:bg-gray-50 dark:hover:bg-gray-700"
+                ? "bg-indigo-100 dark:bg-[var(--selectrev)] text-indigo-900 dark:text-white"
+                : "bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
             }`}
             onClick={() => onFilterChange("week")}
           >
@@ -119,10 +119,10 @@ export function BillingsRevenueHeader({
           </div>
 
           <div
-            className={`bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 p-4 cursor-pointer transition-all ${
+            className={`text-gray-800 dark:text-gray-100 p-4 cursor-pointer transition-all ${
               activeFilter === "month"
-                ? "ring-2 ring-indigo-500 dark:ring-indigo-400"
-                : "hover:bg-gray-50 dark:hover:bg-gray-700"
+                ? "bg-indigo-100 dark:bg-[var(--selectrev)] text-indigo-900 dark:text-white"
+                : "bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
             }`}
             onClick={() => onFilterChange("month")}
           >
