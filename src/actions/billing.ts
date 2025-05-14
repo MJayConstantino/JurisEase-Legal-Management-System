@@ -1,9 +1,9 @@
 "use server"
 
-import type { Bill } from  "@/types/billing.type"
+import type { Bill } from "@/types/billing.type"
 import { supabase } from "@/lib/supabase"
 import { revalidatePath } from "next/cache"
-import { Matter } from "@/types/matter.type"
+import type { Matter } from "@/types/matter.type"
 
 interface BillWithMatter extends Bill {
   matter?: Matter
@@ -24,7 +24,7 @@ function mapDbBillToAppBill(dbBill: any): BillWithMatter {
       }
     : undefined
   return {
-    bill_id: dbBill.bill_id, 
+    bill_id: dbBill.bill_id,
     name: dbBill.name,
     amount: dbBill.amount,
     created_at: dbBill.created_at,
@@ -33,20 +33,20 @@ function mapDbBillToAppBill(dbBill: any): BillWithMatter {
     matter_id: dbBill.matter_id,
     matter: matter,
   }
-
 }
 
 function mapBillForUpdate(mappedBill: BillWithMatter): Partial<Bill> {
-  const { matter, ...billWithoutMatter } = mappedBill;
-  return billWithoutMatter;
+  const { matter, ...billWithoutMatter } = mappedBill
+  return billWithoutMatter
 }
 
 export async function getBills() {
+  console.log("Fetching bills with matters...")
   const { data, error } = await supabase
     .from("billings")
     .select(`
       *,
-      matters:matter_id(matter_id, name, case_number)
+      matters(*)
     `)
     .order("created_at", { ascending: false })
 
@@ -55,9 +55,12 @@ export async function getBills() {
     return []
   }
 
-  return data.map(mapDbBillToAppBill) as BillWithMatter[]
-}
+  console.log("Bills data from DB:", data)
+  const mappedBills = data.map(mapDbBillToAppBill)
+  console.log("Mapped bills with matters:", mappedBills)
 
+  return mappedBills as BillWithMatter[]
+}
 
 export async function getBillsByMatterId(matterId: string) {
   const { data, error } = await supabase
@@ -77,25 +80,19 @@ export async function getBillsByMatterId(matterId: string) {
 }
 
 export async function createBill(bill: Omit<Bill, "bill_id">) {
-
-  const { data, error } = await supabase
-    .from("billings")
-    .insert([bill])
-    .select()
+  const { data, error } = await supabase.from("billings").insert([bill]).select()
 
   if (error) {
     console.error("Error adding bill:", error)
     return null
   }
 
-  
   revalidatePath("/billings")
 
   return mapDbBillToAppBill(data[0]) as BillWithMatter
 }
 
 export async function updateBill(bill: Bill) {
-
   const { data, error } = await supabase
     .from("billings")
     .update(mapBillForUpdate(bill))
@@ -107,7 +104,6 @@ export async function updateBill(bill: Bill) {
     return null
   }
 
-  
   revalidatePath("/billings")
 
   return data[0] as BillWithMatter
@@ -121,7 +117,6 @@ export async function deleteBill(id: string) {
     return false
   }
 
-  
   revalidatePath("/billings")
 
   return true

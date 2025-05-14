@@ -1,7 +1,9 @@
 "use client"
 
+import { useState } from "react"
 import { format, startOfWeek, endOfWeek } from "date-fns"
 import type { TimeFilter } from "@/types/billing.type"
+import { ChevronDown, ChevronUp } from "lucide-react"
 
 interface CombinedRevenueHeaderProps {
   totalRevenue: number
@@ -31,6 +33,8 @@ export function BillingsRevenueHeader({
   activeMatterFilter,
   matterFilteredRevenues,
 }: CombinedRevenueHeaderProps) {
+  const [isExpanded, setIsExpanded] = useState(true)
+
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "decimal",
@@ -43,81 +47,96 @@ export function BillingsRevenueHeader({
   const weekStart = startOfWeek(today)
   const weekEnd = endOfWeek(today)
 
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded)
+  }
+
   return (
-    <div className="grid grid-cols-1 gap-3 mt-4">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div
-          className="bg-[#2D336B] hover:bg-[#1B1E4B] dark:bg-[#2D336B] text-white p-4 md:p-6 rounded-md cursor-pointer transition-all dark:hover:bg-[#1B1E4B] md:col-span-1"
-          onClick={() => onFilterChange("all")}
-        >
-          <div className="flex flex-col">
+    <div className="mt-4">
+      <div
+        className="bg-[#2D336B] text-white p-4 md:p-6 rounded-t-md cursor-pointer transition-all hover:bg-[#1B1E4B] dark:bg-[#2D336B] dark:hover:bg-[#1B1E4B]"
+        onClick={toggleExpand}
+      >
+        <div className="flex justify-between items-center">
+          <div className="flex-1">
             <div className="text-lg md:text-xl font-bold mb-1">
-              Total Revenue:{activeMatterFilter ? ` (${activeMatterFilter})` : ""}
+              Total Revenue{activeMatterFilter ? ` (${activeMatterFilter})` : ""}
             </div>
             <div className="text-base md:text-lg text-indigo-200 dark:text-indigo-100 mt-2 md:mt-3">
               As of {format(currentDateTime, "MMMM d, yyyy")} at {format(currentDateTime, "h:mm a")}
             </div>
             <div
-              className=" overflow-hidden text-2xl md:text-4xl font-bold"
+              className="overflow-hidden text-2xl md:text-4xl font-bold"
               title={formatAmount(activeMatterFilter ? matterFilteredRevenues.total : totalRevenue)}
             >
-              {formatAmount(activeMatterFilter ? matterFilteredRevenues.total : totalRevenue)}
+              ${formatAmount(activeMatterFilter ? matterFilteredRevenues.total : totalRevenue)}
             </div>
           </div>
-        </div>
-        <div
-          className={`bg-white dark:bg-gray-800 border dark:border-gray-700 text-gray-800 dark:text-gray-100 p-4 rounded-md flex-1 cursor-pointer transition-all shadow-sm ${
-            activeFilter === "today"
-              ? "ring-2 ring-indigo-500 dark:ring-indigo-400"
-              : "hover:bg-gray-50 dark:hover:bg-gray-700"
-          }`}
-          onClick={() => onFilterChange("today")}
-        >
-          <div className="text-base md:text-lg font-semibold">Revenue for: {format(today, "MMMM d, yyyy")}</div>
-          <div
-            className="overflow-hidden text-xl md:text-3xl font-bold mt-1 md:mt-2"
-            title={formatAmount(activeMatterFilter ? matterFilteredRevenues.today : todayRevenue)}
-          >
-            {formatAmount(activeMatterFilter ? matterFilteredRevenues.today : todayRevenue)}
-          </div>
-        </div>
-
-        <div
-          className={`bg-white dark:bg-gray-800 border dark:border-gray-700 text-gray-800 dark:text-gray-100 p-4 rounded-md flex-1 cursor-pointer transition-all shadow-sm ${
-            activeFilter === "week"
-              ? "ring-2 ring-indigo-500 dark:ring-indigo-400"
-              : "hover:bg-gray-50 dark:hover:bg-gray-700"
-          }`}
-          onClick={() => onFilterChange("week")}
-        >
-          <div className="text-base md:text-lg font-semibold">
-            Revenue for: {format(weekStart, "MMM d")} - {format(weekEnd, "MMM d, yyyy")}
-          </div>
-          <div
-            className="overflow-hidden text-xl md:text-3xl font-bold mt-1 md:mt-2"
-            title={formatAmount(activeMatterFilter ? matterFilteredRevenues.week : weekRevenue)}
-          >
-            {formatAmount(activeMatterFilter ? matterFilteredRevenues.week : weekRevenue)}
-          </div>
-        </div>
-
-        <div
-          className={`bg-white dark:bg-gray-800 border dark:border-gray-700 text-gray-800 dark:text-gray-100 p-4 rounded-md flex-1 cursor-pointer transition-all shadow-sm ${
-            activeFilter === "month"
-              ? "ring-2 ring-indigo-500 dark:ring-indigo-400"
-              : "hover:bg-gray-50 dark:hover:bg-gray-700"
-          }`}
-          onClick={() => onFilterChange("month")}
-        >
-          <div className="text-base md:text-lg font-semibold">Monthly Revenue for: {format(today, "MMMM yyyy")} </div>
-          <div
-            className="overflow-hidden text-xl md:text-3xl font-bold mt-1 md:mt-2"
-            title={formatAmount(activeMatterFilter ? matterFilteredRevenues.month : monthRevenue)}
-          >
-            {formatAmount(activeMatterFilter ? matterFilteredRevenues.month : monthRevenue)}
+          <div className="flex items-center justify-center">
+            {isExpanded ? <ChevronUp className="h-6 w-6 text-white" /> : <ChevronDown className="h-6 w-6 text-white" />}
           </div>
         </div>
       </div>
+
+      {isExpanded && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-x border-b rounded-b-md overflow-hidden">
+          <div
+            className={`bg-white dark:bg-gray-800 border-r dark:border-gray-700 text-gray-800 dark:text-gray-100 p-4 cursor-pointer transition-all ${
+              activeFilter === "today"
+                ? "ring-2 ring-indigo-500 dark:ring-indigo-400"
+                : "hover:bg-gray-50 dark:hover:bg-gray-700"
+            }`}
+            onClick={() => onFilterChange("today")}
+          >
+            <div className="text-base md:text-lg font-semibold">Today's Revenue</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">{format(today, "MMMM d, yyyy")}</div>
+            <div
+              className="overflow-hidden text-xl md:text-3xl font-bold mt-1 md:mt-2 text-[#2D336B] dark:text-indigo-300"
+              title={formatAmount(activeMatterFilter ? matterFilteredRevenues.today : todayRevenue)}
+            >
+              ${formatAmount(activeMatterFilter ? matterFilteredRevenues.today : todayRevenue)}
+            </div>
+          </div>
+
+          <div
+            className={`bg-white dark:bg-gray-800 border-r dark:border-gray-700 text-gray-800 dark:text-gray-100 p-4 cursor-pointer transition-all ${
+              activeFilter === "week"
+                ? "ring-2 ring-indigo-500 dark:ring-indigo-400"
+                : "hover:bg-gray-50 dark:hover:bg-gray-700"
+            }`}
+            onClick={() => onFilterChange("week")}
+          >
+            <div className="text-base md:text-lg font-semibold">Weekly Revenue</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              {format(weekStart, "MMM d")} - {format(weekEnd, "MMM d, yyyy")}
+            </div>
+            <div
+              className="overflow-hidden text-xl md:text-3xl font-bold mt-1 md:mt-2 text-[#2D336B] dark:text-indigo-300"
+              title={formatAmount(activeMatterFilter ? matterFilteredRevenues.week : weekRevenue)}
+            >
+              ${formatAmount(activeMatterFilter ? matterFilteredRevenues.week : weekRevenue)}
+            </div>
+          </div>
+
+          <div
+            className={`bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 p-4 cursor-pointer transition-all ${
+              activeFilter === "month"
+                ? "ring-2 ring-indigo-500 dark:ring-indigo-400"
+                : "hover:bg-gray-50 dark:hover:bg-gray-700"
+            }`}
+            onClick={() => onFilterChange("month")}
+          >
+            <div className="text-base md:text-lg font-semibold">Monthly Revenue</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">{format(today, "MMMM yyyy")}</div>
+            <div
+              className="overflow-hidden text-xl md:text-3xl font-bold mt-1 md:mt-2 text-[#2D336B] dark:text-indigo-300"
+              title={formatAmount(activeMatterFilter ? matterFilteredRevenues.month : monthRevenue)}
+            >
+              ${formatAmount(activeMatterFilter ? matterFilteredRevenues.month : monthRevenue)}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

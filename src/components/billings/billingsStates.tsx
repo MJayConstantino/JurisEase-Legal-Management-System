@@ -46,8 +46,8 @@ export function BillingStates(){
     const [currentMatter, setCurrentMatter] = useState<Matter | null>(null)
 
     // matter-billing page
-    const [billToEdit, setBillToEdit] = useState<Bill | null>(null)
-    const [billIdToDelete, setBillIdToDelete] = useState<string | null>(null)
+    const [isLoadingMatters, setIsLoadingMatters] = useState(true)
+    const [isLoadingBills, setIsLoadingBills] = useState(false)
 
     return{
         name, setName, remarks, setRemarks, amount, setAmount, created_at, setCreated_at, 
@@ -64,6 +64,6 @@ export function BillingStates(){
         setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, setTimeFilter, sortField, setSortField, sortDirection, setSortDirection,
         statusFilter, setStatusFilter, matters, setMatters, selectedMatterId, setSelectedMatterId, currentMatter, setCurrentMatter,
 
-        billToEdit, setBillToEdit, billIdToDelete, setBillIdToDelete
+        isLoadingMatters, setIsLoadingMatters, isLoadingBills, setIsLoadingBills
     }
 }

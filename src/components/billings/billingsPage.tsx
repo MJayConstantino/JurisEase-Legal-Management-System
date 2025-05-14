@@ -10,17 +10,18 @@ import { BillingsListHeader } from "@/components/billings/billingsListHeader"
 import type { Bill, SortDirection, SortField, StatusFilter } from "@/types/billing.type"
 import { BillingStates } from "./billingsStates"
 import { BillingsActionHandlers } from "@/action-handlers/billings"
-import { Matter } from "@/types/matter.type"
+import type { Matter } from "@/types/matter.type"
 
 interface BillWithMatter extends Bill {
   matter?: Matter
 }
 
-interface BillingsPageProps{
+interface BillingsPageProps {
   bills: BillWithMatter[]
+  allMatters?: Matter[]
 }
 
-export function BillingInterface({ bills }: BillingsPageProps) {
+export function BillingInterface({ bills, allMatters }: BillingsPageProps) {
   const {
     filteredBills,
     setFilteredBills,
@@ -40,22 +41,40 @@ export function BillingInterface({ bills }: BillingsPageProps) {
     setBills,
     selectedMatterId,
     setSelectedMatterId,
+    setMatters,
   } = BillingStates()
 
   const { addBill, updateBill, deleteBill } = BillingsActionHandlers()
 
+  const mattersList = useMemo(() => {
+    const mattersMap = new Map<string, Matter>()
+
+    if (allMatters && allMatters.length > 0) {
+      allMatters.forEach((matter) => {
+        if (!mattersMap.has(matter.matter_id)) {
+          mattersMap.set(matter.matter_id, matter)
+        }
+      })
+    }
+
+    bills.forEach((bill) => {
+      if (bill.matter && bill.matter.matter_id && !mattersMap.has(bill.matter.matter_id)) {
+        mattersMap.set(bill.matter.matter_id, bill.matter)
+      }
+    })
+
+    return Array.from(mattersMap.values()).sort((a, b) => a.name.localeCompare(b.name))
+  }, [bills, allMatters])
+
   useEffect(() => {
     if (bills && bills.length > 0) {
-      const mattersList = bills.reduce((acc: Matter[], bill) => {
-        if (bill.matter && !acc.some((m) => m.matter_id === bill.matter?.matter_id)) {
-          acc.push(bill.matter)
-        }
-        return acc
-      }, [])
-
       setBills(bills)
     }
-  }, [bills, setBills])
+
+    if (mattersList.length > 0) {
+      setMatters(mattersList)
+    }
+  }, [bills, mattersList, setBills, setMatters])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -64,38 +83,36 @@ export function BillingInterface({ bills }: BillingsPageProps) {
     return () => clearInterval(interval)
   }, [setCurrentDateTime])
 
-   const sortBills = useCallback((billsToSort: BillWithMatter[], field: SortField, direction: SortDirection) => {
-      return [...billsToSort].sort((a, b) => {
-        let comparison = 0
+  const sortBills = useCallback((billsToSort: BillWithMatter[], field: SortField, direction: SortDirection) => {
+    return [...billsToSort].sort((a, b) => {
+      let comparison = 0
 
-        switch (field) {
-          case "matterName":
-            const matterA = a.matter?.name || ""
-            const matterB = b.matter?.name || ""
-            comparison = matterA.localeCompare(matterB)
-            break
-          case "name":
-            comparison = a.name.localeCompare(b.name)
-            break
-          case "amount":
-            comparison = a.amount - b.amount
-            break
-          case "created_at":
-            comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-            break
-          case "status":
-            comparison = a.status.localeCompare(b.status)
-            break
-          case "remarks":
-            comparison = (a.remarks || "").localeCompare(b.remarks || "")
-            break
-        }
+      switch (field) {
+        case "matterName":
+          const matterA = a.matter?.name || ""
+          const matterB = b.matter?.name || ""
+          comparison = matterA.localeCompare(matterB)
+          break
+        case "name":
+          comparison = a.name.localeCompare(b.name)
+          break
+        case "amount":
+          comparison = a.amount - b.amount
+          break
+        case "created_at":
+          comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          break
+        case "status":
+          comparison = a.status.localeCompare(b.status)
+          break
+        case "remarks":
+          comparison = (a.remarks || "").localeCompare(b.remarks || "")
+          break
+      }
 
-        return direction === "asc" ? comparison : -comparison
-      })
-    },
-    [],
-  )
+      return direction === "asc" ? comparison : -comparison
+    })
+  }, [])
 
   useEffect(() => {
     let result = [...bills]
@@ -169,18 +186,6 @@ export function BillingInterface({ bills }: BillingsPageProps) {
     setSelectedMatterId(matterId === "all" ? null : matterId)
   }
 
-  const mattersList = useMemo(() => {
-    const mattersMap = new Map<string, Matter>()
-
-    bills.forEach((bill) => {
-      if (bill.matter && !mattersMap.has(bill.matter.matter_id)) {
-        mattersMap.set(bill.matter.matter_id, bill.matter)
-      }
-    })
-
-    return Array.from(mattersMap.values())
-  }, [bills])
-
   const totalRevenue = useMemo(() => {
     return filteredBills.reduce((sum, bill) => sum + Number(bill.amount), 0)
   }, [filteredBills])
@@ -233,9 +238,7 @@ export function BillingInterface({ bills }: BillingsPageProps) {
           activeFilter={timeFilter}
           onFilterChange={setTimeFilter}
           activeMatterFilter={
-            selectedMatterId
-              ? mattersList.find((m) => m.matter_id === selectedMatterId)?.name || selectedMatterId
-              : ""
+            selectedMatterId ? mattersList.find((m) => m.matter_id === selectedMatterId)?.name || selectedMatterId : ""
           }
           matterFilteredRevenues={{
             total: totalRevenue,
@@ -307,7 +310,7 @@ export function BillingInterface({ bills }: BillingsPageProps) {
           onOpenChange={setIsNewBillDialogOpen}
           onSave={addBill}
           matters={mattersList}
-          matterBillingMatterId={""}
+          matterBillingMatterId={selectedMatterId || ""}
         />
       </div>
     </div>

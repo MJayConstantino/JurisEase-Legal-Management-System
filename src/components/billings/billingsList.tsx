@@ -118,7 +118,7 @@ export function BillingsList({
                   <BillingsItem
                     key={bill.bill_id}
                     bill={bill}
-                    matter={currentMatter}
+                    currentMatter={currentMatter}
                     matters={matters}
                     onUpdate={onUpdate}
                     onDelete={onDelete}

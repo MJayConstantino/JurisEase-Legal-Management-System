@@ -66,6 +66,9 @@ export function BillingsItem({
     }
   };
 
+  const billMatter = bill.matter || matters.find((m) => m.matter_id === bill.matter_id)
+  const matterDisplay = billMatter ? `${billMatter.name} [${billMatter.case_number}]` : `Matter ID: ${bill.matter_id}`
+
   return (
     <TableRow className="text-sm md:text-base dark:border-gray-700">
       <TableCell className="text-center text-gray-500 dark:text-gray-400 font-medium w-12">{index}</TableCell>
@@ -74,11 +77,8 @@ export function BillingsItem({
         {bill.name}
       </TableCell>
       {!hideMatterColumn && (
-        <TableCell
-          className="font-medium max-w-[150px] truncate"
-          title={bill.matter ? `${bill.matter.name} [${bill.matter.case_number}]` : `Matter ID: ${bill.matter_id}`}
-        >
-          {bill.matter ? `${bill.matter.name} [${bill.matter.case_number}]` : `Matter ID: ${bill.matter_id}`}
+        <TableCell className="font-medium max-w-[150px] truncate" title={`Matter Name: ${matterDisplay}`}>
+          {matterDisplay}
         </TableCell>
       )}
       <TableCell title={formatAmount(bill.amount)} className="overflow-hidden">
