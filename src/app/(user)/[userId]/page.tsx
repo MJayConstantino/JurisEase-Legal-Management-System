@@ -22,7 +22,12 @@ export default async function UserProfilePage({ params }: { params: { userId: st
     };
 
     return (
-      <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+      <ThemeProvider
+        attribute="class" 
+        defaultTheme="light" 
+        enableSystem 
+        disableTransitionOnChange
+      >
         <div className="flex flex-col gap-6 h-full">
           <UserProfileInterface user={user} />
         </div>
