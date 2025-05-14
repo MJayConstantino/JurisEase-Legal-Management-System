@@ -4,7 +4,11 @@ import { ThemeProvider } from '@/components/theme-provider'
 import UserProfileInterface from '@/components/userprofile/userProfileInterface';
 import { notFound } from 'next/navigation';
 
-export default async function UserProfilePage({ params }: { params: { userId: string } }) {
+export default async function UserProfilePage({ 
+  params
+}: {
+   params: { userId: string } 
+}) {
   try {
     const { userId } = params;
 
