@@ -33,7 +33,7 @@ interface UserProfileProps {
 export default function UserProfileInterface({ user }: UserProfileProps) {
   const router = useRouter()
 
-  const { userList, setUserList, userEmail, setUserEmail, setLoading, setUserName, userData, setUserData,
+  const { setUserList, setUserEmail, setUserName,  setUserData,
     isDeleteDialogOpen, setIsDeleteDialogOpen 
   } = UserProfileStates()
 
