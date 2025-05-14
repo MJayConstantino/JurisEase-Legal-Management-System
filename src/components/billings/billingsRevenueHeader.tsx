@@ -55,7 +55,7 @@ export function BillingsRevenueHeader({
   return (
     <div className="mt-4">
       <div
-        className={`bg-[#1B1E4B] text-white p-4 md:p-6 rounded-t-md cursor-pointer transition-all hover:bg-[#25305B] dark:bg-[var(--totalrev)] dark:hover:bg-[var(--totalrev-hover)] ${
+        className={`bg-[#1B1E4B] text-white p-2 md:p-4 rounded-t-md cursor-pointer transition-all hover:bg-[#25305B] dark:bg-[var(--totalrev)] dark:hover:bg-[var(--totalrev-hover)] ${
           activeFilter === "all" ? "bg-[#1B1E4B] dark:bg-[var(--selectrev)] text-indigo-900 dark:text-white" : ""
         }`}
         onClick={() => {
@@ -65,17 +65,21 @@ export function BillingsRevenueHeader({
       >
         <div className="flex justify-between items-center">
           <div className="flex-1">
-            <div className="text-lg md:text-xl font-bold mb-1">
-              Total Revenue{activeMatterFilter ? ` (${activeMatterFilter})` : ""}
+            <div>
+              <div className="text-lg md:text-xl font-bold mb-1">
+                Total Revenue
+              </div>
+              <div className="truncate w-64" title={activeMatterFilter}>{activeMatterFilter ? `for: "${activeMatterFilter}"` : ""}</div>
+              <div className="text-base md:text-lg text-indigo-200 dark:text-indigo-100 mt-2 md:mt-3">
+                As of {format(currentDateTime, "MMMM d, yyyy")} at {format(currentDateTime, "h:mm a")}
+              </div>
             </div>
-            <div className="text-base md:text-lg text-indigo-200 dark:text-indigo-100 mt-2 md:mt-3">
-              As of {format(currentDateTime, "MMMM d, yyyy")} at {format(currentDateTime, "h:mm a")}
-            </div>
-            <div
-              className="overflow-hidden text-2xl md:text-4xl font-bold"
-              title={formatAmount(activeMatterFilter ? matterFilteredRevenues.total : totalRevenue)}
-            >
-              ${formatAmount(activeMatterFilter ? matterFilteredRevenues.total : totalRevenue)}
+
+            <div className="flex items-baseline overflow-hidden text-2xl md:text-4xl font-bold">
+              <span className="mr-1">$</span>
+              <span title={formatAmount(activeMatterFilter ? matterFilteredRevenues.total : totalRevenue)}>
+                {formatAmount(activeMatterFilter ? matterFilteredRevenues.total : totalRevenue)}
+              </span>
             </div>
           </div>
           <Button

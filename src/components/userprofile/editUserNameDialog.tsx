@@ -67,10 +67,10 @@ export function EditUsername({
               className="w-64"
             />
             <div>
-              <Button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-500">
+              <Button onClick={handleSave} className="bg-[#1B1E4B] text-white rounded-t-md cursor-pointer pr-4 hover:bg-[#25305B]">
                 Save
               </Button>
-              <Button variant="outline" onClick={handleCancel}>
+              <Button variant="outline" onClick={handleCancel} className="ml-1 hover:bg-gray-200 dark:hover:bg-gray-700">
                 Cancel
               </Button>
             </div>
@@ -83,7 +83,7 @@ export function EditUsername({
               <UsernameDisplay username={user.user_name}/>
             </div>
           
-            <Button className="bg-transparent hover:bg-indigo-500" onClick={() => setIsEditing(true)}>
+            <Button className="bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700" onClick={() => setIsEditing(true)}>
               <PencilIcon className="text-black dark:text-white"/>
             </Button>
           </div>

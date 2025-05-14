@@ -2,14 +2,15 @@
 
 import type React from "react"
 
-import { Menu, Plus } from "lucide-react"
+import { ChevronLeftIcon, ChevronRightIcon, Menu, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { StatusFilter } from "@/types/billing.type"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { Matter } from "@/types/matter.type"
 import { Label } from "@radix-ui/react-label"
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
+import { BillingStates } from "./billingsStates"
 
 interface BillingsListHeaderProps {
   onNewBill: () => void
@@ -25,11 +26,45 @@ export function BillingsListHeader({ onNewBill, onStatusFilterChange,  matters, 
   const [activeFilter, setActiveFilter] = useState<StatusFilter|string>("all");
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const {visibleMatters, setVisibleMatters, currentPage, setCurrentPage} = BillingStates()
+
   const handleFilterChange = (filter: string) => {
     setActiveFilter(filter);
     onStatusFilterChange(filter);
     setMenuOpen(false);
   };
+
+  const mattersPerPage = 5
+  const totalPages = Math.ceil(matters.length / mattersPerPage)
+  const updateVisibleMatters = useCallback((page: number) => {
+    const startIndex = (page - 1) * mattersPerPage
+    const endIndex = Math.min(page * mattersPerPage, matters.length)
+      setVisibleMatters(matters.slice(startIndex, endIndex))
+      setCurrentPage(page)
+    }, [matters, mattersPerPage, setCurrentPage, setVisibleMatters ])
+  
+    useEffect(() => {
+      if (matters.length > 0) {
+        updateVisibleMatters(1)
+      }
+    }, [matters, updateVisibleMatters ])
+  
+    
+    const goToNextPage = (e: React.MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (currentPage < totalPages) {
+        updateVisibleMatters(currentPage + 1)
+      }
+    }
+  
+    const goToPrevPage = (e: React.MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      if (currentPage > 1) {
+        updateVisibleMatters(currentPage - 1)
+      }
+    }
 
   return (
     <div className="p-4 border-b bg-gray-50 dark:bg-gray-900 dark:border-gray-700 rounded-t-lg">
@@ -54,24 +89,56 @@ export function BillingsListHeader({ onNewBill, onStatusFilterChange,  matters, 
               <SelectTrigger className="w-full dark:bg-gray-800 dark:border-gray-700 text-sm md:text-base">
                 <SelectValue placeholder="Filter by matter" />
               </SelectTrigger>
-              <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
+              <SelectContent className="dark:bg-gray-700 dark:border-gray-600 overflow-hidden">
                 <SelectItem value="all" className="text-sm md:text-base">
                   All
                 </SelectItem>
-                {matters.map((matter) => (
-                  <SelectItem
-                    key={matter.matter_id}
-                    value={matter.matter_id}
-                    className="text-sm md:text-base"
-                  >
-                    <span className="truncate inline-block max-w-[250px]">{matter.name}</span>[{matter.case_number}]
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                    <div className="flex flex-col">
+                      {visibleMatters.map((matter) => (
+                        <SelectItem
+                          key={matter.matter_id}
+                          value={matter.matter_id}
+                          className="text-sm md:text-base"
+                          title={matter.name}
+                        >
+                          <span className="truncate inline-block max-w-[250px]">{matter.name}</span>[{matter.case_number}]
+                        </SelectItem>
+                      ))}
+                    </div>
+
+                    {/* Pagination */}
+                    {matters.length > mattersPerPage && (
+                      <div className="flex items-center justify-between py-2 px-2 border-t mt-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={goToPrevPage}
+                          disabled={currentPage === 1}
+                          className="h-8 px-2"
+                        >
+                          <ChevronLeftIcon className="h-4 w-4 mr-1" />
+                          Prev
+                        </Button>
+                        <span className="text-xs text-gray-500">
+                          Page {currentPage} of {totalPages}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={goToNextPage}
+                          disabled={currentPage === totalPages}
+                          className="h-8 px-2"
+                        >
+                          Next
+                          <ChevronRightIcon className="h-4 w-4 ml-1" />
+                        </Button>
+                      </div>
+                    )}
+                  </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
         {/* Filter Desktop */}
 
@@ -146,20 +213,52 @@ export function BillingsListHeader({ onNewBill, onStatusFilterChange,  matters, 
                 <SelectItem value="all" className="text-sm md:text-base">
                   All
                 </SelectItem>
-                {matters.map((matter) => (
-                  <SelectItem
-                    key={matter.matter_id}
-                    value={matter.matter_id}
-                    className="text-sm md:text-base"
-                  >
-                    <span className="truncate inline-block max-w-[250px]">{matter.name}</span>[{matter.case_number}]
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      )}
+                    <div className="flex flex-col">
+                          {visibleMatters.map((matter) => (
+                            <SelectItem
+                              key={matter.matter_id}
+                              value={matter.matter_id}
+                              className="text-sm md:text-base"
+                              title={matter.name}
+                            >
+                              <span className="truncate inline-block max-w-[250px]">{matter.name}</span>[{matter.case_number}]
+                            </SelectItem>
+                          ))}
+                        </div>
+
+                        {/* Pagination */}
+                        {matters.length > mattersPerPage && (
+                          <div className="flex items-center justify-between py-2 px-2 border-t mt-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={goToPrevPage}
+                              disabled={currentPage === 1}
+                              className="h-8 px-2"
+                            >
+                              <ChevronLeftIcon className="h-4 w-4 mr-1" />
+                              Prev
+                            </Button>
+                            <span className="text-xs text-gray-500">
+                              Page {currentPage} of {totalPages}
+                            </span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={goToNextPage}
+                              disabled={currentPage === totalPages}
+                              className="h-8 px-2"
+                            >
+                              Next
+                              <ChevronRightIcon className="h-4 w-4 ml-1" />
+                            </Button>
+                          </div>
+                        )}
+                      </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
 
         <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
           <DropdownMenuTrigger asChild>
