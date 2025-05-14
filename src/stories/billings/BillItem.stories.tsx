@@ -18,7 +18,6 @@ export const Default: Story = {
           <TableBody>
             <BillingsItem
               bill={ mockBills[4]}
-              matter={mockMatters.find((m) => m.matter_id ===  mockBills[4].matter_id)}
               matters={mockMatters}
               onUpdate={(bill) => console.log("Bill updated:", bill)}
               onDelete={(id) => console.log("Bill deleted:", id)}
@@ -37,7 +36,6 @@ export const Active: Story = {
         <TableBody>
           <BillingsItem
             bill={ mockBills[0]}
-            matter={mockMatters.find((m) => m.matter_id ===  mockBills[0].matter_id)}
             matters={mockMatters}
             onUpdate={(bill) => console.log("Bill updated:", bill)}
             onDelete={(id) => console.log("Bill deleted:", id)}
@@ -56,7 +54,6 @@ export const Pending: Story = {
         <TableBody>
           <BillingsItem
             bill={ mockBills[1]}
-            matter={mockMatters.find((m) => m.matter_id ===  mockBills[1].matter_id)}
             matters={mockMatters}
             onUpdate={(bill) => console.log("Bill updated:", bill)}
             onDelete={(id) => console.log("Bill deleted:", id)}
@@ -75,7 +72,6 @@ export const Paid: Story = {
         <TableBody>
           <BillingsItem
             bill={ mockBills[2]}
-            matter={mockMatters.find((m) => m.matter_id ===  mockBills[2].matter_id)}
             matters={mockMatters}
             onUpdate={(bill) => console.log("Bill updated:", bill)}
             onDelete={(id) => console.log("Bill deleted:", id)}
@@ -94,7 +90,6 @@ export const Overdue: Story = {
         <TableBody>
           <BillingsItem
             bill={ mockBills[3]}
-            matter={mockMatters.find((m) => m.matter_id ===  mockBills[3].matter_id)}
             matters={mockMatters}
             onUpdate={(bill) => console.log("Bill updated:", bill)}
             onDelete={(id) => console.log("Bill deleted:", id)}
