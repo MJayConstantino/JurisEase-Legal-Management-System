@@ -22,14 +22,12 @@ interface BillingsListHeaderProps {
   hideMatterFilter?: boolean
 }
 
-export function BillingsListHeader({ onNewBill, onStatusFilterChange,  matters, selectedMatterId, onMatterFilterChange, hideMatterFilter = false, }: BillingsListHeaderProps) {
-  const [activeFilter, setActiveFilter] = useState<StatusFilter|string>("all");
+export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChange,  matters, selectedMatterId, onMatterFilterChange, hideMatterFilter = false, }: BillingsListHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const {visibleMatters, setVisibleMatters, currentPage, setCurrentPage} = BillingStates()
 
   const handleFilterChange = (filter: string) => {
-    setActiveFilter(filter);
     onStatusFilterChange(filter);
     setMenuOpen(false);
   };
@@ -144,7 +142,7 @@ export function BillingsListHeader({ onNewBill, onStatusFilterChange,  matters, 
 
         <div className="flex flex-wrap gap-2 bg-gray-100 shadow dark:bg-gray-700 rounded-md justify-center sm:justify-start">
           <Button
-            variant={activeFilter === "all" ? "blue" : "ghost"}
+            variant={statusFilter === "all" ? "blue" : "ghost"}
             size="sm"
             className="px-3 py-1 h-9 text-xs font-semibold rounded-md flex-1 sm:flex-none hover:cursor-pointer"
             onClick={() => handleFilterChange("all")}
@@ -152,7 +150,7 @@ export function BillingsListHeader({ onNewBill, onStatusFilterChange,  matters, 
             All Bills
           </Button>
           <Button
-            variant={activeFilter === "active" ? "blue" : "ghost"}
+            variant={statusFilter === "active" ? "blue" : "ghost"}
             size="sm"
             className="px-3 h-9 text-xs font-semibold rounded-md flex-1 sm:flex-none hover:cursor-pointer"
             onClick={() => handleFilterChange("active")}
@@ -160,7 +158,7 @@ export function BillingsListHeader({ onNewBill, onStatusFilterChange,  matters, 
             Active
           </Button>
           <Button
-            variant={activeFilter === "paid" ? "blue" : "ghost"}
+            variant={statusFilter === "paid" ? "blue" : "ghost"}
             size="sm"
             className="px-3 h-9 text-xs font-semibold rounded-md flex-1 sm:flex-none hover:cursor-pointer"
             onClick={() => handleFilterChange("paid")}
@@ -168,7 +166,7 @@ export function BillingsListHeader({ onNewBill, onStatusFilterChange,  matters, 
             Paid
           </Button>
           <Button
-            variant={activeFilter === "pending" ? "blue" : "ghost"}
+            variant={statusFilter === "pending" ? "blue" : "ghost"}
             size="sm"
             className="px-3 h-9 text-xs font-semibold rounded-md flex-1 sm:flex-none hover:cursor-pointer"
             onClick={() => handleFilterChange("pending")}
@@ -176,7 +174,7 @@ export function BillingsListHeader({ onNewBill, onStatusFilterChange,  matters, 
             Pending
           </Button>
           <Button
-            variant={activeFilter === "overdue" ? "blue" : "ghost"}
+            variant={statusFilter === "overdue" ? "blue" : "ghost"}
             size="sm"
             className="px-3 h-9 text-xs font-semibold rounded-md flex-1 sm:flex-none hover:cursor-pointer"
             onClick={() => handleFilterChange("overdue")}
@@ -274,7 +272,7 @@ export function BillingsListHeader({ onNewBill, onStatusFilterChange,  matters, 
               <DropdownMenuItem
                 key={filter}
                 className={
-                  activeFilter === filter ? "bg-[#1B1E4B] text-white" : ""
+                  statusFilter === filter ? "bg-[#1B1E4B] text-white" : ""
                 }
                 onClick={() => handleFilterChange(filter)}
               >

@@ -1,14 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react"
 import { BillingsList } from "@/components/billings/billingsList"
 import { mockBills, mockMatters } from "./mockDataForSB"
-import { BillingStates } from "@/components/billings/billingsStates"
 
 const meta: Meta<typeof BillingsList> = {
   title: "Billings/BillingList",
   component: BillingsList,
 }
 
-const {sortDirection}=BillingStates()
+const sortDirection = "desc"
 
 export default meta
 type Story = StoryObj<typeof BillingsList>

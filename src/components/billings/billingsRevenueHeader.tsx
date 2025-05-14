@@ -21,6 +21,7 @@ interface CombinedRevenueHeaderProps {
     week: number
     month: number
   }
+  defaultExpandedState?: boolean
 }
 
 export function BillingsRevenueHeader({
@@ -33,8 +34,9 @@ export function BillingsRevenueHeader({
   onFilterChange,
   activeMatterFilter,
   matterFilteredRevenues,
+  defaultExpandedState = false
 }: CombinedRevenueHeaderProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(defaultExpandedState)
 
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
