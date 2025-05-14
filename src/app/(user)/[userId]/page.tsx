@@ -7,10 +7,10 @@ import { notFound } from 'next/navigation';
 export default async function UserProfilePage({ 
   params
 }: {
-   params: { userId: string } 
+  params: Promise<{ userId: string }> 
 }) {
   try {
-    const { userId } = params;
+    const { userId } = await params;
 
     const userData = await fetchUsersAction(userId);
     const userAvatar = await fetchUserInfoAction();
