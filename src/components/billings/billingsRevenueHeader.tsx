@@ -4,6 +4,7 @@ import { useState } from "react"
 import { format, startOfWeek, endOfWeek } from "date-fns"
 import type { TimeFilter } from "@/types/billing.type"
 import { ChevronDown, ChevronUp } from "lucide-react"
+import { Button } from "../ui/button"
 
 interface CombinedRevenueHeaderProps {
   totalRevenue: number
@@ -33,7 +34,7 @@ export function BillingsRevenueHeader({
   activeMatterFilter,
   matterFilteredRevenues,
 }: CombinedRevenueHeaderProps) {
-  const [isExpanded, setIsExpanded] = useState(true)
+  const [isExpanded, setIsExpanded] = useState(false)
 
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -54,8 +55,13 @@ export function BillingsRevenueHeader({
   return (
     <div className="mt-4">
       <div
-        className="bg-[#1B1E4B] text-white p-4 md:p-6 rounded-t-md cursor-pointer transition-all hover:bg-[#1B1E4B] dark:bg-[var(--totalrev)] dark:hover:bg-[var(--totalrev-hover)]"
-        onClick={toggleExpand}
+        className={`bg-[#1B1E4B] text-white p-4 md:p-6 rounded-t-md cursor-pointer transition-all hover:bg-[#25305B] dark:bg-[var(--totalrev)] dark:hover:bg-[var(--totalrev-hover)] ${
+          activeFilter === "all" ? "bg-[#1B1E4B] dark:bg-[var(--selectrev)] text-indigo-900 dark:text-white" : ""
+        }`}
+        onClick={() => {
+          toggleExpand()
+          onFilterChange("all")
+        }}
       >
         <div className="flex justify-between items-center">
           <div className="flex-1">
@@ -72,12 +78,20 @@ export function BillingsRevenueHeader({
               ${formatAmount(activeMatterFilter ? matterFilteredRevenues.total : totalRevenue)}
             </div>
           </div>
-          <div className="flex items-center justify-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={(e) => {
+              e.stopPropagation()
+              toggleExpand()
+            }}
+            className="text-white bg-none hover:bg-[#25305B] cursor-pointer"
+            aria-label="Toggle details"
+          >
             {isExpanded ? <ChevronUp className="h-6 w-6 text-white" /> : <ChevronDown className="h-6 w-6 text-white" />}
-          </div>
+          </Button>
         </div>
       </div>
-
       {isExpanded && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-x border-b rounded-b-md overflow-hidden">
           <div

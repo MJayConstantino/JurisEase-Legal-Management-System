@@ -55,9 +55,7 @@ export async function getBills() {
     return []
   }
 
-  console.log("Bills data from DB:", data)
   const mappedBills = data.map(mapDbBillToAppBill)
-  console.log("Mapped bills with matters:", mappedBills)
 
   return mappedBills as BillWithMatter[]
 }
@@ -72,7 +70,7 @@ export async function getBillsByMatterId(matterId: string) {
     .eq("matter_id", matterId)
 
   if (error) {
-    console.error(`Error fetching bills for matter ${matterId}:`, error)
+    console.error(`Error fetching bills by matter:`, error)
     return []
   }
 

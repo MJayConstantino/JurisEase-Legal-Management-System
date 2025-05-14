@@ -286,7 +286,7 @@ export function BillingInterface({ bills, allMatters }: BillingsPageProps) {
           <BillingsListHeader
             onNewBill={() => setIsNewBillDialogOpen(true)}
             statusFilter={statusFilter}
-            onStatusFilterChange={setStatusFilter}
+            onStatusFilterChange={(filter) => setStatusFilter(filter as StatusFilter)}
             matters={mattersList}
             selectedMatterId={selectedMatterId || "all"}
             onMatterFilterChange={handleMatterFilterChange}
@@ -300,7 +300,8 @@ export function BillingInterface({ bills, allMatters }: BillingsPageProps) {
               onDelete={deleteBill}
               isLoading={isLoading}
               sortField={sortField}
-              onSortChange={handleSortChange}
+              onSortChange={handleSortChange} 
+              sortDirection={sortDirection}            
             />
           </div>
         </div>

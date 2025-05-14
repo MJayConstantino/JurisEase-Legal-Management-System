@@ -71,9 +71,7 @@ export function BillingsItem({
 
   return (
     <TableRow className="text-sm md:text-base dark:border-gray-700">
-      <TableCell className="text-center text-gray-500 dark:text-gray-400 font-medium w-12">{index}</TableCell>
-
-      <TableCell className="font-medium max-w-[200px] truncate" title={bill.name}>
+      <TableCell className="pl-5 font-medium max-w-[200px] truncate" title={`Bill Name: ${bill.name}`}>
         {bill.name}
       </TableCell>
       {!hideMatterColumn && (
@@ -81,26 +79,29 @@ export function BillingsItem({
           {matterDisplay}
         </TableCell>
       )}
-      <TableCell title={formatAmount(bill.amount)} className="overflow-hidden">
+      <TableCell title={`Amount: ${formatAmount(bill.amount)}`} className="overflow-hidden">
         {formatAmount(bill.amount)}
       </TableCell>
       <TableCell
         className={`${hideMatterColumn ? "max-w-[250px]" : "max-w-[200px]"} truncate`}
-        title={bill.remarks || "-"}
+        title={`Remarks: ${bill.remarks || "--No remarks--"}`}
       >
-        {bill.remarks || "-"}
+        {bill.remarks ? (
+          bill.remarks
+        ) : (
+          <span className="italic text-gray-500">--No remarks--</span>
+        )}
       </TableCell>
       <TableCell>
         <span
-          className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium ${getStatusStyles(
-            bill.status,
-          )}`}
+          className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium ${getStatusStyles( bill.status)}`}
+          title={`Status: ${bill.status}`}
         >
           {bill.status}
         </span>
       </TableCell>
       <TableCell>{format(new Date(bill.created_at), "MMM d, yyyy")}</TableCell>
-      <TableCell className="text-right">
+      <TableCell className="text-right pr-5">
         <BillingsButtons onEdit={() => setIsEditDialogOpen(true)} onDelete={() => setIsDeleteDialogOpen(true)} />
 
         <BillingsEditDialog

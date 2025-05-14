@@ -224,11 +224,12 @@ export function BillingsAddDialog({
                           className="text-sm md:text-base"
                           title={matter.name}
                         >
-                          {matter.name} [{matter.case_number}]
+                          <span className="truncate inline-block max-w-[250px]">{matter.name}</span>[{matter.case_number}]
                         </SelectItem>
                       ))}
                     </div>
 
+                    {/* Pagination */}
                     {matters.length > mattersPerPage && (
                       <div className="flex items-center justify-between py-2 px-2 border-t mt-2">
                         <Button
