@@ -4,7 +4,13 @@ import { ThemeProvider } from '@/components/theme-provider'
 import UserProfileInterface from '@/components/userprofile/userProfileInterface';
 import { notFound } from 'next/navigation';
 
-export default async function UserProfilePage({ params }: { params: { userId: string } }) {
+interface PageProps {
+  params: {
+    userId: string;
+  };
+}
+
+export default async function UserProfilePage({ params }: PageProps) {
   try {
     const { userId } = params;
 
@@ -16,9 +22,11 @@ export default async function UserProfilePage({ params }: { params: { userId: st
     }
 
     const user = {
-      ...userData,
-      ...userAvatar,
-      user_email: userData.user_email || ''
+      user_id: userData.user_id,
+      user_name: userData.user_name,
+      user_email: userData.user_email,
+      avatar_url: userAvatar.avatar_url,
+      full_name: userAvatar.full_name,
     };
 
     return (

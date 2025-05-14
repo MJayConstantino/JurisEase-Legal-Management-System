@@ -25,7 +25,7 @@ interface UserProfileProps {
     user_id: string;
     user_name: string;
     user_email: string;
-    avatar_url?: string;
+    avatar_url: string;
     full_name: string;
   };
 }
