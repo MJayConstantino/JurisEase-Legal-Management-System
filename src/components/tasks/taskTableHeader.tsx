@@ -34,7 +34,6 @@ export function TaskTableHeader({
   };
 
   const renderSortableHeader = (field: SortField, label: string) => {
-    console.log(`[TaskTableHeader] Rendering sortable header for field: ${field}`);
     return (
       <Button
         variant="ghost"

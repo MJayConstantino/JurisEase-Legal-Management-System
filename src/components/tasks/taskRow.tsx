@@ -52,8 +52,7 @@ export function TaskRow({
   const [isViewingDetails, setIsViewingDetails] = useState(false);
   
   useEffect(() => {
-    console.log(`[TaskRow] isViewingDetails changed to: ${isViewingDetails} for task: ${task.task_id}`);
-  }, [isViewingDetails, task.task_id]);
+ }, [isViewingDetails, task.task_id]);
   
   const isTaskOverdueFlag = isTaskOverdue(
     task.due_date ?? undefined,
