@@ -30,10 +30,9 @@ export async function signinAction(formData: FormData) {
     return {
       error:
         'Invalid data: ' +
-        (zodErrorObj.email
-          ? '(Email must contain @ or be valid!) '
-          : ''
-        ).trim(),
+        (zodErrorObj.email ? '(Email must contain @ or be valid!) ' : '') +
+        ' ' +
+        (zodErrorObj.password ? '(Invalid password was provided!)' : '').trim(),
     }
   }
   const userLockedOut = await isUserLocked(data.email)
@@ -99,7 +98,7 @@ export async function signUpAction(formData: FormData) {
           (zodErrorObj?.password
             ? '(Passwords must contain 5 characters) '
             : '') +
-          (data.name ? '' : '(No name was provided Provided)')
+          (data.name ? '' : '(No name was provided)')
         ).trim(),
     }
   }
