@@ -29,11 +29,10 @@ export async function signinAction(formData: FormData) {
     const zodErrorObj = zodError.flatten().fieldErrors
     return {
       error:
-        'Invalid Data Inputted: ' +
-        (
-          (zodErrorObj.email ? '(Invalid Email Format) ' : '') +
-          (zodErrorObj.password ? '(Invalid Password Format)' : '')
-        ).trim(),
+        'Invalid data: ' +
+        (zodErrorObj.email ? '(Email must contain @ or be valid!) ' : '') +
+        ' ' +
+        (zodErrorObj.password ? '(Invalid password was provided!)' : '').trim(),
     }
   }
   const userLockedOut = await isUserLocked(data.email)
@@ -93,11 +92,13 @@ export async function signUpAction(formData: FormData) {
     const zodErrorObj = zodError?.flatten().fieldErrors
     return {
       error:
-        'Invalid data Inputted: ' +
+        'Invalid data: ' +
         (
-          (zodErrorObj?.email ? '(Invalid Email Format) ' : '') +
-          (zodErrorObj?.password ? '(Invalid Password Format) ' : '') +
-          (data.name ? '' : '(No Name Provided)')
+          (zodErrorObj?.email ? '(Email must contain @ or be valid!) ' : '') +
+          (zodErrorObj?.password
+            ? '(Passwords must contain 5 characters) '
+            : '') +
+          (data.name ? '' : '(No name was provided)')
         ).trim(),
     }
   }

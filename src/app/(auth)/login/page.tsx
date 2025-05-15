@@ -9,15 +9,12 @@ export default function Login() {
     router.push('/loggedIn')
   }
 
-
-
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50">
-
-    <LoginPage
-      onLoginSuccess={handleLoginSuccess}
-      onGoogleLoginSuccess={handleLoginSuccess}
-    />
+      <LoginPage
+        onLoginSuccess={handleLoginSuccess}
+        onGoogleLoginSuccess={handleLoginSuccess}
+      />
     </div>
   )
 }

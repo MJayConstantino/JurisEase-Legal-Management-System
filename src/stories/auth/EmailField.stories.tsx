@@ -64,15 +64,20 @@ export const Pending: StoryObj = {
   },
 }
 
-export const Filled: StoryObj = {
+export const FilledLong: StoryObj = {
   ...Template,
   args: { ...Template.args, value: 'user@example.com' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const emailInput = canvas.getByPlaceholderText('Enter Email')
     await userEvent.clear(emailInput)
-    await userEvent.type(emailInput, 'user@example.com')
-    await expect(emailInput).toHaveValue('user@example.com')
+    await userEvent.type(
+      emailInput,
+      'user@exampleAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaa.com'
+    )
+    await expect(emailInput).toHaveValue(
+      'user@exampleAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaa.com'
+    )
     action('Filled input tested')('user@example.com')
   },
 }
@@ -87,13 +92,10 @@ export const InvalidInput: StoryObj = {
 
     await userEvent.clear(emailInput)
     await userEvent.type(emailInput, 'invalid-email')
+    await userEvent.tab()
 
     await waitFor(() => expect(emailInput).toHaveValue('invalid-email'))
     action('Invalid email typed')('invalid-email')
-    const validation = emailSchema.safeParse('invalid-email')
-    if (validation.error) {
-      toast.error(validation.error.errors[0].message)
-    }
   },
 }
 

@@ -22,7 +22,7 @@ export default {
   ],
 } as Meta
 
-const nameSchema = z.string().min(3, 'Name must be at least 3 characters long') // Zod name validation schema
+const nameSchema = z.string().min(3, 'Name must be at least 1 characters long') // Zod name validation schema
 
 const Template: StoryObj = {
   render: (args: any) => {
@@ -67,16 +67,26 @@ export const Pending: StoryObj = {
   },
 }
 
-export const Filled: StoryObj = {
+export const FilledLong: StoryObj = {
   ...Template,
-  args: { ...Template.args, value: 'John Doe' },
+  args: {
+    ...Template.args,
+    value: 'John Doe',
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const nameInput = canvas.getByPlaceholderText('Enter your full name')
     await userEvent.clear(nameInput)
-    await userEvent.type(nameInput, 'John Doe')
-    await expect(nameInput).toHaveValue('John Doe') // Validate filled input
-    action('Filled input tested')('John Doe')
+    await userEvent.type(
+      nameInput,
+      'John Doe  LOREM IPSUM DOLOR EXAMPLE LONG NAME THIS IS A LONG NAME'
+    )
+    await expect(nameInput).toHaveValue(
+      'John Doe  LOREM IPSUM DOLOR EXAMPLE LONG NAME THIS IS A LONG NAME'
+    ) // Validate filled input
+    action('Filled input tested')(
+      'John Doe  LOREM IPSUM DOLOR EXAMPLE LONG NAME THIS IS A LONG NAME'
+    )
   },
 }
 
@@ -89,14 +99,9 @@ export const InvalidInput: StoryObj = {
     nameInput.focus()
 
     await userEvent.clear(nameInput)
-    await userEvent.type(nameInput, 'JD')
+    await userEvent.tab()
 
-    await waitFor(() => expect(nameInput).toHaveValue('JD'))
-    action('Invalid name typed')('JD')
-    const validation = nameSchema.safeParse('JD')
-    if (validation.error) {
-      toast.error(validation.error.errors[0].message)
-    }
+    await waitFor(() => expect(nameInput).toHaveValue(''))
   },
 }
 
