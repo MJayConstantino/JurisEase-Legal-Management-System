@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import type { Matter } from "@/types/matter.type";
 import type { Task } from "@/types/task.type";
 import { TaskForm } from "./taskForm";
@@ -32,6 +32,8 @@ export function TaskTable({
   onTaskUpdated,
   onTaskDeleted,
 }: TaskTableProps) {
+  console.log('[TaskTable] Rendering with tasks count:', tasks.length);
+  
   const [sortField, setSortField] = useState<SortField>("created_at");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -42,10 +44,19 @@ export function TaskTable({
   const params = useParams();
   const matterId = params.matterId as string | undefined;
 
+  useEffect(() => {
+    console.log('[TaskTable] Tasks data changed:', { count: tasks.length });
+    console.log('[TaskTable] Current sorting:', { field: sortField, direction: sortDirection });
+  }, [tasks, sortField, sortDirection]);
+
   const handleSort = useCallback((field: SortField) => {
+    console.log('[TaskTable] handleSort called with field:', field);
     if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      const newDirection = sortDirection === "asc" ? "desc" : "asc";
+      console.log('[TaskTable] Changing sort direction to:', newDirection);
+      setSortDirection(newDirection);
     } else {
+      console.log('[TaskTable] Changing sort field to:', field);
       setSortField(field);
       setSortDirection("asc");
     }
@@ -58,6 +69,7 @@ export function TaskTable({
   }), []);
 
   const sortedTasks = useMemo(() => {
+    console.log('[TaskTable] Recalculating sortedTasks');
     return [...tasks].sort((a, b) => {
       const direction = sortDirection === "asc" ? 1 : -1;
 
@@ -86,30 +98,48 @@ export function TaskTable({
   }, [tasks, sortField, sortDirection, matters, priorityOrder]);
 
   const handleStatusChange = useCallback((task: Task) => {
+    console.log('[TaskTable] handleStatusChange called for task:', task.task_id);
     if (processingTaskId !== task.task_id) {
+      console.log('[TaskTable] Setting processingTaskId:', task.task_id);
       setProcessingTaskId(task.task_id);
       handleComplete(
         task,
         task,
         (updatedTask) => {
+          console.log('[TaskTable] Task completion successful:', updatedTask.task_id);
           onTaskUpdated(updatedTask);
-          setTimeout(() => setProcessingTaskId(null), 1000);
+          setTimeout(() => {
+            console.log('[TaskTable] Clearing processingTaskId');
+            setProcessingTaskId(null);
+          }, 1000);
         },
         onTaskUpdated,
         () => {},
         false
       );
+    } else {
+      console.log('[TaskTable] Task already processing:', task.task_id);
     }
   }, [processingTaskId, onTaskUpdated]);
 
   const handleEditTask = useCallback((task: Task) => {
+    console.log('[TaskTable] handleEditTask called for task:', task.task_id);
     setEditingTask(task);
   }, []);
 
   const handleDeleteTask = useCallback((task: Task) => {
+    console.log('[TaskTable] handleDeleteTask called for task:', task.task_id);
     setDeletingTask(task);
     setIsDeleteDialogOpen(true);
   }, []);
+
+  console.log('[TaskTable] Current state:', { 
+    sortedTasksCount: sortedTasks.length,
+    editingTask: editingTask?.task_id,
+    deletingTask: deletingTask?.task_id,
+    isDeleteDialogOpen,
+    processingTaskId
+  });
 
   return (
     <>
@@ -156,7 +186,7 @@ export function TaskTable({
         </div>
       </div>
 
-      {/* Task forms and dialogs */}
+      {/* Task forms and dialogs - only render when needed */}
       {editingTask && (
         <TaskForm
           open={!!editingTask}
@@ -193,7 +223,7 @@ export function TaskTable({
         />
       )}
 
-      {deletingTask && (
+      {isDeleteDialogOpen && deletingTask && (
         <TaskDeleteDialog
           isOpen={isDeleteDialogOpen}
           onOpenChange={setIsDeleteDialogOpen}

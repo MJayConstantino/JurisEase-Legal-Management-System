@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { toast } from "sonner";
@@ -66,7 +66,18 @@ export function TaskForm({
   isLoadingMatters,
   matterId,
 }: TaskFormProps & { matterId?: string }) {
-
+  // Prevent duplicate renders with a ref
+  const initialRenderRef = useRef(true);
+  
+  console.log('[TaskForm] Rendering with:', { 
+    open, 
+    disableMatterSelect, 
+    isLoadingMatters, 
+    initialTaskId: initialTask?.task_id,
+    matterId,
+    isInitialRender: initialRenderRef.current
+  });
+  
   const defaultTask = useMemo<Task>(
     () => ({
       task_id: "",
@@ -84,27 +95,39 @@ export function TaskForm({
   const [task, setTask] = useState<Task>(() => initialTask || defaultTask);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Only update task state when dialog opens (not on every render)
   useEffect(() => {
     if (open) {
-      setTask(
-        initialTask
-          ? { ...initialTask }
-          : {
-              ...defaultTask,
-              matter_id: matterId || defaultTask.matter_id,
-            }
-      );
+      const newTaskState = initialTask
+        ? { ...initialTask }
+        : {
+            ...defaultTask,
+            matter_id: matterId || defaultTask.matter_id,
+          };
+      console.log('[TaskForm] Dialog opened, setting task state to:', newTaskState);
+      setTask(newTaskState);
     }
   }, [open, initialTask, matterId, defaultTask]);
+  
+  // Mark initial render complete
+  useEffect(() => {
+    initialRenderRef.current = false;
+  }, []);
+
+  useEffect(() => {
+    console.log('[TaskForm] Current task state:', task);
+  }, [task]);
 
   const handleChange = useCallback(
     (field: keyof Task, value: string | Date | undefined) => {
+      console.log(`[TaskForm] Field "${field}" changed:`, value);
       setTask((prev) => ({ ...prev, [field]: value }));
     },
     []
   );
 
   const validateTask = useCallback((): boolean => {
+    console.log('[TaskForm] Validating task:', task);
     try {
       const validationData = {
         ...task,
@@ -112,11 +135,14 @@ export function TaskForm({
       };
 
       taskSchema.parse(validationData);
+      console.log('[TaskForm] Validation successful');
       return true;
     } catch (error: any) {
       if (error instanceof z.ZodError) {
+        console.error('[TaskForm] Validation error:', error.errors[0]);
         toast.error(error.errors[0].message);
       } else {
+        console.error('[TaskForm] Unknown validation error:', error);
         toast.error("Validation failed. Please check your input.");
       }
       return false;
@@ -125,9 +151,19 @@ export function TaskForm({
 
   const handleSubmit = useCallback(
     async (keepFormOpen: boolean = false) => {
-      if (isSubmitting) return;
-      if (!validateTask()) return;
+      console.log('[TaskForm] handleSubmit called with keepFormOpen:', keepFormOpen);
+      
+      if (isSubmitting) {
+        console.log('[TaskForm] Submission already in progress, ignoring');
+        return;
+      }
+      
+      if (!validateTask()) {
+        console.log('[TaskForm] Validation failed, aborting submission');
+        return;
+      }
 
+      console.log('[TaskForm] Submitting task...');
       setIsSubmitting(true);
 
       try {
@@ -136,42 +172,52 @@ export function TaskForm({
           due_date: task.due_date ? new Date(task.due_date) : undefined,
           matter_id: task.matter_id || undefined,
         };
+        console.log('[TaskForm] Prepared task for submission:', taskToSubmit);
 
         const isNewTask = !task.task_id;
+        console.log(`[TaskForm] Performing ${isNewTask ? 'create' : 'update'} operation`);
+        
         const response = isNewTask
           ? await handleCreateTask(taskToSubmit)
           : await handleUpdateTask(taskToSubmit);
 
+        console.log('[TaskForm] API response:', response);
+
         if (response && !response.error && response.task) {
-          toast.success(
-            isNewTask
-              ? `Task "${response.task.name}" created successfully`
-              : `Task "${response.task.name}" updated successfully`
-          );
+          const successMessage = isNewTask
+            ? `Task "${response.task.name}" created successfully`
+            : `Task "${response.task.name}" updated successfully`;
+          console.log('[TaskForm]', successMessage);  
+          toast.success(successMessage);
 
           if (isNewTask && keepFormOpen && onSaveAndCreateAnother) {
+            console.log('[TaskForm] Calling onSaveAndCreateAnother and resetting form');
             onSaveAndCreateAnother(response.task as Task);
+            // Reset form with same matter
             setTask({
               ...defaultTask,
-              matter_id: matterId || task.matter_id, // Keep the same matter
+              matter_id: matterId || task.matter_id,
             });
           } else if (onSave) {
+            console.log('[TaskForm] Calling onSave callback');
             onSave(response.task as Task);
-            if (!isNewTask) {
-              setTask(response.task as Task);
+            if (!keepFormOpen) {
+              console.log('[TaskForm] Closing form after save');
+              onOpenChange(false);
             }
-            onOpenChange(false);
           }
         } else {
+          console.error('[TaskForm] API returned error:', response?.error);
           toast.error(response?.error || "Failed to save task");
         }
       } catch (error) {
-        console.error("Error saving task:", error);
+        console.error("[TaskForm] Error saving task:", error);
         toast.error(
           "Failed to save task: " +
             (error instanceof Error ? error.message : "Unknown error")
         );
       } finally {
+        console.log('[TaskForm] Submission completed, resetting isSubmitting state');
         setIsSubmitting(false);
       }
     },
@@ -196,8 +242,14 @@ export function TaskForm({
       data-testid="task-form-dialog"
       open={open}
       onOpenChange={(newOpen) => {
+        console.log('[TaskForm] Dialog onOpenChange called with:', newOpen);
         if (!isSubmitting) {
-          onOpenChange(newOpen);
+          // Prevent unnecessary state updates
+          if (open !== newOpen) {
+            onOpenChange(newOpen);
+          }
+        } else {
+          console.log('[TaskForm] Ignoring dialog close during submission');
         }
       }}
     >

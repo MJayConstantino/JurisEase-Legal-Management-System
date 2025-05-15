@@ -18,6 +18,8 @@ export function TaskTableHeader({
   onSort,
   hideMatterColumn = false,
 }: TaskTableHeaderProps) {
+  console.log('[TaskTableHeader] Rendering with:', { sortField, sortDirection, hideMatterColumn });
+
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) {
       return (
@@ -31,16 +33,22 @@ export function TaskTableHeader({
     );
   };
 
-  const renderSortableHeader = (field: SortField, label: string) => (
-    <Button
-      variant="ghost"
-      onClick={() => onSort(field)}
-      className="p-0 h-auto text-xs md:text-sm font-semibold hover:bg-transparent focus:bg-transparent dark:hover:bg-transparent dark:focus:bg-transparent dark:text-gray-white whitespace-nowrap flex items-center"
-    >
-      <span className="max-w-[60px] md:max-w-none truncate">{label}</span>{" "}
-      {getSortIcon(field)}
-    </Button>
-  );
+  const renderSortableHeader = (field: SortField, label: string) => {
+    console.log(`[TaskTableHeader] Rendering sortable header for field: ${field}`);
+    return (
+      <Button
+        variant="ghost"
+        onClick={() => {
+          console.log(`[TaskTableHeader] Sort clicked for field: ${field}`);
+          onSort(field);
+        }}
+        className="p-0 h-auto text-xs md:text-sm font-semibold hover:bg-transparent focus:bg-transparent dark:hover:bg-transparent dark:focus:bg-transparent dark:text-gray-white whitespace-nowrap flex items-center"
+      >
+        <span className="max-w-[60px] md:max-w-none truncate">{label}</span>{" "}
+        {getSortIcon(field)}
+      </Button>
+    );
+  };
 
   return (
     <TableHeader className="bg-gray-50 dark:bg-gray-900">

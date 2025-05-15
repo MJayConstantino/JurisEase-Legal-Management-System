@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -40,8 +40,31 @@ export function TaskDetails({
 }: TaskDetailsProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  
+  useEffect(() => {
+    console.log('[TaskDetails] State updated:', { isEditing, isDeleteDialogOpen });
+  }, [isEditing, isDeleteDialogOpen]);
 
-  if (!task) return null;
+  const handleEditClick = useCallback(() => {
+    console.log('[TaskDetails] Edit button clicked');
+    onOpenChange(false); // Close task details dialog first
+    setIsEditing(true); // Then open the edit form
+  }, [onOpenChange]);
+  
+  const handleDeleteClick = useCallback(() => {
+    console.log('[TaskDetails] Delete button clicked');
+    setIsDeleteDialogOpen(true);
+  }, []);
+  
+  const handleCloseClick = useCallback(() => {
+    console.log('[TaskDetails] Close button clicked');
+    onOpenChange(false);
+  }, [onOpenChange]);
+
+  if (!task) {
+    console.log('[TaskDetails] No task provided, not rendering');
+    return null;
+  }
 
   const isTaskOverdueFlag = isTaskOverdue(
     task.due_date ?? undefined,
@@ -52,7 +75,10 @@ export function TaskDetails({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog open={open} onOpenChange={(newState) => {
+        console.log('[TaskDetails] Dialog state changing to:', newState);
+        onOpenChange(newState);
+      }}>
         <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold flex items-center justify-between dark:text-white">
@@ -148,10 +174,7 @@ export function TaskDetails({
             <div className="flex gap-3 w-full sm:w-auto">
               <Button
                 variant="default"
-                onClick={() => {
-                  onOpenChange(false); // Close task details dialog first
-                  setIsEditing(true); // Then open the edit form
-                }}
+                onClick={handleEditClick}
                 className="flex-1 sm:flex-none cursor-pointer"
               >
                 <Edit className="h-4 w-4 mr-2" />
@@ -159,7 +182,7 @@ export function TaskDetails({
               </Button>
               <Button
                 variant="destructive"
-                onClick={() => setIsDeleteDialogOpen(true)}
+                onClick={handleDeleteClick}
                 className="flex-1 sm:flex-none cursor-pointer"
               >
                 <Trash2Icon className="h-4 w-4 mr-2" />
@@ -168,7 +191,7 @@ export function TaskDetails({
             </div>
             <Button
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={handleCloseClick}
               className="w-full sm:w-auto cursor-pointer"
             >
               Close
@@ -177,34 +200,46 @@ export function TaskDetails({
         </DialogContent>
       </Dialog>
 
-      {/* Edit Task Form */}
-      <TaskForm
-        open={isEditing}
-        onOpenChange={setIsEditing}
-        disableMatterSelect={false}
-        onSave={(updatedTask) => {
-          onTaskUpdated(updatedTask);
-          setIsEditing(false);
-        }}
-        initialTask={task}
-        matters={matters}
-        isLoadingMatters={isLoadingMatters}
-        getMatterNameDisplay={(matterId) =>
-          getMattersDisplayName(matterId, matters)
-        }
-      />
+      {/* Only render when needed */}
+      {isEditing && (
+        <TaskForm
+          open={isEditing}
+          onOpenChange={(open) => {
+            console.log('[TaskDetails] Edit form state changed to:', open);
+            setIsEditing(open);
+          }}
+          disableMatterSelect={false}
+          onSave={(updatedTask) => {
+            console.log('[TaskDetails] Task updated:', updatedTask);
+            onTaskUpdated(updatedTask);
+            setIsEditing(false);
+          }}
+          initialTask={task}
+          matters={matters}
+          isLoadingMatters={isLoadingMatters}
+          getMatterNameDisplay={(matterId) =>
+            getMattersDisplayName(matterId, matters)
+          }
+        />
+      )}
 
-      {/* Delete Confirmation */}
-      <TaskDeleteDialog
-        isOpen={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        task={task}
-        onSuccess={() => {
-          onTaskDeleted(task.task_id);
-          setIsDeleteDialogOpen(false);
-          onOpenChange(false);
-        }}
-      />
+      {/* Only render when needed */}
+      {isDeleteDialogOpen && (
+        <TaskDeleteDialog
+          isOpen={isDeleteDialogOpen}
+          onOpenChange={(open) => {
+            console.log('[TaskDetails] Delete dialog state changed to:', open);
+            setIsDeleteDialogOpen(open);
+          }}
+          task={task}
+          onSuccess={() => {
+            console.log('[TaskDetails] Task delete successful:', task.task_id);
+            onTaskDeleted(task.task_id);
+            setIsDeleteDialogOpen(false);
+            onOpenChange(false);
+          }}
+        />
+      )}
     </>
   );
 }

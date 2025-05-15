@@ -7,7 +7,7 @@ import type { Matter } from "@/types/matter.type";
 import { Calendar, Edit, Trash2Icon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { TaskForm } from "./taskForm";
 import { getStatusColor } from "@/utils/getStatusColor";
 import { Skeleton } from "../ui/skeleton";
@@ -38,13 +38,31 @@ export function TaskCard({
   matters = [],
   isLoadingMatters = false,
 }: TaskCardProps) {
+  
   const [isEditing, setIsEditing] = useState(false);
   const [isViewingDetails, setIsViewingDetails] = useState(false);
   const [task, setTask] = useState<Task>(initialTask);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  
   const params = useParams();
   const matterId = params.matterId as string | undefined;
+  
+  useEffect(() => {
+    console.log(`[TaskCard] State updated for task ${task.task_id}:`, {
+      isEditing,
+      isViewingDetails,
+      isProcessing,
+      isDeleteDialogOpen,
+      matterId
+    });
+  }, [isEditing, isViewingDetails, task.task_id, isProcessing, isDeleteDialogOpen, matterId]);
+  
+  // Update internal state when external task prop changes
+  useEffect(() => {
+    console.log(`[TaskCard] Initial task updated for task ${initialTask.task_id}:`, initialTask);
+    setTask(initialTask);
+  }, [initialTask]);
 
   const matterName = getMattersDisplayName(task.matter_id || "", matters);
 
@@ -52,6 +70,46 @@ export function TaskCard({
     task.due_date ?? undefined,
     task.status
   );
+  
+  console.log(`[TaskCard] Task ${task.task_id} details:`, {
+    matterName: matterName || 'None',
+    isOverdue: isTaskOverdueFlag,
+    dueDate: task.due_date ? formatDate(task.due_date) : 'No date'
+  });
+
+  const handleEditClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log(`[TaskCard] Edit button clicked for task: ${task.task_id}`);
+    setIsEditing(true);
+  }, [task.task_id]);
+  
+  const handleDeleteClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log(`[TaskCard] Delete button clicked for task: ${task.task_id}`);
+    setIsDeleteDialogOpen(true);
+  }, [task.task_id]);
+  
+  const handleCardClick = useCallback(() => {
+    console.log(`[TaskCard] Card clicked for task: ${task.task_id}`);
+    setIsViewingDetails(true);
+  }, [task.task_id]);
+  
+  const handleTaskStatusChange = useCallback(() => {
+    console.log(`[TaskCard] Status checkbox clicked for task: ${task.task_id}`);
+    if (!isProcessing) {
+      console.log(`[TaskCard] Processing status change for task: ${task.task_id}`);
+      handleComplete(
+        initialTask,
+        task,
+        setTask,
+        onTaskUpdated,
+        setIsProcessing,
+        isProcessing
+      );
+    } else {
+      console.log(`[TaskCard] Task already processing: ${task.task_id}`);
+    }
+  }, [initialTask, isProcessing, onTaskUpdated, task]);
 
   return (
     <div className="cursor-pointer">
@@ -63,7 +121,7 @@ export function TaskCard({
             ? "border-green-500 bg-green-50 dark:bg-green-950"
             : "bg-white dark:bg-gray-800 dark:border-gray-700"
         }`}
-        onClick={() => setIsViewingDetails(true)}
+        onClick={handleCardClick}
       >
         <div
           className="mb-2 flex justify-between items-start gap-2 "
@@ -150,18 +208,7 @@ export function TaskCard({
               </label>
               <Checkbox
                 checked={task.status === "completed"}
-                onCheckedChange={() => {
-                  if (!isProcessing) {
-                    handleComplete(
-                      initialTask,
-                      task,
-                      setTask,
-                      onTaskUpdated,
-                      setIsProcessing,
-                      isProcessing
-                    );
-                  }
-                }}
+                onCheckedChange={handleTaskStatusChange}
                 disabled={isProcessing}
                 id={`task-complete-${initialTask.task_id}`}
                 className={`mr-1 h-9 w-9 border-2 dark:border-gray-700 rounded-md hover:cursor-pointer ${
@@ -175,10 +222,7 @@ export function TaskCard({
               variant="outline"
               size="icon"
               className="h-7 w-7 md:h-9 md:w-9 cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsEditing(true);
-              }}
+              onClick={handleEditClick}
               disabled={isProcessing}
             >
               <Edit className="h-3 w-3 md:h-4 md:w-4" />
@@ -188,10 +232,7 @@ export function TaskCard({
               variant="outline"
               size="icon"
               className="h-7 w-7 md:h-9 md:w-9 cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsDeleteDialogOpen(true);
-              }}
+              onClick={handleDeleteClick}
               disabled={isProcessing}
             >
               <Trash2Icon className="h-3 w-3 md:h-4 md:w-4" />
@@ -201,57 +242,76 @@ export function TaskCard({
         </div>
       </div>
 
-      <TaskForm
-        open={isEditing}
-        onOpenChange={setIsEditing}
-        disableMatterSelect={!!matterId}
-        onSave={(updatedTask) =>
-          handleSaveTask(
-            initialTask,
-            updatedTask,
-            setTask,
-            onTaskUpdated,
-            setIsProcessing
-          )
-        }
-        onSaveAndCreateAnother={(updatedTask) =>
-          handleSaveTask(
-            initialTask,
-            updatedTask,
-            setTask,
-            onTaskUpdated,
-            setIsProcessing
-          )
-        }
-        initialTask={task}
-        matters={matters}
-        isLoadingMatters={isLoadingMatters}
-        getMatterNameDisplay={(matterId) =>
-          getMattersDisplayName(matterId, matters)
-        }
-      />
+      {isEditing && (
+        <TaskForm
+          open={isEditing}
+          onOpenChange={(open) => {
+            console.log(`[TaskCard] Edit form state changed to: ${open} for task: ${task.task_id}`);
+            setIsEditing(open);
+          }}
+          disableMatterSelect={!!matterId}
+          onSave={(updatedTask) => {
+            console.log(`[TaskCard] Task edited, saving: ${updatedTask.task_id}`);
+            handleSaveTask(
+              initialTask,
+              updatedTask,
+              setTask,
+              onTaskUpdated,
+              setIsProcessing
+            );
+          }}
+          onSaveAndCreateAnother={(updatedTask) => {
+            console.log(`[TaskCard] Task edited, saving and creating another: ${updatedTask.task_id}`);
+            handleSaveTask(
+              initialTask,
+              updatedTask,
+              setTask,
+              onTaskUpdated,
+              setIsProcessing
+            );
+          }}
+          initialTask={task}
+          matters={matters}
+          isLoadingMatters={isLoadingMatters}
+          getMatterNameDisplay={(matterId) =>
+            getMattersDisplayName(matterId, matters)
+          }
+        />
+      )}
 
-      <TaskDeleteDialog
-        isOpen={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        task={initialTask}
-        onSuccess={() =>
-          handleDelete(initialTask.task_id, onTaskDeleted, setIsProcessing)
-        }
-      />
+      {isDeleteDialogOpen && (
+        <TaskDeleteDialog
+          isOpen={isDeleteDialogOpen}
+          onOpenChange={(open) => {
+            console.log(`[TaskCard] Delete dialog state changed to: ${open} for task: ${task.task_id}`);
+            setIsDeleteDialogOpen(open);
+          }}
+          task={initialTask}
+          onSuccess={() => {
+            console.log(`[TaskCard] Delete confirmed for task: ${initialTask.task_id}`);
+            handleDelete(initialTask.task_id, onTaskDeleted, setIsProcessing);
+          }}
+        />
+      )}
 
-      <TaskDetails
-        open={isViewingDetails}
-        onOpenChange={setIsViewingDetails}
-        task={task}
-        matters={matters}
-        isLoadingMatters={isLoadingMatters}
-        onTaskUpdated={(updatedTask) => {
-          setTask(updatedTask);
-          onTaskUpdated(updatedTask);
-        }}
-        onTaskDeleted={onTaskDeleted}
-      />
+      {isViewingDetails && (
+        <TaskDetails
+          open={isViewingDetails}
+          onOpenChange={(open) => {
+            console.log(`[TaskCard] Task details state changed to: ${open} for task: ${task.task_id}`);
+            setIsViewingDetails(open);
+          }}
+          task={task}
+          matters={matters}
+          isLoadingMatters={isLoadingMatters}
+          onTaskUpdated={(updatedTask) => {
+            console.log(`[TaskCard] Task updated from details view: ${updatedTask.task_id}`);
+            setTask(updatedTask);
+            onTaskUpdated(updatedTask);
+          }}
+          onTaskDeleted={onTaskDeleted}
+        />
+      )}
     </div>
   );
 }

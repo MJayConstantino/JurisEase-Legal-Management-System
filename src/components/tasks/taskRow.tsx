@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { isTaskOverdue, formatDate } from "@/utils/taskHandlers";
 import { getStatusColor } from "@/utils/getStatusColor";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TaskDetails } from "./taskDetails";
 import {
   DropdownMenu,
@@ -48,12 +48,23 @@ export function TaskRow({
   onTaskDeleted,
   hideMatterColumn = false,
 }: TaskRowProps) {
+  
   const [isViewingDetails, setIsViewingDetails] = useState(false);
+  
+  useEffect(() => {
+    console.log(`[TaskRow] isViewingDetails changed to: ${isViewingDetails} for task: ${task.task_id}`);
+  }, [isViewingDetails, task.task_id]);
+  
   const isTaskOverdueFlag = isTaskOverdue(
     task.due_date ?? undefined,
     task.status
   );
   const matterName = getMatterName(task.matter_id || "");
+  
+  console.log(`[TaskRow] Task ${task.task_id} status:`, { 
+    isOverdue: isTaskOverdueFlag, 
+    matterName: matterName || 'None' 
+  });
 
   const backgroundClasses = isTaskOverdueFlag
     ? "bg-red-50 dark:bg-red-950"
@@ -65,13 +76,19 @@ export function TaskRow({
     <>
       <TableRow
         className={`${backgroundClasses} hover:bg-gray-50/muted dark:hover:bg-gray-900/muted hover:cursor-pointer`}
-        onClick={() => setIsViewingDetails(true)}
+        onClick={() => {
+          console.log(`[TaskRow] Row clicked for task: ${task.task_id}`);
+          setIsViewingDetails(true);
+        }}
       >
         {/* Checkbox Column */}
         <TableCell className="p-1 md:p-2" onClick={(e) => e.stopPropagation()}>
           <Checkbox
             checked={task.status === "completed"}
-            onCheckedChange={() => onStatusChange(task)}
+            onCheckedChange={() => {
+              console.log(`[TaskRow] Status checkbox changed for task: ${task.task_id}`);
+              onStatusChange(task);
+            }}
             disabled={isProcessing}
             id={`task-complete-${task.task_id}`}
             className={`h-4 w-4 md:h-5 md:w-5 border-gray-300 hover:cursor-pointer ${
@@ -179,7 +196,10 @@ export function TaskRow({
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => setIsViewingDetails(true)}
+                onClick={() => {
+                  console.log(`[TaskRow] View details clicked for task: ${task.task_id}`);
+                  setIsViewingDetails(true);
+                }}
                 disabled={isProcessing}
                 className="hover:cursor-pointer"
               >
@@ -187,7 +207,10 @@ export function TaskRow({
                 View Details
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => onEdit(task)}
+                onClick={() => {
+                  console.log(`[TaskRow] Edit clicked for task: ${task.task_id}`);
+                  onEdit(task);
+                }}
                 disabled={isProcessing}
                 className="hover:cursor-pointer"
               >
@@ -195,7 +218,10 @@ export function TaskRow({
                 Edit Task
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => onStatusChange(task)}
+                onClick={() => {
+                  console.log(`[TaskRow] Status change clicked for task: ${task.task_id}`);
+                  onStatusChange(task);
+                }}
                 disabled={isProcessing}
                 className="hover:cursor-pointer"
               >
@@ -207,7 +233,10 @@ export function TaskRow({
                 {task.status === "completed" ? "Incomplete" : "Complete"}
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => onDelete(task)}
+                onClick={() => {
+                  console.log(`[TaskRow] Delete clicked for task: ${task.task_id}`);
+                  onDelete(task);
+                }}
                 disabled={isProcessing}
                 className="text-red-600 focus:text-red-600 hover:cursor-pointer"
               >
@@ -221,7 +250,10 @@ export function TaskRow({
 
       <TaskDetails
         open={isViewingDetails}
-        onOpenChange={setIsViewingDetails}
+        onOpenChange={(open) => {
+          console.log(`[TaskRow] TaskDetails dialog state changed to: ${open} for task: ${task.task_id}`);
+          setIsViewingDetails(open);
+        }}
         task={task}
         matters={matters}
         isLoadingMatters={isLoadingMatters}

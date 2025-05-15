@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Grid, List, Menu } from "lucide-react";
 import { TaskForm } from "./taskForm";
@@ -33,20 +33,50 @@ export function TasksHeader({
   matters = [],
   matterId,
 }: TasksHeaderProps) {
+  
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [isLoadingMatters] = useState<boolean>(false);
+  
+  useEffect(() => {
+    console.log('[TasksHeader] Component state:', { 
+      isAddTaskOpen, 
+      activeFilter, 
+      isLoadingMatters 
+    });
+  }, [isAddTaskOpen, activeFilter, isLoadingMatters]);
 
-  const handleFilterChange = (filter: string) => {
-    console.log("Filter changed to:", filter);
+  const handleFilterChange = useCallback((filter: string) => {
+    console.log('[TasksHeader] Filter changed to:', filter);
     setActiveFilter(filter);
     onStatusChange(filter);
-  };
+  }, [onStatusChange]);
 
-  const handleViewToggle = (newView: "grid" | "table") => {
-    console.log("View toggled to:", newView);
+  const handleViewToggle = useCallback((newView: "grid" | "table") => {
+    console.log('[TasksHeader] View toggled to:', newView);
     onViewChange(newView);
-  };
+  }, [onViewChange]);
+  
+  const handleOpenAddTask = useCallback(() => {
+    console.log('[TasksHeader] Add Task button clicked');
+    setIsAddTaskOpen(true);
+  }, []);
+  
+  const handleAddTaskOpenChange = useCallback((open: boolean) => {
+    console.log('[TasksHeader] TaskForm state changed to:', open);
+    setIsAddTaskOpen(open);
+  }, []);
+  
+  const handleTaskSaved = useCallback((newTask: Task) => {
+    console.log('[TasksHeader] Task saved:', newTask);
+    if (onTaskCreated) onTaskCreated(newTask);
+    // Don't set isAddTaskOpen here - let the form component handle it
+  }, [onTaskCreated]);
+  
+  const handleTaskSavedAndCreateAnother = useCallback((newTask: Task) => {
+    console.log('[TasksHeader] Task saved and creating another:', newTask);
+    if (onTaskCreated) onTaskCreated(newTask);
+  }, [onTaskCreated]);
 
   return (
     <div className="px-4 py-4 border-b bg-gray-50 dark:bg-gray-900 dark:border-gray-700 rounded-t-lg">
@@ -55,10 +85,7 @@ export function TasksHeader({
         <Button
           variant="blue"
           size="sm"
-          onClick={() => {
-            console.log("Opening Add Task form");
-            setIsAddTaskOpen(true);
-          }}
+          onClick={handleOpenAddTask}
         >
           <Plus className="h-3 w-3 mr-1" />
           <span className="text-xs">Add Task</span>
@@ -154,10 +181,7 @@ export function TasksHeader({
           variant="blue"
           size="sm"
           className="sm:h-9"
-          onClick={() => {
-            console.log("Opening Add Task form");
-            setIsAddTaskOpen(true);
-          }}
+          onClick={handleOpenAddTask}
         >
           <Plus className="h-3 w-3 mr-1 sm:mr-2" />
           <span className="text-xs sm:text-sm">Add Task</span>
@@ -220,22 +244,22 @@ export function TasksHeader({
         </div>
       </div>
 
-      <TaskForm
-        open={isAddTaskOpen}
-        onOpenChange={setIsAddTaskOpen}
-        onSave={(newTask) => {
-          if (onTaskCreated) onTaskCreated(newTask);
-          setIsAddTaskOpen(false);
-        }}
-        onSaveAndCreateAnother={onTaskCreated}
-        disableMatterSelect={!!matterId}
-        matters={matters}
-        isLoadingMatters={isLoadingMatters}
-        getMatterNameDisplay={(matterId) =>
-          getMattersDisplayName(matterId, matters)
-        }
-        matterId={matterId}
-      />
+      {/* Only render TaskForm if it's open to prevent unnecessary renders */}
+      {isAddTaskOpen && (
+        <TaskForm
+          open={isAddTaskOpen}
+          onOpenChange={handleAddTaskOpenChange}
+          onSave={handleTaskSaved}
+          onSaveAndCreateAnother={handleTaskSavedAndCreateAnother}
+          disableMatterSelect={!!matterId}
+          matters={matters}
+          isLoadingMatters={isLoadingMatters}
+          getMatterNameDisplay={(matterId) =>
+            getMattersDisplayName(matterId, matters)
+          }
+          matterId={matterId}
+        />
+      )}
     </div>
   );
 }

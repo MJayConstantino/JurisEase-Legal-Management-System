@@ -25,6 +25,7 @@ export interface TaskListProps {
 }
 
 export function TaskList({ initialTasks = [], matterId, tasks: externalTasks, onTaskCreated }: TaskListProps) {
+  
   const [tasks, setTasks] = useState<Task[]>(externalTasks ?? initialTasks);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [view, setView] = useState<"grid" | "table">("table");
@@ -34,25 +35,35 @@ export function TaskList({ initialTasks = [], matterId, tasks: externalTasks, on
 
   // Improved fetch tasks with useCallback to prevent unnecessary rerenders
   const fetchTasks = useCallback(async () => {
-    if (initialTasks.length > 0) return;
+    console.log('[TaskList] fetchTasks called', { initialTasksLength: initialTasks.length });
+    
+    if (initialTasks.length > 0) {
+      console.log('[TaskList] Using initialTasks instead of fetching');
+      return;
+    }
 
     try {
+      console.log('[TaskList] Starting task fetch', { matterId });
       setIsLoadingTasks(true);
       let result;
 
       if (matterId) {
+        console.log('[TaskList] Fetching tasks for matter:', matterId);
         result = await handleFetchTasksByMatterId(matterId);
       } else {
+        console.log('[TaskList] Fetching all tasks');
         result = await handleFetchTasks();
       }
 
       if (result.error) {
+        console.error('[TaskList] Error in task fetch response:', result.error);
         throw new Error(result.error);
       }
 
+      console.log('[TaskList] Tasks fetched successfully:', { count: result.tasks.length });
       setTasks(result.tasks);
     } catch (error) {
-      console.error("Error fetching tasks:", error);
+      console.error("[TaskList] Error fetching tasks:", error);
     } finally {
       setIsLoadingTasks(false);
     }
@@ -60,21 +71,32 @@ export function TaskList({ initialTasks = [], matterId, tasks: externalTasks, on
 
   // Only fetch matters once, with proper dependency tracking
   const fetchMatters = useCallback(async () => {
+    console.log('[TaskList] fetchMatters called');
+    
     try {
       setIsLoadingMatters(true);
       if (matterId) {
+        console.log('[TaskList] Fetching single matter with ID:', matterId);
         const { matter, error } = await handleFetchMatterById(matterId);
         if (error) {
+          console.error('[TaskList] Error fetching matter:', error);
           throw new Error(error);
         }
         if (matter) {
+          console.log('[TaskList] Matter fetched successfully:', matter);
           setMatters([matter]);
+        } else {
+          console.warn('[TaskList] No matter found for ID:', matterId);
         }
       } else {
+        console.log('[TaskList] Fetching all matters');
         const { matters: matterData, error } = await handleFetchMatters();
         if (error) {
+          console.error('[TaskList] Error fetching matters:', error);
           throw new Error(error);
         }
+        
+        console.log('[TaskList] Matters fetched successfully:', { count: matterData.length });
         // Use Set to ensure uniqueness by matter_id
         const uniqueMatterIds = new Set();
         const uniqueMatters = matterData.filter((matter) => {
@@ -83,10 +105,11 @@ export function TaskList({ initialTasks = [], matterId, tasks: externalTasks, on
           return true;
         });
 
+        console.log('[TaskList] Unique matters count:', uniqueMatters.length);
         setMatters(uniqueMatters);
       }
     } catch (error) {
-      console.error("Error fetching matters:", error);
+      console.error("[TaskList] Error fetching matters:", error);
       toast.error("Failed to load matters");
     } finally {
       setIsLoadingMatters(false);
@@ -95,35 +118,57 @@ export function TaskList({ initialTasks = [], matterId, tasks: externalTasks, on
 
   // Load data on mount
   useEffect(() => {
+    console.log('[TaskList] Component mounted, initiating data fetch');
     fetchTasks();
     fetchMatters();
   }, [fetchTasks, fetchMatters]);
 
   // If externalTasks is provided, sync it to local state
   useEffect(() => {
-    if (externalTasks) setTasks(externalTasks);
+    if (externalTasks) {
+      console.log('[TaskList] External tasks updated, syncing to local state:', { count: externalTasks.length });
+      setTasks(externalTasks);
+    }
   }, [externalTasks]);
 
   const handleTaskCreated = useCallback((newTask: Task) => {
-    setTasks((prev) => [newTask, ...prev]);
-    if (onTaskCreated) onTaskCreated(newTask); // propagate up if needed
+    console.log('[TaskList] Task created:', newTask);
+    setTasks((prev) => {
+      console.log('[TaskList] Adding new task to state, previous count:', prev.length);
+      return [newTask, ...prev];
+    });
+    if (onTaskCreated) {
+      console.log('[TaskList] Propagating task created event to parent');
+      onTaskCreated(newTask);
+    }
   }, [onTaskCreated]);
 
   const handleTaskUpdated = useCallback((updatedTask: Task) => {
-    setTasks((prev) =>
-      prev.map((task) =>
+    console.log('[TaskList] Task updated:', updatedTask);
+    setTasks((prev) => {
+      const taskExists = prev.some(task => task.task_id === updatedTask.task_id);
+      console.log(`[TaskList] Task ${taskExists ? 'exists' : 'not found'} in current state`);
+      return prev.map((task) =>
         task.task_id === updatedTask.task_id ? updatedTask : task
-      )
-    );
+      );
+    });
   }, []);
 
   const handleTaskDeleted = useCallback((taskId: string) => {
-    setTasks((prev) => prev.filter((t) => t.task_id !== taskId));
+    console.log('[TaskList] Task deleted, ID:', taskId);
+    setTasks((prev) => {
+      const beforeCount = prev.length;
+      const filteredTasks = prev.filter((t) => t.task_id !== taskId);
+      console.log(`[TaskList] Tasks count: ${beforeCount} -> ${filteredTasks.length}`);
+      return filteredTasks;
+    });
   }, []);
 
   // Use useMemo for expensive filtering operation
   const filteredTasks = useMemo(() => {
-    return tasks.filter((task) => {
+    console.log('[TaskList] Filtering tasks with:', { statusFilter, matterId });
+    
+    const filtered = tasks.filter((task) => {
       if (matterId && task.matter_id !== matterId) return false;
       if (statusFilter === "all") return true;
       if (statusFilter === "overdue") {
@@ -134,6 +179,9 @@ export function TaskList({ initialTasks = [], matterId, tasks: externalTasks, on
         !isTaskOverdue(task.due_date ?? undefined, task.status)
       );
     });
+    
+    console.log(`[TaskList] Filtered tasks: ${filtered.length} of ${tasks.length}`);
+    return filtered;
   }, [tasks, statusFilter, matterId]);
 
   return (
