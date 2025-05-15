@@ -19,7 +19,9 @@ export const SignInButton: React.FC<SignInButtonProps> = ({
       className="bg-[#2a3563] hover:bg-[#1e2547] text-white"
       disabled={disabled}
     >
-      {isPending ? 'Logging in...' : 'Log in'}
+      <span className="text-xs sm:text-sm">
+        {isPending ? 'Logging in...' : 'Log in'}
+      </span>
     </Button>
   )
 }

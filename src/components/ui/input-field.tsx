@@ -81,9 +81,7 @@ export const InputField = forwardRef(
           {label}
         </label>
         <div className="relative">
-          {Icon && (
-            <Icon className="absolute left-3 top-1/2 -translate-y-1/2 text-[#2a3563]" />
-          )}
+          {Icon && <Icon className="absolute left-3 top-4  text-[#2a3563]" />}
           <Input
             id={id}
             name={name}

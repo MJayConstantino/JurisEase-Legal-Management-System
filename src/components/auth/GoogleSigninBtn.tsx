@@ -21,7 +21,7 @@ export const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({
       disabled={disabled}
     >
       <GoogleIcon />
-      <span>{value}</span>
+      <span className="text-xs md:text-sm">{value}</span>
     </Button>
   )
 }
