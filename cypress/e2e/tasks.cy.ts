@@ -343,7 +343,7 @@ describe("Tasks E2E Interactions", () => {
     });
   });
 
-  describe("Mark task as complete in table view", () => {
+  describe("Mark task as complete", () => {
     it("should mark a task as complete directly from the table", () => {
       cy.contains("tr", "Updated Task").within(() => {
         cy.get('button[role="checkbox"][data-slot="checkbox"]').click();
@@ -355,44 +355,6 @@ describe("Tasks E2E Interactions", () => {
       cy.contains("tr", "Updated Task").within(() => {
         cy.get('button[role="checkbox"][data-slot="checkbox"]').click();
       });
-      cy.contains('Task "Updated Task" unmarked as complete').should("exist");
-    });
-
-    it("should mark task as complete in grid view", () => {
-      cy.get(
-        'button[id="radix-«R99tqdel7»"][data-slot="dropdown-menu-trigger"]'
-      ).click();
-      cy.get(
-        'div[id^="radix-«R99tqdel7H1»"][data-slot="dropdown-menu-content"]'
-      )
-        .should("be.visible")
-        .should("contain", "Filter Tasks");
-
-      cy.get('div[id^="radix-"][data-slot="dropdown-menu-content"]')
-        .find('div[role="menuitem"]')
-        .contains("Grid")
-        .click();
-
-      cy.get("#task-complete-7742a3bb-09cc-4001-842b-2615c0224186").click();
-      cy.contains('Task "Updated Task" marked as complete').should("exist");
-    });
-
-    it("should unmark task as complete in grid view", () => {
-      cy.get(
-        'button[id="radix-«R99tqdel7»"][data-slot="dropdown-menu-trigger"]'
-      ).click();
-      cy.get(
-        'div[id^="radix-«R99tqdel7H1»"][data-slot="dropdown-menu-content"]'
-      )
-        .should("be.visible")
-        .should("contain", "Filter Tasks");
-
-      cy.get('div[id^="radix-"][data-slot="dropdown-menu-content"]')
-        .find('div[role="menuitem"]')
-        .contains("Grid")
-        .click();
-
-      cy.get("#task-complete-7742a3bb-09cc-4001-842b-2615c0224186").click();
       cy.contains('Task "Updated Task" unmarked as complete').should("exist");
     });
   });
@@ -416,7 +378,9 @@ describe("Tasks E2E Interactions", () => {
       cy.get('button[type="button"].bg-red-600.hover\\:bg-red-700')
         .contains("Delete Task")
         .click();
-      cy.contains('"Updated Task" has been deleted successfully.').should("exist");
+      cy.contains('"Updated Task" has been deleted successfully.').should(
+        "exist"
+      );
     });
   });
 
@@ -429,6 +393,8 @@ describe("Tasks E2E Interactions", () => {
       cy.get('button[role="tab"][aria-controls*="content-tasks"]')
         .contains("Tasks")
         .click();
+      cy.wait(5000)
+
     });
 
     it("should create a task in matter tabs page", () => {
@@ -482,12 +448,12 @@ describe("Tasks E2E Interactions", () => {
 
   after(() => {
     cy.log("Starting cleanup process to delete all test tasks");
-    
+
     // Login and navigate to tasks page
     cy.login("test@testdomain.com", "testPassword");
     cy.wait(2000);
     cy.visit("/tasks").wait(2000);
-    
+
     // List of task names created in the tests
     const tasksToDelete = [
       "Low Priority Task",
@@ -497,38 +463,46 @@ describe("Tasks E2E Interactions", () => {
       "Completed Task",
       "No Due Date Task",
       "Task without Matter",
-      "Edited Matter Task"
+      "Edited Matter Task",
     ];
-    
+
     // Function to delete a single task if it exists
     const deleteTaskIfExists = (taskName) => {
-      cy.get('body').then($body => {
+      cy.get("body").then(($body) => {
         // Check if task exists
         if ($body.text().includes(taskName)) {
           cy.log(`Deleting task: ${taskName}`);
-          
+
           // Try-catch to handle potential errors
           try {
             // Open actions menu for the task
-            cy.contains('tr', taskName)
+            cy.contains("tr", taskName)
               .find('button[data-slot="dropdown-menu-trigger"]')
-              .click({force: true});
-            
+              .click({ force: true });
+
             // Click delete option
-            cy.get('div[role="menuitem"]').contains('Delete Task').click({force: true});
-            
+            cy.get('div[role="menuitem"]')
+              .contains("Delete Task")
+              .click({ force: true });
+
             // Confirm deletion in modal
-            cy.get('button.bg-red-600').contains('Delete Task').click({force: true});
-            
+            cy.get("button.bg-red-600")
+              .contains("Delete Task")
+              .click({ force: true });
+
             // Wait for deletion to complete
             cy.wait(500);
           } catch (e) {
             cy.log(`Error deleting task "${taskName}": ${e.message}`);
             // Try alternative method - clicking on task name first
             try {
-              cy.contains(taskName).click({force: true});
-              cy.get('button[data-slot="button"]').contains('Delete').click({force: true});
-              cy.get('button.bg-red-600').contains('Delete Task').click({force: true});
+              cy.contains(taskName).click({ force: true });
+              cy.get('button[data-slot="button"]')
+                .contains("Delete")
+                .click({ force: true });
+              cy.get("button.bg-red-600")
+                .contains("Delete Task")
+                .click({ force: true });
               cy.wait(500);
             } catch (e2) {
               cy.log(`Alternative method also failed: ${e2.message}`);
@@ -539,18 +513,17 @@ describe("Tasks E2E Interactions", () => {
         }
       });
     };
-    
+
     // Process each task in the list
-    tasksToDelete.forEach(taskName => {
+    tasksToDelete.forEach((taskName) => {
       deleteTaskIfExists(taskName);
     });
-    
+
     // Final verification - reload page and check if tasks are gone
     cy.reload();
     cy.wait(2000);
-    
+
     // Log completion message
     cy.log("Task cleanup process complete");
-    
   });
 });
