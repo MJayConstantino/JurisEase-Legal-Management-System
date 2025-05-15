@@ -79,7 +79,7 @@ export function EditUsername({
       ) : (
         <>
           <div className="flex-1 flex flex-col md:flex-row justify-center items-center md:items-center gap-2">
-            <div className="max-w-auto truncate pr-5">
+            <div className="max-w-auto truncate pr-5" title={user.user_name}>
               <UsernameDisplay username={user.user_name}/>
             </div>
           

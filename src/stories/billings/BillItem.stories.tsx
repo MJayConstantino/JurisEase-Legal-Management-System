@@ -29,42 +29,6 @@ export const Default: Story = {
     ),
   }
 
-export const Active: Story = {
-  render: () => (
-    <div className="p-4 w-full max-w-[1200px]">
-      <Table>
-        <TableBody>
-          <BillingsItem
-            bill={ mockBills[0]}
-            matters={mockMatters}
-            onUpdate={(bill) => console.log("Bill updated:", bill)}
-            onDelete={(id) => console.log("Bill deleted:", id)}
-            index={1}
-          />
-        </TableBody>
-      </Table>
-    </div>
-  ),
-}
-
-export const Pending: Story = {
-  render: () => (
-    <div className="p-4 w-full max-w-[1200px]">
-      <Table>
-        <TableBody>
-          <BillingsItem
-            bill={ mockBills[1]}
-            matters={mockMatters}
-            onUpdate={(bill) => console.log("Bill updated:", bill)}
-            onDelete={(id) => console.log("Bill deleted:", id)}
-            index={1}
-          />
-        </TableBody>
-      </Table>
-    </div>
-  ),
-}
-
 export const Paid: Story = {
   render: () => (
     <div className="p-4 w-full max-w-[1200px]">
@@ -83,7 +47,7 @@ export const Paid: Story = {
   ),
 }
 
-export const Overdue: Story = {
+export const Unpaid: Story = {
   render: () => (
     <div className="p-4 w-full max-w-[1200px]">
       <Table>
