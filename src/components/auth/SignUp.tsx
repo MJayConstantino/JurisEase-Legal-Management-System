@@ -10,6 +10,7 @@ import { Footer } from '@/components/auth/Footer'
 import { toast } from 'sonner'
 // import { signUpAction } from '@/actions/users'
 import { handleSignUpSubmit } from '@/action-handlers/users'
+import { GoogleSignInButton } from './GoogleSigninBtn'
 
 export interface SignUpPageProps {
   signUpHandler?: (
@@ -142,7 +143,7 @@ export function SignUpPage({
 
         {/* Footer Section */}
         <Footer
-          text="Already have an account?"
+          text="Already have a Google or JurisEase account?"
           linkHref="/login"
           linkText="Log In"
         />

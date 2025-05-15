@@ -1,12 +1,14 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
+import React from 'react'
+import { Button } from '@/components/ui/button'
 
 export interface GoogleSignInButtonProps {
-  onClick: () => void;
-  disabled: boolean;
+  onClick: () => void
+  value?: string
+  disabled: boolean
 }
 
 export const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({
+  value = 'Continue with Google',
   onClick,
   disabled,
 }) => {
@@ -19,10 +21,10 @@ export const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({
       disabled={disabled}
     >
       <GoogleIcon />
-      <span>Sign in with Google</span>
+      <span>{value}</span>
     </Button>
-  );
-};
+  )
+}
 
 export const GoogleIcon: React.FC = () => (
   <svg viewBox="0 0 24 24" width="20" height="20">
@@ -43,4 +45,4 @@ export const GoogleIcon: React.FC = () => (
       d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
     />
   </svg>
-);
+)
