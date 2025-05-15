@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useTransition } from 'react'
+import React, { useRef, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
 import { PasswordField } from './PasswordField'
@@ -34,10 +34,36 @@ export function LoginPage({
   const [password, setPassword] = useState('')
   const [isTransitioning, startTransition] = useTransition()
 
+  const emailRef = useRef<{
+    triggerValidation: () => boolean
+    clearErrors: () => void
+  } | null>(null)
+
+  const passwordRef = useRef<{
+    triggerValidation: () => boolean
+    clearErrors: () => void
+  } | null>(null)
+
   // Handle form submission for login
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
+
+    const isEmailValid = emailRef.current?.triggerValidation()
+    const isPasswordValid = passwordRef.current?.triggerValidation()
+
+    if (isEmailValid && isPasswordValid) {
+      console.log('Passed validation')
+    } else {
+      if (!isEmailValid) {
+        console.error('Invalid or empty email')
+        setEmail('')
+      }
+      if (!isPasswordValid) {
+        console.error('Invalid or empty password')
+        setPassword('')
+      }
+    }
 
     startTransition(async () => {
       try {
@@ -95,6 +121,7 @@ export function LoginPage({
             {/* Email FIeld  */}
             <div className="mb-4">
               <EmailField
+                ref={emailRef!}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isPending || isTransitioning}
@@ -104,6 +131,7 @@ export function LoginPage({
             {/* Password Field  */}
             <div className="mb-6">
               <PasswordField
+                ref={passwordRef!}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isPending || isTransitioning}

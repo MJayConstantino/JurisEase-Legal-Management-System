@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useTransition } from 'react'
+import React, { useRef, useState, useTransition } from 'react'
 import { NameField } from '@/components/auth/NameField'
 import { EmailField } from '@/components/auth/Emailfield'
 import { PasswordField } from '@/components/auth/PasswordField'
@@ -28,24 +28,56 @@ export function SignUpPage({
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isTransitioning, startTransition] = useTransition()
+  const nameRef = useRef<{
+    triggerValidation: () => boolean
+    clearErrors: () => void
+  } | null>(null)
+  const emailRef = useRef<{
+    triggerValidation: () => boolean
+    clearErrors: () => void
+  } | null>(null)
+
+  const passwordRef = useRef<{
+    triggerValidation: () => boolean
+    clearErrors: () => void
+  } | null>(null)
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
+    const isNameValid = nameRef.current?.triggerValidation()
+    const isEmailValid = emailRef.current?.triggerValidation()
+    const isPasswordValid = passwordRef.current?.triggerValidation()
 
+    if (isNameValid && isEmailValid && isPasswordValid) {
+      console.log('Passed validation')
+    } else {
+      if (!isEmailValid) {
+        console.error('Invalid or empty email')
+        setEmail('')
+      }
+      if (!isPasswordValid) {
+        console.error('Invalid or empty password')
+        setPassword('')
+      }
+      if (!isNameValid) {
+        console.error('Invalid or empty name')
+        setName('')
+      }
+    }
     startTransition(async () => {
       try {
         const { error } = await signUpHandler(formData)
         if (error) {
           console.log(Object.fromEntries(formData.entries()))
           toast.error(error) // Notify error
-          setName('')
-          setEmail('')
-          setPassword('')
         } else {
           // Notify success
 
           onSignUpSuccess?.()
+          setName('')
+          setEmail('')
+          setPassword('')
         }
       } catch (err) {
         console.error('Error during sign-up:', err)
@@ -71,6 +103,7 @@ export function SignUpPage({
             {/* Name Field */}
             <div className="mb-4">
               <NameField
+                ref={nameRef}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 disabled={isPending || isTransitioning}
@@ -80,6 +113,7 @@ export function SignUpPage({
             {/* Email Field */}
             <div className="mb-4">
               <EmailField
+                ref={emailRef}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isPending || isTransitioning}
@@ -89,6 +123,7 @@ export function SignUpPage({
             {/* Password Field */}
             <div className="mb-6">
               <PasswordField
+                ref={passwordRef}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isPending || isTransitioning}

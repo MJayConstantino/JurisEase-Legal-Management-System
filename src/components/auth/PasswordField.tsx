@@ -7,10 +7,12 @@ export interface PasswordFieldProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   disabled: boolean
   page: 'login' | 'register'
+  ref?: React.Ref<{ triggerValidation: () => boolean; clearErrors: () => void }>
 }
 
 export const PasswordField: React.FC<PasswordFieldProps> = ({
   value,
+  ref = null,
   onChange,
   disabled,
   page,
@@ -18,6 +20,7 @@ export const PasswordField: React.FC<PasswordFieldProps> = ({
   return (
     <InputField
       id="password"
+      ref={ref}
       type="password"
       name="password"
       label="Password"

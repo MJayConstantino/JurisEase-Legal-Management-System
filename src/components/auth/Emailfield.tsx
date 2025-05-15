@@ -6,15 +6,18 @@ interface EmailFieldProps {
   value?: string
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   disabled: boolean
+  ref?: React.Ref<{ triggerValidation: () => boolean; clearErrors: () => void }>
 }
 
 export const EmailField: React.FC<EmailFieldProps> = ({
   value,
+  ref = null,
   onChange,
   disabled = false,
 }) => {
   return (
     <InputField
+      ref={ref}
       id="email"
       name="email"
       label="Email"
