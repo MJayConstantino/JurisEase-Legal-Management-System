@@ -24,7 +24,7 @@ export const NameField: React.FC<NameFieldProps> = ({
       placeholder="Enter your full name"
       value={value}
       onChange={onChange}
-      required
+      required={true}
       disabled={disabled}
       text={''}
     />

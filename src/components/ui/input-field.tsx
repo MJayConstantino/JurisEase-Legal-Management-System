@@ -32,7 +32,7 @@ export function InputField({
 
   validateEmail = false,
   validatePassword = false,
-  minPasswordLength = 8,
+  minPasswordLength = 5,
   icon: Icon,
   type = 'text',
   disabled = false,

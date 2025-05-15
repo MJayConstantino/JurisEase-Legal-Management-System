@@ -23,9 +23,10 @@ export const EmailField: React.FC<EmailFieldProps> = ({
       placeholder="Enter Email"
       value={value}
       onChange={onChange}
-      required
+      required={true}
       disabled={disabled}
       text={''}
+      validateEmail={true}
     />
   )
 }

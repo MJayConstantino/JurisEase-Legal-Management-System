@@ -6,12 +6,14 @@ export interface PasswordFieldProps {
   value: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   disabled: boolean
+  type: 'login' | 'register'
 }
 
 export const PasswordField: React.FC<PasswordFieldProps> = ({
   value,
   onChange,
   disabled,
+  type,
 }) => {
   return (
     <InputField
@@ -27,6 +29,7 @@ export const PasswordField: React.FC<PasswordFieldProps> = ({
       required
       disabled={disabled}
       text={''}
+      validatePassword={type == 'register' ? true : false}
     />
   )
 }

@@ -92,6 +92,7 @@ export function SignUpPage({
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isPending || isTransitioning}
+                type="register"
               />
             </div>
 
