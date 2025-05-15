@@ -1,9 +1,7 @@
 
 export enum BillStatus {
-  active = "active",
+  unpaid = "unpaid",
   paid = "paid",
-  pending = "pending",
-  overdue = "overdue",
 }
 
 export interface Bill {
@@ -22,4 +20,4 @@ export type SortField = "matterName" | "name" | "amount" | "created_at" | "statu
 
 export type TimeFilter = "all" | "today" | "week" | "month"
 
-export type StatusFilter = "all" | "active" | "paid" | "pending" | "overdue"
+export type StatusFilter = "all" | "paid" | "unpaid"

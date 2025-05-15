@@ -150,14 +150,6 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
             All Bills
           </Button>
           <Button
-            variant={statusFilter === "active" ? "blue" : "ghost"}
-            size="sm"
-            className="px-3 h-9 text-xs font-semibold rounded-md flex-1 sm:flex-none hover:cursor-pointer"
-            onClick={() => handleFilterChange("active")}
-          >
-            Active
-          </Button>
-          <Button
             variant={statusFilter === "paid" ? "blue" : "ghost"}
             size="sm"
             className="px-3 h-9 text-xs font-semibold rounded-md flex-1 sm:flex-none hover:cursor-pointer"
@@ -166,20 +158,12 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
             Paid
           </Button>
           <Button
-            variant={statusFilter === "pending" ? "blue" : "ghost"}
+            variant={statusFilter === "unpaid" ? "blue" : "ghost"}
             size="sm"
             className="px-3 h-9 text-xs font-semibold rounded-md flex-1 sm:flex-none hover:cursor-pointer"
-            onClick={() => handleFilterChange("pending")}
+            onClick={() => handleFilterChange("unpaid")}
           >
-            Pending
-          </Button>
-          <Button
-            variant={statusFilter === "overdue" ? "blue" : "ghost"}
-            size="sm"
-            className="px-3 h-9 text-xs font-semibold rounded-md flex-1 sm:flex-none hover:cursor-pointer"
-            onClick={() => handleFilterChange("overdue")}
-          >
-            Overdue
+            Unpaid
           </Button>
         </div>
       </div>
@@ -268,7 +252,7 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuLabel>Filter Bills</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {["all", "active", "paid", "pending", "overdue"].map((filter) => (
+            {["all", "paid", "unpaid"].map((filter) => (
               <DropdownMenuItem
                 key={filter}
                 className={
