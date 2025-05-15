@@ -260,7 +260,7 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
                               Prev
                             </Button>
                             <span className="text-xs text-gray-500">
-                              Page {currentPage} of {totalPages}
+                              {currentPage}/{totalPages}
                             </span>
                             <Button
                               variant="outline"
