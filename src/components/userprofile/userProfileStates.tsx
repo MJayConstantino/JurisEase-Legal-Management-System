@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserData } from "./page";
+import { UserData } from "./userProfileInterface";
 import { User } from "@/types/user.type";
 
 export function UserProfileStates(){

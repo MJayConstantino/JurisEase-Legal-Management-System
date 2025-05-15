@@ -39,6 +39,7 @@
   --sidebar-accent-foreground: 0 0% 100%; /* white */
   --sidebar-border: 240 30% 30%; /* slightly lighter for borders */
   --sidebar-ring: 240 30% 40%; /* for focus rings */
+
 }
 
 .dark {
@@ -76,6 +77,12 @@
   --sidebar-accent-foreground: 0 0% 100%; /* white */
   --sidebar-border: 240 15% 25%; /* slightly lighter for borders */
   --sidebar-ring: 240 15% 35%; /* for focus rings */
+
+
+  /* Revenue Headers */
+  --totalrev: oklch(0.21 0.034 264.665); /* same blueish gray as the table column headers*/
+  --totalrev-hover: oklch(0.225 0.034 264.665);  /* lighter version */
+  --selectrev: oklch(0.35 0.034 264.665);  /* even lighter version */
 }
 
 @theme inline {

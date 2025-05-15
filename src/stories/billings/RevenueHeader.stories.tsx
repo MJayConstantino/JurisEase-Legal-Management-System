@@ -19,8 +19,14 @@ export const Default: Story = {
         monthRevenue={12000}
         currentDateTime={new Date()}
         activeFilter="all"
-        onFilterChange={(filter) => console.log("Filter changed:", filter)}
-      />
+        onFilterChange={(filter) => console.log("Filter changed:", filter)} activeMatterFilter={""} matterFilteredRevenues={{
+          total: 0,
+          today: 0,
+          week: 0,
+          month: 0
+        }}      
+        defaultExpandedState={true}
+        />
     </div>
   ),
 }
@@ -35,8 +41,14 @@ export const TodayFilter: Story = {
         monthRevenue={12000}
         currentDateTime={new Date()}
         activeFilter="today"
-        onFilterChange={(filter) => console.log("Filter changed:", filter)}
-      />
+        onFilterChange={(filter) => console.log("Filter changed:", filter)} activeMatterFilter={""} matterFilteredRevenues={{
+          total: 0,
+          today: 0,
+          week: 0,
+          month: 0
+        }}      
+        defaultExpandedState={true}
+        />
     </div>
   ),
 }
@@ -51,8 +63,14 @@ export const WeeklyFilter: Story = {
         monthRevenue={12000}
         currentDateTime={new Date()}
         activeFilter="week"
-        onFilterChange={(filter) => console.log("Filter changed:", filter)}
-      />
+        onFilterChange={(filter) => console.log("Filter changed:", filter)} activeMatterFilter={""} matterFilteredRevenues={{
+          total: 0,
+          today: 0,
+          week: 0,
+          month: 0
+        }}      
+        defaultExpandedState={true}
+        />
     </div>
   ),
 }
@@ -67,8 +85,14 @@ export const MonthlyFilter: Story = {
         monthRevenue={12000}
         currentDateTime={new Date()}
         activeFilter="month"
-        onFilterChange={(filter) => console.log("Filter changed:", filter)}
-      />
+        onFilterChange={(filter) => console.log("Filter changed:", filter)} activeMatterFilter={""} matterFilteredRevenues={{
+          total: 0,
+          today: 0,
+          week: 0,
+          month: 0
+        }}      
+        defaultExpandedState={true}
+        />
     </div>
   ),
 }
