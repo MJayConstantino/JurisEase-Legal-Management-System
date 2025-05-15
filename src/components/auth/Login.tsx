@@ -54,6 +54,8 @@ export function LoginPage({
 
     if (isEmailValid && isPasswordValid) {
       console.log('Passed validation')
+      setPassword('')
+      setEmail('')
     } else {
       if (!isEmailValid) {
         console.error('Invalid or empty email')
@@ -107,7 +109,7 @@ export function LoginPage({
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4">
-      <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-sm">
+      <div className="w-full max-w-md rounded-lg bg-white p-4 sm:p-6 shadow-sm">
         {/* Header Section  */}
         <Header
           title="Welcome back!"
@@ -116,7 +118,7 @@ export function LoginPage({
         />
 
         {/* Form Section */}
-        <div className="rounded-lg bg-[#e1e5f2] p-6">
+        <div className="rounded-lg bg-[#e1e5f2] p-4 sm:p-6">
           <form onSubmit={handleSubmit}>
             {/* Email FIeld  */}
             <div className="mb-4">
