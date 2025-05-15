@@ -22,7 +22,8 @@ interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-// 🔹 ForwardRef to expose validation methods externally
+// ForwardRef to expose validation methods externally
+// eslint-disable-next-line react/display-name
 export const InputField = forwardRef(
   (
     {
