@@ -6,16 +6,19 @@ export interface NameFieldProps {
   value?: string
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   disabled: boolean
+  ref?: React.Ref<{ triggerValidation: () => boolean; clearErrors: () => void }>
 }
 
 export const NameField: React.FC<NameFieldProps> = ({
   value,
+  ref = null,
   onChange,
   disabled = false,
 }) => {
   return (
     <InputField
       id="name"
+      ref={ref}
       type="text"
       name="name"
       label="Full Name"
@@ -24,7 +27,7 @@ export const NameField: React.FC<NameFieldProps> = ({
       placeholder="Enter your full name"
       value={value}
       onChange={onChange}
-      required
+      required={true}
       disabled={disabled}
       text={''}
     />

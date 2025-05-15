@@ -159,7 +159,7 @@ export function BillingsAddDialog({
     setAmount("")
     setCreated_at(new Date())
     setDateString(format(new Date(), "yyyy-MM-dd"))
-    setStatus(BillStatus.pending)
+    setStatus(BillStatus.unpaid)
     setRemarks("")
     updateVisibleMatters(1)
   }
@@ -367,17 +367,11 @@ export function BillingsAddDialog({
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
-                    <SelectItem value="active" className="text-sm md:text-base">
-                      Active
-                    </SelectItem>
                     <SelectItem value="paid" className="text-sm md:text-base">
                       Paid
                     </SelectItem>
-                    <SelectItem value="pending" className="text-sm md:text-base">
-                      Pending
-                    </SelectItem>
-                    <SelectItem value="overdue" className="text-sm md:text-base">
-                      Overdue
+                    <SelectItem value="unpaid" className="text-sm md:text-base">
+                      Unpaid
                     </SelectItem>
                   </SelectContent>
                 </Select>

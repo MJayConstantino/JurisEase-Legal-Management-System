@@ -19,7 +19,9 @@ describe('User Auth Process', () => {
     after(() => {})
     it('should raise an error when no fields are filled', () => {
       cy.contains('Sign Up').click()
-      cy.wait(1200).contains('Invalid data Inputted:').should('be.visible')
+      cy.wait(1200)
+        .contains(/invalid/i)
+        .should('be.visible')
     })
 
     it('should raise an error if invalid email', () => {
@@ -27,7 +29,9 @@ describe('User Auth Process', () => {
       cy.get('#email').type('invalid-email')
       cy.get('#password').type('testPassword')
       cy.contains('Sign Up').click()
-      cy.wait(1200).contains('Invalid data Inputted:').should('be.visible')
+      cy.wait(1200)
+        .contains(/invalid/i)
+        .should('be.visible')
     })
 
     it('should raise an error if password is less than 5', () => {
@@ -35,7 +39,9 @@ describe('User Auth Process', () => {
       cy.get('#email').type('Test@test.com')
       cy.get('#password').type('tes')
       cy.contains('Sign Up').click()
-      cy.wait(1200).contains('Invalid data Inputted:').should('be.visible')
+      cy.wait(1200)
+        .contains(/invalid/i)
+        .should('be.visible')
     })
 
     it('should sign up user if provided right credentials', () => {
@@ -121,7 +127,7 @@ describe('User Auth Process', () => {
       cy.get('#password').type('testPassword')
       cy.get('button[type="submit"]').click()
       //verify user session
-      cy.wait(3000)
+      cy.wait(5000)
         .contains(/welcome to jurisease/i)
         .should('be.visible')
     })

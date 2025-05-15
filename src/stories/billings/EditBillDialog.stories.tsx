@@ -82,7 +82,7 @@ export const EditBillFormPlay: Story = {
 
       if (selectStatus) {
         await userEvent.keyboard("{Enter}", { delay: 100 })
-        await userEvent.keyboard("{ArrowDown}{ArrowDown}{ArrowDown}{Enter}", { delay: 300 })
+        await userEvent.keyboard("{ArrowDown}{Enter}", { delay: 300 })
         await userEvent.tab()
       }
     })

@@ -98,10 +98,8 @@ export function MatterBillingPage() {
     if (statusFilter !== "all") {
       const statusMap: Record<StatusFilter, string> = {
         all: "",
-        active: "active",
         paid: "paid",
-        pending: "pending",
-        overdue: "overdue",
+        unpaid: "unpaid",
       }
 
       const filterStatus = statusMap[statusFilter]

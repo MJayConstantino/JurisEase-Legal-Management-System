@@ -67,16 +67,23 @@ export const Pending: StoryObj<PasswordFieldProps> = {
   },
 }
 
-export const Filled: StoryObj<PasswordFieldProps> = {
+export const FilledLong: StoryObj<PasswordFieldProps> = {
   ...Template,
   args: { ...Template.args, value: 'mypassword' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const passwordInput = canvas.getByPlaceholderText('Enter Password')
     await userEvent.clear(passwordInput)
-    await userEvent.type(passwordInput, 'mypassword')
-    await expect(passwordInput).toHaveValue('mypassword')
-    action('Filled input tested')('mypassword')
+    await userEvent.type(
+      passwordInput,
+      'mypasswordthatisreallylongfornootherreasonthantotest'
+    )
+    await expect(passwordInput).toHaveValue(
+      'mypasswordthatisreallylongfornootherreasonthantotest'
+    )
+    action('Filled input tested')(
+      'mypasswordthatisreallylongfornootherreasonthantotest'
+    )
   },
 }
 
@@ -89,14 +96,10 @@ export const InvalidPassword: StoryObj<PasswordFieldProps> = {
     passwordInput.focus()
 
     await userEvent.clear(passwordInput)
-    await userEvent.type(passwordInput, '123')
+    await userEvent.tab()
 
-    await waitFor(() => expect(passwordInput).toHaveValue('123'))
-    action('Invalid password typed')('123')
-    const validation = passwordSchema.safeParse('JD')
-    if (validation.error) {
-      toast.error(validation.error.errors[0].message)
-    }
+    await waitFor(() => expect(passwordInput).toHaveValue(''))
+    action('Invalid password typed')('')
   },
 }
 
