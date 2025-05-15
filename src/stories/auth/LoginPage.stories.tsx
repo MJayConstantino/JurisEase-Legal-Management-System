@@ -36,25 +36,20 @@ const Template: StoryObj<LoginPageProps> = {
       action('handleLoginSubmitfn')(formData) // Log the action
       const validation = validateLogin(formData)
       if (!validation.success) {
-        toast.error(validation.error.errors[0].message, {
-          id: 'validation-error',
-        })
         return { error: validation.error.errors[0].message }
       }
       if (
         formData.get('email') === 'test@example.com' &&
         formData.get('password') === 'password'
       ) {
-        toast.success('Login Success', { id: 'login-success' })
         return { error: null }
       } else {
-        toast.error('Invalid credentials', { id: 'login-failure' })
         return { error: 'Invalid credentials' }
       }
     },
     handleGoogleLoginfn: async () => {
       action('handleGoogleLoginfn')() // Log the action
-      toast.success('Google Login Success', { id: 'google-login-success' })
+
       return { error: null }
     },
     onLoginSuccess: action('onLoginSuccess'), // Log the action
@@ -80,10 +75,12 @@ export const Success: StoryObj<LoginPageProps> = {
   ...Template,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
+
     const emailInput = canvas.getByPlaceholderText('Enter Email')
     const passwordInput = canvas.getByPlaceholderText('Enter Password')
     const loginButton = canvas.getByRole('button', { name: 'Log in' })
-
+    await userEvent.clear(emailInput)
+    await userEvent.clear(passwordInput)
     await userEvent.type(emailInput, 'test@example.com')
     await userEvent.type(passwordInput, 'password')
     await userEvent.click(loginButton)
@@ -103,6 +100,8 @@ export const Failed: StoryObj<LoginPageProps> = {
     const passwordInput = canvas.getByPlaceholderText('Enter Password')
     const loginButton = canvas.getByRole('button', { name: 'Log in' })
 
+    await userEvent.clear(emailInput)
+    await userEvent.clear(passwordInput)
     await userEvent.type(emailInput, 'wrong@example.com')
     await userEvent.type(passwordInput, 'wrongpassword')
     await userEvent.click(loginButton)
@@ -121,7 +120,8 @@ export const InvalidInput: StoryObj<LoginPageProps> = {
     const emailInput = canvas.getByPlaceholderText('Enter Email')
     const passwordInput = canvas.getByPlaceholderText('Enter Password')
     const loginButton = canvas.getByRole('button', { name: 'Log in' })
-
+    await userEvent.clear(emailInput)
+    await userEvent.clear(passwordInput)
     await userEvent.type(emailInput, 'invalid-email')
     await userEvent.type(passwordInput, '123')
     await userEvent.click(loginButton)
@@ -137,8 +137,9 @@ export const GoogleLoginSuccess: StoryObj<LoginPageProps> = {
   ...Template,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
+
     const googleLoginButton = canvas.getByRole('button', {
-      name: 'Sign in with Google',
+      name: 'Continue with Google',
     })
 
     await userEvent.click(googleLoginButton)

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { LogOut, Plus, User } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -127,10 +127,6 @@ function AvatarDropdownMenu({
           className="px-3 py-2 text-black dark:text-white"
         >
           <User /> Profile
-        </DropdownMenuItem>
-        <DropdownMenuItem className="md:hidden px-3 py-2 text-black dark:text-white">
-          <Plus className="mr-2 h-4 w-4" />
-          <span>Create New</span>
         </DropdownMenuItem>
         <DropdownMenuItem className="px-3 py-2 text-black dark:text-white">
           <LogOut />

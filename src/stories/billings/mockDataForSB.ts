@@ -38,7 +38,7 @@ export const mockBills: Bill[] = [
         name: "Active Bill",
         amount: 1230,
         created_at: "2025-08-15",
-        status: BillStatus.active,
+        status: BillStatus.unpaid,
         remarks: "This bill has remarks"
     },
     {
@@ -47,7 +47,7 @@ export const mockBills: Bill[] = [
         name: "Pending Bill",
         amount: 5090,
         created_at: "2025-06-01",
-        status: BillStatus.pending,
+        status: BillStatus.paid,
         remarks: "This bill has remarks"
     },
     {
@@ -56,7 +56,7 @@ export const mockBills: Bill[] = [
         name: "Paid Bill",
         amount: 9203,
         created_at: "2025-09-13",
-        status: BillStatus.paid,
+        status: BillStatus.unpaid,
         remarks: "-"
     },
     {
@@ -65,7 +65,7 @@ export const mockBills: Bill[] = [
         name: "Overdue Bill",
         amount: 2931,
         created_at: "2025-03-22",
-        status: BillStatus.overdue,
+        status: BillStatus.paid,
         remarks: "something something"
     },
     {
@@ -74,7 +74,7 @@ export const mockBills: Bill[] = [
         name: "Default Bill",
         amount: 76,
         created_at: "2025-01-01",
-        status: BillStatus.pending,
+        status: BillStatus.paid,
         remarks: "This is a default bill"
     }
 ]

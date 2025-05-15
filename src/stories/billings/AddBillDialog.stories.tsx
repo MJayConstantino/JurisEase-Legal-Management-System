@@ -113,7 +113,7 @@ export const AddBillFormPlay: Story = {
 
       if (selectStatus) {
         await userEvent.keyboard("{Enter}", { delay: 100 })
-        await userEvent.keyboard("{ArrowUp}{ArrowUp}{Enter}", { delay: 300 })
+        await userEvent.keyboard("{ArrowDown}{Enter}", { delay: 300 })
         await userEvent.tab()
       }
     })
@@ -126,7 +126,7 @@ export const AddBillFormPlay: Story = {
         document.querySelector('textarea[placeholder="(optional)"]')
 
       if (remarksInput) {
-        await userEvent.keyboard("Example remarks for this bill.{Enter}This can be any length; it's also optional and can be left blank.", { delay: 100 })
+        await userEvent.keyboard("Example remarks for this bill.{Enter} It's also optional.", { delay: 100 })
         await userEvent.tab()
         await userEvent.tab()
       }

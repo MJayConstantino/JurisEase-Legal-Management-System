@@ -35,7 +35,7 @@ export function ChangeAvatar({ userName, metadataAvatarUrl }: ChangeAvatarProps)
             if (newAvatarUrl) {
               setAvatarPreview(newAvatarUrl);
             }
-            window.location.reload()
+            // router.refresh()
             toast.success("User Avatar updated successfully")
           } catch (error) {
             console.error('Error uploading avatar:', error);

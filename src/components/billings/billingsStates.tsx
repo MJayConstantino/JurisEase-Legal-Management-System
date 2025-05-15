@@ -1,3 +1,4 @@
+"use client"
 
 import { useState } from "react"
 import { Bill, BillStatus, SortDirection, SortField, StatusFilter, TimeFilter } from  "@/types/billing.type"
@@ -10,11 +11,18 @@ export function BillingStates(){
     const [name, setName] = useState("")
     const [amount, setAmount] = useState("")
     const [created_at, setCreated_at] = useState<Date>(new Date())
-    const [status, setStatus] = useState<BillStatus>(BillStatus.pending)
+    const [status, setStatus] = useState<BillStatus>(BillStatus.unpaid)
     const [remarks, setRemarks] = useState("")
     const [matter_id, setMatterId] = useState("")
     const [dateString, setDateString] = useState(format(new Date(), "yyyy-MM-dd"))
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [negativeAmountError, setNegativeAmountError] = useState(false)
+    const [isMaxFieldError, setIsMaxFieldError] = useState(false)
+    const [visibleMatters, setVisibleMatters] = useState<Matter[]>([])
+    const [currentPage, setCurrentPage] = useState(1)
+    const [nameError, setNameError] = useState(false)
+    const [amountError, setAmountError] = useState(false)
+    const [matterError, setMatterError] = useState(false)
 
     // billing items
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -38,12 +46,15 @@ export function BillingStates(){
     const [currentMatter, setCurrentMatter] = useState<Matter | null>(null)
 
     // matter-billing page
-    const [billToEdit, setBillToEdit] = useState<Bill | null>(null)
-    const [billIdToDelete, setBillIdToDelete] = useState<string | null>(null)
+    const [isLoadingMatters, setIsLoadingMatters] = useState(true)
+    const [isLoadingBills, setIsLoadingBills] = useState(false)
 
     return{
         name, setName, remarks, setRemarks, amount, setAmount, created_at, setCreated_at, 
-        status, setStatus, matter_id, setMatterId, dateString, setDateString, isSubmitting, setIsSubmitting,
+        status, setStatus, matter_id, setMatterId, dateString, setDateString, isSubmitting, 
+        setIsSubmitting, visibleMatters, setVisibleMatters, currentPage, setCurrentPage,
+        isMaxFieldError, setIsMaxFieldError, nameError, setNameError, amountError, setAmountError,
+        matterError, setMatterError, negativeAmountError, setNegativeAmountError,
         
         isEditDialogOpen, setIsEditDialogOpen, isDeleteDialogOpen, setIsDeleteDialogOpen,
 
@@ -53,6 +64,6 @@ export function BillingStates(){
         setIsNewBillDialogOpen, isLoading, setIsLoading, timeFilter, setTimeFilter, sortField, setSortField, sortDirection, setSortDirection,
         statusFilter, setStatusFilter, matters, setMatters, selectedMatterId, setSelectedMatterId, currentMatter, setCurrentMatter,
 
-        billToEdit, setBillToEdit, billIdToDelete, setBillIdToDelete
+        isLoadingMatters, setIsLoadingMatters, isLoadingBills, setIsLoadingBills
     }
 }
