@@ -70,7 +70,7 @@ export function BillingsItem({
         {bill.name}
       </TableCell>
       {!hideMatterColumn && (
-        <TableCell className="font-medium max-w-[150px] truncate" title={`Matter Name: ${matterDisplay}`}>
+        <TableCell className="font-medium max-w-[200px] truncate" title={`Matter Name: ${matterDisplay}`}>
           {matterDisplay}
         </TableCell>
       )}

@@ -220,7 +220,7 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
                   <SelectValue placeholder="Filter by matter" />
                 </SelectTrigger>
                 <SelectContent
-                  className="dark:bg-gray-800 dark:border-gray-700 w-[280px] p-0 overflow-hidden"
+                  className="dark:bg-gray-800 dark:border-gray-700 w-[300px] p-0 overflow-hidden"
                   align="start"
                   side="bottom"
                   sideOffset={5}
@@ -246,39 +246,39 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
                     ))}
                   </div>
 
-                  {/* Pagination */}
-                  {matters.length > mattersPerPage && (
-                    <div className="flex items-center justify-between p-2 border-t bg-gray-50 dark:bg-gray-700">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={goToPrevPage}
-                        disabled={currentPage === 1}
-                        className="h-7 w-12 px-1 text-[10px]"
-                      >
-                        <ChevronLeftIcon className="h-3 w-3 mr-1" />
-                        Prev
-                      </Button>
-                      <span className="text-[10px] text-gray-500">
-                        {currentPage}/{totalPages}
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={goToNextPage}
-                        disabled={currentPage === totalPages}
-                        className="h-7 w-12 px-1 text-[10px]"
-                      >
-                        Next
-                        <ChevronRightIcon className="h-3 w-3 ml-1" />
-                      </Button>
-                    </div>
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        )}
+                        {/* Pagination */}
+                        {matters.length > mattersPerPage && (
+                          <div className="flex items-center justify-between py-2 px-2 border-t mt-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={goToPrevPage}
+                              disabled={currentPage === 1}
+                              className="h-8 px-2"
+                            >
+                              <ChevronLeftIcon className="h-4 w-4 mr-1" />
+                              Prev
+                            </Button>
+                            <span className="text-xs text-gray-500">
+                              Page {currentPage} of {totalPages}
+                            </span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={goToNextPage}
+                              disabled={currentPage === totalPages}
+                              className="h-8 px-2"
+                            >
+                              Next
+                              <ChevronRightIcon className="h-4 w-4 ml-1" />
+                            </Button>
+                          </div>
+                        )}
+                      </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
       </div>
     </div>
   )

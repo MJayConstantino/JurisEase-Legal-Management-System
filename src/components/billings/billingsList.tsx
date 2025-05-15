@@ -49,23 +49,23 @@ export function BillingsList({
     <Button
       variant="ghost"
       onClick={() => onSortChange(field)}
-      className="p-0 h-auto font-semibold flex items-center hover:bg-transparent"
+      className="p-0 h-auto font-semibold flex items-center hover:bg-transparent whitespace-nowrap overflow-hidden text-ellipsis"
     >
       {label} {getSortIcon(field)}
     </Button>
   );
 
   return (
-    <div className="overflow-x-auto w-full">
-      <div className={`${hideMatterColumn ? "min-w-[700px]" : "min-w-[800px]"} sm:px-0`}>
+    <div className="overflow-x-auto w-full overflow:hidden">
+      <div className={`${hideMatterColumn ? "min-w-[800px]" : "min-w-[900px]"} sm:px-0`}>
         <Table className="table-auto w-full">
           <TableHeader className="bg-gray-100 dark:bg-gray-900">
             <TableRow className="text-sm md:text-base">
-              <TableHead className="w-[15%]">
+              <TableHead className="w-[20%]">
                  {renderSortableHeader("name", "Bill Name")}
               </TableHead>
               {!hideMatterColumn && (
-                <TableHead className="w-[20%]">
+                <TableHead className="w-[25%]">
                   {renderSortableHeader("matterName", "Matter Name")}
                 </TableHead>
               )}
