@@ -67,31 +67,36 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
   return (
     <div className="p-4 border-b bg-gray-50 dark:bg-gray-900 dark:border-gray-700 rounded-t-lg">
       <div className="hidden lg:flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <Button
-          variant="blue"
-          size="lg"
-          onClick={onNewBill}
-          className="bg-[#1B1E4B] hover:bg-[#16183F] dark:bg-primary dark:hover:bg-gray-100 cursor-pointer text-sm md:text-base py-1 px-2 md:py-3 md:px-3 mr-4 md:mr-5 whitespace-nowrap"
-        >
-          <Plus className="h-3 w-3 md:mr-1" />
-          <span className="hidden md:inline">Add Bill</span>
-        </Button>
-
-        {!hideMatterFilter && (
-        <div className=" flex flex-col md:flex-row md:items-center md:space-x-4 space-y-2 md:space-y-0">
-          <Label htmlFor="matter" className="text-sm md:text-base">
-            Filter by Matter:
-          </Label>
-          <div className="w-full md:w-[250px]">
-            <Select value={selectedMatterId} onValueChange={onMatterFilterChange}>
-              <SelectTrigger className="w-full dark:bg-gray-800 dark:border-gray-700 text-sm md:text-base">
-                <SelectValue placeholder="Filter by matter" />
-              </SelectTrigger>
-              <SelectContent className="dark:bg-gray-700 dark:border-gray-600 overflow-hidden">
-                <SelectItem value="all" className="text-sm md:text-base">
-                  All
-                </SelectItem>
-                    <div className="flex flex-col">
+        <div className="flex items-center space-x-4">
+          
+          <Button
+            variant="blue"
+            size="lg"
+            onClick={onNewBill}
+            className="bg-[#1B1E4B] hover:bg-[#16183F] dark:bg-primary dark:hover:bg-gray-100 cursor-pointer text-sm md:text-base py-1 px-2 md:py-3 md:px-3 whitespace-nowrap"
+          >
+            <Plus className="h-3 w-3 md:mr-1" />
+            <span className="hidden md:inline">Add Bill</span>
+          </Button>
+          {!hideMatterFilter && (
+            <div className="flex items-center space-x-2">
+              
+              <Label htmlFor="matter" className="text-sm md:text-base whitespace-nowrap">
+                Filter by Matter:
+              </Label>
+              <div className="w-[250px]">
+                
+                <Select value={selectedMatterId} onValueChange={onMatterFilterChange}>
+                  <SelectTrigger className="w-full dark:bg-gray-800 dark:border-gray-700 text-sm md:text-base">
+                    <SelectValue placeholder="Filter by matter" />
+                  </SelectTrigger>
+                  <SelectContent className="dark:bg-gray-700 dark:border-gray-600 overflow-hidden w-[350px] h-[300px]">
+                    
+                    <SelectItem value="all" className="text-sm md:text-base">
+                      All
+                    </SelectItem>
+                    <div className="flex flex-col h-[200px] overflow-y-auto">
+                      
                       {visibleMatters.map((matter) => (
                         <SelectItem
                           key={matter.matter_id}
@@ -99,33 +104,37 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
                           className="text-sm md:text-base"
                           title={matter.name}
                         >
-                          <span className="truncate inline-block max-w-[250px]">{matter.name}</span>[{matter.case_number}]
+                          <div className="flex items-center justify-between w-full">
+                            
+                            <span className="truncate inline-block max-w-[250px]">{matter.name}</span>
+                            <span className="ml-1 text-xs text-gray-500 whitespace-nowrap">[{matter.case_number}]</span>
+                          </div>
                         </SelectItem>
                       ))}
                     </div>
-
                     {/* Pagination */}
                     {matters.length > mattersPerPage && (
-                      <div className="flex items-center justify-between py-2 px-2 border-t mt-2">
+                      <div className="flex items-center justify-between py-2 px-2 border-t mt-auto">
+                        
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={goToPrevPage}
                           disabled={currentPage === 1}
-                          className="h-8 px-2"
+                          className="h-8 w-20 px-2 text-xs"
                         >
                           <ChevronLeftIcon className="h-4 w-4 mr-1" />
                           Prev
                         </Button>
                         <span className="text-xs text-gray-500">
-                          Page {currentPage} of {totalPages}
+                          {currentPage}/{totalPages}
                         </span>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={goToNextPage}
                           disabled={currentPage === totalPages}
-                          className="h-8 px-2"
+                          className="h-8 w-20 px-2 text-xs"
                         >
                           Next
                           <ChevronRightIcon className="h-4 w-4 ml-1" />
@@ -133,13 +142,13 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
                       </div>
                     )}
                   </SelectContent>
-              </Select>
+                </Select>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Filter Desktop */}
-
         <div className="flex flex-wrap gap-2 bg-gray-100 shadow dark:bg-gray-700 rounded-md justify-center sm:justify-start">
           <Button
             variant={statusFilter === "all" ? "blue" : "ghost"}
@@ -184,103 +193,108 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
         </div>
       </div>
 
+      {/* Filter mobile */}
+      <div className="flex flex-col gap-4 lg:hidden">
+        <div className="flex items-center justify-between">
+          <Button variant="blue" size="sm" onClick={onNewBill} className="bg-[#1B1E4B] hover:bg-[#16183F] text-white">
+            <Plus className="h-3 w-3 mr-1" />
+            <span className="text-xs">Add Bill</span>
+          </Button>
 
-
-        {/* Filter mobile */}
-      <div className="flex items-center justify-between lg:hidden mb-4">
-        <Button
-          variant="blue"
-          size="sm"
-          onClick={onNewBill}
-        >
-          <Plus className="h-3 w-3 mr-1" />
-          <span className="text-xs">Add Bill</span>
-        </Button>
+          <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon" className="h-8 w-8">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Open filters</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              
+              <DropdownMenuLabel>Filter Bills</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {["all", "paid", "unpaid"].map((filter) => (
+                <DropdownMenuItem
+                  key={filter}
+                  className={statusFilter === filter ? "bg-[#1B1E4B] text-white" : ""}
+                  onClick={() => handleFilterChange(filter)}
+                >
+                  {filter.charAt(0).toUpperCase() + filter.slice(1)}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
         {!hideMatterFilter && (
-        <div className="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-2 md:space-y-0">
-          <Label htmlFor="matter" className="text-sm md:text-base">
-            Filter by Matter:
-          </Label>
-          <div className="w-full md:w-[150px]">
-            <Select value={selectedMatterId} onValueChange={onMatterFilterChange}>
-              <SelectTrigger className="w-full dark:bg-gray-800 dark:border-gray-700 text-sm md:text-base">
-                <SelectValue placeholder="Filter by matter" />
-              </SelectTrigger>
-              <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
-                <SelectItem value="all" className="text-sm md:text-base">
-                  All
-                </SelectItem>
-                    <div className="flex flex-col">
-                          {visibleMatters.map((matter) => (
-                            <SelectItem
-                              key={matter.matter_id}
-                              value={matter.matter_id}
-                              className="text-sm md:text-base"
-                              title={matter.name}
-                            >
-                              <span className="truncate inline-block max-w-[250px]">{matter.name}</span>[{matter.case_number}]
-                            </SelectItem>
-                          ))}
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="mobile-matter" className="text-xs">
+              Filter by Matter:
+            </Label>
+            <div className="w-full">
+              <Select value={selectedMatterId} onValueChange={onMatterFilterChange}>
+                <SelectTrigger id="mobile-matter" className="w-full text-xs h-9 dark:bg-gray-800 dark:border-gray-700">
+                  <SelectValue placeholder="Filter by matter" />
+                </SelectTrigger>
+                <SelectContent
+                  className="dark:bg-gray-800 dark:border-gray-700 w-[280px] p-0 overflow-hidden"
+                  align="start"
+                  side="bottom"
+                  sideOffset={5}
+                >
+                  <div className="p-0">
+                    <SelectItem value="all" className="text-xs rounded-none border-b">
+                      All
+                    </SelectItem>
+                  </div>
+                  <div className="p-0">
+                    {visibleMatters.map((matter) => (
+                      <SelectItem
+                        key={matter.matter_id}
+                        value={matter.matter_id}
+                        className="text-xs rounded-none border-b last:border-b-0"
+                        title={matter.name}
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <span className="truncate inline-block max-w-[150px]">{matter.name}</span>
+                          <span className="ml-1 text-xs text-gray-500 whitespace-nowrap">[{matter.case_number}]</span>
                         </div>
+                      </SelectItem>
+                    ))}
+                  </div>
 
-                        {/* Pagination */}
-                        {matters.length > mattersPerPage && (
-                          <div className="flex items-center justify-between py-2 px-2 border-t mt-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={goToPrevPage}
-                              disabled={currentPage === 1}
-                              className="h-8 px-2"
-                            >
-                              <ChevronLeftIcon className="h-4 w-4 mr-1" />
-                              Prev
-                            </Button>
-                            <span className="text-xs text-gray-500">
-                              Page {currentPage} of {totalPages}
-                            </span>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={goToNextPage}
-                              disabled={currentPage === totalPages}
-                              className="h-8 px-2"
-                            >
-                              Next
-                              <ChevronRightIcon className="h-4 w-4 ml-1" />
-                            </Button>
-                          </div>
-                        )}
-                      </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            )}
-
-        <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon">
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Open filters</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuLabel>Filter Bills</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {["all", "active", "paid", "pending", "overdue"].map((filter) => (
-              <DropdownMenuItem
-                key={filter}
-                className={
-                  statusFilter === filter ? "bg-[#1B1E4B] text-white" : ""
-                }
-                onClick={() => handleFilterChange(filter)}
-              >
-                {filter.charAt(0).toUpperCase() + filter.slice(1)}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+                  {/* Pagination */}
+                  {matters.length > mattersPerPage && (
+                    <div className="flex items-center justify-between p-2 border-t bg-gray-50 dark:bg-gray-700">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={goToPrevPage}
+                        disabled={currentPage === 1}
+                        className="h-7 w-12 px-1 text-[10px]"
+                      >
+                        <ChevronLeftIcon className="h-3 w-3 mr-1" />
+                        Prev
+                      </Button>
+                      <span className="text-[10px] text-gray-500">
+                        {currentPage}/{totalPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={goToNextPage}
+                        disabled={currentPage === totalPages}
+                        className="h-7 w-12 px-1 text-[10px]"
+                      >
+                        Next
+                        <ChevronRightIcon className="h-3 w-3 ml-1" />
+                      </Button>
+                    </div>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

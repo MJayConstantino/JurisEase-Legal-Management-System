@@ -57,7 +57,7 @@ export function BillingsList({
 
   return (
     <div className="overflow-x-auto w-full">
-      <div className={`${hideMatterColumn ? "min-w-[700px]" : "min-w-[800px]"} px-4 sm:px-0`}>
+      <div className={`${hideMatterColumn ? "min-w-[700px]" : "min-w-[800px]"} sm:px-0`}>
         <Table className="table-auto w-full">
           <TableHeader className="bg-gray-100 dark:bg-gray-900">
             <TableRow className="text-sm md:text-base">
