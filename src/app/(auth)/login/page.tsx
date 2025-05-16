@@ -1,6 +1,8 @@
 'use client'
 import { LoginPage } from '@/components/auth/Login'
+import LoginSkeleton from './loading'
 import { useRouter } from 'next/navigation'
+import { Suspense } from 'react'
 
 export default function Login() {
   const router = useRouter()
@@ -11,10 +13,12 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50">
-      <LoginPage
-        onLoginSuccess={handleLoginSuccess}
-        onGoogleLoginSuccess={handleLoginSuccess}
-      />
+      <Suspense fallback={<LoginSkeleton />}>
+        <LoginPage
+          onLoginSuccess={handleLoginSuccess}
+          onGoogleLoginSuccess={handleLoginSuccess}
+        />
+      </Suspense>
     </div>
   )
 }
