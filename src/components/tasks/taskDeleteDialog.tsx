@@ -21,13 +21,12 @@ export function TaskDeleteDialog({
   onSuccess,
   redirectToList = false,
 }: TaskDeleteDialogProps) {
+  
   const router = useRouter();
 
   const handleDelete = async () => {
-    console.log("Attempting to delete task:", task);
     try {
       const { error } = await handleDeleteTask(task.task_id);
-      console.log("Delete result:", error ? error : "Success");
 
       if (!error) {
         onOpenChange(false);
@@ -37,12 +36,10 @@ export function TaskDeleteDialog({
         }
 
         if (onSuccess) {
-          console.log("Executing onSuccess callback");
           onSuccess();
         }
 
         if (redirectToList) {
-          console.log("Redirecting to task list");
           router.push("/tasks");
         }
 
@@ -63,8 +60,12 @@ export function TaskDeleteDialog({
   return (
     <DeleteConfirmationDialog
       isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      onConfirm={handleDelete}
+      onOpenChange={(open) => {
+        onOpenChange(open);
+      }}
+      onConfirm={async () => {
+        await handleDelete();
+      }}
       title="Delete Task"
       description={`Are you sure you want to delete the task "${task.name}"? This action cannot be undone.`}
       confirmText="Delete Task"

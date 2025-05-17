@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -46,7 +46,6 @@ export function CreateNewButton({
   const [isLoadingMatters, setIsLoadingMatters] = useState(false);
   const [taskMatters, setTaskMatters] = useState<Matter[]>([]);
 
-  // Load matters for billing
   useEffect(() => {
     async function loadBillingData() {
       setIsLoading(true);
@@ -63,12 +62,17 @@ export function CreateNewButton({
   }, [setIsLoading, setBillingMatters]);
 
   useEffect(() => {
+    if (!isAddTaskOpen) return;
+
+    let isMounted = true;
+
     async function loadAllMatters() {
-      if (!isAddTaskOpen) return;
       console.log("Fetching all matters for task creation");
       setIsLoadingMatters(true);
       try {
         const result = await handleFetchMatters();
+        if (!isMounted) return;
+
         if (result.error) {
           throw new Error(result.error);
         }
@@ -79,14 +83,33 @@ export function CreateNewButton({
       } catch (error) {
         console.error("Failed to load matters for task creation:", error);
       } finally {
-        setIsLoadingMatters(false);
+        if (isMounted) {
+          setIsLoadingMatters(false);
+        }
       }
     }
 
     loadAllMatters();
+
+    return () => {
+      isMounted = false;
+    };
   }, [isAddTaskOpen]);
 
-  const handleOpenAddTask = () => setIsAddTaskOpen(true);
+  const handleOpenAddTask = useCallback(() => {
+    setIsAddTaskOpen(true);
+  }, []);
+
+  const handleTaskCreated = useCallback(
+    (newTask: Task) => {
+      if (onTaskCreated) {
+        onTaskCreated(newTask);
+      }
+
+      setIsAddTaskOpen(false);
+    },
+    [onTaskCreated]
+  );
 
   return (
     <>
@@ -131,22 +154,23 @@ export function CreateNewButton({
         matterBillingMatterId={""}
       />
 
-      <TaskForm
-        open={isAddTaskOpen}
-        onOpenChange={setIsAddTaskOpen}
-        onSave={(newTask) => {
-          if (onTaskCreated) onTaskCreated(newTask);
-          setIsAddTaskOpen(false);
-        }}
-        onSaveAndCreateAnother={onTaskCreated}
-        disableMatterSelect={!!matterId}
-        matters={taskMatters}
-        isLoadingMatters={isLoadingMatters}
-        getMatterNameDisplay={(matterId) =>
-          getMattersDisplayName(matterId, taskMatters)
-        }
-        matterId={matterId}
-      />
+      {isAddTaskOpen && (
+        <TaskForm
+          open={isAddTaskOpen}
+          onOpenChange={setIsAddTaskOpen}
+          onSave={handleTaskCreated}
+          onSaveAndCreateAnother={(newTask) => {
+            if (onTaskCreated) onTaskCreated(newTask);
+          }}
+          disableMatterSelect={!!matterId}
+          matters={taskMatters}
+          isLoadingMatters={isLoadingMatters}
+          getMatterNameDisplay={(matterId) =>
+            getMattersDisplayName(matterId, taskMatters)
+          }
+          matterId={matterId}
+        />
+      )}
     </>
   );
 }

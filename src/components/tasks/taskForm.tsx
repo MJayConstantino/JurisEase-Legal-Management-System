@@ -66,7 +66,6 @@ export function TaskForm({
   isLoadingMatters,
   matterId,
 }: TaskFormProps & { matterId?: string }) {
-
   const defaultTask = useMemo<Task>(
     () => ({
       task_id: "",
@@ -84,16 +83,16 @@ export function TaskForm({
   const [task, setTask] = useState<Task>(() => initialTask || defaultTask);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Only update task state when dialog opens (not on every render)
   useEffect(() => {
     if (open) {
-      setTask(
-        initialTask
-          ? { ...initialTask }
-          : {
-              ...defaultTask,
-              matter_id: matterId || defaultTask.matter_id,
-            }
-      );
+      const newTaskState = initialTask
+        ? { ...initialTask }
+        : {
+            ...defaultTask,
+            matter_id: matterId || defaultTask.matter_id,
+          };
+      setTask(newTaskState);
     }
   }, [open, initialTask, matterId, defaultTask]);
 
@@ -125,8 +124,13 @@ export function TaskForm({
 
   const handleSubmit = useCallback(
     async (keepFormOpen: boolean = false) => {
-      if (isSubmitting) return;
-      if (!validateTask()) return;
+      if (isSubmitting) {
+        return;
+      }
+      
+      if (!validateTask()) {
+        return;
+      }
 
       setIsSubmitting(true);
 
@@ -138,35 +142,34 @@ export function TaskForm({
         };
 
         const isNewTask = !task.task_id;
+        
         const response = isNewTask
           ? await handleCreateTask(taskToSubmit)
           : await handleUpdateTask(taskToSubmit);
 
         if (response && !response.error && response.task) {
-          toast.success(
-            isNewTask
-              ? `Task "${response.task.name}" created successfully`
-              : `Task "${response.task.name}" updated successfully`
-          );
+          const successMessage = isNewTask
+            ? `Task "${response.task.name}" created successfully`
+            : `Task "${response.task.name}" updated successfully`;
+          toast.success(successMessage);
 
           if (isNewTask && keepFormOpen && onSaveAndCreateAnother) {
             onSaveAndCreateAnother(response.task as Task);
+            // Reset form with same matter
             setTask({
               ...defaultTask,
-              matter_id: matterId || task.matter_id, // Keep the same matter
+              matter_id: matterId || task.matter_id,
             });
           } else if (onSave) {
             onSave(response.task as Task);
-            if (!isNewTask) {
-              setTask(response.task as Task);
+            if (!keepFormOpen) {
+              onOpenChange(false);
             }
-            onOpenChange(false);
           }
         } else {
           toast.error(response?.error || "Failed to save task");
         }
       } catch (error) {
-        console.error("Error saving task:", error);
         toast.error(
           "Failed to save task: " +
             (error instanceof Error ? error.message : "Unknown error")
@@ -197,7 +200,10 @@ export function TaskForm({
       open={open}
       onOpenChange={(newOpen) => {
         if (!isSubmitting) {
-          onOpenChange(newOpen);
+          // Prevent unnecessary state updates
+          if (open !== newOpen) {
+            onOpenChange(newOpen);
+          }
         }
       }}
     >
