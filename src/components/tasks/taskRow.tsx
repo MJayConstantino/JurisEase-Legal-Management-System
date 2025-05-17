@@ -109,7 +109,7 @@ export function TaskRow({
   return (
     <>
       <TableRow
-        className={`${backgroundClasses} hover:bg-gray-50/muted dark:hover:bg-gray-900/muted hover:cursor-pointer`}
+        className={`${backgroundClasses} hover:bg-gray-200 dark:hover:bg-gray-700 hover:cursor-pointer`}
         onClick={() => {
           setIsViewingDetails(true);
         }}
@@ -216,7 +216,7 @@ export function TaskRow({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 md:h-8 md:w-8 hover:cursor-pointerB"
+                className="h-6 w-6 md:h-8 md:w-8 hover:cursor-pointer"
                 disabled={isProcessing}
               >
                 <MoreHorizontal className="h-3 w-3 md:h-4 md:w-4" />

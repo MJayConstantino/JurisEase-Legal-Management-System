@@ -186,7 +186,7 @@ export function TaskCard({
                 onCheckedChange={handleTaskStatusChange}
                 disabled={isProcessing}
                 id={`task-complete-${initialTask.task_id}`}
-                className={`mr-1 h-7 w-7 md:h-9 md:w-9 border-2 dark:border-gray-700 rounded-md hover:cursor-pointer ${
+                className={`mr-1 h-7 w-7 md:h-9 md:w-9 border-2 hover:bg-accent dark:border-gray-700 rounded-md hover:cursor-pointer ${
                   task.status === "completed"
                     ? "dark:bg-green-700"
                     : "dark:bg-gray-800"
