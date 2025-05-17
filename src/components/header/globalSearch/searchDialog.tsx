@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, XIcon } from 'lucide-react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
@@ -81,21 +81,30 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
     performSearch(query)
   }, debounceTime)
 
+  // memoized Filters ensure that api endpoint to prevent unecessary executions
+  const memoizedFilters = useMemo(
+    () => ({
+      searchQuery,
+      searchByFilters,
+      contentTypeFilters,
+    }),
+
+    [searchQuery, searchByFilters, contentTypeFilters]
+  )
   // Perform search when query or filters change
 
   useEffect(() => {
-    // Only search if there's a query
-    if (searchQuery.trim()) {
-      debouncedSearch(searchQuery)
+    if (memoizedFilters.searchQuery.trim()) {
+      debouncedSearch(memoizedFilters.searchQuery)
     } else {
-      // Clear results if search is empty
       setAllResults([])
       setDisplayedResults([])
       setCurrentPage(1)
     }
+
     return () => debouncedSearch.cancel()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, searchByFilters, contentTypeFilters])
+  }, [memoizedFilters])
 
   // Update displayed results when page changes or all results update
   useEffect(() => {

@@ -195,7 +195,12 @@ export function SearchResults({
                 {/* Pagination */}
                 <div className="flex justify-center pt-2">
                   {hasMore ? (
-                    <Button variant="outline" size="sm" onClick={onLoadMore}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={onLoadMore}
+                      className="cursor-pointer hover:text-muted-foreground"
+                    >
                       Load more
                     </Button>
                   ) : (
