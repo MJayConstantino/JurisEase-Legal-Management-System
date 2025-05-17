@@ -207,7 +207,10 @@ export function BillingsAddDialog({
                   <sup className="text-red-600">*</sup>
                 </div>
                 <Select value={matter_id} onValueChange={setMatterId} disabled={disableMatterColumn}>
-                  <SelectTrigger id="matter" className="text-sm md:text-base dark:bg-gray-700 dark:border-gray-600">
+                  <SelectTrigger
+                    id="matter"
+                    className="text-sm md:text-base dark:bg-gray-700 dark:border-gray-600 w-full"
+                  >
                     <SelectValue placeholder="Select matter">
                       {selectedMatter && (
                         <span className="truncate inline-block max-w-[250px]" title={selectedMatter.name}>
@@ -216,8 +219,8 @@ export function BillingsAddDialog({
                       )}
                     </SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="dark:bg-gray-700 dark:border-gray-600 overflow-hidden">
-                    <div className="flex flex-col">
+                  <SelectContent className="dark:bg-gray-700 dark:border-gray-600 overflow-hidden w-[280px] xs:w-[300px] md:w-[350px] h-[260px]">
+                    <div className="flex flex-col h-[200px] overflow-y-auto">
                       {visibleMatters.map((matter) => (
                         <SelectItem
                           key={matter.matter_id}
@@ -225,36 +228,41 @@ export function BillingsAddDialog({
                           className="text-sm md:text-base"
                           title={matter.name}
                         >
-                          <span className="truncate inline-block max-w-[250px]">{matter.name}</span>[{matter.case_number}]
+                          <div className="flex items-center justify-between w-full">
+                            <span className="truncate inline-block max-w-[150px] xs:max-w-[180px] md:max-w-[250px]">
+                              {matter.name}
+                            </span>
+                            <span className="ml-1 text-xs text-gray-500 whitespace-nowrap">[{matter.case_number}]</span>
+                          </div>
                         </SelectItem>
                       ))}
                     </div>
 
                     {/* Pagination */}
                     {matters.length > mattersPerPage && (
-                      <div className="flex items-center justify-between py-2 px-2 border-t mt-2">
+                      <div className="flex items-center justify-between py-2 px-2 border-t mt-auto">
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={goToPrevPage}
                           disabled={currentPage === 1}
-                          className="h-8 px-2"
+                          className="h-8 w-14 px-1 text-xs md:w-20 md:text-sm"
                         >
-                          <ChevronLeftIcon className="h-4 w-4 mr-1" />
+                          <ChevronLeftIcon className="h-3 w-3 md:h-4 md:w-4 mr-1" />
                           Prev
                         </Button>
                         <span className="text-xs text-gray-500">
-                          Page {currentPage} of {totalPages}
+                          {currentPage}/{totalPages}
                         </span>
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={goToNextPage}
                           disabled={currentPage === totalPages}
-                          className="h-8 px-2"
+                          className="h-8 w-14 px-1 text-xs md:w-20 md:text-sm"
                         >
                           Next
-                          <ChevronRightIcon className="h-4 w-4 ml-1" />
+                          <ChevronRightIcon className="h-3 w-3 md:h-4 md:w-4 ml-1" />
                         </Button>
                       </div>
                     )}
