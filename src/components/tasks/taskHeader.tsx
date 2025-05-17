@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Grid, List, Menu } from "lucide-react";
 import { TaskForm } from "./taskForm";
@@ -33,60 +33,52 @@ export function TasksHeader({
   matters = [],
   matterId,
 }: TasksHeaderProps) {
-  
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [isLoadingMatters] = useState<boolean>(false);
-  
-  useEffect(() => {
-    console.log('[TasksHeader] Component state:', { 
-      isAddTaskOpen, 
-      activeFilter, 
-      isLoadingMatters 
-    });
-  }, [isAddTaskOpen, activeFilter, isLoadingMatters]);
 
-  const handleFilterChange = useCallback((filter: string) => {
-    console.log('[TasksHeader] Filter changed to:', filter);
-    setActiveFilter(filter);
-    onStatusChange(filter);
-  }, [onStatusChange]);
+  const handleFilterChange = useCallback(
+    (filter: string) => {
+      setActiveFilter(filter);
+      onStatusChange(filter);
+    },
+    [onStatusChange]
+  );
 
-  const handleViewToggle = useCallback((newView: "grid" | "table") => {
-    console.log('[TasksHeader] View toggled to:', newView);
-    onViewChange(newView);
-  }, [onViewChange]);
-  
+  const handleViewToggle = useCallback(
+    (newView: "grid" | "table") => {
+      onViewChange(newView);
+    },
+    [onViewChange]
+  );
+
   const handleOpenAddTask = useCallback(() => {
-    console.log('[TasksHeader] Add Task button clicked');
     setIsAddTaskOpen(true);
   }, []);
-  
+
   const handleAddTaskOpenChange = useCallback((open: boolean) => {
-    console.log('[TasksHeader] TaskForm state changed to:', open);
     setIsAddTaskOpen(open);
   }, []);
-  
-  const handleTaskSaved = useCallback((newTask: Task) => {
-    console.log('[TasksHeader] Task saved:', newTask);
-    if (onTaskCreated) onTaskCreated(newTask);
-    // Don't set isAddTaskOpen here - let the form component handle it
-  }, [onTaskCreated]);
-  
-  const handleTaskSavedAndCreateAnother = useCallback((newTask: Task) => {
-    console.log('[TasksHeader] Task saved and creating another:', newTask);
-    if (onTaskCreated) onTaskCreated(newTask);
-  }, [onTaskCreated]);
+
+  const handleTaskSaved = useCallback(
+    (newTask: Task) => {
+      if (onTaskCreated) onTaskCreated(newTask);
+    },
+    [onTaskCreated]
+  );
+
+  const handleTaskSavedAndCreateAnother = useCallback(
+    (newTask: Task) => {
+      if (onTaskCreated) onTaskCreated(newTask);
+    },
+    [onTaskCreated]
+  );
 
   return (
     <div className="px-4 py-4 border-b bg-gray-50 dark:bg-gray-900 dark:border-gray-700 rounded-t-lg">
       {/* Mobile/Tablet View - Change breakpoint from md to lg */}
       <div className="flex items-center justify-between lg:hidden mb-4">
-        <Button
-          variant="blue"
-          size="sm"
-          onClick={handleOpenAddTask}
-        >
+        <Button variant="blue" size="sm" onClick={handleOpenAddTask}>
           <Plus className="h-3 w-3 mr-1" />
           <span className="text-xs">Add Task</span>
         </Button>
@@ -102,7 +94,7 @@ export function TasksHeader({
               <span className="sr-only">Menu</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[150px] font-bold">
+          <DropdownMenuContent align="end" className="w-[150px]">
             <DropdownMenuLabel>Filter Tasks</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
@@ -191,7 +183,7 @@ export function TasksHeader({
           <Button
             variant={activeFilter === "all" ? "blue" : "ghost"}
             size="sm"
-            className="px-3 py-1 h-9 text-xs font-semibold rounded-md flex-1 sm:flex-1 lg:flex-none hover:cursor-pointer"
+            className="px-3 py-1 h-9 text-xs rounded-md flex-1 sm:flex-1 lg:flex-none hover:cursor-pointer"
             onClick={() => handleFilterChange("all")}
           >
             All Tasks
@@ -199,7 +191,7 @@ export function TasksHeader({
           <Button
             variant={activeFilter === "in-progress" ? "blue" : "ghost"}
             size="sm"
-            className="px-3 h-9 text-xs font-semibold rounded-md flex-1 sm:flex-1 lg:flex-none hover:cursor-pointer"
+            className="px-3 py-1 h-9 text-xs rounded-md flex-1 sm:flex-1 lg:flex-none hover:cursor-pointer"
             onClick={() => handleFilterChange("in-progress")}
           >
             In-Progress
@@ -207,7 +199,7 @@ export function TasksHeader({
           <Button
             variant={activeFilter === "overdue" ? "blue" : "ghost"}
             size="sm"
-            className="px-3 h-9 text-xs font-semibold rounded-md flex-1 sm:flex-1 lg:flex-none hover:cursor-pointer"
+            className="px-3 py-1 h-9 text-xs rounded-md flex-1 sm:flex-1 lg:flex-none hover:cursor-pointer"
             onClick={() => handleFilterChange("overdue")}
           >
             Overdue
@@ -215,7 +207,7 @@ export function TasksHeader({
           <Button
             variant={activeFilter === "completed" ? "blue" : "ghost"}
             size="sm"
-            className="px-3 h-9 text-xs font-semibold rounded-md flex-1 sm:flex-1 lg:flex-none hover:cursor-pointer"
+            className="px-3 py-1 h-9 text-xs rounded-md flex-1 sm:flex-1 lg:flex-none hover:cursor-pointer"
             onClick={() => handleFilterChange("completed")}
           >
             Completed
@@ -226,7 +218,7 @@ export function TasksHeader({
           <Button
             variant={view === "grid" ? "blue" : "ghost"}
             size="sm"
-            className="cursor-pointer px-3 h-9 text-xs font-semibold rounded-md"
+            className="cursor-pointer px-3 h-9 text-xs rounded-md"
             onClick={() => handleViewToggle("grid")}
           >
             <Grid className="h-5 w-5 mr-0 lg:mr-2" />
@@ -235,7 +227,7 @@ export function TasksHeader({
           <Button
             variant={view === "table" ? "blue" : "ghost"}
             size="sm"
-            className="cursor-pointer px-3 h-9 text-xs font-semibold rounded-md"
+            className="cursor-pointer px-3 h-9 text-xs rounded-md"
             onClick={() => handleViewToggle("table")}
           >
             <List className="h-5 w-5 mr-0 lg:mr-2" />
@@ -244,7 +236,6 @@ export function TasksHeader({
         </div>
       </div>
 
-      {/* Only render TaskForm if it's open to prevent unnecessary renders */}
       {isAddTaskOpen && (
         <TaskForm
           open={isAddTaskOpen}

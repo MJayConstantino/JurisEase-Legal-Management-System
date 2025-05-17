@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -40,29 +40,21 @@ export function TaskDetails({
 }: TaskDetailsProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  
-  useEffect(() => {
-    console.log('[TaskDetails] State updated:', { isEditing, isDeleteDialogOpen });
-  }, [isEditing, isDeleteDialogOpen]);
 
   const handleEditClick = useCallback(() => {
-    console.log('[TaskDetails] Edit button clicked');
     onOpenChange(false); // Close task details dialog first
     setIsEditing(true); // Then open the edit form
   }, [onOpenChange]);
   
   const handleDeleteClick = useCallback(() => {
-    console.log('[TaskDetails] Delete button clicked');
     setIsDeleteDialogOpen(true);
   }, []);
   
   const handleCloseClick = useCallback(() => {
-    console.log('[TaskDetails] Close button clicked');
     onOpenChange(false);
   }, [onOpenChange]);
 
   if (!task) {
-    console.log('[TaskDetails] No task provided, not rendering');
     return null;
   }
 
@@ -76,7 +68,6 @@ export function TaskDetails({
   return (
     <>
       <Dialog open={open} onOpenChange={(newState) => {
-        console.log('[TaskDetails] Dialog state changing to:', newState);
         onOpenChange(newState);
       }}>
         <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
@@ -205,12 +196,10 @@ export function TaskDetails({
         <TaskForm
           open={isEditing}
           onOpenChange={(open) => {
-            console.log('[TaskDetails] Edit form state changed to:', open);
             setIsEditing(open);
           }}
           disableMatterSelect={false}
           onSave={(updatedTask) => {
-            console.log('[TaskDetails] Task updated:', updatedTask);
             onTaskUpdated(updatedTask);
             setIsEditing(false);
           }}
@@ -228,12 +217,10 @@ export function TaskDetails({
         <TaskDeleteDialog
           isOpen={isDeleteDialogOpen}
           onOpenChange={(open) => {
-            console.log('[TaskDetails] Delete dialog state changed to:', open);
             setIsDeleteDialogOpen(open);
           }}
           task={task}
           onSuccess={() => {
-            console.log('[TaskDetails] Task delete successful:', task.task_id);
             onTaskDeleted(task.task_id);
             setIsDeleteDialogOpen(false);
             onOpenChange(false);

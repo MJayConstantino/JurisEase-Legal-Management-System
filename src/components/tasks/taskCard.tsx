@@ -49,18 +49,6 @@ export function TaskCard({
   const matterId = params.matterId as string | undefined;
   
   useEffect(() => {
-    console.log(`[TaskCard] State updated for task ${task.task_id}:`, {
-      isEditing,
-      isViewingDetails,
-      isProcessing,
-      isDeleteDialogOpen,
-      matterId
-    });
-  }, [isEditing, isViewingDetails, task.task_id, isProcessing, isDeleteDialogOpen, matterId]);
-  
-  // Update internal state when external task prop changes
-  useEffect(() => {
-    console.log(`[TaskCard] Initial task updated for task ${initialTask.task_id}:`, initialTask);
     setTask(initialTask);
   }, [initialTask]);
 
@@ -70,34 +58,23 @@ export function TaskCard({
     task.due_date ?? undefined,
     task.status
   );
-  
-  console.log(`[TaskCard] Task ${task.task_id} details:`, {
-    matterName: matterName || 'None',
-    isOverdue: isTaskOverdueFlag,
-    dueDate: task.due_date ? formatDate(task.due_date) : 'No date'
-  });
 
   const handleEditClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log(`[TaskCard] Edit button clicked for task: ${task.task_id}`);
     setIsEditing(true);
-  }, [task.task_id]);
+  }, []);
   
   const handleDeleteClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log(`[TaskCard] Delete button clicked for task: ${task.task_id}`);
     setIsDeleteDialogOpen(true);
-  }, [task.task_id]);
+  }, []);
   
   const handleCardClick = useCallback(() => {
-    console.log(`[TaskCard] Card clicked for task: ${task.task_id}`);
     setIsViewingDetails(true);
-  }, [task.task_id]);
+  }, []);
   
   const handleTaskStatusChange = useCallback(() => {
-    console.log(`[TaskCard] Status checkbox clicked for task: ${task.task_id}`);
     if (!isProcessing) {
-      console.log(`[TaskCard] Processing status change for task: ${task.task_id}`);
       handleComplete(
         initialTask,
         task,
@@ -106,8 +83,6 @@ export function TaskCard({
         setIsProcessing,
         isProcessing
       );
-    } else {
-      console.log(`[TaskCard] Task already processing: ${task.task_id}`);
     }
   }, [initialTask, isProcessing, onTaskUpdated, task]);
 
@@ -211,7 +186,7 @@ export function TaskCard({
                 onCheckedChange={handleTaskStatusChange}
                 disabled={isProcessing}
                 id={`task-complete-${initialTask.task_id}`}
-                className={`mr-1 h-9 w-9 border-2 dark:border-gray-700 rounded-md hover:cursor-pointer ${
+                className={`mr-1 h-7 w-7 md:h-9 md:w-9 border-2 dark:border-gray-700 rounded-md hover:cursor-pointer ${
                   task.status === "completed"
                     ? "dark:bg-green-700"
                     : "dark:bg-gray-800"
@@ -246,12 +221,10 @@ export function TaskCard({
         <TaskForm
           open={isEditing}
           onOpenChange={(open) => {
-            console.log(`[TaskCard] Edit form state changed to: ${open} for task: ${task.task_id}`);
             setIsEditing(open);
           }}
           disableMatterSelect={!!matterId}
           onSave={(updatedTask) => {
-            console.log(`[TaskCard] Task edited, saving: ${updatedTask.task_id}`);
             handleSaveTask(
               initialTask,
               updatedTask,
@@ -261,7 +234,6 @@ export function TaskCard({
             );
           }}
           onSaveAndCreateAnother={(updatedTask) => {
-            console.log(`[TaskCard] Task edited, saving and creating another: ${updatedTask.task_id}`);
             handleSaveTask(
               initialTask,
               updatedTask,
@@ -283,12 +255,10 @@ export function TaskCard({
         <TaskDeleteDialog
           isOpen={isDeleteDialogOpen}
           onOpenChange={(open) => {
-            console.log(`[TaskCard] Delete dialog state changed to: ${open} for task: ${task.task_id}`);
             setIsDeleteDialogOpen(open);
           }}
           task={initialTask}
           onSuccess={() => {
-            console.log(`[TaskCard] Delete confirmed for task: ${initialTask.task_id}`);
             handleDelete(initialTask.task_id, onTaskDeleted, setIsProcessing);
           }}
         />
@@ -298,14 +268,12 @@ export function TaskCard({
         <TaskDetails
           open={isViewingDetails}
           onOpenChange={(open) => {
-            console.log(`[TaskCard] Task details state changed to: ${open} for task: ${task.task_id}`);
             setIsViewingDetails(open);
           }}
           task={task}
           matters={matters}
           isLoadingMatters={isLoadingMatters}
           onTaskUpdated={(updatedTask) => {
-            console.log(`[TaskCard] Task updated from details view: ${updatedTask.task_id}`);
             setTask(updatedTask);
             onTaskUpdated(updatedTask);
           }}

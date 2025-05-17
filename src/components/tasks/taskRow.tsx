@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { isTaskOverdue, formatDate } from "@/utils/taskHandlers";
 import { getStatusColor } from "@/utils/getStatusColor";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { TaskDetails } from "./taskDetails";
 import {
   DropdownMenu,
@@ -48,22 +48,13 @@ export function TaskRow({
   onTaskDeleted,
   hideMatterColumn = false,
 }: TaskRowProps) {
-  
   const [isViewingDetails, setIsViewingDetails] = useState(false);
-  
-  useEffect(() => {
- }, [isViewingDetails, task.task_id]);
-  
+
   const isTaskOverdueFlag = isTaskOverdue(
     task.due_date ?? undefined,
     task.status
   );
   const matterName = getMatterName(task.matter_id || "");
-  
-  console.log(`[TaskRow] Task ${task.task_id} status:`, { 
-    isOverdue: isTaskOverdueFlag, 
-    matterName: matterName || 'None' 
-  });
 
   const backgroundClasses = isTaskOverdueFlag
     ? "bg-red-50 dark:bg-red-950"
@@ -71,12 +62,55 @@ export function TaskRow({
     ? "bg-green-50 dark:bg-green-950"
     : "";
 
+  // If matters are loading, display skeleton UI in all columns
+  if (isLoadingMatters) {
+    return (
+      <TableRow className="hover:bg-gray-50/muted dark:hover:bg-gray-900/muted">
+        {/* Checkbox Column */}
+        <TableCell className="p-1 md:p-2">
+          <Skeleton className="h-4 w-4 md:h-5 md:w-5 rounded-lg" />
+        </TableCell>
+
+        {/* Task Name */}
+        <TableCell className="p-1 md:p-2">
+          <Skeleton className="w-24 h-4 rounded-lg" />
+        </TableCell>
+
+        {/* Matter Column - Only show if not in a matter-specific page */}
+        {!hideMatterColumn && (
+          <TableCell className="p-1 md:p-2 w-32 md:w-40">
+            <Skeleton className="w-24 h-4 rounded-lg" />
+          </TableCell>
+        )}
+
+        {/* Status */}
+        <TableCell className="p-1 md:p-2">
+          <Skeleton className="w-24 h-4 rounded-lg" />
+        </TableCell>
+
+        {/* Priority */}
+        <TableCell className="p-1 md:p-2">
+          <Skeleton className="w-24 h-4 rounded-lg" />
+        </TableCell>
+
+        {/* Due Date */}
+        <TableCell className="p-1 md:p-2">
+          <Skeleton className="w-24 h-4 rounded-lg" />
+        </TableCell>
+
+        {/* Actions */}
+        <TableCell className="p-1 md:p-2 text-right">
+          <Skeleton className="w-8 h-8 rounded-lg ml-auto" />
+        </TableCell>
+      </TableRow>
+    );
+  }
+
   return (
     <>
       <TableRow
         className={`${backgroundClasses} hover:bg-gray-50/muted dark:hover:bg-gray-900/muted hover:cursor-pointer`}
         onClick={() => {
-          console.log(`[TaskRow] Row clicked for task: ${task.task_id}`);
           setIsViewingDetails(true);
         }}
       >
@@ -85,7 +119,6 @@ export function TaskRow({
           <Checkbox
             checked={task.status === "completed"}
             onCheckedChange={() => {
-              console.log(`[TaskRow] Status checkbox changed for task: ${task.task_id}`);
               onStatusChange(task);
             }}
             disabled={isProcessing}
@@ -115,15 +148,14 @@ export function TaskRow({
 
         {/* Matter Column - Only show if not in a matter-specific page */}
         {!hideMatterColumn && (
-          <TableCell className="p-1 md:p-2 w-32 md:w-40" title={`Matter: ${matterName}`}>
+          <TableCell
+            className="p-1 md:p-2 w-32 md:w-40"
+            title={`Matter: ${matterName}`}
+          >
             {task.matter_id ? (
-              isLoadingMatters ? (
-                <Skeleton className="inline-block w-20 md:w-28 h-4 rounded" />
-              ) : (
-                <span className="font-medium text-xs sm:text-sm md:text-base truncate dark:text-white max-w-[80px] sm:max-w-[120px] md:max-w-full ">
-                  {matterName || "None"}
-                </span>
-              )
+              <span className="font-medium text-xs sm:text-sm md:text-base truncate dark:text-white max-w-[80px] sm:max-w-[120px] md:max-w-full">
+                {matterName || "None"}
+              </span>
             ) : (
               <span className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
                 None
@@ -196,7 +228,6 @@ export function TaskRow({
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => {
-                  console.log(`[TaskRow] View details clicked for task: ${task.task_id}`);
                   setIsViewingDetails(true);
                 }}
                 disabled={isProcessing}
@@ -207,7 +238,6 @@ export function TaskRow({
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
-                  console.log(`[TaskRow] Edit clicked for task: ${task.task_id}`);
                   onEdit(task);
                 }}
                 disabled={isProcessing}
@@ -218,7 +248,6 @@ export function TaskRow({
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
-                  console.log(`[TaskRow] Status change clicked for task: ${task.task_id}`);
                   onStatusChange(task);
                 }}
                 disabled={isProcessing}
@@ -233,7 +262,6 @@ export function TaskRow({
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
-                  console.log(`[TaskRow] Delete clicked for task: ${task.task_id}`);
                   onDelete(task);
                 }}
                 disabled={isProcessing}
@@ -250,7 +278,6 @@ export function TaskRow({
       <TaskDetails
         open={isViewingDetails}
         onOpenChange={(open) => {
-          console.log(`[TaskRow] TaskDetails dialog state changed to: ${open} for task: ${task.task_id}`);
           setIsViewingDetails(open);
         }}
         task={task}
