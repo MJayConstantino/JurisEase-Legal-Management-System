@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from '@/components/ui/skeleton'
 
 export default function LoginSkeleton() {
   return (
@@ -12,7 +12,6 @@ export default function LoginSkeleton() {
 
         <div className="rounded-lg bg-[#e1e5f2] p-6">
           <div className="space-y-6">
-
             <div className="space-y-2">
               <Skeleton className="h-5 w-16 rounded" />
               <Skeleton className="h-10 w-full rounded" />
@@ -36,4 +35,3 @@ export default function LoginSkeleton() {
     </div>
   )
 }
-
