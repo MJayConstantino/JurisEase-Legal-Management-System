@@ -6,24 +6,26 @@ export default function MatterDetailLoading() {
       {/* Matter header skeleton */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border shadow p-4 sm:p-6">
         <div className="flex items-center gap-3 mb-3 sm:mb-4">
-          <Skeleton className="h-8 w-8 rounded-full flex-shrink-0" />
+          <Skeleton className="h-8 w-8 rounded-md flex-shrink-0" />{" "}
+          {/* Back button */}
           <div className="flex flex-wrap items-center gap-2">
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-6 w-20" />
+            <Skeleton className="h-7 sm:h-8 w-40 sm:w-48" />{" "}
+            {/* Matter title */}
+            <Skeleton className="h-6 w-20" /> {/* Status badge */}
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm">
           <div className="flex items-center gap-1">
-            <Skeleton className="h-4 w-16" />
-            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-4 w-12" /> {/* Case label */}
+            <Skeleton className="h-4 w-24" /> {/* Case number */}
           </div>
-          <Skeleton className="hidden sm:block h-4 w-4 rounded-full" />
+          <Skeleton className="hidden sm:block h-4 w-4 rounded-full" />{" "}
+          {/* Bullet */}
           <div className="flex items-center gap-1">
-            <Skeleton className="h-4 w-16" />
-            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-4 w-14" /> {/* Client label */}
+            <Skeleton className="h-4 w-32" /> {/* Client name */}
           </div>
-          <Skeleton className="hidden sm:block h-4 w-4 rounded-full" />
         </div>
       </div>
 
@@ -38,67 +40,110 @@ export default function MatterDetailLoading() {
         </div>
 
         {/* Dashboard content skeleton */}
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Case details card skeleton */}
             <div className="bg-white dark:bg-gray-800 border rounded-lg shadow-sm p-4">
-              <Skeleton className="h-6 w-32 mb-4" />
+              <div className="flex items-center justify-between mb-4">
+                <Skeleton className="h-6 w-32" /> {/* Card title */}
+                <Skeleton className="h-8 w-8 rounded-md" /> {/* Edit button */}
+              </div>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-4 w-24" /> {/* Field label */}
+                  <Skeleton className="h-5 w-full" /> {/* Field value */}
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" /> {/* Field label */}
+                    <Skeleton className="h-5 w-full" /> {/* Field value */}
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" /> {/* Field label */}
+                    <Skeleton className="h-5 w-full" /> {/* Field value */}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-24" /> {/* Field label */}
+                  <Skeleton className="h-20 w-full" /> {/* Field value */}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" /> {/* Field label */}
+                    <Skeleton className="h-5 w-full" /> {/* Field value */}
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" /> {/* Field label */}
+                    <Skeleton className="h-5 w-full" /> {/* Field value */}
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" /> {/* Field label */}
+                    <Skeleton className="h-5 w-full" /> {/* Field value */}
+                  </div>
                   <div className="space-y-2">
                     <Skeleton className="h-4 w-24" />
                     <Skeleton className="h-5 w-full" />
                   </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-5 w-20" />
+                    <Skeleton className="h-4 w-24" /> {/* Field label */}
+                    <Skeleton className="h-5 w-full" /> {/* Field value */}
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" /> {/* Field label */}
+                    <Skeleton className="h-5 w-full" /> {/* Field value */}
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-20 w-full" />
-                </div>
               </div>
             </div>
 
-            {/* Opposing council card skeleton */}
-            <div className="bg-white dark:bg-gray-800 border rounded-lg shadow-sm p-4">
-              <Skeleton className="h-6 w-48 mb-4" />
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-5 w-full" />
+            <div className="space-y-6">
+              {/* Opposing council card skeleton */}
+              <div className="bg-white dark:bg-gray-800 border rounded-lg shadow-sm p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <Skeleton className="h-6 w-40" /> {/* Card title */}
+                  <Skeleton className="h-8 w-8 rounded-md" />{" "}
+                  {/* Edit button */}
                 </div>
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-5 w-full" />
-                </div>
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-5 w-full" />
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" /> {/* Field label */}
+                    <Skeleton className="h-5 w-full" /> {/* Field value */}
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" /> {/* Field label */}
+                    <Skeleton className="h-5 w-full" /> {/* Field value */}
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" /> {/* Field label */}
+                    <Skeleton className="h-5 w-full" /> {/* Field value */}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Court details card skeleton */}
-            <div className="bg-white dark:bg-gray-800 border rounded-lg shadow-sm p-4">
-              <Skeleton className="h-6 w-32 mb-4" />
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-5 w-full" />
+              {/* Court details card skeleton */}
+              <div className="bg-white dark:bg-gray-800 border rounded-lg shadow-sm p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <Skeleton className="h-6 w-32" /> {/* Card title */}
+                  <Skeleton className="h-8 w-8 rounded-md" />{" "}
+                  {/* Edit button */}
                 </div>
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-5 w-full" />
-                </div>
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-5 w-full" />
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" /> {/* Field label */}
+                    <Skeleton className="h-5 w-full" /> {/* Field value */}
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" /> {/* Field label */}
+                    <Skeleton className="h-5 w-full" /> {/* Field value */}
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" /> {/* Field label */}
+                    <Skeleton className="h-5 w-full" /> {/* Field value */}
+                  </div>
                 </div>
               </div>
             </div>

@@ -14,9 +14,8 @@ export default async function MattersPage() {
 
   return (
     <div className="flex flex-col gap-6 h-full">
-      {/* <Suspense fallback={<MattersLoading />} />
-      <MattersList matters={matters} /> */}
-      <MattersLoading />
+      <Suspense fallback={<MattersLoading />} />
+      <MattersList matters={matters} />
     </div>
   );
 }
