@@ -30,8 +30,8 @@ export async function search(
           '*, attorney:users!assigned_attorney(user_name, user_id),staff:users!assigned_staff(user_name, user_id)'
         )
         .limit(10)
-      console.log('✅ Tasks Data:', matters)
-      console.log('❌ Tasks Error:', error)
+      // console.log('✅ Tasks Data:', matters)
+      // console.log('❌ Tasks Error:', error)
       if (error) throw new Error(error.message)
 
       searchResults.push(
@@ -77,8 +77,8 @@ export async function search(
         )
         .limit(10)
 
-      console.log('✅ Tasks Data:', tasks)
-      console.log('❌ Tasks Error:', error)
+      // console.log('✅ Tasks Data:', tasks)
+      // console.log('❌ Tasks Error:', error)
 
       if (error) throw new Error(error.message)
 
@@ -129,8 +129,8 @@ export async function search(
         .limit(10)
 
       // console.log('🔍 Billings Query:', billingsQuery.toString())
-      console.log('✅ Billings Data:', billings)
-      console.log('❌ Billings Error:', error)
+      // console.log('✅ Billings Data:', billings)
+      // console.log('❌ Billings Error:', error)
 
       if (error) throw new Error(error.message)
 

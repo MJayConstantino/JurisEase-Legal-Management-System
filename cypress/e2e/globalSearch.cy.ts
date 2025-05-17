@@ -8,9 +8,9 @@ describe('Global Search E2E', () => {
     cy.wait(5000)
     cy.visit('/matters').wait(5000)
   })
-  describe('When the user searches for a matter', () => {})
+  // describe('When the user searches for a matter', () => {})
 
-  describe('When the user searches for a task ', () => {})
+  // describe('When the user searches for a task ', () => {})
 
-  describe('When the user searches for a bill', () => {})
+  // describe('When the user searches for a bill', () => {})
 })
