@@ -65,6 +65,7 @@ export function EditUsername({
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               className="w-64"
+              maxLength={30}
             />
             <div>
               <Button onClick={handleSave} className="bg-[#1B1E4B] text-white rounded-t-md cursor-pointer pr-4 hover:bg-[#25305B]">
