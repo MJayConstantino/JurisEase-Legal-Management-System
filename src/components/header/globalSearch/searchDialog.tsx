@@ -18,6 +18,8 @@ import type {
   SearchResult,
 } from './types'
 import { search } from '@/actions/globalSearch'
+import { debounce } from 'lodash'
+
 import { DialogTitle } from '@radix-ui/react-dialog'
 
 interface SearchDialogProps {
@@ -28,6 +30,8 @@ interface SearchDialogProps {
 export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
   const router = useRouter()
   const inputRef = useRef<HTMLInputElement>(null)
+  // debounce should be longer if DB is in too much ram usage to prevent search errors
+  const debounceTime = 500
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('')
@@ -72,18 +76,24 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
     }
   }, [open])
 
+  // debounced search ensures that it's only fired after certain time - 500ms
+  const debouncedSearch = debounce((query: string) => {
+    performSearch(query)
+  }, debounceTime)
+
   // Perform search when query or filters change
 
   useEffect(() => {
     // Only search if there's a query
     if (searchQuery.trim()) {
-      performSearch(searchQuery)
+      debouncedSearch(searchQuery)
     } else {
       // Clear results if search is empty
       setAllResults([])
       setDisplayedResults([])
       setCurrentPage(1)
     }
+    return () => debouncedSearch.cancel()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, searchByFilters, contentTypeFilters])
 
