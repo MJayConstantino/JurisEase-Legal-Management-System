@@ -183,7 +183,7 @@ export function TasksHeader({
           <Button
             variant={activeFilter === "all" ? "blue" : "ghost"}
             size="sm"
-            className="px-3 py-1 h-9 text-xs rounded-md flex-1 sm:flex-1 lg:flex-none hover:cursor-pointer"
+            className="px-3 py-1 h-9 text-xs rounded-md flex-1 sm:flex-1 lg:flex-none hover:cursor-pointer font-semibold "
             onClick={() => handleFilterChange("all")}
           >
             All Tasks
@@ -191,7 +191,7 @@ export function TasksHeader({
           <Button
             variant={activeFilter === "in-progress" ? "blue" : "ghost"}
             size="sm"
-            className="px-3 py-1 h-9 text-xs rounded-md flex-1 sm:flex-1 lg:flex-none hover:cursor-pointer"
+            className="px-3 py-1 h-9 text-xs rounded-md flex-1 sm:flex-1 lg:flex-none hover:cursor-pointer font-semibold"
             onClick={() => handleFilterChange("in-progress")}
           >
             In-Progress
@@ -199,7 +199,7 @@ export function TasksHeader({
           <Button
             variant={activeFilter === "overdue" ? "blue" : "ghost"}
             size="sm"
-            className="px-3 py-1 h-9 text-xs rounded-md flex-1 sm:flex-1 lg:flex-none hover:cursor-pointer"
+            className="px-3 py-1 h-9 text-xs rounded-md flex-1 sm:flex-1 lg:flex-none hover:cursor-pointer font-semibold"
             onClick={() => handleFilterChange("overdue")}
           >
             Overdue
@@ -207,7 +207,7 @@ export function TasksHeader({
           <Button
             variant={activeFilter === "completed" ? "blue" : "ghost"}
             size="sm"
-            className="px-3 py-1 h-9 text-xs rounded-md flex-1 sm:flex-1 lg:flex-none hover:cursor-pointer"
+            className="px-3 py-1 h-9 text-xs rounded-md flex-1 sm:flex-1 lg:flex-none hover:cursor-pointer font-semibold"
             onClick={() => handleFilterChange("completed")}
           >
             Completed
@@ -218,7 +218,7 @@ export function TasksHeader({
           <Button
             variant={view === "grid" ? "blue" : "ghost"}
             size="sm"
-            className="cursor-pointer px-3 h-9 text-xs rounded-md"
+            className="cursor-pointer px-3 h-9 text-xs rounded-md font-semibold"
             onClick={() => handleViewToggle("grid")}
           >
             <Grid className="h-5 w-5 mr-0 lg:mr-2" />
@@ -227,7 +227,7 @@ export function TasksHeader({
           <Button
             variant={view === "table" ? "blue" : "ghost"}
             size="sm"
-            className="cursor-pointer px-3 h-9 text-xs rounded-md"
+            className="cursor-pointer px-3 h-9 text-xs rounded-md font-semibold"
             onClick={() => handleViewToggle("table")}
           >
             <List className="h-5 w-5 mr-0 lg:mr-2" />

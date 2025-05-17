@@ -8,7 +8,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export function TaskPageSkeleton() {
+// Keep the named export for reuse in other components
+export function TasksLoading() {
   return (
     <div className="border w-full container mx-auto h-full flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900 rounded-lg shadow mb-[56px] md:mb-0">
       {/* Header Skeleton */}
@@ -96,4 +97,9 @@ export function TaskPageSkeleton() {
       </div>
     </div>
   );
+}
+
+// Add a default export for Next.js loading page
+export default function Loading() {
+  return <TasksLoading />;
 }
