@@ -62,7 +62,7 @@ export async function search(
 
     // ✅ Case-Insensitive Task Query
     if (contentTypes.includes('tasks')) {
-      console.log(attributes)
+      // console.log(attributes)
       let { data: tasks, error } = await supabase
         .rpc('search_tasks', {
           search_term: query,
@@ -113,7 +113,7 @@ export async function search(
 
     // ✅ Case-Insensitive Billings Query
     if (contentTypes.includes('bills')) {
-      console.log(attributes)
+      // console.log(attributes)
       let { data: billings, error } = await supabase
         .rpc('search_billings', {
           search_term: query,
@@ -149,7 +149,7 @@ export async function search(
             type: 'Bill' as const,
             status: billing.status,
             title: billing.name || `Invoice #${billing.bill_id}`,
-            subtitle: `Matter: ${billing.matters.name || 'Unknown'}, Amount: $${
+            subtitle: `Matter: ${billing.matters.name || 'Unknown'}, Amount: ₱${
               billing.amount || '0.00'
             }`,
             route: `/bills/${billing.bill_id}`,

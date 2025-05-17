@@ -53,12 +53,11 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
       bills: true,
     })
 
-  // Reset state when dialog opens/closes
   useEffect(() => {
     if (open && inputRef.current) {
       setTimeout(() => {
         inputRef.current?.focus()
-        // Don't perform initial search - start with empty results
+
         setAllResults([])
         setDisplayedResults([])
         setCurrentPage(1)
@@ -177,10 +176,10 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
       <DialogTitle className="sr-only">Search Dialog</DialogTitle>
       <DialogContent
         role="dialog"
-        className="w-[calc(100%-2rem)] sm:max-w-xl max-h-[90vh] p-4 sm:p-6 overflow-hidden bg-accent"
+        className="w-[calc(100%-2rem)] sm:max-w-xl max-h-[90vh] p-4 sm:p-6 overflow-hidden bg-accent "
       >
         {/* Make the entire content area scrollable */}
-        <div className="max-h-[calc(90vh-2rem)] overflow-y-auto pr-2">
+        <div className="max-h-[calc(90vh-2rem)] overflow-y-auto pr-2 scrollbar-hide">
           {/* Search input area - sticky at the top */}
           <div className="flex items-center border-b border-border pb-4 sticky top-0  z-10">
             <Search className="h-5 w-5 text-muted-foreground mr-2 flex-shrink-0 hidden sm:block" />
@@ -193,15 +192,15 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
               className="border-0 p-0 focus-visible:ring-0 text-lg flex-1 text-foreground placeholder:text-muted-foreground placeholder:text-xs sm:placeholder:text-sm "
             />
             <Button
-              variant="outline"
+              variant="secondary"
               size="sm"
               aria-label="Clear"
               onClick={handleClearSearch}
-              className="ml-2 whitespace-nowrap"
+              className="ml-2 whitespace-nowrap cursor-pointer hover:text-muted-foreground"
             >
               <span className="hidden sm:block">Clear</span>
               <span>
-                <XIcon />
+                <XIcon className="hover:text-muted-foreground" />
               </span>
             </Button>
           </div>
