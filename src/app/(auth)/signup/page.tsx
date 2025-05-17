@@ -1,10 +1,10 @@
 'use client'
 
+import LoginSkeleton from '@/components/auth/LoginSkeleton'
 import { SignUpPage } from '@/components/auth/SignUp'
 import { useRouter } from 'next/navigation'
 import { Suspense } from 'react'
 import { toast } from 'sonner'
-import LoginSkeleton from './loading'
 
 export default function SignUp() {
   const router = useRouter()

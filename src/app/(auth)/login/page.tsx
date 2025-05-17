@@ -1,6 +1,6 @@
 'use client'
 import { LoginPage } from '@/components/auth/Login'
-import LoginSkeleton from './loading'
+import LoginSkeleton from '../../../components/auth/LoginSkeleton'
 import { useRouter } from 'next/navigation'
 import { Suspense } from 'react'
 
