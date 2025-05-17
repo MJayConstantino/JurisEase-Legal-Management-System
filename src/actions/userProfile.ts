@@ -134,7 +134,7 @@ export async function fetchUserName(userId: string): Promise<string | null> {
   return data?.user_name || null;
 }
 
-export async function fetchUsersAction(userId: string) {
+export async function fetchUsersData(userId: string) {
   const supabase = await createSupabaseClient();
   const { data, error } = await supabase
     .from('users')

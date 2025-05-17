@@ -1,4 +1,4 @@
-import { fetchUsersAction } from '@/actions/userProfile';
+import { fetchUsersData } from '@/actions/userProfile';
 import { fetchUserInfoAction } from '@/actions/users';
 import { ThemeProvider } from '@/components/theme-provider'
 import UserProfileInterface from '@/components/userprofile/userProfileInterface';
@@ -12,7 +12,7 @@ export default async function UserProfilePage({
   try {
     const { userId } = await params;
 
-    const userData = await fetchUsersAction(userId);
+    const userData = await fetchUsersData(userId);
     const userAvatar = await fetchUserInfoAction();
 
     if (!userData || !userAvatar) {
