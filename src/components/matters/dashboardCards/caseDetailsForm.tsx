@@ -350,17 +350,16 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
                     {/* Show selected attorney as a badge with remove button */}
                     {assignedAttorney && (
                       <div className="flex items-center mb-2">
-                        <Badge className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
-                          <Briefcase className="h-3 w-3" />
-                          <span>
-                            {assignedAttorney.user_name ||
-                              assignedAttorney.user_email}
+                        <Badge className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 max-w-full">
+                          <Briefcase className="h-3 w-3 flex-shrink-0" />
+                          <span className="truncate">
+                            {assignedAttorney.user_name}
                           </span>
                           <Button
                             type="button"
                             variant="ghost"
                             size="sm"
-                            className="h-4 w-4 p-0 ml-1 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800"
+                            className="h-4 w-4 p-0 ml-1 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 flex-shrink-0"
                             onClick={() => onChange("assigned_attorney", null)}
                           >
                             <X className="h-3 w-3" />
@@ -399,12 +398,12 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
                   </>
                 ) : (
                   <div className="flex items-center">
-                    <Briefcase className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <Briefcase className="h-4 w-4 mr-2 text-muted-foreground flex-shrink-0" />
                     <p className="truncate max-w-full">
                       {getUserDisplayName(
                         matter.assigned_attorney ?? "",
                         users
-                      )}
+                      ) || "No attorney assigned"}
                     </p>
                   </div>
                 )}
@@ -422,17 +421,16 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
                     {/* Show selected staff as a badge with remove button */}
                     {assignedStaff && (
                       <div className="flex items-center mb-2">
-                        <Badge className="flex items-center gap-1 px-3 py-1.5 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                          <User className="h-3 w-3" />
-                          <span>
-                            {assignedStaff.user_name ||
-                              assignedStaff.user_email}
+                        <Badge className="flex items-center gap-1 px-3 py-1.5 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 max-w-full">
+                          <User className="h-3 w-3 flex-shrink-0" />
+                          <span className="truncate">
+                            {assignedStaff.user_name}
                           </span>
                           <Button
                             type="button"
                             variant="ghost"
                             size="sm"
-                            className="h-4 w-4 p-0 ml-1 rounded-full hover:bg-green-200 dark:hover:bg-green-800"
+                            className="h-4 w-4 p-0 ml-1 rounded-full hover:bg-green-200 dark:hover:bg-green-800 flex-shrink-0"
                             onClick={() => onChange("assigned_staff", null)}
                           >
                             <X className="h-3 w-3" />
@@ -471,9 +469,10 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
                   </>
                 ) : (
                   <div className="flex items-center">
-                    <User className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <User className="h-4 w-4 mr-2 text-muted-foreground flex-shrink-0" />
                     <p className="truncate max-w-full">
-                      {getUserDisplayName(matter.assigned_staff ?? "", users)}
+                      {getUserDisplayName(matter.assigned_staff ?? "", users) ||
+                        "No staff assigned"}
                     </p>
                   </div>
                 )}

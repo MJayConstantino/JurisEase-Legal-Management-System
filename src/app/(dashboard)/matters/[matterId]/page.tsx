@@ -4,6 +4,8 @@ import { MatterTabs } from "@/components/matters/matterTabs";
 import { MatterDashboard } from "@/components/matters/matterDashboard";
 import { getMatterById } from "@/actions/matters";
 import { fetchUsersAction } from "@/actions/users";
+import MatterDetailLoading from "./loading";
+import { Suspense } from "react";
 
 export async function generateMetadata({
   params,
@@ -50,6 +52,7 @@ export default async function MatterDetailPage({
 
     return (
       <div className="flex flex-col gap-6 h-full">
+        <Suspense fallback={<MatterDetailLoading />} />
         <MatterHeader matter={matter} />
         <MatterTabs matterId={matter.matter_id}>
           <MatterDashboard matter={matter} users={users} />

@@ -31,7 +31,11 @@ export function MatterTabs({ children, matterId }: MatterTabsProps) {
   }
 
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+    <Tabs
+      value={activeTab}
+      onValueChange={setActiveTab}
+      className="w-full mb-10"
+    >
       <div className="bg-white dark:bg-gray-800 rounded-lg border shadow">
         <TabsList className="w-full justify-start border-b rounded-none p-0 h-auto bg-transparent dark:bg-transparent">
           <TabsTrigger
