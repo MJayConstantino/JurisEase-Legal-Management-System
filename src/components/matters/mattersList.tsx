@@ -61,7 +61,7 @@ export function MattersList({ matters }: MattersListProps) {
   });
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border shadow">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border shadow mb-10">
       <MattersHeader onStatusChange={setStatusFilter} />
       <MattersTable
         matters={sortedMatters}
