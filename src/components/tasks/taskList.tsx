@@ -151,7 +151,7 @@ export function TaskList({
   }, [tasks, statusFilter, matterId]);
 
   return (
-    <div className="border w-full container mx-auto h-full flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900 rounded-lg shadow mb-[56px] md:mb-0">
+    <div className="border w-full container mx-auto h-auto flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900 rounded-lg shadow mb-[56px] md:mb-0">
       <TasksHeader
         onStatusChange={setStatusFilter}
         onViewChange={setView}
