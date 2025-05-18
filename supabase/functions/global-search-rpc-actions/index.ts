@@ -128,7 +128,7 @@ Deno.serve(async (req) => {
         name: 'MockBill',
         amount: 100,
         created_at: new Date().toISOString(),
-        status: 'pending',
+        status: 'paid',
         remarks: '',
       }
 
