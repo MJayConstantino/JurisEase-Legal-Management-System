@@ -6,7 +6,7 @@ import { BillingsAddDialog } from "@/components/billings/billingsAddDialog"
 import { BillingsListHeader } from "@/components/billings/billingsListHeader"
 import { BillingsList } from "@/components/billings/billingsList"
 import type { Bill, SortDirection, SortField, StatusFilter } from "@/types/billing.type"
-import { getBillsByMatterId } from "@/actions/billing"
+import { deleteBill, getBillsByMatterId } from "@/actions/billing"
 import { getMatters } from "@/actions/matters"
 import { toast } from "sonner"
 import { BillingStates } from "@/components/billings/billingsStates"
@@ -139,9 +139,20 @@ export function MatterBillingPage() {
     setBills((prev) => prev.map((bill) => (bill.bill_id === updatedBill.bill_id ? updatedBill : bill)))
   }, [setBills])
 
-  const handleBillDeleted = useCallback((billId: string) => {
-    setBills((prev) => prev.filter((b) => b.bill_id !== billId))
-  }, [setBills])
+  const handleBillDeleted = useCallback(async (billId: string) => {
+  try {
+    const success = await deleteBill(billId)
+    if (success) {
+      setBills((prev) => prev.filter((b) => b.bill_id !== billId))
+      toast.success("Bill deleted successfully!")
+    } else {
+      toast.error("Failed to delete bill.")
+    }
+  } catch (error) {
+    console.error("Delete failed", error)
+    toast.error("Failed to delete bill. Please try again.")
+  }
+}, [setBills])
 
   const handleSortChange = (field: SortField) => {
     if (sortField === field) {
@@ -166,7 +177,7 @@ export function MatterBillingPage() {
             hideMatterFilter={true}
           />
 
-          <div className="max-h-[600px] overflow-y-auto">
+          <div className="overflow-y-auto h-full max-h-[calc(100vh-410px)] md:max-h-[calc(100vh-330px)]">
             <BillingsList
               bills={filteredBills}
               matters={matters}

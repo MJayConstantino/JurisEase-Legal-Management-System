@@ -15,11 +15,11 @@ interface BillingsListProps {
   bills: Bill[]
   onUpdate: (bill: Bill) => void
   onDelete: (id: string) => void
-  isLoading?: boolean
   sortField: SortField | null
   sortDirection: SortDirection
   onSortChange: (field: SortField) => void
   hideMatterColumn?: boolean
+  isLoading?:boolean
 }
 
 export function BillingsList({
@@ -27,10 +27,10 @@ export function BillingsList({
   matters,
   onUpdate,
   onDelete,
-  isLoading = false,
   sortField,
   onSortChange,
   sortDirection,
+  isLoading,
   hideMatterColumn = false
 }: BillingsListProps) {
 
@@ -58,52 +58,43 @@ export function BillingsList({
   return (
     <div className="overflow-x-auto w-full overflow:hidden">
       <div className={`${hideMatterColumn ? "min-w-[800px]" : "min-w-[900px]"} sm:px-0`}>
-        <Table className="table-auto w-full">
-          <TableHeader className="bg-gray-100 dark:bg-gray-900">
-            <TableRow className="text-sm md:text-base">
-              <TableHead className="w-[20%]">
-                 {renderSortableHeader("name", "Bill Name")}
-              </TableHead>
-              {!hideMatterColumn && (
-                <TableHead className="w-[25%]">
-                  {renderSortableHeader("matterName", "Matter Name")}
+        <div className="overflow-y-auto max-h-[80vh] h-[calc(100vh-410px)] md:h-[calc(100vh-330px)]">
+          <Table className="table-auto w-full">
+            <TableHeader className="bg-gray-100 dark:bg-gray-900 sticky top-0 z-10">
+              <TableRow className="text-sm md:text-base">
+                <TableHead className="w-[20%]">
+                  {renderSortableHeader("name", "Bill Name")}
                 </TableHead>
-              )}
-              <TableHead className="w-[15%]">
-                {renderSortableHeader("amount", "Amount")}
-              </TableHead>
-              <TableHead className={`${hideMatterColumn ? "w-[20%]" : "w-[15%]"}`}>
-                {renderSortableHeader("remarks", "Remarks")}
-              </TableHead>
-              <TableHead className="w-[10%]">Status</TableHead>
-              <TableHead className="w-[10%]">
-                {renderSortableHeader("created_at", "Date Billed")}
-              </TableHead>
-              <TableHead className="w-[5%] pr-5 text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={hideMatterColumn ? 7 : 8}
-                  className="text-center py-6 md:py-8 text-muted-foreground text-sm md:text-base"
-                >
-                  Loading bills...
-                </TableCell>
+                {!hideMatterColumn && (
+                  <TableHead className="w-[25%]">
+                    {renderSortableHeader("matterName", "Matter Name")}
+                  </TableHead>
+                )}
+                <TableHead className="w-[15%]">
+                  {renderSortableHeader("amount", "Amount")}
+                </TableHead>
+                <TableHead className={`${hideMatterColumn ? "w-[20%]" : "w-[15%]"}`}>
+                  {renderSortableHeader("remarks", "Remarks")}
+                </TableHead>
+                <TableHead className="w-[10%]">Status</TableHead>
+                <TableHead className="w-[10%]">
+                  {renderSortableHeader("created_at", "Date Billed")}
+                </TableHead>
+                <TableHead className="w-[5%] pr-5 text-right">Actions</TableHead>
               </TableRow>
-            ) : bills.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={hideMatterColumn ? 7 : 8}
-                  className="text-center py-6 md:py-8 text-muted-foreground text-sm md:text-base"
-                >
-                  No bills found. Add a new bill to get started.
-                </TableCell>
-              </TableRow>
-            ) : (
-              bills.map((bill, index) => {
-                return (
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+               <TableRow>
+                  <TableCell
+                    colSpan={hideMatterColumn ? 7 : 8}
+                    className="text-center py-6 md:py-8 text-muted-foreground text-sm md:text-base"
+                  >
+                    Loading Bills...
+                  </TableCell>
+                </TableRow>
+              ) : bills.length > 0 ? (
+                bills.map((bill, index) => (
                   <BillingsItem
                     key={bill.bill_id}
                     bill={bill}
@@ -112,12 +103,21 @@ export function BillingsList({
                     onDelete={onDelete}
                     index={index + 1}
                     hideMatterColumn={hideMatterColumn}
-                />
-                )
-              })
-            )}
-          </TableBody>
-        </Table>
+                  />
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={hideMatterColumn ? 7 : 8}
+                    className="text-center py-6 md:py-8 text-muted-foreground text-sm md:text-base"
+                  >
+                    No bills found. Add a new bill to get started.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   )

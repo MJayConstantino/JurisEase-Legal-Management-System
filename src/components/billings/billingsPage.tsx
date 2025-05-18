@@ -225,7 +225,7 @@ export function BillingInterface({ bills, allMatters }: BillingsPageProps) {
   }, [bills])
 
   return (
-    <div className="py-0 px-0">
+    <div>
       <div className="max-w-auto mx-auto">
         <BillingsRevenueHeader
           totalRevenue={totalRevenue}
@@ -290,7 +290,7 @@ export function BillingInterface({ bills, allMatters }: BillingsPageProps) {
             onMatterFilterChange={handleMatterFilterChange}
           />
 
-          <div className="max-h-[600px] overflow-y-auto">
+          <div>
             <BillingsList
               bills={filteredBills}
               matters={mattersList}
