@@ -43,7 +43,12 @@ describe('Global Search E2E', () => {
       cy.wait(2000)
         .contains(/testMatter/i)
         .should('be.visible')
-      cy.contains(/testMatter/i).click()
+      cy.get(
+        'span.text-xs.px-2.mr-1.mb-1.py-0\\.5.rounded.bg-yellow-100.text-yellow-800'
+      ).click({ force: true })
+      cy.wait(2000)
+        .contains(/testMatter/i)
+        .should('be.visible')
     })
     it('shoould display relevant matters whose name or client matches the search query if the matter checkbox is checked and the client search by checkbox is checked', () => {
       cy.get('#matters').click()
@@ -88,7 +93,7 @@ describe('Global Search E2E', () => {
   })
 
   //TASKS SECTION
-  describe.skip('When a user wants to search for a task', () => {
+  describe('When a user wants to search for a task', () => {
     beforeEach(() => {
       cy.visit('/tasks').wait(5000)
       cy.get('.border-input').click()
@@ -112,6 +117,34 @@ describe('Global Search E2E', () => {
         .should('be.visible')
       cy.contains(/mock task/i).should('be.visible')
       cy.contains(/with matter/i).should('be.visible')
+    })
+    it('should navigate to the tasks listing page task item without matter is clicked', () => {
+      cy.get('#tasks').click()
+      cy.get('input[aria-label="DialogBoxSearch"]').type(
+        'Mock Task (No Matter)'
+      )
+      cy.wait(2000)
+        .contains(/mock task/i)
+        .should('be.visible')
+      cy.contains('Mock Task (No Matter) (Global Search E2E)').click({
+        force: true,
+      })
+      cy.wait(2000).location('pathname').should('eq', '/tasks')
+    })
+    it('should navigate to the full detail matters page when task item with matter is clicked', () => {
+      cy.get('#tasks').click()
+      cy.get('input[aria-label="DialogBoxSearch"]').type(
+        'Mock Task (With Matter)'
+      )
+      cy.wait(2000)
+        .contains(/testMatter/i)
+        .should('be.visible')
+      cy.contains('Mock Task (With Matter) (Global Search E2E)').click({
+        force: true,
+      })
+      cy.wait(2000)
+        .contains(/testMatter/i)
+        .should('be.visible')
     })
 
     it('should display relevant tasks whose name or  matter client matches the search query if the matter checkbox is checked and the client search by checkbox is checked', () => {
@@ -157,7 +190,7 @@ describe('Global Search E2E', () => {
   })
 
   // BILLS SECTION
-  describe.skip('When a user wants to search for a bill', () => {
+  describe('When a user wants to search for a bill', () => {
     beforeEach(() => {
       cy.visit('/billings').wait(5000)
       cy.get('.w-64 > .border-input').click()
@@ -179,6 +212,17 @@ describe('Global Search E2E', () => {
       cy.wait(2000)
 
       cy.contains(/mockbill/i).should('be.visible')
+    })
+    it('should navigate to the full detail matters page when matter item is clicked', () => {
+      cy.get('#matters').click()
+      cy.get('input[aria-label="DialogBoxSearch"]').type('MockBill')
+      cy.wait(2000)
+        .contains(/MockBill/i)
+        .should('be.visible')
+      cy.contains(/MockBill/i).click({ force: true })
+      cy.wait(2000)
+        .contains(/testMatter/i)
+        .should('be.visible')
     })
 
     it('should display relevant bills whose name or matter client matches the search query if the matter checkbox is checked and the client search by checkbox is checked', () => {
@@ -217,10 +261,6 @@ describe('Global Search E2E', () => {
       cy.contains(/mockbill/i).should('be.visible')
     })
   })
-
-  // describe('When the user searches for a bill', () => {})
-
-  // describe states when all matters, tasks, bills are checked
 
   // describe when the modal is cleared
 })
