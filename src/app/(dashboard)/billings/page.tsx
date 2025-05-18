@@ -1,7 +1,7 @@
 import { BillingInterface } from "@/components/billings/billingsPage";
 import type { Metadata } from "next";
 import { handleFetchBills } from "@/action-handlers/billings";
-import BillingsSkeleton from "./loading";
+import BillingsLoading from "./loading";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
@@ -14,7 +14,7 @@ export default async function BillingsPage() {
 
   return (
     <div className="flex flex-col gap-6 h-full">
-      <Suspense fallback={<BillingsSkeleton/>}/>
+      <Suspense fallback={<BillingsLoading/>}/>
       <BillingInterface bills={bills} allMatters={allMatters} />
     </div>
   )
