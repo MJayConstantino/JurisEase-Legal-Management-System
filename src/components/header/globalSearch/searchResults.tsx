@@ -116,10 +116,10 @@ export function SearchResults({
     <Collapsible
       open={isOpen}
       onOpenChange={setIsOpen}
-      className="w-full overflow-hidden text-ellipsis truncate"
+      className="w-full overflow-hidden text-ellipsis truncate "
     >
       {/* Collapsible header/trigger with result count */}
-      <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium text-foreground hover:bg-muted p-2 rounded-md">
+      <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium text-foreground hover:bg-muted p-2 rounded-md cursor-pointer">
         <div className="flex items-center justify-between w-full">
           <span>Results</span>
           <div className="flex items-center gap-2">
@@ -135,7 +135,7 @@ export function SearchResults({
         </div>
       </CollapsibleTrigger>
 
-      <CollapsibleContent className="pt-2 pb-1">
+      <CollapsibleContent className="pt-2 pb-1 ">
         {/* Loading state */}
         {isSearching ? (
           <div className="flex items-center justify-center h-[200px]">
@@ -195,7 +195,12 @@ export function SearchResults({
                 {/* Pagination */}
                 <div className="flex justify-center pt-2">
                   {hasMore ? (
-                    <Button variant="outline" size="sm" onClick={onLoadMore}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={onLoadMore}
+                      className="cursor-pointer hover:text-muted-foreground"
+                    >
                       Load more
                     </Button>
                   ) : (

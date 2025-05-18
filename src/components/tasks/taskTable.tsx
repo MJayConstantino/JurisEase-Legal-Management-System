@@ -44,7 +44,8 @@ export function TaskTable({
 
   const handleSort = useCallback((field: SortField) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      const newDirection = sortDirection === "asc" ? "desc" : "asc";
+      setSortDirection(newDirection);
     } else {
       setSortField(field);
       setSortDirection("asc");
@@ -93,7 +94,9 @@ export function TaskTable({
         task,
         (updatedTask) => {
           onTaskUpdated(updatedTask);
-          setTimeout(() => setProcessingTaskId(null), 1000);
+          setTimeout(() => {
+            setProcessingTaskId(null);
+          }, 1000);
         },
         onTaskUpdated,
         () => {},
@@ -156,7 +159,7 @@ export function TaskTable({
         </div>
       </div>
 
-      {/* Task forms and dialogs */}
+      {/* Task forms and dialogs - only render when needed */}
       {editingTask && (
         <TaskForm
           open={!!editingTask}
@@ -193,7 +196,7 @@ export function TaskTable({
         />
       )}
 
-      {deletingTask && (
+      {isDeleteDialogOpen && deletingTask && (
         <TaskDeleteDialog
           isOpen={isDeleteDialogOpen}
           onOpenChange={setIsDeleteDialogOpen}
