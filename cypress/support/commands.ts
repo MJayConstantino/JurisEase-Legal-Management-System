@@ -36,5 +36,16 @@ Cypress.Commands.add('login', (email: string, password: string) => {
   })
 })
 
+Cypress.Commands.add(
+  'signUp',
+  (name: string, email: string, password: string) => {
+    cy.task('register', {
+      name: name,
+      email: email,
+      password: password,
+    })
+  }
+)
+
 //    email: 'test@testdomain.com',
 //        password: 'testPassword',

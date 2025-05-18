@@ -49,6 +49,7 @@ export function TaskRow({
   hideMatterColumn = false,
 }: TaskRowProps) {
   const [isViewingDetails, setIsViewingDetails] = useState(false);
+
   const isTaskOverdueFlag = isTaskOverdue(
     task.due_date ?? undefined,
     task.status
@@ -61,17 +62,65 @@ export function TaskRow({
     ? "bg-green-50 dark:bg-green-950"
     : "";
 
+  // If matters are loading, display skeleton UI in all columns
+  if (isLoadingMatters) {
+    return (
+      <TableRow className="hover:bg-gray-50/muted dark:hover:bg-gray-900/muted">
+        {/* Checkbox Column */}
+        <TableCell className="p-1 md:p-2">
+          <Skeleton className="h-4 w-4 md:h-5 md:w-5 rounded-lg" />
+        </TableCell>
+
+        {/* Task Name */}
+        <TableCell className="p-1 md:p-2">
+          <Skeleton className="w-24 h-4 rounded-lg" />
+        </TableCell>
+
+        {/* Matter Column - Only show if not in a matter-specific page */}
+        {!hideMatterColumn && (
+          <TableCell className="p-1 md:p-2 w-32 md:w-40">
+            <Skeleton className="w-24 h-4 rounded-lg" />
+          </TableCell>
+        )}
+
+        {/* Status */}
+        <TableCell className="p-1 md:p-2">
+          <Skeleton className="w-24 h-4 rounded-lg" />
+        </TableCell>
+
+        {/* Priority */}
+        <TableCell className="p-1 md:p-2">
+          <Skeleton className="w-24 h-4 rounded-lg" />
+        </TableCell>
+
+        {/* Due Date */}
+        <TableCell className="p-1 md:p-2">
+          <Skeleton className="w-24 h-4 rounded-lg" />
+        </TableCell>
+
+        {/* Actions */}
+        <TableCell className="p-1 md:p-2 text-right">
+          <Skeleton className="w-8 h-8 rounded-lg ml-auto" />
+        </TableCell>
+      </TableRow>
+    );
+  }
+
   return (
     <>
       <TableRow
-        className={`${backgroundClasses} hover:bg-gray-50/muted dark:hover:bg-gray-900/muted hover:cursor-pointer`}
-        onClick={() => setIsViewingDetails(true)}
+        className={`${backgroundClasses} hover:bg-gray-200 dark:hover:bg-gray-700 hover:cursor-pointer`}
+        onClick={() => {
+          setIsViewingDetails(true);
+        }}
       >
         {/* Checkbox Column */}
         <TableCell className="p-1 md:p-2" onClick={(e) => e.stopPropagation()}>
           <Checkbox
             checked={task.status === "completed"}
-            onCheckedChange={() => onStatusChange(task)}
+            onCheckedChange={() => {
+              onStatusChange(task);
+            }}
             disabled={isProcessing}
             id={`task-complete-${task.task_id}`}
             className={`h-4 w-4 md:h-5 md:w-5 border-gray-300 hover:cursor-pointer ${
@@ -99,15 +148,14 @@ export function TaskRow({
 
         {/* Matter Column - Only show if not in a matter-specific page */}
         {!hideMatterColumn && (
-          <TableCell className="p-1 md:p-2 w-32 md:w-40" title={`Matter: ${matterName}`}>
+          <TableCell
+            className="p-1 md:p-2 w-32 md:w-40"
+            title={`Matter: ${matterName}`}
+          >
             {task.matter_id ? (
-              isLoadingMatters ? (
-                <Skeleton className="inline-block w-20 md:w-28 h-4 rounded" />
-              ) : (
-                <span className="font-medium text-xs sm:text-sm md:text-base truncate dark:text-white max-w-[80px] sm:max-w-[120px] md:max-w-full ">
-                  {matterName || "None"}
-                </span>
-              )
+              <span className="font-medium text-xs sm:text-sm md:text-base truncate dark:text-white max-w-[80px] sm:max-w-[120px] md:max-w-full">
+                {matterName || "None"}
+              </span>
             ) : (
               <span className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
                 None
@@ -168,7 +216,7 @@ export function TaskRow({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 md:h-8 md:w-8 hover:cursor-pointerB"
+                className="h-6 w-6 md:h-8 md:w-8 hover:cursor-pointer"
                 disabled={isProcessing}
               >
                 <MoreHorizontal className="h-3 w-3 md:h-4 md:w-4" />
@@ -179,7 +227,9 @@ export function TaskRow({
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => setIsViewingDetails(true)}
+                onClick={() => {
+                  setIsViewingDetails(true);
+                }}
                 disabled={isProcessing}
                 className="hover:cursor-pointer"
               >
@@ -187,7 +237,9 @@ export function TaskRow({
                 View Details
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => onEdit(task)}
+                onClick={() => {
+                  onEdit(task);
+                }}
                 disabled={isProcessing}
                 className="hover:cursor-pointer"
               >
@@ -195,7 +247,9 @@ export function TaskRow({
                 Edit Task
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => onStatusChange(task)}
+                onClick={() => {
+                  onStatusChange(task);
+                }}
                 disabled={isProcessing}
                 className="hover:cursor-pointer"
               >
@@ -207,7 +261,9 @@ export function TaskRow({
                 {task.status === "completed" ? "Incomplete" : "Complete"}
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => onDelete(task)}
+                onClick={() => {
+                  onDelete(task);
+                }}
                 disabled={isProcessing}
                 className="text-red-600 focus:text-red-600 hover:cursor-pointer"
               >
@@ -221,7 +277,9 @@ export function TaskRow({
 
       <TaskDetails
         open={isViewingDetails}
-        onOpenChange={setIsViewingDetails}
+        onOpenChange={(open) => {
+          setIsViewingDetails(open);
+        }}
         task={task}
         matters={matters}
         isLoadingMatters={isLoadingMatters}
