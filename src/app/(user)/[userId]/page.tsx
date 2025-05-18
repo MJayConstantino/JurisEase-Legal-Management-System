@@ -3,6 +3,8 @@ import { fetchUserInfoAction } from '@/actions/users';
 import { ThemeProvider } from '@/components/theme-provider'
 import UserProfileInterface from '@/components/userprofile/userProfileInterface';
 import { notFound } from 'next/navigation';
+import UserProfileLoading from './loading';
+import { Suspense } from 'react';
 
 export default async function UserProfilePage({ 
   params
@@ -35,6 +37,7 @@ export default async function UserProfilePage({
         disableTransitionOnChange
       >
         <div className="flex flex-col gap-6 h-full">
+          <Suspense fallback={<UserProfileLoading/>}/>
           <UserProfileInterface user={user} />
         </div>
       </ThemeProvider>
