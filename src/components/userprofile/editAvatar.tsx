@@ -35,7 +35,6 @@ export function ChangeAvatar({ userName, metadataAvatarUrl }: ChangeAvatarProps)
             if (newAvatarUrl) {
               setAvatarPreview(newAvatarUrl);
             }
-            // router.refresh()
             toast.success("User Avatar updated successfully")
           } catch (error) {
             console.error('Error uploading avatar:', error);
@@ -55,7 +54,7 @@ export function ChangeAvatar({ userName, metadataAvatarUrl }: ChangeAvatarProps)
           src={avatarPreview || metadataAvatarUrl || '/placeholder.svg'}
           alt={userName}
         />
-        <AvatarFallback>{userName[0] ?? '?'}</AvatarFallback>
+        <AvatarFallback>{userName?.[0] ?? '?'}</AvatarFallback>
       </Avatar>
 
       <div className="flex flex-col items-center mt-4">
@@ -66,7 +65,7 @@ export function ChangeAvatar({ userName, metadataAvatarUrl }: ChangeAvatarProps)
           id="avatar-upload"
           type="file"
           accept="image/*"
-          className="hidden"
+          className="hidden" 
           onChange={handleAvatarChange}
         />
       </div>

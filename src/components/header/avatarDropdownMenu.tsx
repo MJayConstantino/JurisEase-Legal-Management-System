@@ -118,7 +118,7 @@ function AvatarDropdownMenu({
           {isLoading ? (
             <Skeleton className="w-24 h-4" />
           ) : (
-            userName || userData?.full_name || "User"
+            userName || userData?.full_name
           )}
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="border-gray-200 dark:border-gray-600" />

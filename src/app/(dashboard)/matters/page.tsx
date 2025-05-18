@@ -1,6 +1,8 @@
 import { MattersList } from "@/components/matters/mattersList";
 import type { Metadata } from "next";
 import { handleFetchMatters } from "@/action-handlers/matters";
+import { Suspense } from "react";
+import MattersLoading from "./loading";
 
 export const metadata: Metadata = {
   title: "Matters | Dianson Law Office",
@@ -12,6 +14,7 @@ export default async function MattersPage() {
 
   return (
     <div className="flex flex-col gap-6 h-full">
+      <Suspense fallback={<MattersLoading />} />
       <MattersList matters={matters} />
     </div>
   );

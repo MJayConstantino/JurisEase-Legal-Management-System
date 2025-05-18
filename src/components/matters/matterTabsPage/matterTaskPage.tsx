@@ -1,24 +1,26 @@
-"use client";
+"use client"
 
-import { useParams } from "next/navigation";
-import { TaskList } from "@/components/tasks/taskList";
-import type { Task } from "@/types/task.type";
+import { Suspense } from "react"
+import { useParams } from "next/navigation"
+import { TaskList } from "@/components/tasks/taskList"
+import { TasksLoading } from "@/app/(dashboard)/tasks/loading"
+import type { Task } from "@/types/task.type"
 
 export function MatterTaskPage({
   initialTasks = [],
 }: {
-  initialTasks: Task[];
+  initialTasks: Task[]
 }) {
-  const params = useParams();
-  const matterId = params.matterId as string;
+  const params = useParams()
+  const matterId = params.matterId as string
 
-  
   return (
     <div className="dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800">
-      <TaskList initialTasks={initialTasks} matterId={matterId}/>
+      <Suspense fallback={<TasksLoading />}>
+        <TaskList initialTasks={initialTasks} matterId={matterId} />
+      </Suspense>
     </div>
-  );
+  )
 }
 
-export default MatterTaskPage;
-
+export default MatterTaskPage
