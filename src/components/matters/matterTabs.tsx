@@ -82,9 +82,7 @@ export function MatterTabs({ children, matterId }: MatterTabsProps) {
         </TabsContent>
 
         <TabsContent value="billing" className="p-6 m-0">
-          <div className="max-h-[400px] flex items-start justify-center border border-dashed overflow-hidden rounded-lg">
-            <MatterBillingPage />
-          </div>
+          <MatterBillingPage />
         </TabsContent>
       </div>
     </Tabs>

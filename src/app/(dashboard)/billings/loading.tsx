@@ -55,7 +55,7 @@ export default function BillingsLoading() {
             </div>
 
             {/* Table Rows */}
-            {[...Array(8)].map((_, i) => (
+            {[...Array(5)].map((_, i) => (
               <div
                 key={i}
                 className="border-b p-4 hover:bg-gray-50 dark:hover:bg-gray-800"
