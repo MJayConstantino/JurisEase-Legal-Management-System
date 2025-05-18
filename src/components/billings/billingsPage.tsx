@@ -226,7 +226,7 @@ export function BillingInterface({ bills, allMatters }: BillingsPageProps) {
 
   return (
     <div>
-      <div className="max-w-auto mx-auto">
+      <div className="mx-auto">
         <BillingsRevenueHeader
           totalRevenue={totalRevenue}
           todayRevenue={todayRevenue}

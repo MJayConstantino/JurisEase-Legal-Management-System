@@ -56,10 +56,10 @@ export function BillingsList({
   );
 
   return (
-    <div className="overflow-x-auto w-full overflow:hidden">
-      <div className={`${hideMatterColumn ? "min-w-[800px]" : "min-w-[900px]"} sm:px-0`}>
-        <div className="overflow-y-auto max-h-[80vh] h-[calc(100vh-410px)] md:h-[calc(100vh-330px)]">
-          <Table className="table-auto w-full">
+    <div className="overflow-x-auto w-full">
+      <div className={`sm:px-0`}>
+        <div className="overflow-y-auto max-h-[calc(100vh-410px)] md:max-h-[calc(100vh-330px)]">
+          <Table className="table-auto">
             <TableHeader className="bg-gray-100 dark:bg-gray-900 sticky top-0 z-10">
               <TableRow className="text-sm md:text-base">
                 <TableHead className="w-[20%]">
