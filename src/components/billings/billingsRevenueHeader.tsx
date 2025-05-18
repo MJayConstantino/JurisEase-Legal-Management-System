@@ -58,7 +58,7 @@ export function BillingsRevenueHeader({
   return (
     <div className="mt-0">
       <div
-        className={`bg-[#1B1E4B] text-white p-2 md:p-4 rounded-t-md cursor-pointer transition-all hover:bg-[#25305B] dark:bg-[var(--totalrev)] dark:hover:bg-[var(--totalrev-hover)] ${
+        className={`bg-[#1B1E4B] text-white p-2 md:p-4 rounded-t-md overflow-hidden cursor-pointer transition-all hover:bg-[#25305B] dark:bg-[var(--totalrev)] dark:hover:bg-[var(--totalrev-hover)] ${
           activeFilter === "all" ? "bg-[#1B1E4B] dark:bg-[var(--selectrev)] text-indigo-900 dark:text-white" : ""
         }`}
         onClick={() => {

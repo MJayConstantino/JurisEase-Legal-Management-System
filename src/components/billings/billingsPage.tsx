@@ -226,7 +226,7 @@ export function BillingInterface({ bills, allMatters }: BillingsPageProps) {
 
   return (
     <div>
-      <div className="max-w-auto mx-auto">
+      <div className="mx-auto">
         <BillingsRevenueHeader
           totalRevenue={totalRevenue}
           todayRevenue={todayRevenue}
@@ -303,6 +303,7 @@ export function BillingInterface({ bills, allMatters }: BillingsPageProps) {
             />
           </div>
         </div>
+        <div className="h-[56px] block md:hidden"></div> {/* Spacer for mobile for sidebar tabs */}
 
         <BillingsAddDialog
           open={isNewBillDialogOpen}
