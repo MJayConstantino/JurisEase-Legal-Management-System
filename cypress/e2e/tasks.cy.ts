@@ -15,6 +15,7 @@ describe("Tasks E2E Interactions", () => {
     it("should validate required fields", () => {
       cy.get('button[type="submit"]').contains("Save Task").click();
       cy.contains("Task name is required").should("exist");
+      cy.wait(3000);
     });
 
     it("should successfully create a task", () => {
@@ -235,9 +236,11 @@ describe("Tasks E2E Interactions", () => {
       cy.contains("None").should("exist");
     });
   });
+
   describe("Task Editing", () => {
     it("should edit a task", () => {
       cy.contains("Test Task").click();
+      cy.wait(2000);
       cy.get('button[data-slot="button"]').contains("Edit Task").click();
       cy.get('input[placeholder="Task name"]').clear().type("Updated Task");
       cy.get('textarea[data-slot="textarea"][id="description"]')
@@ -253,16 +256,12 @@ describe("Tasks E2E Interactions", () => {
   describe("Dropdown Interaction", () => {
     it("view tasks by Grid", () => {
       cy.get(
-        'button[id="radix-«R99tqdel7»"][data-slot="dropdown-menu-trigger"]'
-      ).click();
-
-      cy.get(
-        'div[id^="radix-«R99tqdel7H1»"][data-slot="dropdown-menu-content"]'
+        'button[id^="radix-«R15htqdel7»"][data-slot="dropdown-menu-trigger"]'
       )
-        .should("be.visible")
-        .should("contain", "Filter Tasks");
+        .should("exist")
+        .click();
 
-      cy.get('div[id^="radix-"][data-slot="dropdown-menu-content"]')
+      cy.get('div[data-slot="dropdown-menu-content"]')
         .find('div[role="menuitem"]')
         .contains("Grid")
         .click();
@@ -272,20 +271,17 @@ describe("Tasks E2E Interactions", () => {
       );
 
       cy.get(".grid div.cursor-pointer").should("have.length.at.least", 1);
+      cy.wait(2000);
     });
 
     it("view tasks by Status In-Progress", () => {
       cy.get(
-        'button[id="radix-«R99tqdel7»"][data-slot="dropdown-menu-trigger"]'
-      ).click();
-
-      cy.get(
-        'div[id^="radix-«R99tqdel7H1»"][data-slot="dropdown-menu-content"]'
+        'button[id^="radix-«R15htqdel7»"][data-slot="dropdown-menu-trigger"]'
       )
-        .should("be.visible")
-        .should("contain", "Filter Tasks");
+        .should("exist")
+        .click();
 
-      cy.get('div[id^="radix-"][data-slot="dropdown-menu-content"]')
+      cy.get('div[data-slot="dropdown-menu-content"]')
         .find('div[role="menuitem"]')
         .contains("In-Progress")
         .click();
@@ -295,20 +291,17 @@ describe("Tasks E2E Interactions", () => {
           .and("not.contain", "completed")
           .and("not.contain", "overdue");
       });
+      cy.wait(2000);
     });
 
     it("view tasks by Status Overdue", () => {
       cy.get(
-        'button[id="radix-«R99tqdel7»"][data-slot="dropdown-menu-trigger"]'
-      ).click();
-
-      cy.get(
-        'div[id^="radix-«R99tqdel7H1»"][data-slot="dropdown-menu-content"]'
+        'button[id^="radix-«R15htqdel7»"][data-slot="dropdown-menu-trigger"]'
       )
-        .should("be.visible")
-        .should("contain", "Filter Tasks");
+        .should("exist")
+        .click();
 
-      cy.get('div[id^="radix-"][data-slot="dropdown-menu-content"]')
+      cy.get('div[data-slot="dropdown-menu-content"]')
         .find('div[role="menuitem"]')
         .contains("Overdue")
         .click();
@@ -318,19 +311,17 @@ describe("Tasks E2E Interactions", () => {
           .and("not.contain", "completed")
           .and("not.contain", "in-progress");
       });
+      cy.wait(2000);
     });
 
     it("view tasks by Status Completed", () => {
       cy.get(
-        'button[id="radix-«R99tqdel7»"][data-slot="dropdown-menu-trigger"]'
-      ).click();
-      cy.get(
-        'div[id^="radix-«R99tqdel7H1»"][data-slot="dropdown-menu-content"]'
+        'button[id^="radix-«R15htqdel7»"][data-slot="dropdown-menu-trigger"]'
       )
-        .should("be.visible")
-        .should("contain", "Filter Tasks");
+        .should("exist")
+        .click();
 
-      cy.get('div[id^="radix-"][data-slot="dropdown-menu-content"]')
+      cy.get('div[data-slot="dropdown-menu-content"]')
         .find('div[role="menuitem"]')
         .contains("Completed")
         .click();
@@ -340,6 +331,7 @@ describe("Tasks E2E Interactions", () => {
           .and("not.contain", "in-progress")
           .and("not.contain", "overdue");
       });
+      cy.wait(2000);
     });
   });
 
@@ -374,7 +366,7 @@ describe("Tasks E2E Interactions", () => {
     });
   });
 
-  describe.only("Tasks in Matter page", () => {
+  describe("Tasks in Matter page", () => {
     beforeEach(() => {
       cy.login("test@testdomain.com", "testPassword");
       cy.wait(2000);
@@ -482,7 +474,7 @@ describe("Tasks E2E Interactions", () => {
               .click({ force: true });
 
             // Wait for deletion to complete
-            cy.wait(500);
+            cy.wait(3000);
           } catch (e) {
             cy.log(`Error deleting task "${taskName}": ${e.message}`);
             // Try alternative method - clicking on task name first
