@@ -303,6 +303,7 @@ export function BillingInterface({ bills, allMatters }: BillingsPageProps) {
             />
           </div>
         </div>
+        <div className="h-[56px] block md:hidden"></div> {/* Spacer for mobile for sidebar tabs */}
 
         <BillingsAddDialog
           open={isNewBillDialogOpen}
