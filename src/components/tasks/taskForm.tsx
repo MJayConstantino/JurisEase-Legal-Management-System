@@ -207,7 +207,7 @@ export function TaskForm({
         }
       }}
     >
-      <DialogContent className="sm:max-w-[500px] w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700 p-6">
+      <DialogContent className="sm:max-w-[500px] w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700 p-6 scrollbar-hide">
         <DialogHeader>
           <DialogTitle className="dark:text-gray-100 font-semibold">
             {task.task_id ? "Edit Task" : "Add New Task"}
