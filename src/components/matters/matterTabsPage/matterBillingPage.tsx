@@ -177,7 +177,7 @@ export function MatterBillingPage() {
             hideMatterFilter={true}
           />
 
-          <div className="overflow-y-auto ">
+          <div className="overflow-y-auto h-full max-h-[calc(100vh-410px)] md:max-h-[calc(100vh-330px)]">
             <BillingsList
               bills={filteredBills}
               matters={matters}

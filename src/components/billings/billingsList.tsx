@@ -8,7 +8,6 @@ import { BillingsItem } from "@/components/billings/billingsItem"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Matter } from "@/types/matter.type"
 import { Button } from "../ui/button"
-import { BillingsSkeleton } from "./billingsSkeleton"
 
 interface BillingsListProps {
   matters: Matter[]
@@ -86,9 +85,14 @@ export function BillingsList({
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                Array.from({ length: bills.length }).map((_, i) => (
-                  <BillingsSkeleton key={i} hideMatterColumn={hideMatterColumn} />
-                ))
+               <TableRow>
+                  <TableCell
+                    colSpan={hideMatterColumn ? 7 : 8}
+                    className="text-center py-6 md:py-8 text-muted-foreground text-sm md:text-base"
+                  >
+                    Loading Bills...
+                  </TableCell>
+                </TableRow>
               ) : bills.length > 0 ? (
                 bills.map((bill, index) => (
                   <BillingsItem
