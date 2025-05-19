@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createSupabaseClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,25 +18,41 @@ export default function UserLoggedIn(props: any) {
   const override = props.__storybookMockOverride ?? {};
   const supabase = createSupabaseClient();
   const router = useRouter();
-  const [signOutLoading, setSignOutLoading] = useState(override.signOutLoading ?? false);
-  const [dashboardLoading, setDashboardLoading] = useState(override.dashboardLoading ?? false);
-  const [userData, setUserData] = useState<UserData | null>(override.userData ?? null);
+
+  const [signOutLoading, setSignOutLoading] = useState(
+    override.signOutLoading ?? false
+  );
+  const [dashboardLoading, setDashboardLoading] = useState(
+    override.dashboardLoading ?? false
+  );
+  const [userData, setUserData] = useState<UserData | null>(
+    override.userData ?? null
+  );
   const [loadingUser, setLoadingUser] = useState(override.loadingUser ?? true);
+  const [dataFetched, setDataFetched] = useState(false);
+
+  const fetchUser = useCallback(async () => {
+    if (dataFetched || userData) return; 
+
+    setLoadingUser(true);
+    try {
+      const data = await fetchUserInfoAction();
+      if (data && data.full_name) {
+        setUserData(data);
+        setDataFetched(true);
+      }
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    } finally {
+      setLoadingUser(false);
+    }
+  }, [dataFetched, userData]);
 
   useEffect(() => {
-    async function fetchUser() {
-      try {
-        const data: UserData = await fetchUserInfoAction();
-        setUserData(data);
-      } catch (error) {
-        console.error("Error fetching user info:", error);
-      } finally {
-        setLoadingUser(false);
-      }
+    if (!dataFetched && !userData) {
+      fetchUser();
     }
-    fetchUser();
-  }, []);
-
+  }, [fetchUser, dataFetched, userData]);
 
   const handleSignOut = async () => {
     setSignOutLoading(true);
