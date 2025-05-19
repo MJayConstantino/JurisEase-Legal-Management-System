@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { AddMatterDialog } from "@/components/matters/addMatterDialog";
 import { action } from "@storybook/addon-actions";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 import React from "react";
 
 const meta: Meta<typeof AddMatterDialog> = {

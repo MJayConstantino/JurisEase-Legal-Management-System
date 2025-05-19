@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import MattersLoading from "./loading";
 
 export const metadata: Metadata = {
-  title: "Matters | Dianson Law Office",
+  title: "Matters | JurisEase",
   description: "View and manage your legal cases and client matters",
 };
 

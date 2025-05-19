@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import UserProfile from "@/components/homepage/loggedIn/userProfile";
+import UserProfile from "@/components/loggedIn/userProfile";
 
 const mockUserData = {
   full_name: "John Doe",
@@ -14,7 +14,7 @@ const meta: Meta<typeof UserProfile> = {
       appDirectory: true,
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;

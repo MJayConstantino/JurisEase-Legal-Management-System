@@ -4,9 +4,9 @@ import { useEffect, useState, useCallback } from "react";
 import { createSupabaseClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
-import WelcomeHeader from "@/components/homepage/loggedIn/welcomeHeader";
-import UserProfile from "@/components/homepage/loggedIn/userProfile";
-import ActionButtons from "@/components/homepage/loggedIn/actionButtons";
+import WelcomeHeader from "@/components/loggedIn/welcomeHeader";
+import UserProfile from "@/components/loggedIn/userProfile";
+import ActionButtons from "@/components/loggedIn/actionButtons";
 import { fetchUserInfoAction } from "@/actions/users";
 
 interface UserData {
@@ -18,7 +18,6 @@ export default function UserLoggedIn(props: any) {
   const override = props.__storybookMockOverride ?? {};
   const supabase = createSupabaseClient();
   const router = useRouter();
-
   const [signOutLoading, setSignOutLoading] = useState(
     override.signOutLoading ?? false
   );
