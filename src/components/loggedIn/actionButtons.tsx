@@ -26,7 +26,7 @@ export default function ActionButtons({
         type="button"
         className="bg-[#2a3563] hover:cursor-pointer hover:bg-[#1e2547] dark:bg-[#4a5183] dark:hover:bg-[#3e4577] text-white py-6 rounded-lg flex items-center justify-center gap-2 transition-all"
         onClick={handleMatters}
-        disabled={isLoading}
+        disabled={isLoading || disabled}
       >
         {dashboardLoading ? (
           <>
