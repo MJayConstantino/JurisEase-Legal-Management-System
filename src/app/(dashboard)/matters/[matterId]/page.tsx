@@ -34,6 +34,7 @@ export async function generateMetadata({
       description: `Details for matter ${matter.matter_id}: ${matter.name}`,
     };
   } catch (error) {
+    console.error("Error generating metadata:", error);
     return {
       title: "Error | JurisEase",
     };
@@ -71,6 +72,7 @@ export default async function MatterDetailPage({
       </div>
     );
   } catch (error) {
+    console.error("Error fetching matter details:", error);
     notFound();
   }
 }
