@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useTransition } from 'react'
 import { createSupabaseClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
@@ -8,6 +8,7 @@ import WelcomeHeader from './welcomeHeader'
 import UserProfile from './userProfile'
 import ActionButtons from './actionButtons'
 import { fetchUserInfoAction } from '@/actions/users'
+import { toast } from 'sonner'
 
 interface UserData {
   full_name: string
@@ -18,6 +19,7 @@ export default function UserLoggedIn(props: any) {
   const override = props.__storybookMockOverride ?? {}
   const supabase = createSupabaseClient()
   const router = useRouter()
+  const [isTransitioning, startTransition] = useTransition()
 
   // State management
   const [signOutLoading, setSignOutLoading] = useState(
@@ -59,23 +61,25 @@ export default function UserLoggedIn(props: any) {
 
   const handleSignOut = async () => {
     setSignOutLoading(true)
+    startTransition(async () => {
+      try {
+        const { error } = await supabase.auth.signOut()
 
-    try {
-      const { error } = await supabase.auth.signOut()
+        if (error) {
+          console.error('Error signing out:', error.message)
+          toast.error('Failed to sign out')
 
-      if (error) {
-        console.error('Error signing out:', error.message)
-        router.push('/documents?message=Failed to sign out')
-        return
+          return
+        }
+
+        router.push('/login')
+      } catch (error) {
+        console.error('Exception during sign out:', error)
+        toast.error('Failed to sign out')
+      } finally {
+        setSignOutLoading(false)
       }
-
-      router.push('/login')
-    } catch (error) {
-      console.error('Exception during sign out:', error)
-      router.push('/documents?message=Failed to sign out')
-    } finally {
-      setSignOutLoading(false)
-    }
+    })
   }
 
   const handleMatters = async () => {
@@ -98,6 +102,7 @@ export default function UserLoggedIn(props: any) {
               dashboardLoading={dashboardLoading}
               signOutLoading={signOutLoading}
               isLoading={signOutLoading || dashboardLoading}
+              disabled={isTransitioning}
             />
           </CardContent>
         </Card>

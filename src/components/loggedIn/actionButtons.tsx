@@ -1,14 +1,15 @@
-"use client";
+'use client'
 
-import { Button } from "@/components/ui/button";
-import { CalendarDays, LogOut, Loader2 } from "lucide-react";
+import { Button } from '@/components/ui/button'
+import { CalendarDays, LogOut, Loader2 } from 'lucide-react'
 
 interface ActionButtonsProps {
-  handleMatters: () => void;
-  handleSignOut: () => void;
-  dashboardLoading: boolean;
-  signOutLoading: boolean;
-  isLoading: boolean;
+  handleMatters: () => void
+  handleSignOut: () => void
+  dashboardLoading: boolean
+  signOutLoading: boolean
+  isLoading: boolean
+  disabled?: boolean
 }
 
 export default function ActionButtons({
@@ -17,6 +18,7 @@ export default function ActionButtons({
   dashboardLoading,
   signOutLoading,
   isLoading,
+  disabled = false,
 }: ActionButtonsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
@@ -44,7 +46,7 @@ export default function ActionButtons({
         variant="outline"
         className="border-[#2a3563] dark:border-[#8A91D9] hover:cursor-pointer text-[#2a3563] dark:text-[#8A91D9] hover:bg-[#2a3563]/10 dark:hover:bg-[#8A91D9]/10 py-6 rounded-lg flex items-center justify-center gap-2 transition-all"
         onClick={handleSignOut}
-        disabled={isLoading}
+        disabled={isLoading || disabled}
       >
         {signOutLoading ? (
           <>
@@ -59,5 +61,5 @@ export default function ActionButtons({
         )}
       </Button>
     </div>
-  );
+  )
 }
