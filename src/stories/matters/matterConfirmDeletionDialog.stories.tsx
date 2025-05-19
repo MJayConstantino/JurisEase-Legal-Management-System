@@ -3,7 +3,7 @@ import React from "react";
 import { MatterConfirmDeletionDialog } from "@/components/matters/matterConfirmDeletionDialog";
 import { action } from "@storybook/addon-actions";
 import { mockMatters } from "./mockMatters";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 
 const sampleMatter = mockMatters[0];
 

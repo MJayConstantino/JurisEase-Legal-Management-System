@@ -1,7 +1,7 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { MobileBottomNav } from "@/components/sidebar/mobileNavMenu";
 
-import { ModeToggle } from "@/components/mode-toggle";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 import CreateNewButton from "./createNewButton";
 import DesktopSearch from "./globalSearch/desktopSearch";
 

@@ -34,7 +34,7 @@ export default function MatterDetailLoading() {
         <div className="border-b">
           <div className="flex gap-2 p-2">
             {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className="h-10 w-[390px]" />
+              <Skeleton key={i} className="h-10 w-[500px]" />
             ))}
           </div>
         </div>

@@ -20,18 +20,28 @@ export async function getMatters() {
 }
 
 export async function getMatterById(matterId: string) {
-  const { data, error } = await supabase
-    .from("matters")
-    .select("*")
-    .eq("matter_id", matterId)
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("matters")
+      .select("*")
+      .eq("matter_id", matterId)
+      .single();
 
-  if (error) {
+    if (error) {
+      // For "no rows returned" errors, just return null without logging
+      if (error.code === "PGRST116") {
+        return null;
+      }
+
+      console.error("Error fetching matter:", error);
+      return null;
+    }
+
+    return data as Matter;
+  } catch (error) {
     console.error("Error fetching matter:", error);
     return null;
   }
-
-  return data as Matter;
 }
 
 export async function createMatter(matter: Omit<Matter, "matter_id">) {
