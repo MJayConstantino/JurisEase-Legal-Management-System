@@ -1,18 +1,18 @@
-import type React from 'react'
-import { ThemeProvider } from '@/components/theme-provider'
-import { SidebarProvider } from '@/components/ui/sidebar'
-import { AppSidebar } from '@/components/sidebar/appSidebar'
-import { Header } from '@/components/header/header'
-import { ActiveLinkScript } from '@/components/active-link-script'
-import '../globals.css'
-import { protectRoute } from '@/utils/supabase/server'
+import type React from "react";
+import { ThemeProvider } from "@/components/ui/theme-provider";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/sidebar/appSidebar";
+import { Header } from "@/components/header/header";
+import { ActiveLinkScript } from "@/components/ui/active-link-script";
+import "../globals.css";
+import { protectRoute } from "@/utils/supabase/server";
 
 export default async function DashboardLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
-  await protectRoute()
+  await protectRoute();
   return (
     <ThemeProvider
       attribute="class"
@@ -36,5 +36,5 @@ export default async function DashboardLayout({
         <ActiveLinkScript />
       </SidebarProvider>
     </ThemeProvider>
-  )
+  );
 }
