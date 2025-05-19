@@ -71,7 +71,7 @@ export default function UserLoggedIn(props: any) {
 
           return
         }
-
+        toast.success('Sign out sucess!')
         router.push('/login')
       } catch (error) {
         console.error('Exception during sign out:', error)
