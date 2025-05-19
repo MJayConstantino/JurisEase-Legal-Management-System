@@ -1,68 +1,73 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
-import { createSupabaseClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
-import WelcomeHeader from "@/components/homepage/loggedIn/welcomeHeader";
-import UserProfile from "@/components/homepage/loggedIn/userProfile";
-import ActionButtons from "@/components/homepage/loggedIn/actionButtons";
-import { fetchUserInfoAction } from "@/actions/users";
+import { useEffect, useState } from 'react'
+import { createSupabaseClient } from '@/utils/supabase/client'
+import { useRouter } from 'next/navigation'
+import { Card, CardContent } from '@/components/ui/card'
+import WelcomeHeader from '@/components/homepage/loggedIn/welcomeHeader'
+import UserProfile from '@/components/homepage/loggedIn/userProfile'
+import ActionButtons from '@/components/homepage/loggedIn/actionButtons'
+import { fetchUserInfoAction } from '@/actions/users'
 
 interface UserData {
-  full_name: string;
-  avatar_url: string;
+  full_name: string
+  avatar_url: string
 }
 
 export default function UserLoggedIn(props: any) {
-  const override = props.__storybookMockOverride ?? {};
-  const supabase = createSupabaseClient();
-  const router = useRouter();
-  const [signOutLoading, setSignOutLoading] = useState(override.signOutLoading ?? false);
-  const [dashboardLoading, setDashboardLoading] = useState(override.dashboardLoading ?? false);
-  const [userData, setUserData] = useState<UserData | null>(override.userData ?? null);
-  const [loadingUser, setLoadingUser] = useState(override.loadingUser ?? true);
+  const override = props.__storybookMockOverride ?? {}
+  const supabase = createSupabaseClient()
+  const router = useRouter()
+  const [signOutLoading, setSignOutLoading] = useState(
+    override.signOutLoading ?? false
+  )
+  const [dashboardLoading, setDashboardLoading] = useState(
+    override.dashboardLoading ?? false
+  )
+  const [userData, setUserData] = useState<UserData | null>(
+    override.userData ?? null
+  )
+  const [loadingUser, setLoadingUser] = useState(override.loadingUser ?? true)
 
   useEffect(() => {
     async function fetchUser() {
       try {
-        const data: UserData = await fetchUserInfoAction();
-        setUserData(data);
+        const data: UserData = await fetchUserInfoAction()
+        setUserData(data)
       } catch (error) {
-        console.error("Error fetching user info:", error);
+        console.error('Error fetching user info:', error)
       } finally {
-        setLoadingUser(false);
+        setLoadingUser(false)
       }
     }
-    fetchUser();
-  }, []);
-
+    fetchUser()
+  }, [])
 
   const handleSignOut = async () => {
-    setSignOutLoading(true);
+    setSignOutLoading(true)
 
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut()
 
       if (error) {
-        console.error("Error signing out:", error.message);
-        router.push("/documents?message=Failed to sign out");
-        return;
+        console.error('Error signing out:', error.message)
+        router.push('/documents?message=Failed to sign out')
+        return
       }
 
-      router.push("/login");
+      router.push('/login')
     } catch (error) {
-      console.error("Exception during sign out:", error);
-      router.push("/documents?message=Failed to sign out");
+      console.error('Exception during sign out:', error)
+      router.push('/documents?message=Failed to sign out')
     } finally {
-      setSignOutLoading(false);
+      setSignOutLoading(false)
     }
-  };
+  }
 
   const handleMatters = async () => {
-    setDashboardLoading(true);
-    router.push("/matters");
-  };
+    setDashboardLoading(true)
+    router.push('/matters')
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
@@ -85,10 +90,8 @@ export default function UserLoggedIn(props: any) {
       </main>
 
       <footer className="py-4 text-center text-gray-500 dark:text-gray-400 text-sm transition-colors duration-200">
-        <p>
-          © {new Date().getFullYear()} Dianson Law Office. All rights reserved.
-        </p>
+        <p>© {new Date().getFullYear()} JurisEase. All rights reserved.</p>
       </footer>
     </div>
-  );
+  )
 }
