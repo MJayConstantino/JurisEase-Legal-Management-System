@@ -4,9 +4,9 @@ import { useEffect, useState, useCallback } from "react";
 import { createSupabaseClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
-import WelcomeHeader from "@/components/loggedIn/welcomeHeader";
-import UserProfile from "@/components/loggedIn/userProfile";
-import ActionButtons from "@/components/loggedIn/actionButtons";
+import WelcomeHeader from "./welcomeHeader";
+import UserProfile from "./userProfile";
+import ActionButtons from "./actionButtons";
 import { fetchUserInfoAction } from "@/actions/users";
 
 interface UserData {
@@ -18,6 +18,8 @@ export default function UserLoggedIn(props: any) {
   const override = props.__storybookMockOverride ?? {};
   const supabase = createSupabaseClient();
   const router = useRouter();
+
+  // State management
   const [signOutLoading, setSignOutLoading] = useState(
     override.signOutLoading ?? false
   );
@@ -30,8 +32,9 @@ export default function UserLoggedIn(props: any) {
   const [loadingUser, setLoadingUser] = useState(override.loadingUser ?? true);
   const [dataFetched, setDataFetched] = useState(false);
 
+  // Fetch user data just once
   const fetchUser = useCallback(async () => {
-    if (dataFetched || userData) return; 
+    if (dataFetched || userData) return; // Prevent multiple fetches
 
     setLoadingUser(true);
     try {
@@ -48,6 +51,7 @@ export default function UserLoggedIn(props: any) {
   }, [dataFetched, userData]);
 
   useEffect(() => {
+    // Only fetch if we haven't already and don't have user data
     if (!dataFetched && !userData) {
       fetchUser();
     }
