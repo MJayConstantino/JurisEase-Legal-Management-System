@@ -1,23 +1,25 @@
 "use client";
 
-import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 export function ActiveLinkScript() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Add 'active' class to current path links
-    document.querySelectorAll(`a[href="${pathname}"]`).forEach((link) => {
-      link.classList.add("active");
-    });
+    const links = document.querySelectorAll(
+      'a[href^="/matters"], a[href^="/tasks"], a[href^="/billings"]'
+    );
 
-    return () => {
-      // Clean up when pathname changes
-      document.querySelectorAll("a.active").forEach((link) => {
+    links.forEach((link) => {
+      const href = link.getAttribute("href") || "";
+
+      if (pathname.startsWith(href)) {
+        link.classList.add("active");
+      } else {
         link.classList.remove("active");
-      });
-    };
+      }
+    });
   }, [pathname]);
 
   return null;
