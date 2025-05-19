@@ -1,4 +1,5 @@
 import type React from "react";
+import { cookies } from "next/headers";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebar/appSidebar";
@@ -13,6 +14,11 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }>) {
   await protectRoute();
+
+  const cookieStore = await cookies();
+  const sidebarState = cookieStore.get("sidebar_state");
+  const defaultOpen = sidebarState ? sidebarState.value === "true" : true;
+
   return (
     <ThemeProvider
       attribute="class"
@@ -20,15 +26,12 @@ export default async function DashboardLayout({
       enableSystem
       disableTransitionOnChange
     >
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={defaultOpen}>
         <div className="flex min-h-screen w-screen flex-col">
           <Header />
           <div className="flex flex-1 overflow-hidden pt-16">
             <AppSidebar />
-            <main
-              className="flex-1 overflow-auto bg-white dark:bg-neutral-800 p-6 transition-all duration-300 
-                    md:group-data-[state=expanded]"
-            >
+            <main className="flex-1 overflow-auto bg-white dark:bg-neutral-800 p-6 transition-all duration-300 ease-in-out">
               {children}
             </main>
           </div>
