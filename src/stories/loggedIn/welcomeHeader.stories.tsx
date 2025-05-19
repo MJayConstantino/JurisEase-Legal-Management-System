@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import WelcomeHeader from "@/components/homepage/loggedIn/welcomeHeader";
+import WelcomeHeader from "@/components/loggedIn/welcomeHeader";
 
 const meta: Meta<typeof WelcomeHeader> = {
   title: "Logged In/WelcomeHeader",
