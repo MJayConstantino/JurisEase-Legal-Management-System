@@ -1,10 +1,12 @@
 "use client";
 
+import type React from "react";
 import { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { LayoutDashboard, CheckSquare, DollarSign } from "lucide-react";
 import { MatterTaskPage } from "./matterTabsPage/matterTaskPage";
 import { MatterBillingPage } from "./matterTabsPage/matterBillingPage";
+import { getCookie, setCookie } from "@/utils/cookies";
 
 interface MatterTabsProps {
   children: React.ReactNode;
@@ -13,18 +15,20 @@ interface MatterTabsProps {
 
 export function MatterTabs({ children, matterId }: MatterTabsProps) {
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
+  const cookieName = `matter-${matterId}-tab`;
 
   useEffect(() => {
-    const saved =
-      window.localStorage.getItem(`matter-${matterId}-tab`) || "dashboard";
-    setActiveTab(saved);
-  }, [matterId]);
+    // Get tab from cookie or use default
+    const savedTab = getCookie(cookieName) || "dashboard";
+    setActiveTab(savedTab);
+  }, [matterId, cookieName]);
 
   useEffect(() => {
     if (activeTab) {
-      window.localStorage.setItem(`matter-${matterId}-tab`, activeTab);
+      // Save tab to cookie
+      setCookie(cookieName, activeTab);
     }
-  }, [activeTab, matterId]);
+  }, [activeTab, matterId, cookieName]);
 
   if (!activeTab) {
     return null;

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import UserLoggedIn from "@/components/homepage/loggedIn/userLoggedIn";
+import UserLoggedIn from "@/components/loggedIn/userLoggedIn";
 import React, { useState, useEffect } from "react";
 
 const mockUserData = {
@@ -13,7 +13,7 @@ const mockSuccessfulFetch = async () => {
 };
 
 const mockLoadingFetch = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 1000000000)); 
+  await new Promise((resolve) => setTimeout(resolve, 1000000000));
   return mockUserData;
 };
 
@@ -81,19 +81,22 @@ export const SignOutLoading: Story = {
       (global as any).fetchUserInfoAction = mockSuccessfulFetch;
 
       const MockUserLoggedInWithLoading = () => {
-        const [UserLoggedInComponent, setLoaded] = useState<React.ReactNode>(null);
+        const [UserLoggedInComponent, setLoaded] =
+          useState<React.ReactNode>(null);
 
         useEffect(() => {
-          import("@/components/homepage/loggedIn/userLoggedIn").then(({ default: Component }) => {
-            setLoaded(
-              <ComponentOverride
-                Component={Component}
-                mockUserData={mockUserData}
-                signOutLoading={true}
-                dashboardLoading={false}
-              />
-            );
-          });
+          import("@/components/loggedIn/userLoggedIn").then(
+            ({ default: Component }) => {
+              setLoaded(
+                <ComponentOverride
+                  Component={Component}
+                  mockUserData={mockUserData}
+                  signOutLoading={true}
+                  dashboardLoading={false}
+                />
+              );
+            }
+          );
         }, []);
 
         return <>{UserLoggedInComponent}</>;
@@ -110,19 +113,22 @@ export const DashboardLoading: Story = {
       (global as any).fetchUserInfoAction = mockSuccessfulFetch;
 
       const MockUserLoggedInWithLoading = () => {
-        const [UserLoggedInComponent, setLoaded] = useState<React.ReactNode>(null);
+        const [UserLoggedInComponent, setLoaded] =
+          useState<React.ReactNode>(null);
 
         useEffect(() => {
-          import("@/components/homepage/loggedIn/userLoggedIn").then(({ default: Component }) => {
-            setLoaded(
-              <ComponentOverride
-                Component={Component}
-                mockUserData={mockUserData}
-                signOutLoading={false}
-                dashboardLoading={true}
-              />
-            );
-          });
+          import("@/components/loggedIn/userLoggedIn").then(
+            ({ default: Component }) => {
+              setLoaded(
+                <ComponentOverride
+                  Component={Component}
+                  mockUserData={mockUserData}
+                  signOutLoading={false}
+                  dashboardLoading={true}
+                />
+              );
+            }
+          );
         }, []);
 
         return <>{UserLoggedInComponent}</>;

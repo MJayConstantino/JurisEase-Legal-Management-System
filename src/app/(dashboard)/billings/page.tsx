@@ -5,17 +5,17 @@ import BillingsLoading from "./loading";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Billings | Dianson Law Office",
+  title: "Billings | JurisEase",
   description: "View and manage your bills",
 };
 
 export default async function BillingsPage() {
-  const { bills = [], allMatters = [] } = await handleFetchBills()
+  const { bills = [], allMatters = [] } = await handleFetchBills();
 
   return (
     <div className="flex flex-col gap-6 h-full">
-      <Suspense fallback={<BillingsLoading/>}/>
+      <Suspense fallback={<BillingsLoading />} />
       <BillingInterface bills={bills} allMatters={allMatters} />
     </div>
-  )
+  );
 }

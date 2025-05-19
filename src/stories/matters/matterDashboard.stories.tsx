@@ -1,9 +1,23 @@
-// stories/MatterDashboard.stories.tsx
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { MatterDashboard } from "@/components/matters/matterDashboard";
 import { mockMatters } from "./mockMatters";
-import { within, userEvent } from "@storybook/testing-library";
+
+// Add mock users for the stories
+const mockUsers = [
+  {
+    user_id: "1",
+    user_name: "John Doe",
+    user_email: "john.doe@example.com",
+    role: "attorney",
+  },
+  {
+    user_id: "2",
+    user_name: "Jane Smith",
+    user_email: "jane.smith@example.com",
+    role: "paralegal",
+  },
+];
 
 const sampleMatter = mockMatters[0];
 const incompleteMatter = mockMatters[1];
@@ -32,6 +46,7 @@ type Story = StoryObj<typeof MatterDashboard>;
 export const Default: Story = {
   args: {
     matter: sampleMatter,
+    users: mockUsers,
   },
 };
 
@@ -42,6 +57,7 @@ export const Default: Story = {
 export const IncompleteData: Story = {
   args: {
     matter: incompleteMatter,
+    users: mockUsers,
   },
 };
 
@@ -52,6 +68,7 @@ export const IncompleteData: Story = {
 export const DarkMode: Story = {
   args: {
     matter: mockMatters[0],
+    users: mockUsers,
   },
   decorators: [
     // Optionally wrap in a dark background container to simulate dark theme
