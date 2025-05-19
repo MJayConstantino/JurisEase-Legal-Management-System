@@ -14,6 +14,13 @@ export async function generateMetadata({
 }) {
   try {
     const { matterId } = await params;
+
+    if (!matterId) {
+      return {
+        title: "Matter Not Found | JurisEase",
+      };
+    }
+
     const matter = await getMatterById(matterId);
 
     if (!matter) {
@@ -27,7 +34,6 @@ export async function generateMetadata({
       description: `Details for matter ${matter.matter_id}: ${matter.name}`,
     };
   } catch (error) {
-    console.error("Error generating metadata:", error);
     return {
       title: "Error | JurisEase",
     };
@@ -41,26 +47,30 @@ export default async function MatterDetailPage({
 }) {
   try {
     const { matterId } = await params;
-    const [matter, users] = await Promise.all([
-      getMatterById(matterId),
-      fetchUsersAction(),
-    ]);
+
+    if (!matterId) {
+      notFound();
+    }
+
+    const matter = await getMatterById(matterId);
 
     if (!matter) {
       notFound();
     }
 
+    const users = await fetchUsersAction();
+
     return (
       <div className="flex flex-col gap-6 h-full">
-        <Suspense fallback={<MatterDetailLoading />} />
         <MatterHeader matter={matter} />
         <MatterTabs matterId={matter.matter_id}>
-          <MatterDashboard matter={matter} users={users} />
+          <Suspense fallback={<MatterDetailLoading />}>
+            <MatterDashboard matter={matter} users={users} />
+          </Suspense>
         </MatterTabs>
       </div>
     );
   } catch (error) {
-    console.error("Error loading matter details:", error);
     notFound();
   }
 }
