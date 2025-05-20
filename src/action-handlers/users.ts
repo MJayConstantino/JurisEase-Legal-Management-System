@@ -25,16 +25,26 @@ export const handleSignUpSubmit = async (formData: FormData) => {
 export const handleGoogleSignIn = async () => {
   try {
     const supabase = createSupabaseClient()
-    const { error } = await supabase.auth.signInWithOAuth({
+    const redirectLink = `${window.location.origin}/auth/callback`
+    const authWindow = window.open('', '_blank')
+
+    if (!authWindow) {
+      console.error('Popup blocked or failed to open.')
+      return { error: 'Failed to open authentication window.' }
+    }
+    window.open('about:blank', '_self')?.close()
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: redirectLink,
+        skipBrowserRedirect: true,
       },
     })
 
     if (error) {
       return { error: 'Failed Google Login: ' + error.message }
     }
+    authWindow.location.href = data.url
 
     return { error: null }
   } catch (err: any) {
