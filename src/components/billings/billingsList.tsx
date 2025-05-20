@@ -2,11 +2,12 @@
 
 import type React from "react"
 
-import { ArrowUpDown } from "lucide-react"
-import type { Bill, SortField } from "@/types/billing.type"
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react"
+import type { Bill, SortDirection, SortField } from "@/types/billing.type"
 import { BillingsItem } from "@/components/billings/billingsItem"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Matter } from "@/types/matter.type"
+import { Button } from "../ui/button"
 
 interface BillingsListProps {
   matters: Matter[]
@@ -14,10 +15,11 @@ interface BillingsListProps {
   bills: Bill[]
   onUpdate: (bill: Bill) => void
   onDelete: (id: string) => void
-  isLoading?: boolean
   sortField: SortField | null
+  sortDirection: SortDirection
   onSortChange: (field: SortField) => void
   hideMatterColumn?: boolean
+  isLoading?:boolean
 }
 
 export function BillingsList({
@@ -25,116 +27,94 @@ export function BillingsList({
   matters,
   onUpdate,
   onDelete,
-  isLoading = false,
   sortField,
   onSortChange,
+  sortDirection,
+  isLoading,
   hideMatterColumn = false
 }: BillingsListProps) {
 
-  return (
-    <div className="overflow-x-auto w-full">
-      <div className={`${hideMatterColumn ? "min-w-[650px]" : "min-w-[800px]"} px-4 sm:px-0`}>
-        <Table className="w-full table-fixed">
-          <TableHeader className="bg-gray-100 dark:bg-gray-900">
-            <TableRow className="text-sm md:text-base">
-              <TableHead className="w-[5%] text-center text-sm md:text-base">#</TableHead>
-              {!hideMatterColumn && (
-                <TableHead className="w-[20%]">
-                <div className="flex items-center cursor-pointer" onClick={() => onSortChange("matterName")}>
-                    Matter Name
-                    <ArrowUpDown
-                      className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "matterName" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
-                    />
-                  </div>
-                </TableHead>
-              )}
-              <TableHead className="w-[15%]">
-                <div className="flex items-center cursor-pointer" onClick={() => onSortChange("name")}>
-                  Bill Name
-                  <ArrowUpDown
-                    className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "name" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
-                  />
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="ml-2 h-4 w-4" />;
+    }
+    return sortDirection === "asc" ? (
+      <ArrowUp className="ml-2 h-4 w-4" />
+    ) : (
+      <ArrowDown className="ml-2 h-4 w-4" />
+    );
+  };
 
-                </div>
+  const renderSortableHeader = (field: SortField, label: string) => (
+    <Button
+      variant="ghost"
+      onClick={() => onSortChange(field)}
+      className="p-0 h-auto font-semibold flex items-center hover:bg-transparent whitespace-nowrap overflow-hidden text-ellipsis"
+    >
+      {label} {getSortIcon(field)}
+    </Button>
+  );
+
+  return (
+    <div className="overflow-x-auto overflow-y-auto w-full">
+      <Table className="table-auto">
+        <TableHeader className="bg-gray-100 dark:bg-gray-900 sticky top-0 z-10">
+          <TableRow className="text-sm md:text-base">
+            <TableHead className="w-[20%]">
+              {renderSortableHeader("name", "Bill Name")}
+            </TableHead>
+            {!hideMatterColumn && (
+              <TableHead className="w-[25%]">
+                {renderSortableHeader("matterName", "Matter Name")}
               </TableHead>
-              <TableHead className="w-[10%]">
-                <div className="flex items-center cursor-pointer" onClick={() => onSortChange("amount")}>
-                  Amount
-                  <ArrowUpDown
-                    className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "amount" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
-                  />
-                  
-                </div>
-              </TableHead>
-              <TableHead className="w-[10%]">
-                <div className="flex items-center cursor-pointer" onClick={() => onSortChange("created_at")}>
-                  Created At
-                  <ArrowUpDown
-                    className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "created_at" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
-                  />
-                 
-                </div>
-              </TableHead>
-              <TableHead className="w-[10%]">
-                <div className="flex items-center cursor-pointer" onClick={() => onSortChange("status")}>
-                  Status
-                  <ArrowUpDown
-                    className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "status" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
-                  />
-                 
-                </div>
-              </TableHead>
-              <TableHead className={`${hideMatterColumn ? "w-[20%]" : "w-[15%]"}`}>
-                <div className="flex items-center cursor-pointer" onClick={() => onSortChange("remarks")}>
-                  Remarks
-                  <ArrowUpDown
-                    className={`ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4 ${sortField === "remarks" ? "text-indigo-900 dark:text-indigo-300" : "text-gray-400 dark:text-gray-500"}`}
-                  />
-                  
-                </div>
-              </TableHead>
-              <TableHead className="w-[13%] text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={hideMatterColumn ? 7 : 8}
-                  className="text-center py-6 md:py-8 text-muted-foreground text-sm md:text-base"
-                >
-                  Loading bills...
-                </TableCell>
-              </TableRow>
-            ) : bills.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={hideMatterColumn ? 7 : 8}
-                  className="text-center py-6 md:py-8 text-muted-foreground text-sm md:text-base"
-                >
-                  No bills found. Add a new bill to get started.
-                </TableCell>
-              </TableRow>
-            ) : (
-              bills.map((bill, index) => {
-                const currentMatter = matters.find((m) => m.matter_id === bill.matter_id)
-                return (
-                  <BillingsItem
-                    key={bill.bill_id}
-                    bill={bill}
-                    matter={currentMatter}
-                    matters={matters}
-                    onUpdate={onUpdate}
-                    onDelete={onDelete}
-                    index={index + 1}
-                    hideMatterColumn={hideMatterColumn}
-                />
-                )
-              })
             )}
-          </TableBody>
-        </Table>
-      </div>
+            <TableHead className="w-[15%]">
+              {renderSortableHeader("amount", "Amount")}
+            </TableHead>
+            <TableHead className={`${hideMatterColumn ? "w-[20%]" : "w-[15%]"}`}>
+              {renderSortableHeader("remarks", "Remarks")}
+            </TableHead>
+            <TableHead className="w-[10%]">Status</TableHead>
+            <TableHead className="w-[10%]">
+              {renderSortableHeader("created_at", "Date Billed")}
+            </TableHead>
+            <TableHead className="w-[5%] pr-5 text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {isLoading ? (
+            <TableRow>
+              <TableCell
+                colSpan={hideMatterColumn ? 7 : 8}
+                className="text-center py-6 md:py-8 text-muted-foreground text-sm md:text-base"
+              >
+                Loading Bills...
+              </TableCell>
+            </TableRow>
+          ) : bills.length > 0 ? (
+            bills.map((bill, index) => (
+              <BillingsItem
+                key={bill.bill_id}
+                bill={bill}
+                matters={matters}
+                onUpdate={onUpdate}
+                onDelete={onDelete}
+                index={index + 1}
+                hideMatterColumn={hideMatterColumn}
+              />
+            ))
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={hideMatterColumn ? 7 : 8}
+                className="text-center py-6 md:py-8 text-muted-foreground text-sm md:text-base"
+              >
+                No bills found. Add a new bill to get started.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </div>
   )
 }

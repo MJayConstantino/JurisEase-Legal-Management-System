@@ -65,12 +65,13 @@ export function EditUsername({
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               className="w-64"
+              maxLength={30}
             />
             <div>
-              <Button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-500">
+              <Button onClick={handleSave} className="bg-[#1B1E4B] text-white rounded-t-md cursor-pointer pr-4 hover:bg-[#25305B]">
                 Save
               </Button>
-              <Button variant="outline" onClick={handleCancel}>
+              <Button variant="outline" onClick={handleCancel} className="ml-1 hover:bg-gray-200 dark:hover:bg-gray-700">
                 Cancel
               </Button>
             </div>
@@ -79,11 +80,11 @@ export function EditUsername({
       ) : (
         <>
           <div className="flex-1 flex flex-col md:flex-row justify-center items-center md:items-center gap-2">
-            <div className="max-w-auto truncate pr-5">
+            <div className="max-w-auto truncate pr-5" title={user.user_name}>
               <UsernameDisplay username={user.user_name}/>
             </div>
           
-            <Button className="bg-transparent hover:bg-indigo-500" onClick={() => setIsEditing(true)}>
+            <Button className="bg-transparent hover:bg-gray-200 dark:hover:bg-gray-700" onClick={() => setIsEditing(true)}>
               <PencilIcon className="text-black dark:text-white"/>
             </Button>
           </div>

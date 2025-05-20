@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search } from 'lucide-react'
+import { Search, XIcon } from 'lucide-react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -18,6 +18,8 @@ import type {
   SearchResult,
 } from './types'
 import { search } from '@/actions/globalSearch'
+import { debounce } from 'lodash'
+
 import { DialogTitle } from '@radix-ui/react-dialog'
 
 interface SearchDialogProps {
@@ -28,6 +30,8 @@ interface SearchDialogProps {
 export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
   const router = useRouter()
   const inputRef = useRef<HTMLInputElement>(null)
+  // debounce should be longer if DB is in too much ram usage to prevent search errors
+  const debounceTime = 500
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('')
@@ -53,12 +57,11 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
       bills: true,
     })
 
-  // Reset state when dialog opens/closes
   useEffect(() => {
     if (open && inputRef.current) {
       setTimeout(() => {
         inputRef.current?.focus()
-        // Don't perform initial search - start with empty results
+
         setAllResults([])
         setDisplayedResults([])
         setCurrentPage(1)
@@ -73,20 +76,35 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
     }
   }, [open])
 
+  // debounced search ensures that it's only fired after certain time - 500ms
+  const debouncedSearch = debounce((query: string) => {
+    performSearch(query)
+  }, debounceTime)
+
+  // memoized Filters ensure that api endpoint to prevent unecessary executions
+  const memoizedFilters = useMemo(
+    () => ({
+      searchQuery,
+      searchByFilters,
+      contentTypeFilters,
+    }),
+
+    [searchQuery, searchByFilters, contentTypeFilters]
+  )
   // Perform search when query or filters change
 
   useEffect(() => {
-    // Only search if there's a query
-    if (searchQuery.trim()) {
-      performSearch(searchQuery)
+    if (memoizedFilters.searchQuery.trim()) {
+      debouncedSearch(memoizedFilters.searchQuery)
     } else {
-      // Clear results if search is empty
       setAllResults([])
       setDisplayedResults([])
       setCurrentPage(1)
     }
+
+    return () => debouncedSearch.cancel()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, searchByFilters, contentTypeFilters])
+  }, [memoizedFilters])
 
   // Update displayed results when page changes or all results update
   useEffect(() => {
@@ -177,29 +195,32 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
       <DialogTitle className="sr-only">Search Dialog</DialogTitle>
       <DialogContent
         role="dialog"
-        className="w-[calc(100%-2rem)] sm:max-w-xl max-h-[90vh] p-4 sm:p-6 overflow-hidden"
+        className="w-[calc(100%-2rem)] sm:max-w-xl max-h-[90vh] p-4 sm:p-6 overflow-hidden bg-accent "
       >
         {/* Make the entire content area scrollable */}
-        <div className="max-h-[calc(90vh-2rem)] overflow-y-auto pr-2">
+        <div className="max-h-[calc(90vh-2rem)] overflow-y-auto pr-2 scrollbar-hide">
           {/* Search input area - sticky at the top */}
-          <div className="flex items-center border-b border-border pb-4 sticky top-0 bg-background z-10">
-            <Search className="h-5 w-5 text-muted-foreground mr-2 flex-shrink-0" />
+          <div className="flex items-center border-b border-border pb-4 sticky top-0  z-10">
+            <Search className="h-5 w-5 text-muted-foreground mr-2 flex-shrink-0 hidden sm:block" />
             <Input
               aria-label="DialogBoxSearch"
               ref={inputRef}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for matters, bills, tasks..."
-              className="border-0 p-0 focus-visible:ring-0 text-lg flex-1 text-foreground placeholder:text-muted-foreground"
+              className="border-0 p-0 focus-visible:ring-0 text-lg flex-1 text-foreground placeholder:text-muted-foreground placeholder:text-xs sm:placeholder:text-sm "
             />
             <Button
-              variant="outline"
+              variant="secondary"
               size="sm"
               aria-label="Clear"
               onClick={handleClearSearch}
-              className="ml-2 whitespace-nowrap"
+              className="ml-2 whitespace-nowrap cursor-pointer hover:text-muted-foreground"
             >
-              Clear
+              <span className="hidden sm:block">Clear</span>
+              <span>
+                <XIcon className="hover:text-muted-foreground" />
+              </span>
             </Button>
           </div>
 

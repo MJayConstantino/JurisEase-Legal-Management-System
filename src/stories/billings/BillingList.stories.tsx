@@ -7,6 +7,8 @@ const meta: Meta<typeof BillingsList> = {
   component: BillingsList,
 }
 
+const sortDirection = "desc"
+
 export default meta
 type Story = StoryObj<typeof BillingsList>
 
@@ -20,8 +22,8 @@ export const WithBills: Story = {
         onDelete={(id) => console.log("Bill deleted:", id)}
         sortField={null}
         onSortChange={(field) => console.log("Sort field changed:", field)}
-        isLoading={false}
-      />
+        isLoading={false} 
+        sortDirection={sortDirection}      />
     </div>
   ),
 }
@@ -37,6 +39,7 @@ export const LoadingBills: Story = {
         sortField={null}
         onSortChange={(field) => console.log("Sort field changed:", field)}
         isLoading={true}
+        sortDirection={sortDirection}   
       />
     </div>
   ),
@@ -53,6 +56,7 @@ export const Empty: Story = {
         sortField={null}
         onSortChange={(field) => console.log("Sort field changed:", field)}
         isLoading={false}
+        sortDirection={sortDirection}   
       />
     </div>
   ),
@@ -70,6 +74,7 @@ export const MatterBillingWithBills: Story = {
         onSortChange={(field) => console.log("Sort field changed:", field)}
         isLoading={false}
         hideMatterColumn={true}
+        sortDirection={sortDirection}   
       />
     </div>
   ),
@@ -87,6 +92,7 @@ export const MatterBillingLoading: Story = {
         onSortChange={(field) => console.log("Sort field changed:", field)}
         isLoading={true}
         hideMatterColumn={true}
+        sortDirection={sortDirection}  
       />
     </div>
   ),
@@ -104,6 +110,7 @@ export const MatterBillingEmpty: Story = {
         onSortChange={(field) => console.log("Sort field changed:", field)}
         isLoading={false}
         hideMatterColumn={true}
+        sortDirection={sortDirection}  
       />
     </div>
   ),

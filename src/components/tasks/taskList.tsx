@@ -1,12 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import type { Task } from "@/types/task.type";
 import type { Matter } from "@/types/matter.type";
 import { TaskCard } from "./taskCard";
 import { TasksHeader } from "./taskHeader";
-import { handleFetchMatters } from "@/action-handlers/matters";
-import { handleFetchTasks } from "@/action-handlers/tasks";
+import {
+  handleFetchMatterById,
+  handleFetchMatters,
+} from "@/action-handlers/matters";
+import {
+  handleFetchTasks,
+  handleFetchTasksByMatterId,
+} from "@/action-handlers/tasks";
 import { toast } from "sonner";
 import { isTaskOverdue } from "@/utils/taskHandlers";
 import { TaskTable } from "./taskTable";
@@ -14,94 +20,138 @@ import { TaskTable } from "./taskTable";
 export interface TaskListProps {
   initialTasks: Task[];
   matterId?: string;
+  tasks?: Task[];
+  onTaskCreated?: (newTask: Task) => void;
 }
 
-export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+export function TaskList({
+  initialTasks = [],
+  matterId,
+  tasks: externalTasks,
+  onTaskCreated,
+}: TaskListProps) {
+  const [tasks, setTasks] = useState<Task[]>(externalTasks ?? initialTasks);
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [view, setView] = useState<"grid" | "table">("grid");
+  const [view, setView] = useState<"grid" | "table">("table");
   const [matters, setMatters] = useState<Matter[]>([]);
   const [isLoadingMatters, setIsLoadingMatters] = useState(true);
   const [isLoadingTasks, setIsLoadingTasks] = useState(false);
 
-  useEffect(() => {
-    console.log("Fetching tasks...");
-    async function fetchTasks() {
-      try {
-        setIsLoadingTasks(true);
-        const result = await handleFetchTasks();
+  const fetchTasks = useCallback(async () => {
+    if (initialTasks.length > 0) {
+      return;
+    }
 
-        console.log("Fetched tasks:", result);
-        if (result.error) {
-          throw new Error(result.error);
+    try {
+      setIsLoadingTasks(true);
+      let result;
+
+      if (matterId) {
+        result = await handleFetchTasksByMatterId(matterId);
+      } else {
+        result = await handleFetchTasks();
+      }
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      setTasks(result.tasks);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    } finally {
+      setIsLoadingTasks(false);
+    }
+  }, [initialTasks.length, matterId]);
+
+  const fetchMatters = useCallback(async () => {
+    try {
+      setIsLoadingMatters(true);
+      if (matterId) {
+        const { matter, error } = await handleFetchMatterById(matterId);
+        if (error) {
+          throw new Error(error);
+        }
+        if (matter) {
+          setMatters([matter]);
+        }
+      } else {
+        const { matters: matterData, error } = await handleFetchMatters();
+        if (error) {
+          throw new Error(error);
         }
 
-        setTasks(result.tasks);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      } finally {
-        setIsLoadingTasks(false);
-      }
-    }
+        // Use Set to ensure uniqueness by matter_id
+        const uniqueMatterIds = new Set();
+        const uniqueMatters = matterData.filter((matter) => {
+          if (uniqueMatterIds.has(matter.matter_id)) return false;
+          uniqueMatterIds.add(matter.matter_id);
+          return true;
+        });
 
-    if (!initialTasks || initialTasks.length === 0) {
-      fetchTasks();
+        setMatters(uniqueMatters);
+      }
+    } catch (error) {
+      console.error("Error fetching matters:", error);
+      toast.error("Failed to load matters");
+    } finally {
+      setIsLoadingMatters(false);
     }
-  }, [initialTasks]);
+  }, [matterId]);
 
   useEffect(() => {
-    console.log("Fetching matters...");
-    async function fetchMatters() {
-      try {
-        setIsLoadingMatters(true);
-        const { matters: matterData }: { matters: Matter[] } =
-          await handleFetchMatters();
-        console.log("Fetched matters:", matterData);
-        const uniqueMatters = matterData.filter(
-          (matter, index, self) =>
-            index === self.findIndex((m) => m.matter_id === matter.matter_id)
-        );
-        setMatters(uniqueMatters);
-      } catch (error) {
-        console.error("Error fetching matters:", error);
-        toast.error("Failed to load matters");
-      } finally {
-        setIsLoadingMatters(false);
-      }
-    }
+    fetchTasks();
     fetchMatters();
+  }, [fetchTasks, fetchMatters]);
+
+  useEffect(() => {
+    if (externalTasks) {
+      setTasks(externalTasks);
+    }
+  }, [externalTasks]);
+
+  const handleTaskCreated = useCallback(
+    (newTask: Task) => {
+      setTasks((prev) => [newTask, ...prev]);
+      if (onTaskCreated) {
+        onTaskCreated(newTask);
+      }
+    },
+    [onTaskCreated]
+  );
+
+  const handleTaskUpdated = useCallback((updatedTask: Task) => {
+    setTasks((prev) => {
+      return prev.map((task) =>
+        task.task_id === updatedTask.task_id ? updatedTask : task
+      );
+    });
   }, []);
 
-  const handleTaskCreated = (newTask: Task) => {
-    setTasks((prev) => [newTask, ...prev]);
-  };
+  const handleTaskDeleted = useCallback((taskId: string) => {
+    setTasks((prev) => {
+      return prev.filter((t) => t.task_id !== taskId);
+    });
+  }, []);
 
-  const handleTaskUpdated = (updatedTask: Task) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.task_id === updatedTask.task_id ? updatedTask : task
-      )
-    );
-  };
+  const filteredTasks = useMemo(() => {
+    const filtered = tasks.filter((task) => {
+      if (matterId && task.matter_id !== matterId) return false;
+      if (statusFilter === "all") return true;
+      if (statusFilter === "overdue") {
+        return isTaskOverdue(task.due_date ?? undefined, task.status);
+      }
+      return (
+        task.status === statusFilter &&
+        !isTaskOverdue(task.due_date ?? undefined, task.status)
+      );
+    });
 
-  const handleTaskDeleted = (taskId: string) => {
-    setTasks((prev) => prev.filter((t) => t.task_id !== taskId));
-  };
-
-  const filteredTasks = tasks.filter((task) => {
-    if (matterId && task.matter_id !== matterId) return false;
-    if (statusFilter === "all") return true;
-    if (statusFilter === "overdue") {
-      return isTaskOverdue(task.due_date ?? undefined, task.status);
-    }
-    return (
-      task.status === statusFilter &&
-      !isTaskOverdue(task.due_date ?? undefined, task.status)
-    );
-  });
+    return filtered;
+  }, [tasks, statusFilter, matterId]);
 
   return (
-    <div className="border w-full container mx-auto py-4 pt-2 h-full flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md">
+    <div className="border w-full container mx-auto h-auto flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900 rounded-lg shadow mb-[56px] md:mb-0">
       <TasksHeader
         onStatusChange={setStatusFilter}
         onViewChange={setView}
@@ -110,7 +160,7 @@ export function TaskList({ initialTasks = [], matterId }: TaskListProps) {
         matters={matters}
         matterId={matterId}
       />
-      <div className="flex-grow overflow-y-auto w-full">
+      <div className="flex-grow overflow-y-auto w-full pb-4">
         {isLoadingTasks ? (
           <div className="flex justify-center items-center h-64">
             <p className="text-muted-foreground">Loading tasks...</p>

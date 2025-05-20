@@ -1,13 +1,14 @@
+"use server"
 
 import type { User } from "@/types/user.type"
 import { supabase } from "@/lib/supabase"
-// import { data } from "cypress/types/jquery";
-// import { userAgent } from "next/server";
+import { revalidatePath } from "next/cache";
+import { createSupabaseClient } from '../utils/supabase/server'
 
 export async function updateUsername(user: User){
   const { data, error } = await supabase
     .from("users")
-    .update(user)
+    .update({ user_name: user.user_name })
     .eq("user_id", user.user_id)
     .select()
 
@@ -15,6 +16,7 @@ export async function updateUsername(user: User){
     console.error("Error updating profile name:", error);
     return null;
   }
+  revalidatePath(`/${user.user_id}`)
 
   return data;
 }
@@ -90,6 +92,8 @@ export async function uploadAvatar(file: File, userId: string) {
   } else {
     console.log('Uploaded successfully:', uploadData);
   }
+
+  revalidatePath(`/${userId}`)
 }
 
 export async function findExistingAvatar(userId: string) {
@@ -109,6 +113,7 @@ export async function findExistingAvatar(userId: string) {
       console.error('Error checking avatar existence for', ext, error);
     }
   }
+  revalidatePath(`/${userId}`)
 
   return null;
 }
@@ -124,7 +129,23 @@ export async function fetchUserName(userId: string): Promise<string | null> {
     console.error("Error fetching user name:", error);
     return null;
   }
+  revalidatePath(`/${userId}`)
 
   return data?.user_name || null;
+}
+
+export async function fetchUsersData(userId: string) {
+  const supabase = await createSupabaseClient();
+  const { data, error } = await supabase
+    .from('users')
+    .select('user_id, user_name, user_email')
+    .eq('user_id', userId)
+    .single();
+
+  if (error) {
+    throw new Error('Error fetching user: ' + error.message);
+  }
+
+  return data;
 }
 

@@ -18,10 +18,25 @@ async function cleanupTestCases(affectedIds: string[], table: string) {
   }
 }
 
+async function cleanupTestMatter(matterId: string) {
+  try {
+    const { error } = await supabase
+      .from("matters")
+      .delete()
+      .eq("matter_id", matterId);
+    if (error) throw error;
+    console.log(`Successfully cleaned up test matter: ${matterId}`);
+  } catch (error: any) {
+    console.error(`Error cleaning up test matter: ${matterId}`, error.message);
+  }
+}
+
 console.log("Hello from task-table-api-tests!");
 
 Deno.serve(async (req) => {
-  const { action, data, task_id, table, matter_id } = await req.json().catch(() => ({}));
+  const { action, data, task_id, table, matter_id } = await req
+    .json()
+    .catch(() => ({}));
   const defaultTable = "tasks";
   // Authorization
   const authHeader = req.headers.get("Authorization");
@@ -182,14 +197,50 @@ Deno.serve(async (req) => {
 
     if (action === "RUN_TESTS") {
       const affectedIds: string[] = [];
+
+      // First, create a mock matter
+      const mockMatter = {
+        matter_id: crypto.randomUUID(),
+        name: "Michael Drugs Case",
+        client: "Love Doe",
+        status: "open",
+        date_opened: "2025-01-02T00:00:00.000Z",
+        description: "Criminal case on an arson case.",
+        case_number: "CN-112",
+        created_at: new Date().toISOString(),
+      };
+
+      // Insert the mock matter
+      const { data: insertedMatter, error: matterError } = await supabase
+        .from("matters")
+        .insert(mockMatter)
+        .select("*");
+
+      if (matterError) {
+        console.error("Matter insert error details:", matterError);
+        throw new Error("Matter Insert Error: " + matterError.message);
+      }
+
+      // Check insertedMatter before accessing it
+      if (!insertedMatter || insertedMatter.length === 0) {
+        console.error("No matter data returned after insert");
+        // Use the mock matter object instead of failing
+        console.log("Proceeding with original mock matter data");
+      } else {
+        console.log("Inserted Matter:", insertedMatter[0]);
+      }
+
+      console.log("Mock matter created with ID:", mockMatter.matter_id);
+
+      // Now use the mock matter ID in the task
       const mockTask = {
-        task_id: "24ebc6ee-c5e8-45d5-a8b1-02a9e2271be1",
+        task_id: crypto.randomUUID(),
         name: "Prepare Deposition",
         description: "Prepare deposition for witness",
         status: "in-progress",
         priority: "high",
-        matter_id: "32440999-bd80-47ed-91ed-a5341d6e73d7",
-        due_date: "2023-09-01T00:00:00.000Z"
+        matter_id: mockMatter.matter_id,
+        due_date: "2023-09-01T00:00:00.000Z",
       };
 
       // INSERT
@@ -211,6 +262,16 @@ Deno.serve(async (req) => {
         .single();
       if (selectOneError)
         throw new Error("Select Test Error: " + selectOneError.message);
+
+      // GET_TASKS_BY_MATTER
+      const { error: selectByMatterError } = await supabase
+        .from(table || defaultTable)
+        .select("*")
+        .eq("matter_id", mockMatter.matter_id);
+      if (selectByMatterError)
+        throw new Error(
+          "Select By Matter Test Error: " + selectByMatterError.message
+        );
 
       // UPDATE_ONE
       const { error: updateError } = await supabase
@@ -235,8 +296,20 @@ Deno.serve(async (req) => {
 
       // CLEANUP
       await cleanupTestCases(affectedIds, table || defaultTable);
+
+      // Clean up the test matter
+      await cleanupTestMatter(mockMatter.matter_id);
+
       return new Response(
-        "All test cases executed and cleaned up successfully."
+        JSON.stringify({
+          status: 200,
+          message: "All test cases executed and cleaned up successfully.",
+          details: {
+            matter_id: mockMatter.matter_id,
+            task_id: insertedId,
+          },
+        }),
+        { headers: { "Content-Type": "application/json" }, status: 200 }
       );
     }
 

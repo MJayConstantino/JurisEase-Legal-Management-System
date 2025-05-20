@@ -101,13 +101,9 @@ export function SearchResults({
     }
     if (type === 'Bill') {
       switch (status as BillStatus) {
-        case 'active':
-          return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
-        case 'pending':
-          return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
         case 'paid':
           return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-        case 'overdue':
+        case 'unpaid':
           return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
         default:
           return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
@@ -120,10 +116,10 @@ export function SearchResults({
     <Collapsible
       open={isOpen}
       onOpenChange={setIsOpen}
-      className="w-full overflow-hidden text-ellipsis truncate"
+      className="w-full overflow-hidden text-ellipsis truncate "
     >
       {/* Collapsible header/trigger with result count */}
-      <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium text-foreground hover:bg-muted p-2 rounded-md">
+      <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium text-foreground hover:bg-muted p-2 rounded-md cursor-pointer">
         <div className="flex items-center justify-between w-full">
           <span>Results</span>
           <div className="flex items-center gap-2">
@@ -139,7 +135,7 @@ export function SearchResults({
         </div>
       </CollapsibleTrigger>
 
-      <CollapsibleContent className="pt-2 pb-1">
+      <CollapsibleContent className="pt-2 pb-1 ">
         {/* Loading state */}
         {isSearching ? (
           <div className="flex items-center justify-center h-[200px]">
@@ -199,7 +195,12 @@ export function SearchResults({
                 {/* Pagination */}
                 <div className="flex justify-center pt-2">
                   {hasMore ? (
-                    <Button variant="outline" size="sm" onClick={onLoadMore}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={onLoadMore}
+                      className="cursor-pointer hover:text-muted-foreground"
+                    >
                       Load more
                     </Button>
                   ) : (

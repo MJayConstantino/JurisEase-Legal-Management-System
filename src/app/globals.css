@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @plugin 'tailwindcss-animate';
 
 @custom-variant dark (&:is(.dark *));
@@ -76,6 +76,13 @@
   --sidebar-accent-foreground: 0 0% 100%; /* white */
   --sidebar-border: 240 15% 25%; /* slightly lighter for borders */
   --sidebar-ring: 240 15% 35%; /* for focus rings */
+
+  /* Revenue Headers */
+  --totalrev: oklch(
+    0.21 0.034 264.665
+  ); /* same blueish gray as the table column headers*/
+  --totalrev-hover: oklch(0.225 0.034 264.665); /* lighter version */
+  --selectrev: oklch(0.35 0.034 264.665); /* even lighter version */
 }
 
 @theme inline {
@@ -119,71 +126,71 @@
 
 /* Define Aileron font faces */
 @font-face {
-  font-family: "Aileron";
-  src: url("/public/assets/fonts/Aileron-Thin.otf") format("opentype");
+  font-family: 'Aileron';
+  src: url('/public/assets/fonts/Aileron-Thin.otf') format('opentype');
   font-weight: 100;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "Aileron";
-  src: url("/public/assets/fonts/Aileron-UltraLight.otf") format("opentype");
+  font-family: 'Aileron';
+  src: url('/public/assets/fonts/Aileron-UltraLight.otf') format('opentype');
   font-weight: 200;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "Aileron";
-  src: url("/public/assets/fonts/Aileron-Light.otf") format("opentype");
+  font-family: 'Aileron';
+  src: url('/public/assets/fonts/Aileron-Light.otf') format('opentype');
   font-weight: 300;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "Aileron";
-  src: url("/public/assets/fonts/Aileron-Regular.otf") format("opentype");
+  font-family: 'Aileron';
+  src: url('/assets/fonts/Aileron-Regular.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "Aileron";
-  src: url("/public/assets/fonts/Aileron-Italic.otf") format("opentype");
+  font-family: 'Aileron';
+  src: url('/assets/fonts/Aileron-Italic.otf') format('opentype');
   font-weight: 400;
   font-style: italic;
 }
 
 @font-face {
-  font-family: "Aileron";
-  src: url("/public/assets/fonts/Aileron-SemiBold.otf") format("opentype");
+  font-family: 'Aileron';
+  src: url('/assets/fonts/Aileron-SemiBold.otf') format('opentype');
   font-weight: 600;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "Aileron";
-  src: url("/public/assets/fonts/Aileron-Heavy.otf") format("opentype");
+  font-family: 'Aileron';
+  src: url('/assets/fonts/Aileron-Heavy.otf') format('opentype');
   font-weight: 700;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "Aileron";
-  src: url("/public/assets/fonts/Aileron-Bold.otf") format("opentype");
+  font-family: 'Aileron';
+  src: url('/assets/fonts/Aileron-Bold.otf') format('opentype');
   font-weight: 800;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "Aileron";
-  src: url("/public/assets/fonts/Aileron-Black.otf") format("opentype");
+  font-family: 'Aileron';
+  src: url('/assets/fonts/Aileron-Black.otf') format('opentype');
   font-weight: 900;
   font-style: normal;
 }
 
 /* Apply the Aileron font globally */
 body {
-  font-family: "Aileron", sans-serif;
+  font-family: 'Aileron', sans-serif;
 }
 
 @layer base {
@@ -194,4 +201,14 @@ body {
     @apply bg-background text-foreground;
     /* The font-family is already set above */
   }
+}
+
+/* for hiding scroll bar overflow for mobile */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

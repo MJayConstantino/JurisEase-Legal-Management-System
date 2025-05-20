@@ -3,6 +3,9 @@ import { MatterHeader } from "@/components/matters/matterHeader";
 import { MatterTabs } from "@/components/matters/matterTabs";
 import { MatterDashboard } from "@/components/matters/matterDashboard";
 import { getMatterById } from "@/actions/matters";
+import { fetchUsersAction } from "@/actions/users";
+import MatterDetailLoading from "./loading";
+import { Suspense } from "react";
 
 export async function generateMetadata({
   params,
@@ -11,6 +14,13 @@ export async function generateMetadata({
 }) {
   try {
     const { matterId } = await params;
+
+    if (!matterId) {
+      return {
+        title: "Matter Not Found | JurisEase",
+      };
+    }
+
     const matter = await getMatterById(matterId);
 
     if (!matter) {
@@ -38,22 +48,31 @@ export default async function MatterDetailPage({
 }) {
   try {
     const { matterId } = await params;
+
+    if (!matterId) {
+      notFound();
+    }
+
     const matter = await getMatterById(matterId);
 
     if (!matter) {
       notFound();
     }
 
+    const users = await fetchUsersAction();
+
     return (
       <div className="flex flex-col gap-6 h-full">
         <MatterHeader matter={matter} />
         <MatterTabs matterId={matter.matter_id}>
-          <MatterDashboard matter={matter} />
+          <Suspense fallback={<MatterDetailLoading />}>
+            <MatterDashboard matter={matter} users={users} />
+          </Suspense>
         </MatterTabs>
       </div>
     );
   } catch (error) {
-    console.error("Error loading matter details:", error);
+    console.error("Error fetching matter details:", error);
     notFound();
   }
 }

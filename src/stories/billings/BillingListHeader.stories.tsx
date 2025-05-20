@@ -25,20 +25,6 @@ export const Default: Story = {
   ),
 }
 
-export const Active: Story = {
-  render: () => (
-    <div className="p-4 border rounded">
-      <BillingsListHeader
-        statusFilter="active"
-        onStatusFilterChange={(filter) => console.log("Status filter changed:", filter)}
-        onNewBill={() => console.log("New bill button clicked")}
-        matters={mockMatters}
-        selectedMatterId="all"
-        onMatterFilterChange={(matterId) => console.log("Matter filter changed:", matterId)}
-      />
-    </div>
-  ),
-}
 
 export const Paid: Story = {
   render: () => (
@@ -55,26 +41,11 @@ export const Paid: Story = {
   ),
 }
 
-export const Pending: Story = {
-  render: () => (
-    <div className="p-4 border rounded">
-      <BillingsListHeader
-        statusFilter="pending"
-        onStatusFilterChange={(filter) => console.log("Status filter changed:", filter)}
-        onNewBill={() => console.log("New bill button clicked")}
-        matters={mockMatters}
-        selectedMatterId="all"
-        onMatterFilterChange={(matterId) => console.log("Matter filter changed:", matterId)}
-      />
-    </div>
-  ),
-}
-
-export const Overdue: Story = {
+export const Unpaid: Story = {
     render: () => (
       <div className="p-4 border rounded">
         <BillingsListHeader
-          statusFilter="overdue"
+          statusFilter="unpaid"
           onStatusFilterChange={(filter) => console.log("Status filter changed:", filter)}
           onNewBill={() => console.log("New bill button clicked")}
           matters={mockMatters}
@@ -102,21 +73,6 @@ export const MatterBillingsDefault: Story = {
     ),
 }
 
-export const MatterBillingsActive: Story = {
-    render: () => (
-      <div className="p-4 border rounded">
-        <BillingsListHeader
-          statusFilter="active"
-          onStatusFilterChange={(filter) => console.log("Status filter changed:", filter)}
-          onNewBill={() => console.log("New bill button clicked")}
-          matters={mockMatters}
-          selectedMatterId="all"
-          onMatterFilterChange={(matterId) => console.log("Matter filter changed:", matterId)}
-          hideMatterFilter={true}
-        />
-      </div>
-    ),
-}
 
 export const MatterBillingsPaid: Story = {
     render: () => (
@@ -134,27 +90,12 @@ export const MatterBillingsPaid: Story = {
     ),
 }
 
-export const MatterBillingsPending: Story = {
-    render: () => (
-      <div className="p-4 border rounded">
-        <BillingsListHeader
-          statusFilter="pending"
-          onStatusFilterChange={(filter) => console.log("Status filter changed:", filter)}
-          onNewBill={() => console.log("New bill button clicked")}
-          matters={mockMatters}
-          selectedMatterId="all"
-          onMatterFilterChange={(matterId) => console.log("Matter filter changed:", matterId)}
-          hideMatterFilter={true}
-        />
-      </div>
-    ),
-}
 
-export const MatterBillingsOverdue: Story = {
+export const MatterBillingsUnpaid: Story = {
     render: () => (
       <div className="p-4 border rounded">
         <BillingsListHeader
-          statusFilter="overdue"
+          statusFilter="unpaid"
           onStatusFilterChange={(filter) => console.log("Status filter changed:", filter)}
           onNewBill={() => console.log("New bill button clicked")}
           matters={mockMatters}

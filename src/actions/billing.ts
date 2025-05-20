@@ -1,74 +1,99 @@
 "use server"
 
-import type { Bill } from  "@/types/billing.type"
+import type { Bill } from "@/types/billing.type"
 import { supabase } from "@/lib/supabase"
 import { revalidatePath } from "next/cache"
+import type { Matter } from "@/types/matter.type"
 
+interface BillWithMatter extends Bill {
+  matter?: Matter
+}
 
-function mapDbBillToAppBill(dbBill: any): Bill {
+function mapDbBillToAppBill(dbBill: any): BillWithMatter {
+  const matter = dbBill.matters
+    ? {
+        matter_id: dbBill.matters.matter_id,
+        name: dbBill.matters.name,
+        case_number: dbBill.matters.case_number,
+
+        // These are required fields so they are included tho not used.
+        client: dbBill.matters.client || "",
+        status: dbBill.matters.status || "",
+        created_at: dbBill.matters.created_at || "",
+        description: dbBill.matters.description || "",
+      }
+    : undefined
   return {
-    bill_id: dbBill.bill_id, 
+    bill_id: dbBill.bill_id,
     name: dbBill.name,
     amount: dbBill.amount,
     created_at: dbBill.created_at,
     status: dbBill.status,
     remarks: dbBill.remarks || "",
     matter_id: dbBill.matter_id,
+    matter: matter,
   }
+}
 
+function mapBillForUpdate(mappedBill: BillWithMatter): Partial<Bill> {
+  const { matter, ...billWithoutMatter } = mappedBill
+  return billWithoutMatter
 }
 
 export async function getBills() {
+  console.log("Fetching bills with matters...")
   const { data, error } = await supabase
     .from("billings")
-    .select("*")
+    .select(`
+      *,
+      matters(*)
+    `)
+    .order("created_at", { ascending: false })
 
   if (error) {
     console.error("Error fetching bills:", error)
     return []
   }
 
-  return data.map(mapDbBillToAppBill) as Bill[]
-}
+  const mappedBills = data.map(mapDbBillToAppBill)
 
+  return mappedBills as BillWithMatter[]
+}
 
 export async function getBillsByMatterId(matterId: string) {
   const { data, error } = await supabase
     .from("billings")
-    .select("*")
+    .select(`
+      *,
+      matters:matter_id(matter_id, name, case_number)
+    `)
     .eq("matter_id", matterId)
 
   if (error) {
-    console.error(`Error fetching bills for matter ${matterId}:`, error)
+    console.error(`Error fetching bills by matter:`, error)
     return []
   }
 
-  return data.map(mapDbBillToAppBill) as Bill[]
+  return data.map(mapDbBillToAppBill) as BillWithMatter[]
 }
 
 export async function createBill(bill: Omit<Bill, "bill_id">) {
-
-  const { data, error } = await supabase
-    .from("billings")
-    .insert([bill])
-    .select()
+  const { data, error } = await supabase.from("billings").insert([bill]).select()
 
   if (error) {
     console.error("Error adding bill:", error)
     return null
   }
 
-  
   revalidatePath("/billings")
 
-  return mapDbBillToAppBill(data[0]) as Bill
+  return mapDbBillToAppBill(data[0]) as BillWithMatter
 }
 
 export async function updateBill(bill: Bill) {
-
   const { data, error } = await supabase
     .from("billings")
-    .update(bill)
+    .update(mapBillForUpdate(bill))
     .eq("bill_id", bill.bill_id)
     .select()
 
@@ -77,10 +102,9 @@ export async function updateBill(bill: Bill) {
     return null
   }
 
-  
   revalidatePath("/billings")
 
-  return mapDbBillToAppBill(data[0]) as Bill
+  return data[0] as BillWithMatter
 }
 
 export async function deleteBill(id: string) {
@@ -91,7 +115,6 @@ export async function deleteBill(id: string) {
     return false
   }
 
-  
   revalidatePath("/billings")
 
   return true

@@ -3,7 +3,7 @@ import React from "react";
 import { MatterHeader } from "@/components/matters/matterHeader";
 import { mockMatters } from "./mockMatters";
 import { userEvent, within } from "@storybook/testing-library";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 
 const sampleMatter = mockMatters[0];
 
@@ -81,53 +81,6 @@ export const MobileView: Story = {
   decorators: [
     (Story) => (
       <ThemeProvider attribute="class" defaultTheme="light">
-        <div className="min-h-screen w-screen p-4 bg-white dark:bg-gray-900">
-          <Story />
-        </div>
-      </ThemeProvider>
-    ),
-  ],
-};
-
-export const WithOptionsOpen: Story = {
-  args: {
-    matter: sampleMatter,
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const moreButton = await canvas.findByRole("button", {
-      name: /more options/i,
-    });
-    await userEvent.click(moreButton);
-  },
-  decorators: [
-    (Story) => (
-      <ThemeProvider attribute="class" defaultTheme="light">
-        <div className="min-h-screen w-screen p-4 bg-white dark:bg-gray-900">
-          <Story />
-        </div>
-      </ThemeProvider>
-    ),
-  ],
-};
-
-export const WithOptionsOpenDarkMode: Story = {
-  args: {
-    matter: sampleMatter,
-  },
-  parameters: {
-    themes: { current: "dark" },
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    const moreButton = await canvas.findByRole("button", {
-      name: /more options/i,
-    });
-    await userEvent.click(moreButton);
-  },
-  decorators: [
-    (Story) => (
-      <ThemeProvider attribute="class" defaultTheme="dark">
         <div className="min-h-screen w-screen p-4 bg-white dark:bg-gray-900">
           <Story />
         </div>
