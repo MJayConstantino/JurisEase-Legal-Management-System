@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 export default function SignUp() {
   const router = useRouter()
   const handleSignUpSucess = () => {
-    toast.success('Sign Up Succesful! Confirm your Emeil!')
+    toast.success('Sign Up Succesful! Confirm your Email!')
     router.push('/login')
   }
 

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, XIcon } from 'lucide-react'
+import { Delete, Search } from 'lucide-react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -219,7 +219,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
             >
               <span className="hidden sm:block">Clear</span>
               <span>
-                <XIcon className="hover:text-muted-foreground" />
+                <Delete className="hover:text-muted-foreground" />
               </span>
             </Button>
           </div>
