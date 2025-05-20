@@ -1,87 +1,91 @@
-"use client";
+'use client'
 
-import { useEffect, useState, useCallback } from "react";
-import { createSupabaseClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
-import WelcomeHeader from "./welcomeHeader";
-import UserProfile from "./userProfile";
-import ActionButtons from "./actionButtons";
-import { fetchUserInfoAction } from "@/actions/users";
+import { useEffect, useState, useCallback, useTransition } from 'react'
+import { createSupabaseClient } from '@/utils/supabase/client'
+import { useRouter } from 'next/navigation'
+import { Card, CardContent } from '@/components/ui/card'
+import WelcomeHeader from './welcomeHeader'
+import UserProfile from './userProfile'
+import ActionButtons from './actionButtons'
+import { fetchUserInfoAction } from '@/actions/users'
+import { toast } from 'sonner'
 
 interface UserData {
-  full_name: string;
-  avatar_url: string;
+  full_name: string
+  avatar_url: string
 }
 
 export default function UserLoggedIn(props: any) {
-  const override = props.__storybookMockOverride ?? {};
-  const supabase = createSupabaseClient();
-  const router = useRouter();
+  const override = props.__storybookMockOverride ?? {}
+  const supabase = createSupabaseClient()
+  const router = useRouter()
+  const [isTransitioning, startTransition] = useTransition()
 
   // State management
   const [signOutLoading, setSignOutLoading] = useState(
     override.signOutLoading ?? false
-  );
+  )
   const [dashboardLoading, setDashboardLoading] = useState(
     override.dashboardLoading ?? false
-  );
+  )
   const [userData, setUserData] = useState<UserData | null>(
     override.userData ?? null
-  );
-  const [loadingUser, setLoadingUser] = useState(override.loadingUser ?? true);
-  const [dataFetched, setDataFetched] = useState(false);
+  )
+  const [loadingUser, setLoadingUser] = useState(override.loadingUser ?? true)
+  const [dataFetched, setDataFetched] = useState(false)
 
   // Fetch user data just once
   const fetchUser = useCallback(async () => {
-    if (dataFetched || userData) return; // Prevent multiple fetches
+    if (dataFetched || userData) return // Prevent multiple fetches
 
-    setLoadingUser(true);
+    setLoadingUser(true)
     try {
-      const data = await fetchUserInfoAction();
+      const data = await fetchUserInfoAction()
       if (data && data.full_name) {
-        setUserData(data);
-        setDataFetched(true);
+        setUserData(data)
+        setDataFetched(true)
       }
     } catch (error) {
-      console.error("Error fetching user info:", error);
+      console.error('Error fetching user info:', error)
     } finally {
-      setLoadingUser(false);
+      setLoadingUser(false)
     }
-  }, [dataFetched, userData]);
+  }, [dataFetched, userData])
 
   useEffect(() => {
     // Only fetch if we haven't already and don't have user data
     if (!dataFetched && !userData) {
-      fetchUser();
+      fetchUser()
     }
-  }, [fetchUser, dataFetched, userData]);
+  }, [fetchUser, dataFetched, userData])
 
   const handleSignOut = async () => {
-    setSignOutLoading(true);
+    setSignOutLoading(true)
+    startTransition(async () => {
+      try {
+        const { error } = await supabase.auth.signOut()
 
-    try {
-      const { error } = await supabase.auth.signOut();
+        if (error) {
+          console.error('Error signing out:', error.message)
+          toast.error('Failed to sign out')
 
-      if (error) {
-        console.error("Error signing out:", error.message);
-        router.push("/documents?message=Failed to sign out");
-        return;
+          return
+        }
+        toast.success('Sign out sucess!')
+        router.push('/login')
+      } catch (error) {
+        console.error('Exception during sign out:', error)
+        toast.error('Failed to sign out')
+      } finally {
+        setSignOutLoading(false)
       }
-
-      router.push("/login");
-    } catch (error) {
-      console.error("Exception during sign out:", error);
-      router.push("/documents?message=Failed to sign out");
-    } finally {
-      setSignOutLoading(false);
-    }
-  };
+    })
+  }
 
   const handleMatters = async () => {
-    setDashboardLoading(true);
-    router.push("/matters");
-  };
+    setDashboardLoading(true)
+    router.push('/matters')
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
@@ -98,16 +102,15 @@ export default function UserLoggedIn(props: any) {
               dashboardLoading={dashboardLoading}
               signOutLoading={signOutLoading}
               isLoading={signOutLoading || dashboardLoading}
+              disabled={isTransitioning}
             />
           </CardContent>
         </Card>
       </main>
 
       <footer className="py-4 text-center text-gray-500 dark:text-gray-400 text-sm transition-colors duration-200">
-        <p>
-          © {new Date().getFullYear()} Dianson Law Office. All rights reserved.
-        </p>
+        <p>© {new Date().getFullYear()} JurisEase. All rights reserved.</p>
       </footer>
     </div>
-  );
+  )
 }

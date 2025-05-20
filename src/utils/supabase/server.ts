@@ -35,6 +35,13 @@ export async function getUser() {
   return user
 }
 
+export async function sessionExists() {
+  const supabase = await createSupabaseClient()
+  const session = (await supabase.auth.getSession()).data.session
+  if (session) {
+    redirect('/loggedIn')
+  }
+}
 export async function protectRoute() {
   const supabase = await createSupabaseClient()
   const user = await (await supabase.auth.getUser()).data.user
