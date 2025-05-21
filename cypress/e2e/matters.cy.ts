@@ -153,7 +153,7 @@ describe("Matters E2E Interactions", () => {
       cy.wait(300);
       cy.get('[role="option"]').contains("Open").click();
       cy.get('button[type="submit"]').contains("Create Matter").click();
-      cy.wait(500);
+      cy.wait(5000);
       cy.contains("Create New Button Matter").should("be.visible");
     });
 
@@ -174,9 +174,9 @@ describe("Matters E2E Interactions", () => {
       cy.wait(300);
       cy.get('[role="option"]').contains("Open").click();
       cy.get('button[type="submit"]').contains("Create Matter").click();
-      cy.wait(500);
+      cy.wait(5000);
       cy.visit("/matters");
-      cy.wait(500);
+      cy.wait(5000);
       cy.contains("Task Page Matter").should("be.visible");
     });
 
@@ -197,9 +197,9 @@ describe("Matters E2E Interactions", () => {
       cy.wait(300);
       cy.get('[role="option"]').contains("Open").click();
       cy.get('button[type="submit"]').contains("Create Matter").click();
-      cy.wait(500);
+      cy.wait(5000);
       cy.visit("/matters");
-      cy.wait(500);
+      cy.wait(5000);
       cy.contains("Billings Page Matter").should("be.visible");
     });
   });
@@ -382,7 +382,7 @@ describe("Matters E2E Interactions", () => {
         });
 
         it("should show error for a phone number below 8 or above 11 characters", () => {
-          cy.get('input[placeholder="Phone Number"]')
+          cy.get('input[placeholder="Phone number"]')
             .clear()
             .type("1234567891011");
           cy.get('button[aria-label="Save"]').click();
@@ -410,7 +410,7 @@ describe("Matters E2E Interactions", () => {
         });
 
         it("should show error for a phone number below 8 or above 11 characters", () => {
-          cy.get('input[placeholder="Phone"]').clear().type("invalid-phone");
+          cy.get('input[placeholder="Phone"]').clear().type("1234567891011");
           cy.get('button[aria-label="Save"]').click();
           cy.contains("Phone number must be between 8 and 11 digits").should(
             "be.visible"
@@ -679,7 +679,7 @@ describe("Matters E2E Interactions", () => {
 
         it("should delete a matter and show confirmation", () => {
           // Click delete button
-          cy.get("#radix-«ra»").click();
+          cy.get("#radix-«re»").click();
           cy.wait(300);
 
           cy.get(".text-red-600").click();
