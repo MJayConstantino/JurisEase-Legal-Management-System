@@ -33,11 +33,8 @@ export const caseSchema = z.object({
     .nullable(),
   client_email: z
     .string()
-    .refine((val) => val === "" || numbersOnlyRegex.test(val), {
-      message: "Phone can only contain numbers",
-    })
-    .refine((val) => val === "" || phoneDigitsRegex.test(val), {
-      message: "Phone number must be between 8 and 11 digits",
+    .refine((val) => val === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
+      message: "Invalid email format",
     })
     .optional()
     .nullable(),
