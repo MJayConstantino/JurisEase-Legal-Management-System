@@ -71,9 +71,9 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
           
           <Button
             variant="blue"
-            size="lg"
+            size="sm"
             onClick={onNewBill}
-            className="bg-[#1B1E4B] hover:bg-[#16183F] dark:bg-primary dark:hover:bg-gray-100 cursor-pointer text-sm md:text-base py-1 px-2 md:py-3 md:px-3 whitespace-nowrap"
+            className="h-9 px-3 font-semibold rounded-md flex items-center"
           >
             <Plus className="h-3 w-3 md:mr-1" />
             <span className="hidden md:inline">Add Bill</span>
@@ -87,12 +87,12 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
               <div className="w-[250px]">
                 
                 <Select value={selectedMatterId} onValueChange={onMatterFilterChange}>
-                  <SelectTrigger className="w-full dark:bg-gray-800 dark:border-gray-700 text-sm md:text-base">
+                  <SelectTrigger className="hover:cursor-pointer w-full dark:bg-gray-800 dark:border-gray-700 text-sm md:text-base">
                     <SelectValue placeholder="Filter by matter" />
                   </SelectTrigger>
                   <SelectContent className="dark:bg-gray-700 dark:border-gray-600 overflow-hidden w-[350px] h-[300px]">
                     
-                    <SelectItem value="all" className="text-sm md:text-base">
+                    <SelectItem value="all" className="text-sm md:text-base hover:cursor-pointer">
                       All
                     </SelectItem>
                     <div className="flex flex-col h-[200px] overflow-y-auto">
@@ -101,7 +101,7 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
                         <SelectItem
                           key={matter.matter_id}
                           value={matter.matter_id}
-                          className="text-sm md:text-base"
+                          className="text-sm md:text-base hover:cursor-pointer"
                           title={matter.name}
                         >
                           <div className="flex items-center justify-between w-full">
@@ -180,7 +180,7 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
       {/* Filter mobile */}
       <div className="flex flex-col gap-4 lg:hidden">
         <div className="flex items-center justify-between">
-          <Button variant="blue" size="sm" onClick={onNewBill} className="bg-[#1B1E4B] hover:bg-[#16183F] text-white">
+          <Button variant="blue" size="sm" onClick={onNewBill}>
             <Plus className="h-3 w-3 mr-1" />
             <span className="text-xs">Add Bill</span>
           </Button>

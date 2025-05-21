@@ -321,7 +321,7 @@ export function TaskForm({
             <Input
               id="dueDate"
               type="date"
-              className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 w-full"
+              className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 w-full hover:cursor-pointer dark:placeholder:text-gray-400"
               value={formattedDueDate}
               min={format(new Date(), "yyyy-MM-dd")}
               onChange={(e) =>

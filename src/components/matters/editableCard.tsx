@@ -38,7 +38,7 @@ export function EditableCard({
   };
 
   return (
-    <Card className="dark:bg-gray-800">
+    <Card className="dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-lg shadow-sm border dark:shadow-sm">
       <CardHeader className="flex items-center justify-between pb-2">
         <CardTitle>{title}</CardTitle>
         {editable && (

@@ -21,7 +21,7 @@ export function TaskTableHeader({
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) {
       return (
-        <ArrowUpDown className="ml-1 h-3 w-3 md:ml-2 md:h-4 md:w-4 opacity-50" />
+        <ArrowUpDown className="ml-1 h-3 w-3 md:ml-2 md:h-4 md:w-4" />
       );
     }
     return sortDirection === "asc" ? (

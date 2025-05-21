@@ -11,7 +11,7 @@ interface MatterHeaderProps {
 
 export function MatterHeader({ matter }: MatterHeaderProps) {
   return (
-    <div className="max-w-screen bg-white dark:bg-gray-800 rounded-lg border shadow p-4 sm:p-6">
+    <div className="max-w-screenp-4 sm:p-6 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-lg shadow-sm border dark:shadow-sm">
       <div className="flex items-center gap-3 mb-3 sm:mb-4">
         <Link href="/matters">
           <Button
