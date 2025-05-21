@@ -146,7 +146,7 @@ export function LoginPage({
 
     window.addEventListener('message', handleAuthComplete)
     return () => window.removeEventListener('message', handleAuthComplete)
-  }, [])
+  }, [onError, onGoogleLoginSuccess])
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4">

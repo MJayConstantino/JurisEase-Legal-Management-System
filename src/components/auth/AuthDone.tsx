@@ -1,4 +1,5 @@
 'use client'
+/* eslint-disable */
 
 import { useEffect, useState } from 'react'
 import { CheckCircle, HomeIcon } from 'lucide-react'

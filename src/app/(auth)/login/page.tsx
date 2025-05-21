@@ -3,7 +3,6 @@ import { LoginPage } from '@/components/auth/Login'
 import LoginSkeleton from '../../../components/auth/LoginSkeleton'
 import { useRouter } from 'next/navigation'
 import { Suspense, useState } from 'react'
-import { toast } from 'sonner'
 
 export default function Login() {
   const [isNavigating, setNavigating] = useState(false)
