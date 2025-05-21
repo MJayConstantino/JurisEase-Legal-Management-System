@@ -115,7 +115,7 @@ export function SearchByFilters({ filters, setFilters }: SearchByFiltersProps) {
               htmlFor="opposingCouncil"
               className="text-sm text-foreground"
             >
-              Opposing Counsel
+              Opposing Council
             </label>
           </div>
 
