@@ -73,7 +73,6 @@ export const MatterForm: React.FC<MatterFormProps> = ({
               <FormControl>
                 <Input
                   id="matter-name"
-                  className="dark:bg-gray-700 dark:border-gray-600"
                   placeholder="Case Name"
                   maxLength={50}
                   {...field}
