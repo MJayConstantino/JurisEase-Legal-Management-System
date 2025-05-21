@@ -134,8 +134,10 @@ export function LoginPage({
             }
           }
           if (onGoogleLoginSuccess) {
+            toast.success('Google Login Sucess!')
             onGoogleLoginSuccess()
           } else {
+            // force the reload
             window.location.reload()
           }
         })
