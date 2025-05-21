@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { EditableCard } from "../editableCard";
 import type { Matter } from "@/types/matter.type";
 import type { User as UserType } from "@/types/user.type";
@@ -28,6 +28,10 @@ export function CaseDetailsCard({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  useEffect(() => {
+    setEditedMatter({ ...matter });
+  }, [matter]);
+
   const handleChange = (field: keyof Matter, value: any) => {
     setEditedMatter((prev) => {
       if (field === "status") {
@@ -41,6 +45,11 @@ export function CaseDetailsCard({
       }
       return { ...prev, [field]: value };
     });
+
+    // Clear error when field changes
+    if (errors[field as string]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
   };
 
   const saveChanges = async (): Promise<boolean> => {
@@ -51,6 +60,10 @@ export function CaseDetailsCard({
         !editedMatter.client || editedMatter.client.trim() === ""
           ? "To be determined"
           : editedMatter.client,
+      // Ensure empty strings are preserved for display
+      client_phone: editedMatter.client_phone || "",
+      client_email: editedMatter.client_email || "",
+      client_address: editedMatter.client_address || "",
     };
 
     const result = caseSchema.safeParse(matterToSave);

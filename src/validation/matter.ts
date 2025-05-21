@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-// Regex: allow only numbers and symbols (no letters), max 15 chars
-const phoneRegex = /^[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{1,15}$/;
+// Updated Regex: allow only numbers, between 8-10 digits
+const phoneRegex = /^[0-9]{8,10}$/;
 
 // Zod schema for validation
 export const matterSchema = z.object({
@@ -23,13 +23,18 @@ export const caseSchema = z.object({
   client: z.string().max(50, "Max 50 characters").optional(),
   client_phone: z
     .string()
-    .regex(
-      phoneRegex,
-      "Phone can only contain numbers and symbols, max 15 characters"
-    )
+    .refine((val) => val === "" || phoneRegex.test(val), {
+      message: "Phone must contain only numbers and be between 8-10 digits",
+    })
     .optional()
     .nullable(),
-  client_email: z.string().email("Invalid email").optional().nullable(),
+  client_email: z
+    .string()
+    .refine((val) => val === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
+      message: "Invalid email format",
+    })
+    .optional()
+    .nullable(),
   client_address: z
     .string()
     .max(200, "Max 200 characters")
@@ -42,12 +47,16 @@ export const opposingCouncilSchema = z.object({
   name: z.string().max(50, "Max 50 characters").optional(),
   phone: z
     .string()
-    .regex(
-      phoneRegex,
-      "Phone can only contain numbers and symbols, max 15 characters"
-    )
+    .refine((val) => val === "" || phoneRegex.test(val), {
+      message: "Phone must contain only numbers and be between 8-10 digits",
+    })
     .optional(),
-  email: z.string().email("Invalid email").optional(),
+  email: z
+    .string()
+    .refine((val) => val === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
+      message: "Invalid email format",
+    })
+    .optional(),
   address: z.string().max(200, "Max 200 characters").optional(),
 });
 
@@ -56,10 +65,14 @@ export const courtSchema = z.object({
   name: z.string().max(50, "Max 50 characters").optional(),
   phone: z
     .string()
-    .regex(
-      phoneRegex,
-      "Phone can only contain numbers and symbols, max 15 characters"
-    )
+    .refine((val) => val === "" || phoneRegex.test(val), {
+      message: "Phone must contain only numbers and be between 8-10 digits",
+    })
     .optional(),
-  email: z.string().email("Invalid email").optional(),
+  email: z
+    .string()
+    .refine((val) => val === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
+      message: "Invalid email format",
+    })
+    .optional(),
 });
