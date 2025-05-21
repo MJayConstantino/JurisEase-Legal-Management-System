@@ -137,7 +137,7 @@ export const OpposingCouncilDetailsForm: React.FC<
                             ? "border-red-500 ring-1 ring-red-500 focus-visible:ring-red-500"
                             : ""
                         }`}
-                        placeholder="Phone number (8-10 digits or leave empty)"
+                        placeholder="Phone number"
                       />
                     </FormControl>
                     <FormMessage />
@@ -177,7 +177,7 @@ export const OpposingCouncilDetailsForm: React.FC<
                             ? "border-red-500 ring-1 ring-red-500 focus-visible:ring-red-500"
                             : ""
                         }`}
-                        placeholder="Email address (or leave empty)"
+                        placeholder="Email address"
                       />
                     </FormControl>
                     <FormMessage />

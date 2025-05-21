@@ -419,7 +419,7 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
                                     ? "border-red-500 ring-1 ring-red-500 focus-visible:ring-red-500"
                                     : ""
                                 }`}
-                                placeholder="Client Phone (8-10 digits)"
+                                placeholder="Client Phone"
                               />
                             </FormControl>
                             <FormMessage />

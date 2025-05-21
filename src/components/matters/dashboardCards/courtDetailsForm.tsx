@@ -138,7 +138,7 @@ export const CourtDetailsForm: React.FC<CourtDetailsFormProps> = ({
                             ? "border-red-500 ring-1 ring-red-500 focus-visible:ring-red-500"
                             : ""
                         }`}
-                        placeholder="Phone (8-10 digits or leave empty)"
+                        placeholder="Phone"
                       />
                     </FormControl>
                     <FormMessage />
@@ -176,7 +176,7 @@ export const CourtDetailsForm: React.FC<CourtDetailsFormProps> = ({
                             ? "border-red-500 ring-1 ring-red-500 focus-visible:ring-red-500"
                             : ""
                         }`}
-                        placeholder="Email address (or leave empty)"
+                        placeholder="Email address"
                       />
                     </FormControl>
                     <FormMessage />
