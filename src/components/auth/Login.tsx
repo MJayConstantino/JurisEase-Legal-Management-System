@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState, useTransition } from 'react'
+import React, { useEffect, useRef, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
 import { PasswordField } from './PasswordField'
@@ -11,6 +11,7 @@ import { Header } from '@/components/auth/Header'
 import { Footer } from '@/components/auth/Footer'
 
 import { handleGoogleSignIn, handleLoginSubmit } from '@/action-handlers/users'
+import { fetchUserSession } from '@/actions/users'
 
 export interface LoginPageProps {
   handleLoginSubmitfn?: (
@@ -21,6 +22,8 @@ export interface LoginPageProps {
   onGoogleLoginSuccess?: () => void
   redirectPath?: string
   isPending?: boolean
+  onError?: () => void
+  onNavigateGoogleLogin?: () => void
 }
 
 export function LoginPage({
@@ -28,6 +31,8 @@ export function LoginPage({
   handleGoogleLoginfn = handleGoogleSignIn,
   onLoginSuccess,
   onGoogleLoginSuccess,
+  onNavigateGoogleLogin,
+  onError,
   isPending = false,
 }: LoginPageProps) {
   const [email, setEmail] = useState('')
@@ -90,6 +95,10 @@ export function LoginPage({
   // Handle Google Login
   const handleGoogleLogin = () => {
     startTransition(async () => {
+      if (onNavigateGoogleLogin) {
+        onNavigateGoogleLogin()
+      }
+
       try {
         const { error } = await handleGoogleLoginfn()
         if (error) {
@@ -97,7 +106,6 @@ export function LoginPage({
           setEmail('')
           setPassword('')
         } else {
-          toast.success('Google Login Success')
           onGoogleLoginSuccess?.()
         }
       } catch (err) {
@@ -106,6 +114,39 @@ export function LoginPage({
       }
     })
   }
+
+  useEffect(() => {
+    const handleAuthComplete = async (event: MessageEvent) => {
+      if (
+        event.origin === window.location.origin &&
+        event.data === 'auth_complete'
+      ) {
+        console.log('Authentication complete, refreshing session...')
+
+        // Refresh the Supabase session
+        startTransition(async () => {
+          const info = await fetchUserSession()
+          if (!info) {
+            if (onError) {
+              onError()
+            } else {
+              throw new Error('there was no user fetched')
+            }
+          }
+          if (onGoogleLoginSuccess) {
+            toast.success('Google Login Sucess!')
+            onGoogleLoginSuccess()
+          } else {
+            // force the reload
+            window.location.reload()
+          }
+        })
+      }
+    }
+
+    window.addEventListener('message', handleAuthComplete)
+    return () => window.removeEventListener('message', handleAuthComplete)
+  }, [onError, onGoogleLoginSuccess])
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4">

@@ -21,18 +21,56 @@ export const handleSignUpSubmit = async (formData: FormData) => {
 
   return { error: null }
 }
+const getBrowser = () => {
+  if (navigator) {
+    const userAgent = navigator.userAgent
+
+    if (
+      userAgent.includes('Chrome') &&
+      !userAgent.includes('Edg') &&
+      !userAgent.includes('OPR')
+    ) {
+      return 'Google Chrome'
+    } else if (userAgent.includes('Firefox')) {
+      return 'Mozilla Firefox'
+    } else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
+      return 'Safari'
+    } else if (userAgent.includes('Edg')) {
+      return 'Microsoft Edge'
+    } else if (userAgent.includes('OPR') || userAgent.includes('Opera')) {
+      return 'Opera'
+    } else if (userAgent.includes('MSIE') || userAgent.includes('Trident')) {
+      return 'Internet Explorer'
+    } else {
+      return 'Unknown Browser'
+    }
+  }
+}
 
 export const handleGoogleSignIn = async () => {
   try {
     const supabase = createSupabaseClient()
     const redirectLink = `${window.location.origin}/auth/callback`
     const authWindow = window.open('', '_blank')
+    if (navigator.userAgent) {
+      if (getBrowser() == 'Safari') {
+        if (!authWindow) {
+          console.error('Popup blocked or failed to open.')
+          return {
+            error:
+              'Failed to open authentication window. Try Opening the site in Chrome or disable "Prevent Cross-site Tracking"!',
+          }
+        }
+      }
+    }
 
     if (!authWindow) {
       console.error('Popup blocked or failed to open.')
-      return { error: 'Failed to open authentication window.' }
+      return {
+        error: 'Failed to open authentication window.',
+      }
     }
-    window.open('about:blank', '_self')?.close()
+    // window.open('about:blank', '_self')?.close()
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -45,6 +83,14 @@ export const handleGoogleSignIn = async () => {
       return { error: 'Failed Google Login: ' + error.message }
     }
     authWindow.location.href = data.url
+    window.addEventListener('message', (event) => {
+      if (
+        event.origin === window.location.origin &&
+        event.data === 'auth_complete'
+      ) {
+        authWindow.close()
+      }
+    })
 
     return { error: null }
   } catch (err: any) {
