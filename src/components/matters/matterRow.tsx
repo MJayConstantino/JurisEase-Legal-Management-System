@@ -47,7 +47,7 @@ export function MatterRow({
     <>
       <TableRow
         key={matter.matter_id}
-        className="cursor-pointer"
+        className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
         onClick={() => onRowClick(matter.matter_id)}
       >
         <TableCell className="font-medium">

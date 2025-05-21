@@ -73,7 +73,7 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
             variant="blue"
             size="sm"
             onClick={onNewBill}
-            className="h-9 px-3 font-semibold rounded-md flex items-center"
+            className="h-9 px-3 rounded-md flex items-center"
           >
             <Plus className="h-3 w-3 md:mr-1" />
             <span className="hidden md:inline">Add Bill</span>
@@ -87,7 +87,7 @@ export function BillingsListHeader({ onNewBill, statusFilter, onStatusFilterChan
               <div className="w-[250px]">
                 
                 <Select value={selectedMatterId} onValueChange={onMatterFilterChange}>
-                  <SelectTrigger className="hover:cursor-pointer w-full dark:bg-gray-800 dark:border-gray-700 text-sm md:text-base">
+                  <SelectTrigger className="hover:cursor-pointer w-full dark:bg-gray-800 dark:border-gray-700 text-sm ">
                     <SelectValue placeholder="Filter by matter" />
                   </SelectTrigger>
                   <SelectContent className="dark:bg-gray-700 dark:border-gray-600 overflow-hidden w-[350px] h-[300px]">
