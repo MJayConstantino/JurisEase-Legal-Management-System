@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-// Updated Regex: allow only numbers, between 8-10 digits
-const phoneRegex = /^[0-9]{8,10}$/;
+const numbersOnlyRegex = /^[0-9]*$/;
+const phoneDigitsRegex = /^[0-9]{8,11}$/;
 
 // Zod schema for validation
 export const matterSchema = z.object({
@@ -23,15 +23,21 @@ export const caseSchema = z.object({
   client: z.string().max(50, "Max 50 characters").optional(),
   client_phone: z
     .string()
-    .refine((val) => val === "" || phoneRegex.test(val), {
-      message: "Phone must contain only numbers and be between 8-10 digits",
+    .refine((val) => val === "" || numbersOnlyRegex.test(val), {
+      message: "Phone can only contain numbers",
+    })
+    .refine((val) => val === "" || phoneDigitsRegex.test(val), {
+      message: "Phone number must be between 8 and 11 digits",
     })
     .optional()
     .nullable(),
   client_email: z
     .string()
-    .refine((val) => val === "" || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
-      message: "Invalid email format",
+    .refine((val) => val === "" || numbersOnlyRegex.test(val), {
+      message: "Phone can only contain numbers",
+    })
+    .refine((val) => val === "" || phoneDigitsRegex.test(val), {
+      message: "Phone number must be between 8 and 11 digits",
     })
     .optional()
     .nullable(),
@@ -47,8 +53,11 @@ export const opposingCouncilSchema = z.object({
   name: z.string().max(50, "Max 50 characters").optional(),
   phone: z
     .string()
-    .refine((val) => val === "" || phoneRegex.test(val), {
-      message: "Phone must contain only numbers and be between 8-10 digits",
+    .refine((val) => val === "" || numbersOnlyRegex.test(val), {
+      message: "Phone can only contain numbers",
+    })
+    .refine((val) => val === "" || phoneDigitsRegex.test(val), {
+      message: "Phone number must be between 8 and 11 digits",
     })
     .optional(),
   email: z
@@ -65,8 +74,11 @@ export const courtSchema = z.object({
   name: z.string().max(50, "Max 50 characters").optional(),
   phone: z
     .string()
-    .refine((val) => val === "" || phoneRegex.test(val), {
-      message: "Phone must contain only numbers and be between 8-10 digits",
+    .refine((val) => val === "" || numbersOnlyRegex.test(val), {
+      message: "Phone can only contain numbers",
+    })
+    .refine((val) => val === "" || phoneDigitsRegex.test(val), {
+      message: "Phone number must be between 8 and 11 digits",
     })
     .optional(),
   email: z
