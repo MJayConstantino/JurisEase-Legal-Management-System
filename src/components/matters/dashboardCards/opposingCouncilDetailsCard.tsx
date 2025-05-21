@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EditableCard } from "../editableCard";
 import type { Matter } from "@/types/matter.type";
 import {
@@ -22,6 +22,10 @@ export function OpposingCouncilDetailsCard({
   const [editedMatter, setEditedMatter] = useState({ ...matter });
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
+  useEffect(() => {
+    setEditedMatter({ ...matter });
+  }, [matter]);
+
   const handleNestedChange = (
     field: keyof NonNullable<Matter["opposing_council"]>,
     value: string
@@ -33,7 +37,10 @@ export function OpposingCouncilDetailsCard({
         [field]: value,
       },
     }));
-    setFormErrors((prev) => ({ ...prev, [field]: "" }));
+    // Clear error when field changes
+    if (formErrors[field]) {
+      setFormErrors((prev) => ({ ...prev, [field]: "" }));
+    }
   };
 
   const saveChanges = async (): Promise<boolean> => {
@@ -44,14 +51,27 @@ export function OpposingCouncilDetailsCard({
     if (!result.success) {
       const fieldErrors: { [key: string]: string } = {};
       result.error.errors.forEach((err) => {
-        if (err.path[0]) fieldErrors[err.path[0]] = err.message;
+        if (err.path[0]) fieldErrors[err.path[0] as string] = err.message;
       });
       setFormErrors(fieldErrors);
       return false; // Validation failed
     }
 
+    // Ensure empty strings are preserved for display
+    const councilData = editedMatter.opposing_council || {};
+    const matterToSave = {
+      ...editedMatter,
+      opposing_council: {
+        ...councilData,
+        name: councilData.name || "",
+        phone: councilData.phone || "",
+        email: councilData.email || "",
+        address: councilData.address || "",
+      },
+    };
+
     const { matter: updatedMatter, error } = await handleSaveMatter(
-      editedMatter
+      matterToSave
     );
     if (!error && updatedMatter) {
       onUpdate?.(updatedMatter);

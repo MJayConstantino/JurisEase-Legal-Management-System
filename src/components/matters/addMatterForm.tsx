@@ -1,7 +1,8 @@
-import React from "react";
+"use client";
+
+import type React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -10,6 +11,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { MatterStatus } from "@/types/matter.type";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { matterSchema } from "@/validation/matter";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import type { z } from "zod";
 
 export interface MatterData {
   name: string;
@@ -20,100 +33,151 @@ export interface MatterData {
 
 export interface MatterFormProps {
   data: MatterData;
-  errors?: Partial<Record<keyof MatterData, string>>;
   isSubmitting?: boolean;
-  onChange: (field: keyof MatterData, value: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (data: MatterData) => void;
   onCancel?: () => void;
 }
 
 export const MatterForm: React.FC<MatterFormProps> = ({
   data,
-  errors = {},
   isSubmitting = false,
-  onChange,
   onSubmit,
   onCancel,
 }) => {
+  const form = useForm<z.infer<typeof matterSchema>>({
+    resolver: zodResolver(matterSchema),
+    defaultValues: {
+      name: data.name,
+      client: data.client,
+      case_number: data.case_number,
+      status: data.status,
+    },
+  });
+
+  const handleSubmit = (values: z.infer<typeof matterSchema>) => {
+    onSubmit({
+      ...values,
+      client: values.client ?? "",
+    });
+  };
+
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="matter-name">Matter Name *</Label>
-        <Input
-          id="matter-name"
-          className="dark:bg-gray-700 dark:border-gray-600"
-          placeholder="Case Name"
-          value={data.name}
-          onChange={(e) => onChange("name", e.target.value)}
-          maxLength={50}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem className="space-y-2">
+              <FormLabel htmlFor="matter-name">Matter Name *</FormLabel>
+              <FormControl>
+                <Input
+                  id="matter-name"
+                  placeholder="Case Name"
+                  maxLength={50}
+                  {...field}
+                  className={`${
+                    form.formState.errors.name
+                      ? "border-red-500 ring-1 ring-red-500 focus-visible:ring-red-500"
+                      : ""
+                  } dark:bg-gray-700 dark:border-gray-600`}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        {errors.name && (
-          <span className="text-red-500 text-xs">{errors.name}</span>
-        )}
-      </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="case-number">Case Number *</Label>
-        <Input
-          id="case-number"
-          className="dark:bg-gray-700 dark:border-gray-600"
-          placeholder="Case Number"
-          value={data.case_number}
-          onChange={(e) => onChange("case_number", e.target.value)}
-          maxLength={20}
+        <FormField
+          control={form.control}
+          name="case_number"
+          render={({ field }) => (
+            <FormItem className="space-y-2">
+              <FormLabel htmlFor="case-number">Case Number *</FormLabel>
+              <FormControl>
+                <Input
+                  id="case-number"
+                  placeholder="Case Number"
+                  maxLength={20}
+                  {...field}
+                  className={`${
+                    form.formState.errors.case_number
+                      ? "border-red-500 ring-1 ring-red-500 focus-visible:ring-red-500"
+                      : ""
+                  } dark:bg-gray-700 dark:border-gray-600`}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        {errors.case_number && (
-          <span className="text-red-500 text-xs">{errors.case_number}</span>
-        )}
-      </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="client-name">Client Name</Label>
-        <Input
-          id="client-name"
-          className="dark:bg-gray-700 dark:border-gray-600"
-          placeholder="Client name (this can be updated later)"
-          value={data.client}
-          onChange={(e) => onChange("client", e.target.value)}
-          maxLength={50}
+        <FormField
+          control={form.control}
+          name="client"
+          render={({ field }) => (
+            <FormItem className="space-y-2">
+              <FormLabel htmlFor="client-name">Client Name</FormLabel>
+              <FormControl>
+                <Input
+                  id="client-name"
+                  placeholder="Client name (this can be updated later)"
+                  maxLength={50}
+                  {...field}
+                  className="dark:bg-gray-700 dark:border-gray-600"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="status">Status</Label>
-        <Select
-          value={data.status}
-          onValueChange={(value) => onChange("status", value)}
-        >
-          <SelectTrigger
-            id="status"
-            className="dark:bg-gray-700 dark:border-gray-600"
-          >
-            <SelectValue placeholder="Select status" />
-          </SelectTrigger>
-          <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
-            <SelectItem value="open">Open</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="closed">Closed</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+        <FormField
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+            <FormItem className="space-y-2">
+              <FormLabel htmlFor="status">Status</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger
+                    id="status"
+                    className={`${
+                      form.formState.errors.status
+                        ? "border-red-500 ring-1 ring-red-500 focus-visible:ring-red-500"
+                        : ""
+                    } dark:bg-gray-700 dark:border-gray-600`}
+                  >
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
+                  <SelectItem value="open">Open</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="closed">Closed</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <div className="flex justify-end gap-2 pt-4">
-        {onCancel && (
-          <Button
-            type="button"
-            className="text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
-            variant="outline"
-            onClick={onCancel}
-          >
-            Cancel
+        <div className="flex justify-end gap-2 pt-4">
+          {onCancel && (
+            <Button
+              type="button"
+              className="text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+              variant="outline"
+              onClick={onCancel}
+            >
+              Cancel
+            </Button>
+          )}
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Creating..." : "Create Matter"}
           </Button>
-        )}
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Creating..." : "Create Matter"}
-        </Button>
-      </div>
-    </form>
+        </div>
+      </form>
+    </Form>
   );
 };
