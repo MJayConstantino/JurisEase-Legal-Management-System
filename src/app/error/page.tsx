@@ -1,5 +1,11 @@
 'use client'
 
-export default function ErrorPage() {
-  return <p>Sorry, something went wrong</p>
+import ErrorPage from '@/components/auth/ErrorPage'
+
+export default function Error() {
+  return (
+    <>
+      <ErrorPage />
+    </>
+  )
 }
