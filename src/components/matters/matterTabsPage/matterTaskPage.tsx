@@ -1,10 +1,10 @@
-"use client"
+'use client'
 
-import { Suspense } from "react"
-import { useParams } from "next/navigation"
-import { TaskList } from "@/components/tasks/taskList"
-import { TasksLoading } from "@/app/(dashboard)/tasks/loading"
-import type { Task } from "@/types/task.type"
+import { Suspense } from 'react'
+import { useParams } from 'next/navigation'
+import { TaskList } from '@/components/tasks/taskList'
+import { TasksLoading } from '@/app/(dashboard)/tasks/loading'
+import type { Task } from '@/types/task.type'
 
 export function MatterTaskPage({
   initialTasks = [],

@@ -199,7 +199,7 @@ export function SearchResults({
                       variant="outline"
                       size="sm"
                       onClick={onLoadMore}
-                      className="cursor-pointer hover:text-muted-foreground"
+                      className="cursor-pointer hover:text-muted-foreground dark:hover:bg-grey-500  dark:bg-gray-800"
                     >
                       Load more
                     </Button>

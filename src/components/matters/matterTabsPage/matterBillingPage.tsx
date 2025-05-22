@@ -1,22 +1,43 @@
-"use client"
+'use client'
 
-import { useEffect, useCallback, useMemo } from "react"
-import { useParams } from "next/navigation"
-import { BillingsAddDialog } from "@/components/billings/billingsAddDialog"
-import { BillingsListHeader } from "@/components/billings/billingsListHeader"
-import { BillingsList } from "@/components/billings/billingsList"
-import type { Bill, SortDirection, SortField, StatusFilter } from "@/types/billing.type"
-import { deleteBill, getBillsByMatterId } from "@/actions/billing"
-import { getMatters } from "@/actions/matters"
-import { toast } from "sonner"
-import { BillingStates } from "@/components/billings/billingsStates"
-import { supabase } from "@/lib/supabase"
+import { useEffect, useCallback, useMemo } from 'react'
+import { useParams } from 'next/navigation'
+import { BillingsAddDialog } from '@/components/billings/billingsAddDialog'
+import { BillingsListHeader } from '@/components/billings/billingsListHeader'
+import { BillingsList } from '@/components/billings/billingsList'
+import type {
+  Bill,
+  SortDirection,
+  SortField,
+  StatusFilter,
+} from '@/types/billing.type'
+import { deleteBill, getBillsByMatterId } from '@/actions/billing'
+import { getMatters } from '@/actions/matters'
+import { toast } from 'sonner'
+import { BillingStates } from '@/components/billings/billingsStates'
+import { supabase } from '@/lib/supabase'
 
 export function MatterBillingPage() {
-  const {bills, setBills, filteredBills, setFilteredBills, matters, setMatters, setCurrentDateTime,
-    isNewBillDialogOpen, setIsNewBillDialogOpen, setIsLoadingMatters, isLoadingBills, setIsLoadingBills,
-    statusFilter, setStatusFilter, sortField, setSortField, sortDirection, setSortDirection
-  }= BillingStates()
+  const {
+    bills,
+    setBills,
+    filteredBills,
+    setFilteredBills,
+    matters,
+    setMatters,
+    setCurrentDateTime,
+    isNewBillDialogOpen,
+    setIsNewBillDialogOpen,
+    setIsLoadingMatters,
+    isLoadingBills,
+    setIsLoadingBills,
+    statusFilter,
+    setStatusFilter,
+    sortField,
+    setSortField,
+    sortDirection,
+    setSortDirection,
+  } = BillingStates()
 
   const params = useParams()
   const paramsMatterId = params.matterId as string
@@ -26,8 +47,8 @@ export function MatterBillingPage() {
       const billsData = await getBillsByMatterId(paramsMatterId)
       setBills(billsData)
     } catch (error) {
-      console.error("Error fetching bills:", error)
-      toast.error("Failed to load bills")
+      console.error('Error fetching bills:', error)
+      toast.error('Failed to load bills')
     } finally {
       setIsLoadingBills(false)
     }
@@ -39,8 +60,8 @@ export function MatterBillingPage() {
       const mattersData = await getMatters()
       setMatters(mattersData)
     } catch (error) {
-      console.error("Error fetching matters:", error)
-      toast.error("Failed to load matters")
+      console.error('Error fetching matters:', error)
+      toast.error('Failed to load matters')
     } finally {
       setIsLoadingMatters(false)
     }
@@ -64,42 +85,46 @@ export function MatterBillingPage() {
         let comparison = 0
 
         switch (field) {
-          case "matterName":
-            const matterA = matters.find((m) => m.matter_id === a.matter_id)?.name || ""
-            const matterB = matters.find((m) => m.matter_id === b.matter_id)?.name || ""
+          case 'matterName':
+            const matterA =
+              matters.find((m) => m.matter_id === a.matter_id)?.name || ''
+            const matterB =
+              matters.find((m) => m.matter_id === b.matter_id)?.name || ''
             comparison = matterA.localeCompare(matterB)
             break
-          case "name":
+          case 'name':
             comparison = a.name.localeCompare(b.name)
             break
-          case "amount":
+          case 'amount':
             comparison = a.amount - b.amount
             break
-          case "created_at":
-            comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          case 'created_at':
+            comparison =
+              new Date(a.created_at).getTime() -
+              new Date(b.created_at).getTime()
             break
-          case "status":
+          case 'status':
             comparison = a.status.localeCompare(b.status)
             break
-          case "remarks":
-            comparison = (a.remarks || "").localeCompare(b.remarks || "")
+          case 'remarks':
+            comparison = (a.remarks || '').localeCompare(b.remarks || '')
             break
         }
 
-        return direction === "asc" ? comparison : -comparison
+        return direction === 'asc' ? comparison : -comparison
       })
     },
-    [matters],
+    [matters]
   )
 
   const getFilteredBills = useMemo(() => {
     let result = [...bills]
 
-    if (statusFilter !== "all") {
+    if (statusFilter !== 'all') {
       const statusMap: Record<StatusFilter, string> = {
-        all: "",
-        paid: "paid",
-        unpaid: "unpaid",
+        all: '',
+        paid: 'paid',
+        unpaid: 'unpaid',
       }
 
       const filterStatus = statusMap[statusFilter]
@@ -119,57 +144,72 @@ export function MatterBillingPage() {
     setFilteredBills(getFilteredBills)
   }, [getFilteredBills, setFilteredBills])
 
-  const handleBillCreated = useCallback(async (newBill: Omit<Bill, 'bill_id'>) => {
-  const { data, error } = await supabase
-    .from('billings')
-    .insert([newBill])
-    .select();
+  const handleBillCreated = useCallback(
+    async (newBill: Omit<Bill, 'bill_id'>) => {
+      const { data, error } = await supabase
+        .from('billings')
+        .insert([newBill])
+        .select()
 
-  if (error) {
-    console.error("Insert failed", error);
-    return;
-  }
+      if (error) {
+        console.error('Insert failed', error)
+        return
+      }
 
-  if (data && data[0]) {
-    setBills((prev) => [data[0], ...prev]);
-  }
-}, [setBills]);
+      if (data && data[0]) {
+        setBills((prev) => [data[0], ...prev])
+      }
+    },
+    [setBills]
+  )
 
-  const handleBillUpdated = useCallback((updatedBill: Bill) => {
-    setBills((prev) => prev.map((bill) => (bill.bill_id === updatedBill.bill_id ? updatedBill : bill)))
-  }, [setBills])
+  const handleBillUpdated = useCallback(
+    (updatedBill: Bill) => {
+      setBills((prev) =>
+        prev.map((bill) =>
+          bill.bill_id === updatedBill.bill_id ? updatedBill : bill
+        )
+      )
+    },
+    [setBills]
+  )
 
-  const handleBillDeleted = useCallback(async (billId: string) => {
-  try {
-    const success = await deleteBill(billId)
-    if (success) {
-      setBills((prev) => prev.filter((b) => b.bill_id !== billId))
-      toast.success("Bill deleted successfully!")
-    } else {
-      toast.error("Failed to delete bill.")
-    }
-  } catch (error) {
-    console.error("Delete failed", error)
-    toast.error("Failed to delete bill. Please try again.")
-  }
-}, [setBills])
+  const handleBillDeleted = useCallback(
+    async (billId: string) => {
+      try {
+        const success = await deleteBill(billId)
+        if (success) {
+          setBills((prev) => prev.filter((b) => b.bill_id !== billId))
+          toast.success('Bill deleted successfully!')
+        } else {
+          toast.error('Failed to delete bill.')
+        }
+      } catch (error) {
+        console.error('Delete failed', error)
+        toast.error('Failed to delete bill. Please try again.')
+      }
+    },
+    [setBills]
+  )
 
   const handleSortChange = (field: SortField) => {
     if (sortField === field) {
-      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"))
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
     } else {
       setSortField(field)
-      setSortDirection("asc")
+      setSortDirection('asc')
     }
   }
 
   return (
     <div className="pt-0 w-full mx-auto overflow-auto">
       <div className="w-full mx-auto">
-        <div className="border dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 mt-0">
+        <div className="border dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 ">
           <BillingsListHeader
             statusFilter={statusFilter}
-            onStatusFilterChange={(filter) => setStatusFilter(filter as StatusFilter)}
+            onStatusFilterChange={(filter) =>
+              setStatusFilter(filter as StatusFilter)
+            }
             onNewBill={() => setIsNewBillDialogOpen(true)}
             matters={matters}
             selectedMatterId={paramsMatterId}
@@ -186,8 +226,9 @@ export function MatterBillingPage() {
               isLoading={isLoadingBills}
               sortField={sortField}
               onSortChange={handleSortChange}
-              hideMatterColumn={true} 
-              sortDirection={sortDirection}            />
+              hideMatterColumn={true}
+              sortDirection={sortDirection}
+            />
           </div>
         </div>
 
