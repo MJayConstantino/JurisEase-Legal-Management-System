@@ -264,8 +264,7 @@ export const CaseDetailsForm: React.FC<CaseDetailsFormProps> = ({
                   variant="outline"
                   className={getStatusColor(matter.status)}
                 >
-                  {matter.status.charAt(0).toUpperCase() +
-                    matter.status.slice(1)}
+                  {matter.status}
                 </Badge>
               )}
             </div>

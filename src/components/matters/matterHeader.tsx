@@ -17,7 +17,7 @@ export function MatterHeader({ matter }: MatterHeaderProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 flex-shrink-0"
+            className="h-8 w-8 p-0 flex-shrink-0 hover:bg-gray-200 dark:hover:bg-gray-700 hover:cursor-pointer" 
           >
             <ArrowLeft className="h-4 w-4" />
             <span className="sr-only">Back to matters</span>
@@ -32,7 +32,7 @@ export function MatterHeader({ matter }: MatterHeaderProps) {
             {matter.name}
           </h1>
           <Badge className={getStatusColor(matter.status)} variant="outline">
-            {matter.status.charAt(0).toUpperCase() + matter.status.slice(1)}
+            {matter.status}
           </Badge>
         </div>
       </div>

@@ -61,6 +61,7 @@ export function EditableCard({
                   type="button"
                   size="sm"
                   variant="ghost"
+                  className="hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
                   aria-label="Save"
                   onClick={handleSaveClick}
                   disabled={isSaving || isCancelling}
@@ -74,6 +75,7 @@ export function EditableCard({
                 <Button
                   size="sm"
                   variant="ghost"
+                  className="hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer" 
                   aria-label="Cancel"
                   onClick={handleCancel}
                   disabled={isSaving || isCancelling}
@@ -89,6 +91,7 @@ export function EditableCard({
               <Button
                 variant="ghost"
                 size="sm"
+                className="hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
                 aria-label="Edit"
                 onClick={() => setIsEditing(true)}
               >

@@ -122,12 +122,12 @@ export function MatterRow({
           ) : (
             <Badge
               title={`Status: ${
-                matter.status.charAt(0).toUpperCase() + matter.status.slice(1)
+                matter.status
               }`}
               className={getStatusColor(matter.status)}
               variant="outline"
             >
-              {matter.status.charAt(0).toUpperCase() + matter.status.slice(1)}
+              {matter.status}
             </Badge>
           )}
         </TableCell>
