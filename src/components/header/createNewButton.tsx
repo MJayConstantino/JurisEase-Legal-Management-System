@@ -117,9 +117,10 @@ export function CreateNewButton({
         <DropdownMenuTrigger asChild>
           <Button
             className={
-              "bg-[#1B1E4B] dark:bg-gray-700 text-white hover:bg-[#1B1E4B]/50 " +
-              "border-2 border-white dark:hover:bg-gray-600 flex h-10 w-10 md:w-auto md:h-auto md:gap-2 " +
-              "justify-center md:justify-start items-center"
+              "bg-white text-[#181a40] hover:bg-gray-100 " +
+              "dark:bg-gray-600/90 dark:text-white dark:hover:bg-gray-800 " +
+              "border-1 border-grey-950 dark:border-grey-950 flex h-10 w-10 md:w-auto md:h-auto md:gap-2 cursor-pointer " +
+              "justify-center md:justify-start items-center shadow-sm"
             }
           >
             <Plus className="h-4 w-4" />
