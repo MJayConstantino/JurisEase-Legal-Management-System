@@ -9,7 +9,7 @@ import { useMediaQuery } from "@/hooks/use-media-query"
 import type { Bill, BillStatus } from "@/types/billing.type"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -137,140 +137,138 @@ export function BillingsEditDialog({ bill, open, onOpenChange, onSave, onSuccess
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className={`${
-          isDesktop ? "sm:max-w-[700px]" : "sm:max-w-[90vw]"
-        } max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700`}
-      >
+      <DialogContent className="sm:max-w-[500px] w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700 p-6 scrollbar-hide">
         <DialogHeader>
-          <DialogTitle className="text-xl md:text-2xl">Edit Bill</DialogTitle>
+          <DialogTitle className="dark:text-gray-100 font-semibold">
+            Edit Bill
+          </DialogTitle>
+          <DialogDescription>
+            Update the details below to modify this bill.
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
-          <div className={`grid ${isDesktop ? "grid-cols-2" : "grid-cols-1"} gap-4`}>
-            <div className="space-y-4">
-              <div className="grid gap-2 overflow-hidden mb-6">
-                <Label htmlFor="edit-name" className="text-base md:text-lg">
-                  Bill Name
-                  <sup className="text-red-600 ml-1">*</sup>
-                </Label>
+        <div className="grid gap-6 py-4">
+          {/* Bill Name and Amount in 2 columns */}
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-7">
+            <div className="sm:col-span-2">
+              <Label htmlFor="edit-name" className="dark:text-gray-200">
+                Bill Name <sup className="text-red-600">*</sup>
+              </Label>
+              <Input
+                id="edit-name"
+                value={name}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length > 30) {
+                    toast.error("Bill name cannot exceed 30 characters");
+                    return;
+                  }
+                  setName(value);
+                }}
+                placeholder="Enter bill name"
+                className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
+                maxLength={30}
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <Label htmlFor="edit-amount" className="dark:text-gray-200">
+                Amount <sup className="text-red-600">*</sup>
+              </Label>
+              <Input
+                id="amount"
+                type="text"
+                inputMode="decimal"
+                pattern="^\d+(\.\d{1,2})?$"
+                value={amount}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "") {
+                    setAmount(value);
+                    return;
+                  }
+                  if (/^\d+(\.\d{0,2})?$/.test(value)) {
+                    setAmount(value);
+                  }
+                }}
+                placeholder="Enter amount"
+                className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
+                maxLength={15}
+              />
+            </div>
+          </div>
+
+          {/* Remarks */}
+          <div>
+            <Label htmlFor="remarks" className="dark:text-gray-200">
+              Remarks
+            </Label>
+            <Textarea
+              id="remarks"
+              value={remarks}
+              onChange={(e) => setRemarks(e.target.value)}
+              placeholder="(optional)"
+              className="mt-2 resize-none dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
+              rows={3}
+              maxLength={300}
+            />
+          </div>
+
+          {/* Date and Status in 2 columns */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <Label htmlFor="date-display" className="dark:text-gray-200">
+                Date Billed
+              </Label>
+              <div className="relative mt-2 ">
                 <Input
-                  id="edit-name"
-                  value={name}
-                  onChange={(e) => {
-                    const value = e.target.value
-                    if (value.length > 30) {
-                      toast.error("Bill name cannot exceed 30 characters")
-                      return
-                    }
-                    setName(value)
-                  }}
-                  maxLength={30}
-                  className="text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:border-gray-600"
+                  id="date-display"
+                  readOnly
+                  value={created_at ? format(created_at, "MMMM d, yyyy") : ""}
+                  className="pr-10h hover:cursor-pointer dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                  placeholder="Select date"
+                  onClick={openDatePicker}
                 />
-              </div>
-
-              <div className="grid gap-2 overflow-hidden mb-6">
-                <Label htmlFor="edit-amount" className="text-base md:text-lg">
-                  Amount
-                  <sup className="text-red-600 ml-1">*</sup>
-                </Label>
-                <Input
-                  id="amount"
-                  type="text"
-                  inputMode="decimal"
-                  pattern="^\d+(\.\d{1,2})?$"
-                  value={amount}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (value === "") {
-                      setAmount(value);
-                      return;
-                    }
-                    if (/^\d+(\.\d{0,2})?$/.test(value)) {
-                      setAmount(value);
-                    }
-                  }}
-                  placeholder="Enter amount"
-                  className="text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:border-gray-600"
-                  maxLength={15}
+                <input
+                  ref={dateInputRef}
+                  type="date"
+                  value={dateString}
+                  onChange={handleDateChange}
+                  className="sr-only"
+                  tabIndex={-1}
                 />
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="date-display" className="text-base md:text-lg">
-                  Date Billed
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="date-display"
-                    readOnly
-                    value={created_at ? format(created_at, "MMMM d, yyyy") : ""}
-                    className="text-sm md:text-base h-9 md:h-10 pr-10 dark:bg-gray-700 dark:border-gray-600"
-                    placeholder="Select date"
-                    onClick={openDatePicker}
-                  />
-
-                  <input
-                    ref={dateInputRef}
-                    type="date"
-                    value={dateString}
-                    onChange={handleDateChange}
-                    className="sr-only"
-                    tabIndex={-1}
-                  />
-
-                  <Button
-                    name="dateBtn"
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={openDatePicker}
-                    className="absolute right-0 top-0 h-full px-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-                  >
-                    <CalendarIcon className="h-4 w-4 md:h-5 md:w-5" />
-                  </Button>
-                </div>
+                <Button
+                  name="dateBtn"
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={openDatePicker}
+                  className=" absolute right-0 top-0 h-full px-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                >
+                  <CalendarIcon className="h-4 w-4" />
+                </Button>
               </div>
             </div>
 
-            <div className="flex flex-col">
-              <div className="grid gap-2 mb-4 space-y-2">
-                <Label htmlFor="status" className="text-base md:text-lg">
-                  Status
-                </Label>
-                <Select defaultValue="pending" value={status} onValueChange={(value) => setStatus(value as BillStatus)}>
-                  <SelectTrigger
-                    id="edit-status"
-                    className="text-sm md:text-base dark:bg-gray-700 dark:border-gray-600"
-                  >
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
-                    <SelectItem value="paid" className="text-sm md:text-base">
-                      Paid
-                    </SelectItem>
-                    <SelectItem value="unpaid" className="text-sm md:text-base">
-                      Unpaid
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex flex-col flex-grow">
-                <div className="flex items-center justify-between mb-0">
-                  <Label htmlFor="edit-remarks" className="text-base md:text-lg">
-                    Remarks
-                  </Label>
-                </div>
-                <Textarea
-                  id="edit-remarks"
-                  value={remarks}
-                  onChange={(e) => setRemarks(e.target.value)}
-                  placeholder="(optional)"
-                  className="mt-2 flex-grow min-h-[130px] overflow-y-auto resize-none text-sm md:text-base dark:bg-gray-700 dark:border-gray-600 placeholder:italic"
-                />
-              </div>
+            <div>
+              <Label htmlFor="status" className="dark:text-gray-200">
+                Status
+              </Label>
+              <Select
+                defaultValue="pending"
+                value={status}
+                onValueChange={(value) => setStatus(value as BillStatus)}
+              >
+                <SelectTrigger
+                  id="status"
+                  className="hover:cursor-pointer mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 w-full"
+                >
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent className="dark:bg-gray-700 dark:border-gray-600 hover:cursor-pointer">
+                  <SelectItem value="paid">Paid</SelectItem>
+                  <SelectItem value="unpaid">Unpaid</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>

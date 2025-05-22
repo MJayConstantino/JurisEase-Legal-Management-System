@@ -410,7 +410,16 @@ export function BillingsAddDialog({
           </div>
         </div>
 
-        <DialogFooter className="flex flex-col sm:flex-row gap-4 sm:justify-between mt-6">
+        <DialogFooter>
+          <Button
+            id="cancelBtn"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isSubmitting}
+            className="cursor-pointer w-full sm:w-auto dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+          >
+            Cancel
+          </Button>
           <Button
             id="saveBtn"
             onClick={handleSave}
@@ -420,15 +429,6 @@ export function BillingsAddDialog({
             }
           >
             {isSubmitting ? "Saving..." : "Save Bill"}
-          </Button>
-          <Button
-            id="cancelBtn"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isSubmitting}
-            className="cursor-pointer w-full sm:w-auto dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
-          >
-            Cancel
           </Button>
         </DialogFooter>
       </DialogContent>

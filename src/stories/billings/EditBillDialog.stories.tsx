@@ -70,6 +70,7 @@ export const EditBillFormPlay: Story = {
         await userEvent.tab()
         await userEvent.tab()
         await userEvent.tab()
+        await userEvent.tab()
       }
     })
 
