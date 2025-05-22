@@ -52,76 +52,79 @@ describe('Billings E2E Interactions',() => {
 
     //----------This is good----------
 
-    // describe("Creating bills with validation", () => {
-    //     beforeEach(() => {
-    //         cy.viewport(1280, 800)
-    //         cy.contains('Add Bill').click()
-    //         cy.wait(300);
-    //     })
+    describe("Creating bills with validation", () => {
+        beforeEach(() => {
+            cy.viewport(1280, 800)
+            cy.contains('Add Bill').click()
+            cy.wait(300);
+        })
 
-    //     it("should validate required fields", () => {
-    //         cy.get('button[id="saveBtn"]').contains("Save").click();
-    //         cy.contains("Matter is required. Please select a matter.").should("exist");
-    //         cy.contains("Name is required. Please enter a bill name.").should("exist");
-    //         cy.contains("Amount is required. Please enter an amount.").should("exist");
-    //         cy.wait(3000);
-    //     })
+        it("should validate required fields", () => {
+            cy.get('button[id="saveBtn"]').contains("Save").click();
+            cy.contains("Matter is required. Please select a matter.").should("exist");
+            cy.contains("Name is required. Please enter a bill name.").should("exist");
+            cy.contains("Amount is required. Please enter an amount.").should("exist");
+            cy.wait(3000);
+        })
 
-    //     it("should show a validation error when only the Matter is selected", () => {
-    //         cy.get('select[id="matter"]').select(0)
-    //         cy.get('button[id="saveBtn"]').contains('Save').click()
-    //         cy.contains("Name is required. Please enter a bill name.").should("exist");
-    //         cy.contains("Amount is required. Please enter an amount.").should("exist");
-    //     })
+        it("should show a validation error when only the Matter is selected", () => {
+            cy.get('#matter').click()
+            searchForMatter()
+            cy.get('button[id="saveBtn"]').contains('Save').click()
+            cy.contains("Name is required. Please enter a bill name.").should("exist");
+            cy.contains("Amount is required. Please enter an amount.").should("exist");
+        })
 
-    //     it("should show a validation error when only Name is entered", () => {
-    //         cy.get('input[placeholder="Enter bill name"]').type('Test Bill', {
-    //             delay: 100,
-    //         })
-    //         cy.get('button[id="saveBtn"]').contains("Save").click();
-    //         cy.contains("Matter is required. Please select a matter.").should("exist");
-    //         cy.contains("Amount is required. Please enter an amount.").should("exist");
-    //     })
+        it("should show a validation error when only Name is entered", () => {
+            cy.get('input[placeholder="Enter bill name"]').type('Test Bill', {
+                delay: 100,
+            })
+            cy.get('button[id="saveBtn"]').contains("Save").click();
+            cy.contains("Matter is required. Please select a matter.").should("exist");
+            cy.contains("Amount is required. Please enter an amount.").should("exist");
+        })
 
-    //     it("should show a validation error when only Amount is entered", () => {
-    //         cy.get('input[placeholder="Enter amount"]').type('13000', {
-    //             delay: 100,
-    //         })
-    //         cy.get('button[id="saveBtn"]').contains("Save").click();
-    //         cy.contains("Matter is required. Please select a matter.").should("exist");
-    //         cy.contains("Name is required. Please enter a bill name.").should("exist");
-    //     })
+        it("should show a validation error when only Amount is entered", () => {
+            cy.get('input[placeholder="Enter amount"]').type('13000', {
+                delay: 100,
+            })
+            cy.get('button[id="saveBtn"]').contains("Save").click();
+            cy.contains("Matter is required. Please select a matter.").should("exist");
+            cy.contains("Name is required. Please enter a bill name.").should("exist");
+        })
 
-    //     it("should show a validation error when only Matter and Name is entered", () => {
-    //         cy.get('select[id="matter"]').select(0)
-    //         cy.get('input[placeholder="Enter bill name"]').type('Test Bill', {
-    //             delay: 100,
-    //         })
-    //         cy.get('button[id="saveBtn"]').contains('Save').click()
-    //         cy.contains("Amount is required. Please enter an amount.").should("exist");
-    //     })
+        it("should show a validation error when only Matter and Name is entered", () => {
+            cy.get('#matter').click()
+            searchForMatter()
+            cy.get('input[placeholder="Enter bill name"]').type('Test Bill', {
+                delay: 100,
+            })
+            cy.get('button[id="saveBtn"]').contains('Save').click()
+            cy.contains("Amount is required. Please enter an amount.").should("exist");
+        })
 
-    //     it("should show a validation error when only Matter and Amount is entered", () => {
-    //         cy.get('select[id="matter"]').select(0)
-    //         cy.get('input[placeholder="Enter amount"]').type('13000', {
-    //             delay: 100,
-    //         })
-    //         cy.get('button[id="saveBtn"]').contains("Save").click();
-    //         cy.contains("Name is required. Please enter a bill name.").should("exist");
+        it("should show a validation error when only Matter and Amount is entered", () => {
+            cy.get('#matter').click()
+            searchForMatter()
+            cy.get('input[placeholder="Enter amount"]').type('13000', {
+                delay: 100,
+            })
+            cy.get('button[id="saveBtn"]').contains("Save").click();
+            cy.contains("Name is required. Please enter a bill name.").should("exist");
 
-    //     })
+        })
 
-    //     it("should show a validation error when only Amount and Name is entered", () => {
-    //         cy.get('input[placeholder="Enter bill name"]').type('Test Bill', {
-    //             delay: 100,
-    //         })
-    //         cy.get('input[placeholder="Enter amount"]').type('13000', {
-    //             delay: 100,
-    //         })
-    //         cy.get('button[id="saveBtn"]').contains("Save").click();
-    //         cy.contains("Matter is required. Please select a matter.").should("exist");
-    //     })
-    // })
+        it("should show a validation error when only Amount and Name is entered", () => {
+            cy.get('input[placeholder="Enter bill name"]').type('Test Bill', {
+                delay: 100,
+            })
+            cy.get('input[placeholder="Enter amount"]').type('13000', {
+                delay: 100,
+            })
+            cy.get('button[id="saveBtn"]').contains("Save").click();
+            cy.contains("Matter is required. Please select a matter.").should("exist");
+        })
+    })
 
     describe("should create a bill with statuses", () => {
         beforeEach(() => {
@@ -165,119 +168,119 @@ describe('Billings E2E Interactions',() => {
         })
     })
 
-    // describe("should create a bill with or without remarks", () => {
-    //     beforeEach(() => {
-    //         cy.viewport(1280, 800)
-    //         cy.contains("Add Bill").click();
-    //         cy.wait(300);
-    //     })
+    describe("should create a bill with or without remarks", () => {
+        beforeEach(() => {
+            cy.viewport(1280, 800)
+            cy.contains("Add Bill").click();
+            cy.wait(300);
+        })
 
-    //     it('should create a bill with remarks', () => {
-    //         cy.get('#matter').click()
-    //         searchForMatter()
-    //         cy.get('input[placeholder="Enter bill name"]').type('Bill with remarks', {
-    //             delay: 100,
-    //         })
-    //         cy.get('input[placeholder="Enter amount"]').type('1000', {
-    //             delay: 100,
-    //         })
-    //         cy.get('#status').click()
-    //         cy.wait(300)
-    //         cy.get('[role="option"]').contains('Unpaid').click()
-    //         cy.get('textarea[id="remarks"]').type('Bill with added remarks', {delay: 100})
-    //         cy.get('button[id="saveBtn"]').contains('Save').click()
-    //         cy.wait(500)
-    //         cy.contains('Bill with added remarks').should('be.visible')
-    //     })
+        it('should create a bill with remarks', () => {
+            cy.get('#matter').click()
+            searchForMatter()
+            cy.get('input[placeholder="Enter bill name"]').type('Bill with remarks', {
+                delay: 100,
+            })
+            cy.get('input[placeholder="Enter amount"]').type('1000', {
+                delay: 100,
+            })
+            cy.get('#status').click()
+            cy.wait(300)
+            cy.get('[role="option"]').contains('Unpaid').click()
+            cy.get('textarea[id="remarks"]').type('Bill with added remarks', {delay: 100})
+            cy.get('button[id="saveBtn"]').contains('Save').click()
+            cy.wait(500)
+            cy.contains('Bill with added remarks').should('be.visible')
+        })
 
-    //     it('should create a bill without remarks', () => {
-    //         cy.get('#matter').click()
-    //         searchForMatter()
-    //         cy.get('input[placeholder="Enter bill name"]').type('Bill without remarks', {
-    //             delay: 100,
-    //         })
-    //         cy.get('input[placeholder="Enter amount"]').type('1000', {
-    //             delay: 100,
-    //         })
-    //         cy.get('#status').click()
-    //         cy.wait(300)
-    //         cy.get('[role="option"]').contains('Unpaid').click()
-    //         cy.get('button[id="saveBtn"]').contains('Save').click()
-    //         cy.wait(500)
-    //         cy.contains('--No remarks--').should('be.visible')
-    //     })
-    // })
+        it('should create a bill without remarks', () => {
+            cy.get('#matter').click()
+            searchForMatter()
+            cy.get('input[placeholder="Enter bill name"]').type('Bill without remarks', {
+                delay: 100,
+            })
+            cy.get('input[placeholder="Enter amount"]').type('1000', {
+                delay: 100,
+            })
+            cy.get('#status').click()
+            cy.wait(300)
+            cy.get('[role="option"]').contains('Unpaid').click()
+            cy.get('button[id="saveBtn"]').contains('Save').click()
+            cy.wait(500)
+            cy.contains('No remarks').should('be.visible')
+        })
+    })
 
-//     describe(`Creating matters using the "Create New" from different locations`, () => {
-//         it('should create a bill using Create New button from billings page', () => {
-//             cy.viewport(1280, 800)
-//             cy.contains('Create New').click()
-//             cy.wait(300)
-//             cy.contains("New Bill").click();
-//             cy.wait(300);
-//             cy.get('#matter').click()
-//             searchForMatter()
-//             cy.get('input[placeholder="Enter bill name"]').type('Create New Billings', {
-//                 delay: 100,
-//             })
-//             cy.get('input[placeholder="Enter amount"]').type('1000', {
-//                 delay: 100,
-//             })
-//             cy.get('button[id="saveBtn"]').contains('Save').click()
-//             cy.wait(500)
-//             cy.contains('Create New Billings').should('be.visible')
-//         })
-
-
-
-//         it('should create a bill from tasks page and return to billings', () => {
-//             cy.visit('/tasks')
-//             cy.wait(500)
-//             cy.viewport(1280, 800)
-//             cy.contains('Create New').click()
-//             cy.wait(300)
-//             cy.contains("New Bill").click();
-//             cy.wait(300);
-//             cy.get('#matter').click()
-//             searchForMatter()
-//             cy.get('input[placeholder="Enter bill name"]').type('Create New Tasks', {
-//                 delay: 100,
-//             })
-//             cy.get('input[placeholder="Enter amount"]').type('1000', {
-//                 delay: 100,
-//             })
-//             cy.get('button[id="saveBtn"]').contains('Save').click()
-//             cy.wait(500)
-//             cy.visit('/billings')
-//             cy.wait(500)
-//             cy.contains('Create New Tasks').should('be.visible')
-//         })
+    describe(`Creating matters using the "Create New" from different locations`, () => {
+        it('should create a bill using Create New button from billings page', () => {
+            cy.viewport(1280, 800)
+            cy.contains('Create New').click()
+            cy.wait(300)
+            cy.contains("New Bill").click();
+            cy.wait(300);
+            cy.get('#matter').click()
+            searchForMatter()
+            cy.get('input[placeholder="Enter bill name"]').type('Create New Billings', {
+                delay: 100,
+            })
+            cy.get('input[placeholder="Enter amount"]').type('1000', {
+                delay: 100,
+            })
+            cy.get('button[id="saveBtn"]').contains('Save').click()
+            cy.wait(500)
+            cy.contains('Create New Billings').should('be.visible')
+        })
 
 
 
-//         it('should create a bill from matters page and return to billings', () => {
-//             cy.visit('/matters')
-//             cy.wait(500)
-//             cy.viewport(1280, 800)
-//             cy.contains('Create New').click()
-//             cy.wait(300)
-//             cy.contains("New Bill").click();
-//             cy.wait(300);
-//             cy.get('#matter').click()
-//             searchForMatter()
-//             cy.get('input[placeholder="Enter bill name"]').type('Create New Matters', {
-//                 delay: 100,
-//             })
-//             cy.get('input[placeholder="Enter amount"]').type('1000', {
-//                 delay: 100,
-//             })
-//             cy.get('button[id="saveBtn"]').contains('Save').click()
-//             cy.wait(500)
-//             cy.visit('/billings')
-//             cy.wait(500)
-//             cy.contains('Create New Matters').should('be.visible')
-//         })
-//   })
+        it('should create a bill from tasks page and return to billings', () => {
+            cy.visit('/tasks')
+            cy.wait(500)
+            cy.viewport(1280, 800)
+            cy.contains('Create New').click()
+            cy.wait(300)
+            cy.contains("New Bill").click();
+            cy.wait(300);
+            cy.get('#matter').click()
+            searchForMatter()
+            cy.get('input[placeholder="Enter bill name"]').type('Create New Tasks', {
+                delay: 100,
+            })
+            cy.get('input[placeholder="Enter amount"]').type('1000', {
+                delay: 100,
+            })
+            cy.get('button[id="saveBtn"]').contains('Save').click()
+            cy.wait(500)
+            cy.visit('/billings')
+            cy.wait(500)
+            cy.contains('Create New Tasks').should('be.visible')
+        })
+
+
+
+        it('should create a bill from matters page and return to billings', () => {
+            cy.visit('/matters')
+            cy.wait(500)
+            cy.viewport(1280, 800)
+            cy.contains('Create New').click()
+            cy.wait(300)
+            cy.contains("New Bill").click();
+            cy.wait(300);
+            cy.get('#matter').click()
+            searchForMatter()
+            cy.get('input[placeholder="Enter bill name"]').type('Create New Matters', {
+                delay: 100,
+            })
+            cy.get('input[placeholder="Enter amount"]').type('1000', {
+                delay: 100,
+            })
+            cy.get('button[id="saveBtn"]').contains('Save').click()
+            cy.wait(500)
+            cy.visit('/billings')
+            cy.wait(500)
+            cy.contains('Create New Matters').should('be.visible')
+        })
+  })
 
     describe('When updating existing bills', () => {
         beforeEach(() =>  {
