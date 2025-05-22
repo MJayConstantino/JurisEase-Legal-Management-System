@@ -26,7 +26,6 @@ export interface TaskListProps {
 }
 
 export function TaskList({
-  className = '',
   initialTasks = [],
   matterId,
   tasks: externalTasks,
