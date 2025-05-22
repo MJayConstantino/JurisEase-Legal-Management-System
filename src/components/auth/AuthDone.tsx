@@ -33,8 +33,8 @@ export function AuthDonePage() {
   }, [])
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4">
-      <div className="w-full max-w-md rounded-lg bg-white p-4 sm:p-6 shadow-sm">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+      <div className="w-full max-w-md rounded-lg bg-card p-4 sm:p-6 shadow-sm">
         {/* Header Section */}
         <Header
           title="Authentication Successful"
@@ -43,17 +43,17 @@ export function AuthDonePage() {
         />
 
         {/* Success Section */}
-        <div className="rounded-lg bg-[#e1e5f2] p-4 sm:p-6">
+        <div className="rounded-lg bg-card  p-4 sm:p-6">
           <div className="flex flex-col items-center space-y-4 text-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
               <CheckCircle className="h-6 w-6 text-green-600" />
             </div>
 
-            <h3 className="text-lg font-medium text-[#2a3563]">
+            <h3 className="text-lg font-medium text-primary">
               Login Successful
             </h3>
 
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-primary/70">
               {closing
                 ? 'This window will close automatically...'
                 : 'You have been successfully logged in.'}
@@ -67,7 +67,7 @@ export function AuthDonePage() {
 
             {manualClose && (
               <div className="flex flex-col space-y-3 pt-4 max-w-sm">
-                <Button className="w-full bg-[#2a3563] hover:bg-[#1e2547] text-white cursor-pointer">
+                <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer">
                   <Link href="/">
                     <span>
                       <HomeIcon />

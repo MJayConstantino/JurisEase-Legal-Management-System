@@ -47,7 +47,7 @@ export function MatterRow({
     <>
       <TableRow
         key={matter.matter_id}
-        className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+        className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
         onClick={() => onRowClick(matter.matter_id)}
       >
         <TableCell className="font-medium">
@@ -122,12 +122,12 @@ export function MatterRow({
           ) : (
             <Badge
               title={`Status: ${
-                matter.status.charAt(0).toUpperCase() + matter.status.slice(1)
+                matter.status
               }`}
               className={getStatusColor(matter.status)}
               variant="outline"
             >
-              {matter.status.charAt(0).toUpperCase() + matter.status.slice(1)}
+              {matter.status}
             </Badge>
           )}
         </TableCell>
@@ -141,7 +141,7 @@ export function MatterRow({
         <TableCell className="text-right">
           <DropdownMenu>
             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <Button variant="ghost" className="h-8 w-8 p-0">
+              <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
                 <span className="sr-only">Open menu</span>
                 <MoreHorizontal className="h-4 w-4" />
               </Button>

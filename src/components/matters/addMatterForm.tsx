@@ -69,7 +69,7 @@ export const MatterForm: React.FC<MatterFormProps> = ({
           name="name"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel htmlFor="matter-name">Matter Name *</FormLabel>
+              <FormLabel htmlFor="matter-name">Matter Name <sup className="text-red-500">*</sup> </FormLabel>
               <FormControl>
                 <Input
                   id="matter-name"
@@ -93,7 +93,7 @@ export const MatterForm: React.FC<MatterFormProps> = ({
           name="case_number"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel htmlFor="case-number">Case Number *</FormLabel>
+              <FormLabel htmlFor="case-number">Case Number <sup className="text-red-500">*</sup> </FormLabel>
               <FormControl>
                 <Input
                   id="case-number"
@@ -166,7 +166,7 @@ export const MatterForm: React.FC<MatterFormProps> = ({
           {onCancel && (
             <Button
               type="button"
-              className="text-sm md:text-base h-9 md:h-10 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+              className="hover:cursor-pointer text-sm h-9 md:h-10 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
               variant="outline"
               onClick={onCancel}
             >
@@ -174,7 +174,11 @@ export const MatterForm: React.FC<MatterFormProps> = ({
             </Button>
           )}
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Creating..." : "Create Matter"}
+            {isSubmitting ? (
+              "Creating..."
+            ) : (
+              <span className="hover:cursor-pointer">Create Matter</span>
+            )}
           </Button>
         </div>
       </form>
