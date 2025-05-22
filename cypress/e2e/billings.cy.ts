@@ -51,15 +51,8 @@ describe('Billings E2E Interactions',() => {
 
     beforeEach(() => {
         cy.login("test@testdomain.com", "testPassword");
-
-        cy.visit('/', {
-        onBeforeLoad(win) {
-            cy.stub(win.Date, 'now').returns(1747824000000);
-        }})
-
         cy.wait(5000);
         cy.visit("/billings").wait(5000);
-
     })
 
 
