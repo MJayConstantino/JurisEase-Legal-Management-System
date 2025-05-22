@@ -20,6 +20,7 @@ import { formatDateForDisplay } from "@/utils/formatDateForDisplay";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { User } from "@/types/user.type";
 import { MatterConfirmDeletionDialog } from "./matterConfirmDeletionDialog";
+import { useRouter } from "next/navigation";
 
 interface MatterRowProps {
   matter: Matter;
@@ -37,6 +38,7 @@ export function MatterRow({
   deletingId,
   onRowClick,
 }: MatterRowProps) {
+  const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleDeleteClick = (e: React.MouseEvent) => {
@@ -175,7 +177,7 @@ export function MatterRow({
         onOpenChange={setIsDeleteDialogOpen}
         matter={matter}
         onSuccess={() => {
-          window.location.reload();
+          router.refresh();
         }}
       />
     </>
