@@ -195,7 +195,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
       <DialogTitle className="sr-only">Search Dialog</DialogTitle>
       <DialogContent
         role="dialog"
-        className="w-[calc(100%-2rem)] sm:max-w-xl max-h-[90vh] p-4 sm:p-6 overflow-hidden bg-accent "
+        className="w-[calc(100%-2rem)] sm:max-w-xl max-h-[90vh] p-4 sm:p-6 overflow-hidden bg-gray-800 "
       >
         {/* Make the entire content area scrollable */}
         <div className="max-h-[calc(90vh-2rem)] overflow-y-auto pr-2 scrollbar-hide">
