@@ -151,7 +151,7 @@ export function TaskList({
   }, [tasks, statusFilter, matterId]);
 
   return (
-    <div className="border w-full container mx-auto h-auto flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900 rounded-lg shadow mb-[56px] md:mb-0">
+    <div className="border dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 w-full h-auto flex flex-col overflow-hidden mb-[56px] md:mb-0">
       <TasksHeader
         onStatusChange={setStatusFilter}
         onViewChange={setView}
@@ -160,14 +160,14 @@ export function TaskList({
         matters={matters}
         matterId={matterId}
       />
-      <div className="flex-grow overflow-y-auto w-full pb-4">
+      <div className="flex-grow overflow-y-auto w-full">
         {isLoadingTasks ? (
-          <div className="flex justify-center items-center h-64">
+          <div className="flex justify-center items-center py-6 h-auto">
             <p className="text-muted-foreground">Loading tasks...</p>
           </div>
         ) : filteredTasks.length === 0 ? (
-          <div className="flex justify-center items-center h-64 text-muted-foreground">
-            <p>No tasks found.</p>
+          <div className="flex justify-center items-center py-6 text-muted-foreground">
+            <p> No tasks found. Create your first task to get started.</p>
           </div>
         ) : view === "grid" ? (
           <div className="grid grid-cols-1 p-5 md:grid-cols-2 lg:grid-cols-3 gap-4">

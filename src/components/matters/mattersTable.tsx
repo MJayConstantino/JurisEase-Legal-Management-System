@@ -75,7 +75,7 @@ export function MattersTable({
     <Button
       variant="ghost"
       onClick={() => onSort(field)}
-      className="p-0 h-auto font-semibold flex items-center hover:bg-transparent"
+      className="p-0 h-auto font-semibold flex items-center"
     >
       {label} {getSortIcon(field)}
     </Button>
@@ -85,7 +85,7 @@ export function MattersTable({
     <div className="overflow-x-auto">
       <Table>
         <TableHeader className="border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-          <TableRow>
+          <TableRow className="hover:bg-gray-50 dark:hover:bg-gray-900">
             <TableHead>
               {renderSortableHeader("case_number", "Case #")}
             </TableHead>
