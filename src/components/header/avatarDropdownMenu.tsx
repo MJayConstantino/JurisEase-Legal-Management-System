@@ -91,7 +91,7 @@ export default function AvatarDropdownMenu({
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="h-10 w-10 rounded-full p-0"
+          className="h-10 w-10 rounded-full p-0 hover:cursor-pointer"
           aria-label="Avatar"
         >
           {isLoading ? (
@@ -138,12 +138,12 @@ export default function AvatarDropdownMenu({
 
         <DropdownMenuItem
           onClick={handleProfileClick}
-          className="px-3 py-2 text-black dark:text-white"
+          className="px-3 py-2 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer"
         >
           <User className="mr-2" /> Profile
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="px-3 py-2 text-black dark:text-white">
+        <DropdownMenuItem className="px-3 py-2 text-black dark:text-white hover:cursor-pointer">
           <LogOut className="mr-2" />
           <Signout />
         </DropdownMenuItem>

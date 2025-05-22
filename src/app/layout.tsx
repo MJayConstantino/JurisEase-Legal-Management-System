@@ -6,6 +6,7 @@ import { ToastProvider } from "@/components/ui/toast-provider";
 export const metadata: Metadata = {
   title: "JurisEase",
   description: "Legal case management system",
+  
 };
 
 export default function RootLayout({
