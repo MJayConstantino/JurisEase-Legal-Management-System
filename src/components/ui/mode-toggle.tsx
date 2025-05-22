@@ -19,9 +19,9 @@ export function ModeToggle() {
       <Button
         variant="ghost"
         size="icon"
-        className="text-white hover:bg-[#1B1E4B]"
+        className="text-white hover:bg-[#1B1E4B] hover:text-white hover:cursor-pointer"
       >
-        <Moon className="h-5 w-5" />
+        <Moon className="h-5 w-5 hover:text-white" />
         <span className="sr-only">Toggle theme</span>
       </Button>
     );
@@ -31,7 +31,7 @@ export function ModeToggle() {
     <Button
       variant="ghost"
       size="icon"
-      className="text-white hover:bg-[#1B1E4B]"
+      className="text-white hover:bg-[#1B1E4B] hover:text-white hover:cursor-pointer"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >
       {theme === "dark" ? (

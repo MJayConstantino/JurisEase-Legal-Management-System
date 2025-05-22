@@ -40,7 +40,7 @@ export function AppSidebar() {
     <Sidebar
       variant="sidebar"
       collapsible="icon"
-      className="h-[100vh] bg-[#1B1E4B] dark:bg-gray-800 text-white z-0 pt-16 fixed left-0 hidden md:flex w-64 transition-all duration-300 ease-in-out"
+      className="h-[100vh] bg-[#1B1E4B] dark:bg-gray-900 text-white z-0 pt-16 fixed left-0 hidden md:flex w-64 transition-all duration-300 ease-in-out"
     >
       <SidebarContent className="px-2 py-6">
         <SidebarMenu>
