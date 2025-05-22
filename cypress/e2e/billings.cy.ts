@@ -393,8 +393,8 @@ describe('Billings E2E Interactions',() => {
         })
 
         it('should delete the unpaid bill', () => {
-            cy.contains('Updated Bill Name')
-            cy.contains('Updated Bill Name')
+            cy.contains('Unpaid Test Bill')
+            cy.contains('Unpaid Test Bill')
                 .parents('[data-testid^="billing-row"]')
                 .within(() => {
                     cy.get('[data-testid="billing-options-btn"]').click({ force: true })
