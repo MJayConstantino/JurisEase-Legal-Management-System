@@ -2,15 +2,6 @@
 
 import type React from "react";
 import { useRouter } from "next/navigation";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import type { Matter, SortField, SortDirection } from "@/types/matter.type";
 import { useState, useEffect } from "react";
@@ -62,70 +53,77 @@ export function MattersTable({
 
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) {
-      return <ArrowUpDown className="ml-2 h-4 w-4" />;
+      return <ArrowUpDown className="h-4 w-4" />;
     }
     return sortDirection === "asc" ? (
-      <ArrowUp className="ml-2 h-4 w-4" />
+      <ArrowUp className="h-4 w-4" />
     ) : (
-      <ArrowDown className="ml-2 h-4 w-4" />
+      <ArrowDown className="h-4 w-4" />
     );
   };
 
   const renderSortableHeader = (field: SortField, label: string) => (
-    <Button
-      variant="ghost"
+    <button
       onClick={() => onSort(field)}
-      className="p-0 h-auto font-semibold flex items-center"
+      className="flex items-center space-x-1 font-semibold hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer w-full"
     >
-      {label} {getSortIcon(field)}
-    </Button>
+      <span>{label}</span>
+      <span className="inline-flex items-center">{getSortIcon(field)}</span>
+    </button>
   );
 
   return (
-    <div className="overflow-x-auto">
-      <Table>
-        <TableHeader className="border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-          <TableRow className="hover:bg-gray-50 dark:hover:bg-gray-900">
-            <TableHead>
+    <div className="w-full overflow-x-auto">
+      <div className="min-w-full">
+        {/* Table header */}
+        <div className="border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4">
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-3 sm:col-span-1">
               {renderSortableHeader("case_number", "Case #")}
-            </TableHead>
-            <TableHead>{renderSortableHeader("name", "Matter Name")}</TableHead>
-            <TableHead>{renderSortableHeader("client", "Client")}</TableHead>
-            <TableHead>
+            </div>
+            <div className="col-span-6 sm:col-span-2">
+              {renderSortableHeader("name", "Matter Name")}
+            </div>
+            <div className="hidden sm:block sm:col-span-2">
+              {renderSortableHeader("client", "Client")}
+            </div>
+            <div className="hidden sm:block sm:col-span-2">
               {renderSortableHeader("assigned_attorney", "Assigned Attorney")}
-            </TableHead>
-            <TableHead>
+            </div>
+            <div className="hidden sm:block sm:col-span-2">
               {renderSortableHeader("assigned_staff", "Assigned Staff")}
-            </TableHead>
-            <TableHead className="font-semibold">Status</TableHead>
-            <TableHead>
+            </div>
+            <div className="hidden sm:block sm:col-span-1 font-semibold">
+              Status
+            </div>
+            <div className="hidden sm:block sm:col-span-1">
               {renderSortableHeader("date_opened", "Date Opened")}
-            </TableHead>
-            <TableHead className="text-right font-semibold">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {matters.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={8} className="text-center py-10">
-                No matters found. Create your first matter to get started.
-              </TableCell>
-            </TableRow>
-          ) : (
-            matters.map((matter) => (
-              <MatterRow
-                key={matter.matter_id}
-                matter={matter}
-                users={users}
-                isLoading={isLoading}
-                deletingId={deletingId}
-                onRowClick={handleRowClick}
-                onDelete={handleDelete}
-              />
-            ))
-          )}
-        </TableBody>
-      </Table>
+            </div>
+            <div className="col-span-3 sm:col-span-1 text-right font-semibold">
+              Actions
+            </div>
+          </div>
+        </div>
+
+        {/* Table body */}
+        {matters.length === 0 ? (
+          <div className="p-4 text-center py-10">
+            No matters found. Create your first matter to get started.
+          </div>
+        ) : (
+          matters.map((matter) => (
+            <MatterRow
+              key={matter.matter_id}
+              matter={matter}
+              users={users}
+              isLoading={isLoading}
+              deletingId={deletingId}
+              onRowClick={handleRowClick}
+              onDelete={handleDelete}
+            />
+          ))
+        )}
+      </div>
     </div>
   );
 }
