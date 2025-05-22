@@ -65,7 +65,7 @@ export function BillingsItem({
   const matterDisplay = billMatter ? `${billMatter.name} [${billMatter.case_number}]` : `Matter ID: ${bill.matter_id}`
 
   return (
-    <TableRow className="text-sm md:text-base dark:border-gray-700">
+    <TableRow className="text-sm md:text-base dark:border-gray-700"  data-testid={`billing-row-${bill.bill_id}`}>
       <TableCell className="pl-5 font-medium max-w-[200px] truncate" title={`Bill Name: ${bill.name}`}>
         {bill.name}
       </TableCell>
