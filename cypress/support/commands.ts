@@ -47,5 +47,16 @@ Cypress.Commands.add(
   }
 )
 
+Cypress.Commands.add('initializeSearchTests', (username: string) => {
+  cy.task('initializeSearchTests', username).then((data) => {
+    console.log(data)
+  })
+})
+
+Cypress.Commands.add('cleanUpSearchTests', () => {
+  cy.task('deleteSearchTests', 'testMatter (Global Search E2E)')
+  cy.task('deleteUser', 'test@testdomain.com')
+})
+
 //    email: 'test@testdomain.com',
 //        password: 'testPassword',

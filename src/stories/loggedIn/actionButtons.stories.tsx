@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import ActionButtons from "@/components/homepage/loggedIn/actionButtons";
+import ActionButtons from "@/components/loggedIn/actionButtons";
 
 const meta: Meta<typeof ActionButtons> = {
   title: "Logged In/ActionButtons",

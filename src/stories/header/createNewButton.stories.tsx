@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 import CreateNewButton from "@/components/header/createNewButton";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 
 const meta: Meta<typeof CreateNewButton> = {
   title: "Header/CreateNewButton",

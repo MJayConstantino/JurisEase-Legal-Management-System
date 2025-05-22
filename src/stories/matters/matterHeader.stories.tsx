@@ -3,7 +3,7 @@ import React from "react";
 import { MatterHeader } from "@/components/matters/matterHeader";
 import { mockMatters } from "./mockMatters";
 import { userEvent, within } from "@storybook/testing-library";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 
 const sampleMatter = mockMatters[0];
 

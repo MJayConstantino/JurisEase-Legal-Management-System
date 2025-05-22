@@ -152,13 +152,22 @@ export async function fetchUsersAction() {
   return data
 }
 
+export async function fetchUserSession() {
+  const supabase = await createSupabaseClient()
+  const { data, error } = await supabase.auth.getSession()
+  const session = data.session
+  if (!session) {
+    console.log('awaiting session')
+  }
+  if (error) {
+    console.log(error)
+  }
+  return session
+}
+
 export async function fetchUserInfoAction() {
   const supabase = await createSupabaseClient()
   const { data: authData, error: authError } = await supabase.auth.getUser()
-
-  if (authError) {
-    throw new Error('Error fetching user: ' + authError.message)
-  }
 
   if (!authData.user) {
     throw new Error('User not found')

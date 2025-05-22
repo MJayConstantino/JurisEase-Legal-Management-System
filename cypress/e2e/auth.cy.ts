@@ -52,7 +52,7 @@ describe('User Auth Process', () => {
       cy.get('#password').type('testPassword')
       cy.contains('Sign Up').click()
       cy.wait(2000)
-        .contains('Sign Up Succesful! Confirm your Emeil!')
+        .contains('Sign Up Succesful! Confirm your Email!')
         .should('be.visible')
     })
     it('should throw an error if the user tries to sign up with the same credentials while the confirmation email was not confirmed ', () => {

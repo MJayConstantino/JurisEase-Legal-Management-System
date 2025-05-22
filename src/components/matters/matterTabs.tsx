@@ -1,10 +1,12 @@
 "use client";
 
+import type React from "react";
 import { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { LayoutDashboard, CheckSquare, DollarSign } from "lucide-react";
 import { MatterTaskPage } from "./matterTabsPage/matterTaskPage";
 import { MatterBillingPage } from "./matterTabsPage/matterBillingPage";
+import { getCookie, setCookie } from "@/utils/cookies";
 
 interface MatterTabsProps {
   children: React.ReactNode;
@@ -13,18 +15,20 @@ interface MatterTabsProps {
 
 export function MatterTabs({ children, matterId }: MatterTabsProps) {
   const [activeTab, setActiveTab] = useState<string | undefined>(undefined);
+  const cookieName = `matter-${matterId}-tab`;
 
   useEffect(() => {
-    const saved =
-      window.localStorage.getItem(`matter-${matterId}-tab`) || "dashboard";
-    setActiveTab(saved);
-  }, [matterId]);
+    // Get tab from cookie or use default
+    const savedTab = getCookie(cookieName) || "dashboard";
+    setActiveTab(savedTab);
+  }, [matterId, cookieName]);
 
   useEffect(() => {
     if (activeTab) {
-      window.localStorage.setItem(`matter-${matterId}-tab`, activeTab);
+      // Save tab to cookie
+      setCookie(cookieName, activeTab);
     }
-  }, [activeTab, matterId]);
+  }, [activeTab, matterId, cookieName]);
 
   if (!activeTab) {
     return null;
@@ -36,13 +40,15 @@ export function MatterTabs({ children, matterId }: MatterTabsProps) {
       onValueChange={setActiveTab}
       className="w-full mb-10"
     >
-      <div className="bg-white dark:bg-gray-800 rounded-lg border shadow">
-        <TabsList className="w-full justify-start border-b rounded-none p-0 h-auto bg-transparent dark:bg-transparent">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700 shadow">
+        <TabsList className="w-full border-t-accent-foreground justify-start border-b dark:border-gray-700 p-0 h-auto rounded-b-none bg-gray-50 dark:bg-gray-800">
           <TabsTrigger
             value="dashboard"
-            className="flex items-center gap-2 py-3 px-4 rounded-none 
-              data-[state=active]:border-b-2 data-[state=active]:border-primary 
-              data-[state=active]:bg-primary/5 dark:data-[state=active]:bg-primary/10
+            className="flex items-center gap-2 py-3 px-4 rounded-none rounded-tl-lg
+              transition-all duration-200 ease-in-out
+              data-[state=active]:border-dark-foreground/20
+              hover:cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700
+              data-[state=active]:bg-primary/5 dark:data-[state=active]:bg-gray-900
               data-[state=active]:text-primary dark:data-[state=active]:text-white
               dark:text-gray-300"
           >
@@ -51,9 +57,10 @@ export function MatterTabs({ children, matterId }: MatterTabsProps) {
           </TabsTrigger>
           <TabsTrigger
             value="tasks"
-            className="flex items-center gap-2 py-3 px-4 rounded-none 
-              data-[state=active]:border-b-2 data-[state=active]:border-primary 
-              data-[state=active]:bg-primary/5 dark:data-[state=active]:bg-primary/10
+            className="flex items-center gap-2 py-3 px-4 rounded-none
+              transition-all duration-200 ease-in-out
+              hover:cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700
+              data-[state=active]:bg-primary/5 dark:data-[state=active]:bg-gray-900
               data-[state=active]:text-primary dark:data-[state=active]:text-white
               dark:text-gray-300"
           >
@@ -62,9 +69,10 @@ export function MatterTabs({ children, matterId }: MatterTabsProps) {
           </TabsTrigger>
           <TabsTrigger
             value="billing"
-            className="flex items-center gap-2 py-3 px-4 rounded-none 
-              data-[state=active]:border-b-2 data-[state=active]:border-primary 
-              data-[state=active]:bg-primary/5 dark:data-[state=active]:bg-primary/10
+            className="flex items-center gap-2 py-3 px-4 rounded-none rounded-tr-lg
+              transition-all duration-200 ease-in-out
+              hover:cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700
+              data-[state=active]:bg-primary/5 dark:data-[state=active]:bg-gray-900
               data-[state=active]:text-primary dark:data-[state=active]:text-white
               dark:text-gray-300"
           >
@@ -73,15 +81,24 @@ export function MatterTabs({ children, matterId }: MatterTabsProps) {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="dashboard" className="p-6 m-0">
+        <TabsContent
+          value="dashboard"
+          className="p-6 m-0 animate-in fade-in-50 duration-300"
+        >
           {children}
         </TabsContent>
 
-        <TabsContent value="tasks" className="p-6 m-0">
+        <TabsContent
+          value="tasks"
+          className="p-6 m-0 animate-in fade-in-50 duration-300"
+        >
           <MatterTaskPage initialTasks={[]} />
         </TabsContent>
 
-        <TabsContent value="billing" className="p-6 m-0">
+        <TabsContent
+          value="billing"
+          className="p-6 m-0 animate-in fade-in-50 duration-300"
+        >
           <MatterBillingPage />
         </TabsContent>
       </div>

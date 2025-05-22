@@ -57,7 +57,7 @@ export function AppSidebar() {
 
             return (
               <SidebarMenuItem key={item.href} className="mb-4">
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton asChild tooltip={item.title}>
                   <Link href={item.href} className={linkClasses}>
                     <item.icon
                       size={40}

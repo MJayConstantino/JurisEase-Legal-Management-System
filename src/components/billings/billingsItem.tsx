@@ -70,7 +70,7 @@ export function BillingsItem({
         {bill.name}
       </TableCell>
       {!hideMatterColumn && (
-        <TableCell className="font-medium max-w-[200px] truncate" title={`Matter Name: ${matterDisplay}`}>
+        <TableCell className="max-w-[200px] truncate" title={`Matter Name: ${matterDisplay}`}>
           {matterDisplay}
         </TableCell>
       )}
@@ -79,17 +79,17 @@ export function BillingsItem({
       </TableCell>
       <TableCell
         className={`${hideMatterColumn ? "max-w-[250px]" : "max-w-[200px]"} truncate`}
-        title={`Remarks: ${bill.remarks || "--No remarks--"}`}
+        title={`Remarks: ${bill.remarks || "No Remarks"}`}
       >
         {bill.remarks ? (
           bill.remarks
         ) : (
-          <span className="italic text-gray-500">--No remarks--</span>
+          <span className="text-gray-500">No remarks</span>
         )}
       </TableCell>
       <TableCell>
         <span
-          className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-xs md:text-sm font-medium ${getStatusStyles( bill.status)}`}
+          className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-xs ${getStatusStyles( bill.status)}`}
           title={`Status: ${bill.status}`}
         >
           {bill.status}
