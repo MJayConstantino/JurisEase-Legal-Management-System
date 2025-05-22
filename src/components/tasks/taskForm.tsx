@@ -127,7 +127,7 @@ export function TaskForm({
       if (isSubmitting) {
         return;
       }
-      
+
       if (!validateTask()) {
         return;
       }
@@ -142,7 +142,7 @@ export function TaskForm({
         };
 
         const isNewTask = !task.task_id;
-        
+
         const response = isNewTask
           ? await handleCreateTask(taskToSubmit)
           : await handleUpdateTask(taskToSubmit);
@@ -223,7 +223,7 @@ export function TaskForm({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="sm:col-span-2">
               <Label htmlFor="name" className="dark:text-gray-200">
-                Name
+                Name <sup className="text-red-500">*</sup>
               </Label>
               <Input
                 placeholder="Task name"
@@ -321,7 +321,7 @@ export function TaskForm({
             <Input
               id="dueDate"
               type="date"
-              className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 w-full"
+              className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 w-full hover:cursor-pointer dark:placeholder:text-gray-400"
               value={formattedDueDate}
               min={format(new Date(), "yyyy-MM-dd")}
               onChange={(e) =>

@@ -50,7 +50,7 @@ export function EditableCard({
   };
 
   return (
-    <Card className="dark:bg-gray-800">
+    <Card className="dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-lg shadow-sm border dark:shadow-sm">
       <CardHeader className="flex items-center justify-between pb-2">
         <CardTitle>{title}</CardTitle>
         {editable && (
@@ -61,6 +61,7 @@ export function EditableCard({
                   type="button"
                   size="sm"
                   variant="ghost"
+                  className="hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
                   aria-label="Save"
                   onClick={handleSaveClick}
                   disabled={isSaving || isCancelling}
@@ -74,6 +75,7 @@ export function EditableCard({
                 <Button
                   size="sm"
                   variant="ghost"
+                  className="hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer" 
                   aria-label="Cancel"
                   onClick={handleCancel}
                   disabled={isSaving || isCancelling}
@@ -89,6 +91,7 @@ export function EditableCard({
               <Button
                 variant="ghost"
                 size="sm"
+                className="hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
                 aria-label="Edit"
                 onClick={() => setIsEditing(true)}
               >

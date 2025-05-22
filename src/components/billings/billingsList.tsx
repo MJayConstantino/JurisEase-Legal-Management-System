@@ -49,7 +49,7 @@ export function BillingsList({
     <Button
       variant="ghost"
       onClick={() => onSortChange(field)}
-      className="p-0 h-auto font-semibold flex items-center hover:bg-transparent whitespace-nowrap overflow-hidden text-ellipsis"
+      className="p-0 h-auto font-semibold flex items-center whitespace-nowrap overflow-hidden text-ellipsis"
     >
       {label} {getSortIcon(field)}
     </Button>
