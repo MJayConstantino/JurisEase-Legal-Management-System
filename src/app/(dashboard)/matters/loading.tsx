@@ -2,8 +2,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function MattersLoading() {
   return (
-    <div className="flex flex-col gap-6 h-full">
-      <div className="bg-white dark:bg-gray-800 rounded-lg border shadow">
+    <div className="flex flex-col h-full">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border shadow max-w-7xl mx-auto">
         {/* MattersHeader skeleton */}
         <div className="p-4 border-b bg-gray-50 dark:bg-gray-900 dark:border-gray-700 rounded-t-lg">
           {/* Mobile View */}
@@ -26,50 +26,86 @@ export default function MattersLoading() {
         <div className="overflow-x-auto">
           <div className="min-w-full">
             {/* Table header */}
-            <div className="border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-4">
+            <div className="border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900 py-5 px-4">
               <div className="grid grid-cols-12 gap-4">
-                <Skeleton className="h-5 col-span-3 sm:col-span-1" />{" "}
-                {/* Case # */}
-                <Skeleton className="h-5 col-span-6 sm:col-span-2" />{" "}
-                {/* Matter Name */}
-                <Skeleton className="h-5 hidden sm:block sm:col-span-2" />{" "}
-                {/* Client */}
-                <Skeleton className="h-5 hidden sm:block sm:col-span-2" />{" "}
-                {/* Attorney */}
-                <Skeleton className="h-5 hidden sm:block sm:col-span-2" />{" "}
-                {/* Staff */}
-                <Skeleton className="h-5 hidden sm:block sm:col-span-1" />{" "}
-                {/* Status */}
-                <Skeleton className="h-5 hidden sm:block sm:col-span-1" />{" "}
-                {/* Date */}
-                <Skeleton className="h-5 col-span-3 sm:col-span-1 text-right" />{" "}
-                {/* Actions */}
+                <div className="col-span-3 sm:col-span-1">
+                  <div className="flex items-center space-x-1">
+                    <Skeleton className="h-5 w-16" /> {/* Case # */}
+                    <Skeleton className="h-4 w-4 rounded-full" />{" "}
+                    {/* Sort icon */}
+                  </div>
+                </div>
+                <div className="col-span-6 sm:col-span-2">
+                  <div className="flex items-center space-x-1">
+                    <Skeleton className="h-5 w-24" /> {/* Matter Name */}
+                    <Skeleton className="h-4 w-4 rounded-full" />{" "}
+                    {/* Sort icon */}
+                  </div>
+                </div>
+                <div className="hidden sm:block sm:col-span-2">
+                  <div className="flex items-center space-x-1">
+                    <Skeleton className="h-5 w-16" /> {/* Client */}
+                    <Skeleton className="h-4 w-4 rounded-full" />{" "}
+                    {/* Sort icon */}
+                  </div>
+                </div>
+                <div className="hidden sm:block sm:col-span-2">
+                  <div className="flex items-center space-x-1">
+                    <Skeleton className="h-5 w-32" /> {/* Attorney */}
+                    <Skeleton className="h-4 w-4 rounded-full" />{" "}
+                    {/* Sort icon */}
+                  </div>
+                </div>
+                <div className="hidden sm:block sm:col-span-2">
+                  <div className="flex items-center space-x-1">
+                    <Skeleton className="h-5 w-24" /> {/* Staff */}
+                    <Skeleton className="h-4 w-4 rounded-full" />{" "}
+                    {/* Sort icon */}
+                  </div>
+                </div>
+                <div className="hidden sm:block sm:col-span-1">
+                  <Skeleton className="h-5 w-16" /> {/* Status */}
+                </div>
+                <div className="hidden sm:block sm:col-span-1">
+                  <div className="flex items-center space-x-1">
+                    <Skeleton className="h-5 w-24" /> {/* Date */}
+                    <Skeleton className="h-4 w-4 rounded-full" />{" "}
+                    {/* Sort icon */}
+                  </div>
+                </div>
+                <div className="col-span-3 sm:col-span-1 flex justify-end">
+                  <Skeleton className="h-5 w-16" /> {/* Actions */}
+                </div>
               </div>
             </div>
 
             {/* Table rows */}
             {[...Array(8)].map((_, i) => (
-              <div
-                key={i}
-                className="border-b p-4 hover:bg-gray-50 dark:hover:bg-gray-800"
-              >
+              <div key={i} className="border-b p-4">
                 <div className="grid grid-cols-12 gap-4">
-                  <Skeleton className="h-5 col-span-3 sm:col-span-1" />{" "}
-                  {/* Case # */}
-                  <Skeleton className="h-5 col-span-6 sm:col-span-2" />{" "}
-                  {/* Matter Name */}
-                  <Skeleton className="h-5 hidden sm:block sm:col-span-2" />{" "}
-                  {/* Client */}
-                  <Skeleton className="h-5 hidden sm:block sm:col-span-2" />{" "}
-                  {/* Attorney */}
-                  <Skeleton className="h-5 hidden sm:block sm:col-span-2" />{" "}
-                  {/* Staff */}
-                  <Skeleton className="h-5 hidden sm:block sm:col-span-1" />{" "}
-                  {/* Status */}
-                  <Skeleton className="h-5 hidden sm:block sm:col-span-1" />{" "}
-                  {/* Date */}
+                  <div className="col-span-3 sm:col-span-1">
+                    <Skeleton className="h-5 w-full" /> {/* Case # */}
+                  </div>
+                  <div className="col-span-6 sm:col-span-2">
+                    <Skeleton className="h-5 w-full" /> {/* Matter Name */}
+                  </div>
+                  <div className="hidden sm:block sm:col-span-2">
+                    <Skeleton className="h-5 w-full" /> {/* Client */}
+                  </div>
+                  <div className="hidden sm:block sm:col-span-2">
+                    <Skeleton className="h-5 w-full" /> {/* Attorney */}
+                  </div>
+                  <div className="hidden sm:block sm:col-span-2">
+                    <Skeleton className="h-5 w-full" /> {/* Staff */}
+                  </div>
+                  <div className="hidden sm:block sm:col-span-1">
+                    <Skeleton className="h-5 w-full" /> {/* Status */}
+                  </div>
+                  <div className="hidden sm:block sm:col-span-1">
+                    <Skeleton className="h-5 w-full" /> {/* Date */}
+                  </div>
                   <div className="col-span-3 sm:col-span-1 flex justify-end">
-                    <Skeleton className="h-5 w-20" /> {/* Actions */}
+                    <Skeleton className="h-5 w-8" /> {/* Actions */}
                   </div>
                 </div>
               </div>
