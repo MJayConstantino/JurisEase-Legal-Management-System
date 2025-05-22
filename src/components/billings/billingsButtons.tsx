@@ -13,7 +13,7 @@ export function BillingsButtons({ onEdit, onDelete }: BillingsButtonsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-7 w-7 cursor-pointer md:h-9 md:w-9">
+        <Button data-testid="billing-options-btn" variant="ghost" size="icon" className="h-7 w-7 cursor-pointer md:h-9 md:w-9">
           <MoreHorizontal className="h-3 w-3 md:h-4 md:w-4" />
           <span className="sr-only">More options</span>
         </Button>
