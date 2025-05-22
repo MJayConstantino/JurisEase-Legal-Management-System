@@ -195,7 +195,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
       <DialogTitle className="sr-only">Search Dialog</DialogTitle>
       <DialogContent
         role="dialog"
-        className="w-[calc(100%-2rem)] sm:max-w-xl max-h-[90vh] p-4 sm:p-6 overflow-hidden bg-accent "
+        className="w-[calc(100%-2rem)] sm:max-w-xl max-h-[90vh] p-4 sm:p-6 overflow-hidden dark:bg-gray-800 "
       >
         {/* Make the entire content area scrollable */}
         <div className="max-h-[calc(90vh-2rem)] overflow-y-auto pr-2 scrollbar-hide">
@@ -215,7 +215,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
               size="sm"
               aria-label="Clear"
               onClick={handleClearSearch}
-              className="ml-2 whitespace-nowrap cursor-pointer hover:text-muted-foreground"
+              className="ml-2 whitespace-nowrap cursor-pointer hover:text-muted-foreground dark:hover:bg-grey-500  dark:bg-gray-800"
             >
               <span className="hidden sm:block">Clear</span>
               <span>
