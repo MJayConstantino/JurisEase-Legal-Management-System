@@ -1,157 +1,159 @@
-"use client";
+'use client'
 
-import { useState, useEffect, useCallback, useMemo } from "react";
-import type { Task } from "@/types/task.type";
-import type { Matter } from "@/types/matter.type";
-import { TaskCard } from "./taskCard";
-import { TasksHeader } from "./taskHeader";
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import type { Task } from '@/types/task.type'
+import type { Matter } from '@/types/matter.type'
+import { TaskCard } from './taskCard'
+import { TasksHeader } from './taskHeader'
 import {
   handleFetchMatterById,
   handleFetchMatters,
-} from "@/action-handlers/matters";
+} from '@/action-handlers/matters'
 import {
   handleFetchTasks,
   handleFetchTasksByMatterId,
-} from "@/action-handlers/tasks";
-import { toast } from "sonner";
-import { isTaskOverdue } from "@/utils/taskHandlers";
-import { TaskTable } from "./taskTable";
+} from '@/action-handlers/tasks'
+import { toast } from 'sonner'
+import { isTaskOverdue } from '@/utils/taskHandlers'
+import { TaskTable } from './taskTable'
 
 export interface TaskListProps {
-  initialTasks: Task[];
-  matterId?: string;
-  tasks?: Task[];
-  onTaskCreated?: (newTask: Task) => void;
+  initialTasks: Task[]
+  matterId?: string
+  tasks?: Task[]
+  className?: string
+  onTaskCreated?: (newTask: Task) => void
 }
 
 export function TaskList({
+  className = '',
   initialTasks = [],
   matterId,
   tasks: externalTasks,
   onTaskCreated,
 }: TaskListProps) {
-  const [tasks, setTasks] = useState<Task[]>(externalTasks ?? initialTasks);
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [view, setView] = useState<"grid" | "table">("table");
-  const [matters, setMatters] = useState<Matter[]>([]);
-  const [isLoadingMatters, setIsLoadingMatters] = useState(true);
-  const [isLoadingTasks, setIsLoadingTasks] = useState(false);
+  const [tasks, setTasks] = useState<Task[]>(externalTasks ?? initialTasks)
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [view, setView] = useState<'grid' | 'table'>('table')
+  const [matters, setMatters] = useState<Matter[]>([])
+  const [isLoadingMatters, setIsLoadingMatters] = useState(true)
+  const [isLoadingTasks, setIsLoadingTasks] = useState(false)
 
   const fetchTasks = useCallback(async () => {
     if (initialTasks.length > 0) {
-      return;
+      return
     }
 
     try {
-      setIsLoadingTasks(true);
-      let result;
+      setIsLoadingTasks(true)
+      let result
 
       if (matterId) {
-        result = await handleFetchTasksByMatterId(matterId);
+        result = await handleFetchTasksByMatterId(matterId)
       } else {
-        result = await handleFetchTasks();
+        result = await handleFetchTasks()
       }
 
       if (result.error) {
-        throw new Error(result.error);
+        throw new Error(result.error)
       }
 
-      setTasks(result.tasks);
+      setTasks(result.tasks)
     } catch (error) {
-      console.error("Error fetching tasks:", error);
+      console.error('Error fetching tasks:', error)
     } finally {
-      setIsLoadingTasks(false);
+      setIsLoadingTasks(false)
     }
-  }, [initialTasks.length, matterId]);
+  }, [initialTasks.length, matterId])
 
   const fetchMatters = useCallback(async () => {
     try {
-      setIsLoadingMatters(true);
+      setIsLoadingMatters(true)
       if (matterId) {
-        const { matter, error } = await handleFetchMatterById(matterId);
+        const { matter, error } = await handleFetchMatterById(matterId)
         if (error) {
-          throw new Error(error);
+          throw new Error(error)
         }
         if (matter) {
-          setMatters([matter]);
+          setMatters([matter])
         }
       } else {
-        const { matters: matterData, error } = await handleFetchMatters();
+        const { matters: matterData, error } = await handleFetchMatters()
         if (error) {
-          throw new Error(error);
+          throw new Error(error)
         }
 
         // Use Set to ensure uniqueness by matter_id
-        const uniqueMatterIds = new Set();
+        const uniqueMatterIds = new Set()
         const uniqueMatters = matterData.filter((matter) => {
-          if (uniqueMatterIds.has(matter.matter_id)) return false;
-          uniqueMatterIds.add(matter.matter_id);
-          return true;
-        });
+          if (uniqueMatterIds.has(matter.matter_id)) return false
+          uniqueMatterIds.add(matter.matter_id)
+          return true
+        })
 
-        setMatters(uniqueMatters);
+        setMatters(uniqueMatters)
       }
     } catch (error) {
-      console.error("Error fetching matters:", error);
-      toast.error("Failed to load matters");
+      console.error('Error fetching matters:', error)
+      toast.error('Failed to load matters')
     } finally {
-      setIsLoadingMatters(false);
+      setIsLoadingMatters(false)
     }
-  }, [matterId]);
+  }, [matterId])
 
   useEffect(() => {
-    fetchTasks();
-    fetchMatters();
-  }, [fetchTasks, fetchMatters]);
+    fetchTasks()
+    fetchMatters()
+  }, [fetchTasks, fetchMatters])
 
   useEffect(() => {
     if (externalTasks) {
-      setTasks(externalTasks);
+      setTasks(externalTasks)
     }
-  }, [externalTasks]);
+  }, [externalTasks])
 
   const handleTaskCreated = useCallback(
     (newTask: Task) => {
-      setTasks((prev) => [newTask, ...prev]);
+      setTasks((prev) => [newTask, ...prev])
       if (onTaskCreated) {
-        onTaskCreated(newTask);
+        onTaskCreated(newTask)
       }
     },
     [onTaskCreated]
-  );
+  )
 
   const handleTaskUpdated = useCallback((updatedTask: Task) => {
     setTasks((prev) => {
       return prev.map((task) =>
         task.task_id === updatedTask.task_id ? updatedTask : task
-      );
-    });
-  }, []);
+      )
+    })
+  }, [])
 
   const handleTaskDeleted = useCallback((taskId: string) => {
     setTasks((prev) => {
-      return prev.filter((t) => t.task_id !== taskId);
-    });
-  }, []);
+      return prev.filter((t) => t.task_id !== taskId)
+    })
+  }, [])
 
   const filteredTasks = useMemo(() => {
     const filtered = tasks.filter((task) => {
-      if (matterId && task.matter_id !== matterId) return false;
-      if (statusFilter === "all") return true;
-      if (statusFilter === "overdue") {
-        return isTaskOverdue(task.due_date ?? undefined, task.status);
+      if (matterId && task.matter_id !== matterId) return false
+      if (statusFilter === 'all') return true
+      if (statusFilter === 'overdue') {
+        return isTaskOverdue(task.due_date ?? undefined, task.status)
       }
       return (
         task.status === statusFilter &&
         !isTaskOverdue(task.due_date ?? undefined, task.status)
-      );
-    });
+      )
+    })
 
-    return filtered;
-  }, [tasks, statusFilter, matterId]);
+    return filtered
+  }, [tasks, statusFilter, matterId])
 
   return (
-    <div className="border w-full container mx-auto h-auto flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900 rounded-lg shadow mb-[56px] md:mb-0">
+    <div className="border w-full container mx-auto h-auto flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-800 rounded-lg shadow mb-[56px] md:mb-0">
       <TasksHeader
         onStatusChange={setStatusFilter}
         onViewChange={setView}
@@ -169,7 +171,7 @@ export function TaskList({
           <div className="flex justify-center items-center h-64 text-muted-foreground">
             <p>No tasks found.</p>
           </div>
-        ) : view === "grid" ? (
+        ) : view === 'grid' ? (
           <div className="grid grid-cols-1 p-5 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredTasks.map((task) => (
               <TaskCard
@@ -195,5 +197,5 @@ export function TaskList({
         )}
       </div>
     </div>
-  );
+  )
 }
