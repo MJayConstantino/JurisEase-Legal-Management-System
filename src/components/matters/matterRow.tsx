@@ -57,7 +57,7 @@ export function MatterRow({
         <TableCell className="font-medium w-[10%]">
           {isLoading ? (
             <div className="pl-6">
-              <Skeleton className="w-24 h-4" />
+              <Skeleton className="w-24 h-4 rounded-lg" />
             </div>
           ) : (
             <div
@@ -71,7 +71,7 @@ export function MatterRow({
         <TableCell className="w-[18%]">
           {isLoading ? (
             <div className="pl-12">
-              <Skeleton className="w-32 h-4" />
+              <Skeleton className="w-32 h-4 rounded-lg" />
             </div>
           ) : (
             <div
@@ -85,7 +85,7 @@ export function MatterRow({
         <TableCell className="w-[18%]">
           {isLoading ? (
             <div className="pl-12">
-              <Skeleton className="w-32 h-4" />
+              <Skeleton className="w-32 h-4 rounded-lg" />
             </div>
           ) : (
             <div
@@ -99,7 +99,7 @@ export function MatterRow({
         <TableCell className="w-[18%]">
           {isLoading ? (
             <div className="pl-9">
-              <Skeleton className="w-24 h-4" />
+              <Skeleton className="w-24 h-4 rounded-lg" />
             </div>
           ) : (
             <div
@@ -116,7 +116,7 @@ export function MatterRow({
         <TableCell className="w-[18%]">
           {isLoading ? (
             <div className="pl-7">
-              <Skeleton className="w-24 h-4" />
+              <Skeleton className="w-24 h-4 rounded-lg" />
             </div>
           ) : (
             <div
@@ -133,7 +133,7 @@ export function MatterRow({
         <TableCell className="w-[8%]">
           {isLoading ? (
             <div className="pl-8">
-              <Skeleton className="w-12 h-4" />
+              <Skeleton className="w-12 h-4 rounded-lg" />
             </div>
           ) : (
             <div className="pl-8">
@@ -150,7 +150,7 @@ export function MatterRow({
         <TableCell className="w-[10%]">
           {isLoading ? (
             <div className="pl-8">
-              <Skeleton className="w-20 h-4" />
+              <Skeleton className="w-20 h-4 rounded-lg" />
             </div>
           ) : (
             <div className="pl-8">
@@ -158,7 +158,7 @@ export function MatterRow({
             </div>
           )}
         </TableCell>
-        <TableCell className="text-center w-[8%]">
+        <TableCell className="text-center w-[2%]">
           <DropdownMenu>
             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
               <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">

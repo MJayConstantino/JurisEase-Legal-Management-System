@@ -84,7 +84,7 @@ export function MattersTable({
   return (
     <div className="overflow-x-auto">
       <Table>
-        <TableHeader className="border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+        <TableHeader className="border-b dark:border-gray-700 bg-gray-100 dark:bg-gray-900">
           <TableRow className="hover:bg-gray-50 dark:hover:bg-gray-900">
             <TableHead>
               {renderSortableHeader("case_number", "Case #")}
