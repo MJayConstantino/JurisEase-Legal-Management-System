@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function MattersLoading() {
   return (
     <div className="flex flex-col h-full">
-      <div className="bg-white dark:bg-gray-800 rounded-lg border shadow max-w-7xl mx-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border shadow mx-auto">
         {/* MattersHeader skeleton */}
         <div className="p-4 border-b bg-gray-50 dark:bg-gray-900 dark:border-gray-700 rounded-t-lg">
           {/* Mobile View */}
