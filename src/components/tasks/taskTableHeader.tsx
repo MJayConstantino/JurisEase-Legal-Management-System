@@ -45,7 +45,7 @@ export function TaskTableHeader({
   };
 
   return (
-    <TableHeader className="bg-gray-50 dark:bg-gray-900">
+    <TableHeader className="bg-gray-100 dark:bg-gray-900">
       <TableRow className="hover:bg-transparent">
         <TableHead className="w-10 md:w-12 text-center">
           <span className="sr-only">Checkbox</span>
