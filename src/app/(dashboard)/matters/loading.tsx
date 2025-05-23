@@ -17,7 +17,7 @@ export default function MattersLoading() {
             <Skeleton className="h-9 w-32" /> {/* Add Matter button */}
             {/* Filter Buttons */}
             <div className="flex flex-wrap gap-2 bg-gray-100 dark:bg-gray-700 rounded-md p-1">
-              <Skeleton className="h-9 w-40 md:w-64" />
+              <Skeleton className="h-9 w-40 md:w-72" />
             </div>
           </div>
         </div>
