@@ -64,20 +64,6 @@ export const AddBillFormPlay: Story = {
   play: async ({ step }) => {
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    await step("Select a matter", async () => {
-      const selectMatter =
-      document.querySelector("#matter") ||
-      document.querySelector('[id="matter"]')
-
-      if (selectMatter) {
-        await userEvent.keyboard("{Enter}", { delay: 100 })
-        await userEvent.keyboard("{ArrowDown}{Enter}", { delay: 300 })
-        await userEvent.tab()
-      }
-    })
-
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
     await step("Enter bill name", async () => {
       const nameInput =
         document.querySelector('input[id="name"]') ||
@@ -99,19 +85,17 @@ export const AddBillFormPlay: Story = {
       if (amountInput) {
         await userEvent.keyboard("2700", { delay: 100 })
         await userEvent.tab()
-        await userEvent.tab()
-        await userEvent.tab()
       }
     })
 
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    await step("Select status", async () => {
-      const selectStatus =
-      document.querySelector("#status") ||
-      document.querySelector('[id="status"]')
+    await step("Select a matter", async () => {
+      const selectMatter =
+      document.querySelector("#matter") ||
+      document.querySelector('[id="matter"]')
 
-      if (selectStatus) {
+      if (selectMatter) {
         await userEvent.keyboard("{Enter}", { delay: 100 })
         await userEvent.keyboard("{ArrowDown}{Enter}", { delay: 300 })
         await userEvent.tab()
@@ -127,6 +111,22 @@ export const AddBillFormPlay: Story = {
 
       if (remarksInput) {
         await userEvent.keyboard("Example remarks for this bill.{Enter} It's also optional.", { delay: 100 })
+        await userEvent.tab()
+        await userEvent.tab()
+        await userEvent.tab()
+      }
+    })
+
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    await step("Select status", async () => {
+      const selectStatus =
+      document.querySelector("#status") ||
+      document.querySelector('[id="status"]')
+
+      if (selectStatus) {
+        await userEvent.keyboard("{Enter}", { delay: 100 })
+        await userEvent.keyboard("{ArrowDown}{Enter}", { delay: 300 })
         await userEvent.tab()
         await userEvent.tab()
       }
@@ -188,6 +188,7 @@ export const MatterBillingAddBillFormPlay: Story = {
         await userEvent.tab()
         await userEvent.tab()
         await userEvent.tab()
+        await userEvent.tab()
       }
     })
 
@@ -201,7 +202,6 @@ export const MatterBillingAddBillFormPlay: Story = {
       if (selectStatus) {
         await userEvent.keyboard("{Enter}", { delay: 100 })
         await userEvent.keyboard("{Enter}", { delay: 100 })
-        await userEvent.tab()
         await userEvent.tab()
         await userEvent.tab()
       }

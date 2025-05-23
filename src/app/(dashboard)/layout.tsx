@@ -31,7 +31,7 @@ export default async function DashboardLayout({
           <Header />
           <div className="flex flex-1 overflow-hidden pt-16">
             <AppSidebar />
-            <main className="flex-1 overflow-auto bg-white dark:bg-gray-900 p-0 md:p-6 transition-all duration-300 ease-in-out">
+            <main className="flex-1 overflow-auto bg-white dark:bg-gray-800 p-0 md:p-6 transition-all duration-300 ease-in-out">
               {children}
             </main>
           </div>
