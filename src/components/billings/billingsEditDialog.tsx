@@ -49,8 +49,6 @@ export function BillingsEditDialog({ bill, open, onOpenChange, onSave, onSuccess
 
   const dateInputRef = useRef<HTMLInputElement>(null)
 
-  const isDesktop = useMediaQuery("(min-width: 768px)")
-
   useEffect(() => {
     if (open) {
       setMatterId(bill.matter_id)
