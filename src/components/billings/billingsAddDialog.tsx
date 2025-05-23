@@ -391,7 +391,7 @@ export function BillingsAddDialog({
                 Status
               </Label>
               <Select
-                defaultValue="pending"
+                defaultValue="unpaid"
                 value={status}
                 onValueChange={(value) => setStatus(value as BillStatus)}
               >

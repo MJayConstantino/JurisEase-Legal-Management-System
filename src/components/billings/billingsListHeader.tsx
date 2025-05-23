@@ -118,7 +118,7 @@ export function BillingsListHeader({
                 value={selectedMatterId}
                 onValueChange={onMatterFilterChange}
               >
-                <SelectTrigger className="hover:cursor-pointer w-full dark:bg-gray-800 dark:border-gray-700 text-sm">
+                <SelectTrigger id="filter-matter-pc" className="hover:cursor-pointer w-full dark:bg-gray-800 dark:border-gray-700 text-sm">
                   <SelectValue placeholder="Filter by matter" />
                 </SelectTrigger>
                 <SelectContent className="dark:bg-gray-700 dark:border-gray-600 overflow-hidden w-[350px] h-[300px]">
@@ -254,7 +254,7 @@ export function BillingsListHeader({
                 onValueChange={onMatterFilterChange}
               >
                 <SelectTrigger
-                  id="mobile-matter"
+                  id="filter-matter-mobile"
                   className="w-full text-xs h-9 dark:bg-gray-800 dark:border-gray-700"
                 >
                   <SelectValue placeholder="Filter by matter" />
