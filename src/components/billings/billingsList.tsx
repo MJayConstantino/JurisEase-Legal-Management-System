@@ -56,7 +56,7 @@ export function BillingsList({
   );
 
   return (
-    <div className="overflow-x-auto overflow-y-auto w-full">
+    <div className="overflow-x-auto overflow-y-auto w-full" data-cy="scroll-container">
       <Table className="table-auto">
         <TableHeader className="bg-gray-100 dark:bg-gray-900 sticky top-0 z-10">
           <TableRow className="text-sm md:text-base">
