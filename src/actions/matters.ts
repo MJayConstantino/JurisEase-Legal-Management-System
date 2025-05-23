@@ -30,6 +30,13 @@ export async function getMatterById(matterId: string) {
     if (error) {
       // For "no rows returned" errors, just return null without logging
       if (error.code === "PGRST116") {
+        console.log("Matter not found in database:", matterId);
+        return null;
+      }
+
+      // For UUID format errors, return null instead of throwing
+      if (error.code === "22P02") {
+        console.log("Invalid UUID format:", matterId);
         return null;
       }
 
