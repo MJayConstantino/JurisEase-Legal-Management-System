@@ -40,7 +40,7 @@ export function MattersLoading() {
         <div className="relative w-full overflow-auto">
           <Table>
             <TableHeader className="border-b dark:border-gray-700 bg-gray-100 dark:bg-gray-900">
-              <TableRow className="hover:bg-gray-50 dark:hover:bg-gray-900">
+              <TableRow>
                 <TableHead>
                   <Button
                     variant="ghost"
@@ -119,7 +119,7 @@ export function MattersLoading() {
               {Array.from({ length: 8 }).map((_, index) => (
                 <TableRow
                   key={index}
-                  className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+                  className="cursor-default"
                 >
                   <TableCell className="font-medium w-[10%]">
                     <div className="pl-6">
