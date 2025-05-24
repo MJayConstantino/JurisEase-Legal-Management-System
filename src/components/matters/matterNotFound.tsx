@@ -4,7 +4,7 @@ import { FileX, HomeIcon } from "lucide-react";
 import { Header } from "@/components/auth/Header";
 import { Button } from "@/components/ui/button";
 
-export function MatterNotFoundPage() {
+export default function MatterNotFoundPage() {
   const navigateToMatters = () => {
     window.location.href = "/matters";
   };
@@ -12,7 +12,6 @@ export function MatterNotFoundPage() {
   const navigateToHome = () => {
     window.location.href = "/";
   };
-
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
       <div className="w-full max-w-md rounded-lg bg-card p-4 sm:p-6 shadow-sm">
