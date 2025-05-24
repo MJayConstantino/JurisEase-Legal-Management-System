@@ -1,6 +1,6 @@
-import { UserNotFoundPage } from '@/components/userprofile/userNotFound'
-import { UserNotFoundSkeleton } from '@/components/userprofile/userNotFoundSkeleton'
-import { Suspense } from 'react'
+import { UserNotFoundPage } from "@/components/userprofile/userNotFound";
+import { UserNotFoundSkeleton } from "@/components/userprofile/userNotFoundSkeleton";
+import { Suspense } from "react";
 
 export default function UserNotFound() {
   return (
@@ -9,5 +9,5 @@ export default function UserNotFound() {
         <UserNotFoundPage />
       </Suspense>
     </div>
-  )
+  );
 }

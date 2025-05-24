@@ -1,45 +1,38 @@
-import { notFound } from "next/navigation";
-import { MatterHeader } from "@/components/matters/matterHeader";
-import { MatterTabs } from "@/components/matters/matterTabs";
-import { MatterDashboard } from "@/components/matters/matterDashboard";
+import { redirect } from "next/navigation";
+// import { notFound } from "next/navigation";
 import { getMatterById } from "@/actions/matters";
 import { fetchUsersAction } from "@/actions/users";
-import MatterDetailLoading from "./loading";
-import { Suspense } from "react";
+import { MatterPage } from "@/components/matters/matterPage";
+
+// UUID validation
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ matterId: string }>;
 }) {
-  try {
-    const { matterId } = await params;
+  const { matterId } = await params;
 
-    if (!matterId) {
-      return {
-        title: "Matter Not Found | JurisEase",
-      };
-    }
-
-    const matter = await getMatterById(matterId);
-
-    if (!matter) {
-      return {
-        title: "Matter Not Found | JurisEase",
-      };
-    }
-
-    return {
-      title: `${matter.name} | JurisEase`,
-      description: `Details for matter ${matter.matter_id}: ${matter.name}`,
-    };
-  } catch (error) {
-    console.error("Error generating metadata:", error);
+  if (!UUID_REGEX.test(matterId)) {
     return {
       title: "Matter Not Found | JurisEase",
-      description: "The requested matter could not be found.",
     };
   }
+
+  const matter = await getMatterById(matterId);
+
+  if (!matter) {
+    return {
+      title: "Matter Not Found | JurisEase",
+    };
+  }
+
+  return {
+    title: `${matter.name} | JurisEase`,
+    description: `Details for matter ${matter.matter_id}: ${matter.name}`,
+  };
 }
 
 export default async function MatterDetailPage({
@@ -47,41 +40,36 @@ export default async function MatterDetailPage({
 }: {
   params: Promise<{ matterId: string }>;
 }) {
-  try {
-    const { matterId } = await params;
+  const { matterId } = await params;
 
-    if (!matterId || matterId.trim() === "") {
-      notFound();
-    }
-
-    let matter, users;
-
-    try {
-      [matter, users] = await Promise.all([
-        getMatterById(matterId),
-        fetchUsersAction(),
-      ]);
-    } catch (fetchError) {
-      console.error("Error fetching data:", fetchError);
-      throw fetchError;
-    }
-
-    if (!matter) {
-      notFound();
-    }
-
-    return (
-      <div className="flex flex-col gap-6 h-full">
-        <MatterHeader matter={matter} />
-        <MatterTabs matterId={matter.matter_id}>
-          <Suspense fallback={<MatterDetailLoading />}>
-            <MatterDashboard matter={matter} users={users} />
-          </Suspense>
-        </MatterTabs>
-      </div>
+  if (!UUID_REGEX.test(matterId)) {
+    redirect(
+      `/error?msg=${encodeURIComponent(
+        "Invalid matter ID"
+      )}&cause=${encodeURIComponent(
+        "The provided matter ID format is invalid"
+      )}`
     );
-  } catch (error) {
-    console.error("Error in MatterDetailPage:", error);
-    notFound();
+    // notFound();
   }
+
+  const matter = await getMatterById(matterId);
+  const users = await fetchUsersAction();
+
+  if (!matter) {
+    redirect(
+      `/error?msg=${encodeURIComponent(
+        "Matter not found"
+      )}&cause=${encodeURIComponent(
+        `Matter with ID ${matterId} does not exist`
+      )}&code=404`
+    );
+    // notFound();
+  }
+
+  return (
+    <div className="flex flex-col gap-6 h-full">
+      <MatterPage matter={matter} users={users} />
+    </div>
+  );
 }
