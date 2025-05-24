@@ -51,7 +51,11 @@ export function MatterRow({
     <>
       <TableRow
         key={matter.matter_id}
-        className="cursor-default"
+        className={`${
+          isLoading
+            ? "cursor-default hover:not-enabled"
+            : "cursor-default hover:bg-gray-200 dark:hover:bg-gray-700 hover:cursor-pointer"
+        }`}
         onClick={() => onRowClick(matter.matter_id)}
       >
         <TableCell className="font-medium w-[10%]">

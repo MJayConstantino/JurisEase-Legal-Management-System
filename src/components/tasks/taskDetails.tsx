@@ -45,14 +45,19 @@ export function TaskDetails({
     onOpenChange(false); // Close task details dialog first
     setIsEditing(true); // Then open the edit form
   }, [onOpenChange]);
-  
+
   const handleDeleteClick = useCallback(() => {
     setIsDeleteDialogOpen(true);
   }, []);
-  
+
   const handleCloseClick = useCallback(() => {
     onOpenChange(false);
   }, [onOpenChange]);
+
+  // Get the current URL to check if we're within a matter context
+  const pathname =
+    typeof window !== "undefined" ? window.location.pathname : "";
+  const isInMatterContext = pathname.includes("/matters/") && task?.matter_id;
 
   if (!task) {
     return null;
@@ -67,9 +72,12 @@ export function TaskDetails({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={(newState) => {
-        onOpenChange(newState);
-      }}>
+      <Dialog
+        open={open}
+        onOpenChange={(newState) => {
+          onOpenChange(newState);
+        }}
+      >
         <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold flex items-center justify-between dark:text-white">
@@ -198,7 +206,7 @@ export function TaskDetails({
           onOpenChange={(open) => {
             setIsEditing(open);
           }}
-          disableMatterSelect={false}
+          disableMatterSelect={!!isInMatterContext}
           onSave={(updatedTask) => {
             onTaskUpdated(updatedTask);
             setIsEditing(false);
@@ -209,6 +217,7 @@ export function TaskDetails({
           getMatterNameDisplay={(matterId) =>
             getMattersDisplayName(matterId, matters)
           }
+          matterId={isInMatterContext ? task.matter_id : undefined}
         />
       )}
 

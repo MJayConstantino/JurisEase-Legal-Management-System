@@ -152,7 +152,7 @@ export function TaskList({
   }, [tasks, statusFilter, matterId]);
 
   return (
-    <div className="border dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 w-full h-auto flex flex-col overflow-hidden mb-[56px] md:mb-0">
+    <div className="border dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 w-full h-auto flex flex-col overflow-hidden mb-0">
       <TasksHeader
         onStatusChange={setStatusFilter}
         onViewChange={setView}
@@ -163,32 +163,32 @@ export function TaskList({
       />
       <div className="flex-grow overflow-y-auto w-full">
         {filteredTasks.length === 0 ? (
-          <div className="flex items-center justify-center h-full py-10 text-gray-500 dark:text-gray-400">
-        No tasks found. Create a new task to get started.
+          <div className="flex items-center justify-center h-auto py-10 text-gray-500 dark:text-gray-400">
+            No tasks found. Create a new task to get started.
           </div>
         ) : view === "grid" ? (
           <div className="grid grid-cols-1 p-5 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredTasks.map((task) => (
-          <TaskCard
-            key={task.task_id}
-            task={task}
-            matters={matters}
-            isLoadingMatters={isLoadingMatters}
-            onTaskUpdated={handleTaskUpdated}
-            onTaskDeleted={handleTaskDeleted}
-          />
-        ))}
+            {filteredTasks.map((task) => (
+              <TaskCard
+                key={task.task_id}
+                task={task}
+                matters={matters}
+                isLoadingMatters={isLoadingMatters}
+                onTaskUpdated={handleTaskUpdated}
+                onTaskDeleted={handleTaskDeleted}
+              />
+            ))}
           </div>
         ) : (
           <div className="w-full">
-        <TaskTable
-          tasks={filteredTasks}
-          matters={matters}
-          isLoadingMatters={isLoadingMatters}
-          isLoading={isLoadingTasks}
-          onTaskUpdated={handleTaskUpdated}
-          onTaskDeleted={handleTaskDeleted}
-        />
+            <TaskTable
+              tasks={filteredTasks}
+              matters={matters}
+              isLoadingMatters={isLoadingMatters}
+              isLoading={isLoadingTasks}
+              onTaskUpdated={handleTaskUpdated}
+              onTaskDeleted={handleTaskDeleted}
+            />
           </div>
         )}
       </div>

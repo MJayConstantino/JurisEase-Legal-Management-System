@@ -38,16 +38,15 @@ export function TaskCard({
   matters = [],
   isLoadingMatters = false,
 }: TaskCardProps) {
-  
   const [isEditing, setIsEditing] = useState(false);
   const [isViewingDetails, setIsViewingDetails] = useState(false);
   const [task, setTask] = useState<Task>(initialTask);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  
+
   const params = useParams();
   const matterId = params.matterId as string | undefined;
-  
+
   useEffect(() => {
     setTask(initialTask);
   }, [initialTask]);
@@ -59,20 +58,21 @@ export function TaskCard({
     task.status
   );
 
+  // Modify this handler to match the behavior in taskDetails
   const handleEditClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     setIsEditing(true);
   }, []);
-  
+
   const handleDeleteClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     setIsDeleteDialogOpen(true);
   }, []);
-  
+
   const handleCardClick = useCallback(() => {
     setIsViewingDetails(true);
   }, []);
-  
+
   const handleTaskStatusChange = useCallback(() => {
     if (!isProcessing) {
       handleComplete(
@@ -217,6 +217,21 @@ export function TaskCard({
         </div>
       </div>
 
+      <TaskDetails
+        open={isViewingDetails}
+        onOpenChange={(open) => {
+          setIsViewingDetails(open);
+        }}
+        task={task}
+        matters={matters}
+        isLoadingMatters={isLoadingMatters}
+        onTaskUpdated={(updatedTask) => {
+          setTask(updatedTask);
+          onTaskUpdated(updatedTask);
+        }}
+        onTaskDeleted={onTaskDeleted}
+      />
+
       {isEditing && (
         <TaskForm
           open={isEditing}
@@ -261,23 +276,6 @@ export function TaskCard({
           onSuccess={() => {
             handleDelete(initialTask.task_id, onTaskDeleted, setIsProcessing);
           }}
-        />
-      )}
-
-      {isViewingDetails && (
-        <TaskDetails
-          open={isViewingDetails}
-          onOpenChange={(open) => {
-            setIsViewingDetails(open);
-          }}
-          task={task}
-          matters={matters}
-          isLoadingMatters={isLoadingMatters}
-          onTaskUpdated={(updatedTask) => {
-            setTask(updatedTask);
-            onTaskUpdated(updatedTask);
-          }}
-          onTaskDeleted={onTaskDeleted}
         />
       )}
     </div>
