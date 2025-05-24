@@ -38,16 +38,15 @@ export function TaskCard({
   matters = [],
   isLoadingMatters = false,
 }: TaskCardProps) {
-  
   const [isEditing, setIsEditing] = useState(false);
   const [isViewingDetails, setIsViewingDetails] = useState(false);
   const [task, setTask] = useState<Task>(initialTask);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  
+
   const params = useParams();
   const matterId = params.matterId as string | undefined;
-  
+
   useEffect(() => {
     setTask(initialTask);
   }, [initialTask]);
@@ -59,20 +58,21 @@ export function TaskCard({
     task.status
   );
 
+  // Modify this handler to match the behavior in taskDetails
   const handleEditClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     setIsEditing(true);
   }, []);
-  
+
   const handleDeleteClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     setIsDeleteDialogOpen(true);
   }, []);
-  
+
   const handleCardClick = useCallback(() => {
     setIsViewingDetails(true);
   }, []);
-  
+
   const handleTaskStatusChange = useCallback(() => {
     if (!isProcessing) {
       handleComplete(
@@ -99,7 +99,7 @@ export function TaskCard({
         onClick={handleCardClick}
       >
         <div
-          className="mb-2 flex justify-between items-start gap-2 "
+          className="mb-2 flex justify-between items-start gap-2"
           title={`Task Name: ${task.name}`}
         >
           <h3 className="font-medium text-sm sm:text-base line-clamp-2 dark:text-white">
@@ -120,7 +120,7 @@ export function TaskCard({
 
         {task.description && (
           <p
-            className="text-xs mb-2 h-20 sm:text-sm line-clamp-2 overflow-y-auto text-muted-foreground dark:text-gray-400"
+            className="text-xs mb-2 h-15 sm:text-sm line-clamp-2 overflow-y-auto text-muted-foreground dark:text-gray-400"
             title={`Description: ${task.description}`}
           >
             {task.description}
@@ -217,6 +217,21 @@ export function TaskCard({
         </div>
       </div>
 
+      <TaskDetails
+        open={isViewingDetails}
+        onOpenChange={(open) => {
+          setIsViewingDetails(open);
+        }}
+        task={task}
+        matters={matters}
+        isLoadingMatters={isLoadingMatters}
+        onTaskUpdated={(updatedTask) => {
+          setTask(updatedTask);
+          onTaskUpdated(updatedTask);
+        }}
+        onTaskDeleted={onTaskDeleted}
+      />
+
       {isEditing && (
         <TaskForm
           open={isEditing}
@@ -261,23 +276,6 @@ export function TaskCard({
           onSuccess={() => {
             handleDelete(initialTask.task_id, onTaskDeleted, setIsProcessing);
           }}
-        />
-      )}
-
-      {isViewingDetails && (
-        <TaskDetails
-          open={isViewingDetails}
-          onOpenChange={(open) => {
-            setIsViewingDetails(open);
-          }}
-          task={task}
-          matters={matters}
-          isLoadingMatters={isLoadingMatters}
-          onTaskUpdated={(updatedTask) => {
-            setTask(updatedTask);
-            onTaskUpdated(updatedTask);
-          }}
-          onTaskDeleted={onTaskDeleted}
         />
       )}
     </div>

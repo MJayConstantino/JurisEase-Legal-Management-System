@@ -61,10 +61,7 @@ export function MattersList({ matters }: MattersListProps) {
   });
 
   return (
-    <div
-      className="border dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 mb-10"
-      title="Click to view full matter details"
-    >
+    <div className="border dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 mb-10">
       <MattersHeader onStatusChange={setStatusFilter} />
       <MattersTable
         matters={sortedMatters}
