@@ -43,7 +43,13 @@ export default async function MatterDetailPage({
   const { matterId } = await params;
 
   if (!UUID_REGEX.test(matterId)) {
-    redirect("/error?message=Invalid matter ID");
+    redirect(
+      `/error?message=${encodeURIComponent(
+        "Invalid matter ID"
+      )}&cause=${encodeURIComponent(
+        "The provided matter ID format is invalid"
+      )}`
+    );
     // notFound();
   }
 
@@ -51,7 +57,13 @@ export default async function MatterDetailPage({
   const users = await fetchUsersAction();
 
   if (!matter) {
-    redirect("/error?message=Matter not found");
+    redirect(
+      `/error?message=${encodeURIComponent(
+        "Matter not found"
+      )}&cause=${encodeURIComponent(
+        `Matter with ID ${matterId} does not exist`
+      )}&code=404`
+    );
     // notFound();
   }
 
