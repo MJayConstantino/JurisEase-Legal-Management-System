@@ -1,11 +1,8 @@
-import { redirect } from "next/navigation";
-import { MatterHeader } from "@/components/matters/matterHeader";
-import { MatterTabs } from "@/components/matters/matterTabs";
-import { MatterDashboard } from "@/components/matters/matterDashboard";
+// import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import { getMatterById } from "@/actions/matters";
 import { fetchUsersAction } from "@/actions/users";
-import MatterDetailLoading from "./loading";
-import { Suspense } from "react";
+import { MatterPage } from "@/components/matters/matterPage";
 
 // UUID validation
 const UUID_REGEX =
@@ -16,34 +13,26 @@ export async function generateMetadata({
 }: {
   params: Promise<{ matterId: string }>;
 }) {
-  try {
-    const { matterId } = await params;
+  const { matterId } = await params;
 
-    if (!matterId) {
-      return {
-        title: "Matter Not Found | JurisEase",
-      };
-    }
-
-    const matter = await getMatterById(matterId);
-
-    if (!matter) {
-      return {
-        title: "Matter Not Found | JurisEase",
-      };
-    }
-
-    return {
-      title: `${matter.name} | JurisEase`,
-      description: `Details for matter ${matter.matter_id}: ${matter.name}`,
-    };
-  } catch (error) {
-    console.error("Error generating metadata:", error);
+  if (!UUID_REGEX.test(matterId)) {
     return {
       title: "Matter Not Found | JurisEase",
-      description: "The requested matter could not be found.",
     };
   }
+
+  const matter = await getMatterById(matterId);
+
+  if (!matter) {
+    return {
+      title: "Matter Not Found | JurisEase",
+    };
+  }
+
+  return {
+    title: `${matter.name} | JurisEase`,
+    description: `Details for matter ${matter.matter_id}: ${matter.name}`,
+  };
 }
 
 export default async function MatterDetailPage({
@@ -53,25 +42,22 @@ export default async function MatterDetailPage({
 }) {
   const { matterId } = await params;
 
-  if (!matterId || !UUID_REGEX.test(matterId)) {
-    redirect("/error?message=Invalid matter ID");
+  if (!UUID_REGEX.test(matterId)) {
+    // redirect("/error?message=Invalid matter ID");
+    notFound();
   }
 
   const matter = await getMatterById(matterId);
   const users = await fetchUsersAction();
 
-  if (!matter || !users) {
-    redirect("/error?message=Matter not found");
+  if (!matter) {
+    // redirect("/error?message=Matter not found");
+    notFound();
   }
 
   return (
     <div className="flex flex-col gap-6 h-full">
-      <MatterHeader matter={matter} />
-      <MatterTabs matterId={matter.matter_id}>
-        <Suspense fallback={<MatterDetailLoading />}>
-          <MatterDashboard matter={matter} users={users} />
-        </Suspense>
-      </MatterTabs>
+      <MatterPage matter={matter} users={users} />
     </div>
   );
 }

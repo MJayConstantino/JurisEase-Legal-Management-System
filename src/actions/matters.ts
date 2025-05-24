@@ -20,35 +20,18 @@ export async function getMatters() {
 }
 
 export async function getMatterById(matterId: string) {
-  try {
-    const { data, error } = await supabase
-      .from("matters")
-      .select("*")
-      .eq("matter_id", matterId)
-      .single();
+  const { data, error } = await supabase
+    .from("matters")
+    .select("*")
+    .eq("matter_id", matterId)
+    .single();
 
-    if (error) {
-      // For "no rows returned" errors, just return null without logging
-      if (error.code === "PGRST116") {
-        console.log("Matter not found in database:", matterId);
-        return null;
-      }
-
-      // For UUID format errors, return null instead of throwing
-      if (error.code === "22P02") {
-        console.log("Invalid UUID format:", matterId);
-        return null;
-      }
-
-      console.error("Error fetching matter:", error);
-      return null;
-    }
-
-    return data as Matter;
-  } catch (error) {
+  if (error) {
     console.error("Error fetching matter:", error);
     return null;
   }
+
+  return data as Matter;
 }
 
 export async function createMatter(matter: Omit<Matter, "matter_id">) {
