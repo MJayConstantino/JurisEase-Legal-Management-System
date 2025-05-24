@@ -14,30 +14,6 @@ function searchForMatter(bill: string) {
   });
 }
 
-// searches for the bill by scrolling down
- function findBill(
-  bill: string,
-  options?: {
-    container?: string;
-    delay?: number;
-  }
-): void {
-  const {
-    container = '[data-cy="scroll-container"]',
-    delay = 300,
-  } = options || {};
-
-  cy.get(container).then(($el) => {
-    if ($el.find(`:contains("${bill}")`).length > 0) {
-      cy.contains(bill).should('be.visible');
-    } else {
-      cy.get(container)
-        .scrollTo('bottom', { duration: 300, ensureScrollable: false })
-        .wait(delay)
-        .then(() => findBill(bill, options));
-    }
-  });
-}
 describe('Billings E2E Interactions',() => {
     before(() => {
         //Makes cypress ignore Hydration and ResizeObserver errors
@@ -190,7 +166,7 @@ describe('Billings E2E Interactions',() => {
         cy.get('[role="option"]').contains('Unpaid').click()
         cy.get('button[id="saveBtn"]').contains('Save').click()
         cy.wait(500)
-        findBill('Unpaid Test Bill')
+        cy.contains('Unpaid Test Bill').should('be.visible')
       })
 
       it('should create a bill with paid status', () => {
@@ -207,7 +183,7 @@ describe('Billings E2E Interactions',() => {
         cy.get('[role="option"]').contains('Paid').click()
         cy.get('button[id="saveBtn"]').contains('Save').click()
         cy.wait(500)
-        findBill('Paid Test Bill')
+        cy.contains('Paid Test Bill').should('be.visible')
       })
     })
 
@@ -233,7 +209,7 @@ describe('Billings E2E Interactions',() => {
         cy.get('textarea[id="remarks"]').type('Bill with added remarks', {delay: 100})
         cy.get('button[id="saveBtn"]').contains('Save').click()
         cy.wait(500)
-        findBill('Bill with added remarks')
+        cy.contains('Bill with added remarks').should('be.visible')
       })
 
       it('should create a bill without remarks', () => {
@@ -250,7 +226,7 @@ describe('Billings E2E Interactions',() => {
         cy.get('[role="option"]').contains('Unpaid').click()
         cy.get('button[id="saveBtn"]').contains('Save').click()
         cy.wait(500)
-        findBill('No remarks')
+        cy.contains('No remarks').should('be.visible')
       })
     })
 
@@ -274,7 +250,7 @@ describe('Billings E2E Interactions',() => {
         cy.get('button[id="saveBtn"]').contains('Save').click()
         cy.wait(500)
 
-        findBill('Create New Billings')
+        cy.contains('Create New Billings').should('be.visible')
       })
 
 
@@ -299,7 +275,7 @@ describe('Billings E2E Interactions',() => {
         cy.wait(500)
         cy.visit('/billings')
         cy.wait(500)
-        findBill('Create New Tasks')
+        cy.contains('Create New Tasks').should('be.visible')
       })
 
 
@@ -324,7 +300,7 @@ describe('Billings E2E Interactions',() => {
         cy.wait(500)
         cy.visit('/billings')
         cy.wait(500)
-        findBill('Create New Matters')
+        cy.contains('Create New Matters').should('be.visible')
       })
   })
 
@@ -345,8 +321,7 @@ describe('Billings E2E Interactions',() => {
         cy.get('input[value="Paid Test Bill"]').clear().type('Updated Bill Name', { delay: 100 })
         cy.get('button[id="saveBtn"]').contains('Save').click()
         cy.wait(500)
-        findBill('Updated Bill Name')
-        cy.contains('Updated Bill Name').scrollIntoView().should('be.visible')
+        cy.contains('Updated Bill Name').should('be.visible')
       })
 
       it('should show an error when editing name but field is left empty', () => {
