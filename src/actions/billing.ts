@@ -68,6 +68,7 @@ export async function getBillsByMatterId(matterId: string) {
       matters:matter_id(matter_id, name, case_number)
     `)
     .eq("matter_id", matterId)
+    .order("created_at", { ascending: false })
 
   if (error) {
     console.error(`Error fetching bills by matter:`, error)
