@@ -137,6 +137,7 @@ export default function AvatarDropdownMenu({
         <DropdownMenuSeparator className="border-gray-200 dark:border-gray-600" />
 
         <DropdownMenuItem
+          id="user-profile"
           onClick={handleProfileClick}
           className="px-3 py-2 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer"
         >
