@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { MatterHeader } from "@/components/matters/matterHeader";
 import { MatterTabs } from "@/components/matters/matterTabs";
 import { MatterDashboard } from "@/components/matters/matterDashboard";
