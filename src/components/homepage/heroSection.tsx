@@ -33,7 +33,7 @@ export default function HeroSection({
   };
 
   return (
-    <section className="bg-gradient-to-b from-gray-50 to-white py-20 md:py-32">
+    <section className="py-20 md:py-32">
       <div className="container mx-auto px-6 md:px-10 text-center">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#2D336B] mb-6 leading-tight">
           {title}
