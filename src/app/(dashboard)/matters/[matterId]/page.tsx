@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { MatterHeader } from "@/components/matters/matterHeader";
 import { MatterTabs } from "@/components/matters/matterTabs";
 import { MatterDashboard } from "@/components/matters/matterDashboard";
@@ -6,6 +6,10 @@ import { getMatterById } from "@/actions/matters";
 import { fetchUsersAction } from "@/actions/users";
 import MatterDetailLoading from "./loading";
 import { Suspense } from "react";
+
+// UUID validation
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export async function generateMetadata({
   params,
@@ -49,16 +53,17 @@ export default async function MatterDetailPage({
 }) {
   const { matterId } = await params;
 
-  if (!matterId || matterId.trim() === "") {
-    notFound();
+  if (!matterId || !UUID_REGEX.test(matterId)) {
+    redirect("/error?message=Invalid matter ID");
   }
 
   const matter = await getMatterById(matterId);
   const users = await fetchUsersAction();
 
   if (!matter || !users) {
-    notFound();
+    redirect("/error?message=Matter not found");
   }
+
   return (
     <div className="flex flex-col gap-6 h-full">
       <MatterHeader matter={matter} />
