@@ -47,41 +47,26 @@ export default async function MatterDetailPage({
 }: {
   params: Promise<{ matterId: string }>;
 }) {
-  try {
-    const { matterId } = await params;
+  const { matterId } = await params;
 
-    if (!matterId || matterId.trim() === "") {
-      notFound();
-    }
-
-    let matter, users;
-
-    try {
-      [matter, users] = await Promise.all([
-        getMatterById(matterId),
-        fetchUsersAction(),
-      ]);
-    } catch (fetchError) {
-      console.error("Error fetching data:", fetchError);
-      throw fetchError;
-    }
-
-    if (!matter) {
-      notFound();
-    }
-
-    return (
-      <div className="flex flex-col gap-6 h-full">
-        <MatterHeader matter={matter} />
-        <MatterTabs matterId={matter.matter_id}>
-          <Suspense fallback={<MatterDetailLoading />}>
-            <MatterDashboard matter={matter} users={users} />
-          </Suspense>
-        </MatterTabs>
-      </div>
-    );
-  } catch (error) {
-    console.error("Error in MatterDetailPage:", error);
+  if (!matterId || matterId.trim() === "") {
     notFound();
   }
+
+  const matter = await getMatterById(matterId);
+  const users = await fetchUsersAction();
+
+  if (!matter || !users) {
+    notFound();
+  }
+  return (
+    <div className="flex flex-col gap-6 h-full">
+      <MatterHeader matter={matter} />
+      <MatterTabs matterId={matter.matter_id}>
+        <Suspense fallback={<MatterDetailLoading />}>
+          <MatterDashboard matter={matter} users={users} />
+        </Suspense>
+      </MatterTabs>
+    </div>
+  );
 }
