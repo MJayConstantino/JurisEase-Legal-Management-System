@@ -44,7 +44,7 @@ export default async function MatterDetailPage({
 
   if (!UUID_REGEX.test(matterId)) {
     redirect(
-      `/error?message=${encodeURIComponent(
+      `/error?msg=${encodeURIComponent(
         "Invalid matter ID"
       )}&cause=${encodeURIComponent(
         "The provided matter ID format is invalid"
@@ -58,7 +58,7 @@ export default async function MatterDetailPage({
 
   if (!matter) {
     redirect(
-      `/error?message=${encodeURIComponent(
+      `/error?msg=${encodeURIComponent(
         "Matter not found"
       )}&cause=${encodeURIComponent(
         `Matter with ID ${matterId} does not exist`
