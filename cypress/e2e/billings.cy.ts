@@ -40,7 +40,7 @@ function searchForMatter(bill: string) {
 }
 describe('Billings E2E Interactions',() => {
     before(() => {
-        //Makes cypress ignore the error caused by Date.now() mismatch time e.g 10:01 and 10:02
+        //Makes cypress ignore Hydration and ResizeObserver errors
         Cypress.on('uncaught:exception', (err) => {
           if (
             err.message.includes('Hydration failed') ||
