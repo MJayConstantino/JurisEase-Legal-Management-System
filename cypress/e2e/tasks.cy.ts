@@ -18,6 +18,37 @@ describe("Tasks E2E Interactions", () => {
       cy.wait(3000);
     });
 
+    it("should validate task name length limit", () => {
+      // Create a string that's just over 100 characters
+      const tooLongTaskName = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.".repeat(2);
+      cy.get('input[placeholder="Task name"]').type(tooLongTaskName, { delay: 0 });
+
+      // Submit the form
+      cy.get('button[type="submit"]').contains("Save Task").click();
+
+      // Verify the validation error appears
+      cy.contains("Task name must be less than 100 characters").should("exist");
+      cy.wait(3000);
+    });
+
+    it("should validate description length limit", () => {
+      // Create a valid task name
+      cy.get('input[placeholder="Task name"]').type("Test Task");
+      const tooLongDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. Fusce auctor nisi at ex.".repeat(7);
+
+      cy.get('textarea[data-slot="textarea"][id="description"]')
+        .should("have.attr", "placeholder", "Optional")
+        .type(tooLongDescription, { delay: 10 });
+
+      cy.get('button[type="submit"]').contains("Save Task").click();
+
+      // Verify the validation error appears
+      cy.contains("Description must be less than 500 characters").should(
+        "exist"
+      );
+      cy.wait(3000);
+    });
+
     it("should successfully create a task", () => {
       cy.get('input[placeholder="Task name"]').type("Test Task");
       cy.get('textarea[data-slot="textarea"][id="description"]')
@@ -25,6 +56,7 @@ describe("Tasks E2E Interactions", () => {
         .type("Test Task Description");
       cy.get('button[type="submit"]').contains("Save Task").click();
       cy.contains('Task "Test Task" created successfully').should("exist");
+      cy.wait(3000);
     });
   });
 
@@ -382,7 +414,7 @@ describe("Tasks E2E Interactions", () => {
       cy.get('button[type="button"].bg-red-600.hover\\:bg-red-700')
         .contains("Delete Task")
         .click();
-      cy.contains('"Updated Task" has been deleted successfully.').should(
+      cy.contains('"Updated Task" has been deleted successfully').should(
         "exist"
       );
       cy.wait(2000);
@@ -423,7 +455,7 @@ describe("Tasks E2E Interactions", () => {
     beforeEach(() => {
       // Navigate to the matter detail page
       cy.visit("/matters");
-      cy.wait(1000);
+      cy.wait(5000);
       cy.contains(matterName).click();
       cy.wait(1000);
 
@@ -498,9 +530,10 @@ describe("Tasks E2E Interactions", () => {
         cy.get('button[role="checkbox"][data-slot="checkbox"]').click();
       });
       cy.wait(1000);
-      cy.contains('Task "Updated Matter Task" marked as complete').should("exist")
-      cy.wait(1000
+      cy.contains('Task "Updated Matter Task" marked as complete').should(
+        "exist"
       );
+      cy.wait(3000);
     });
 
     it("should mark the task as incomplete", () => {
@@ -512,7 +545,7 @@ describe("Tasks E2E Interactions", () => {
       cy.contains('Task "Updated Matter Task" unmarked as complete').should(
         "exist"
       );
-      cy.wait(1000);
+      cy.wait(3000);
     });
 
     it("should delete the task", () => {
