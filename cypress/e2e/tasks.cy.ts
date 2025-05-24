@@ -257,7 +257,6 @@ describe("Tasks E2E Interactions", () => {
         .click({ force: true });
       cy.get("[role='option']").first().click();
 
-      // Do not set a due date
       cy.get('button[type="submit"]').contains("Save Task").click();
       // Verify the task was created
 
@@ -414,9 +413,7 @@ describe("Tasks E2E Interactions", () => {
       cy.get('button[type="button"].bg-red-600.hover\\:bg-red-700')
         .contains("Delete Task")
         .click();
-      cy.contains('"Updated Task" has been deleted successfully').should(
-        "exist"
-      );
+      cy.contains('"Updated Task" has been deleted successfully').should("exist");
       cy.wait(2000);
     });
   });
@@ -486,6 +483,8 @@ describe("Tasks E2E Interactions", () => {
 
       // Save the task
       cy.get('button[type="submit"]').contains("Save Task").click();
+      
+      // Verify the task was created
       cy.contains('"Matter Context Task" created successfully').should("exist");
       cy.contains("Matter Context Task").should("exist");
     });
@@ -519,6 +518,8 @@ describe("Tasks E2E Interactions", () => {
 
       // Save changes
       cy.get('button[type="submit"]').contains("Update Task").click();
+      
+      // Verify the task was updated
       cy.wait(1000);
       cy.contains('"Updated Matter Task" updated successfully').should("exist");
       cy.contains("Updated Matter Task").should("exist");
@@ -558,9 +559,7 @@ describe("Tasks E2E Interactions", () => {
       cy.get('button[type="button"].bg-red-600')
         .contains("Delete Task")
         .click();
-      cy.contains('"Updated Matter Task" has been deleted successfully').should(
-        "exist"
-      );
+      cy.contains('"Updated Matter Task" has been deleted successfully').should("exist");
       cy.wait(2000);
     });
 
