@@ -99,7 +99,7 @@ export function TaskCard({
         onClick={handleCardClick}
       >
         <div
-          className="mb-2 flex justify-between items-start gap-2 "
+          className="mb-2 flex justify-between items-start gap-2"
           title={`Task Name: ${task.name}`}
         >
           <h3 className="font-medium text-sm sm:text-base line-clamp-2 dark:text-white">
@@ -120,7 +120,7 @@ export function TaskCard({
 
         {task.description && (
           <p
-            className="text-xs mb-2 h-20 sm:text-sm line-clamp-2 overflow-y-auto text-muted-foreground dark:text-gray-400"
+            className="text-xs mb-2 h-15 sm:text-sm line-clamp-2 overflow-y-auto text-muted-foreground dark:text-gray-400"
             title={`Description: ${task.description}`}
           >
             {task.description}

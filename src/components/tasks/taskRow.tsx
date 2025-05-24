@@ -65,42 +65,54 @@ export function TaskRow({
   // If matters are loading, display skeleton UI in all columns
   if (isLoadingMatters) {
     return (
-      <TableRow className="hover:bg-gray-50/muted dark:hover:bg-gray-900/muted">
-        {/* Checkbox Column */}
-        <TableCell className="p-1 md:p-2">
-          <Skeleton className="h-4 w-4 md:h-5 md:w-5 rounded-lg" />
+      <TableRow className="hover:bg-gray-50 dark:hover:bg-gray-900 hover:cursor-pointer text-center">
+        {/* Checkbox Cell */}
+        <TableCell className="w-[50px] p-1 md:p-2 text-center">
+          <div className="flex justify-center">
+            <Skeleton className="h-4 w-4 md:h-5 md:w-5 rounded-lg" />
+          </div>
         </TableCell>
 
-        {/* Task Name */}
-        <TableCell className="p-1 md:p-2">
-          <Skeleton className="w-24 h-4 rounded-lg" />
+        {/* Task Name Cell */}
+        <TableCell className={`p-1 md:p-2 ${hideMatterColumn ? "w-[40%] md:w-[45%]" : "w-[25%] md:w-[30%]"}`}>
+          <div className="flex flex-col">
+            <Skeleton className="h-5 w-full max-w-[200px] rounded-md text-left" />
+          </div>
         </TableCell>
 
-        {/* Matter Column - Only show if not in a matter-specific page */}
+        {/* Matter Cell */}
         {!hideMatterColumn && (
-          <TableCell className="p-1 md:p-2 w-32 md:w-40">
-            <Skeleton className="w-24 h-4 rounded-lg" />
+          <TableCell className="p-1 md:p-2 w-[20%] md:table-cell">
+            <Skeleton className="h-5 w-full max-w-[150px] rounded-md mx-auto" />
           </TableCell>
         )}
 
-        {/* Status */}
-        <TableCell className="p-1 md:p-2">
-          <Skeleton className="w-24 h-4 rounded-lg" />
+        {/* Status Cell */}
+        <TableCell className="p-1 md:p-2 w-[15%] text-center">
+          <div className="flex justify-center">
+            <Skeleton className="h-5 w-20 rounded-full" />
+          </div>
         </TableCell>
 
-        {/* Priority */}
-        <TableCell className="p-1 md:p-2">
-          <Skeleton className="w-24 h-4 rounded-lg" />
+        {/* Priority Cell */}
+        <TableCell className="p-1 md:p-2 w-[15%] text-center">
+          <div className="flex justify-center">
+            <Skeleton className="h-5 w-16 rounded-full" />
+          </div>
         </TableCell>
 
-        {/* Due Date */}
-        <TableCell className="p-1 md:p-2">
-          <Skeleton className="w-24 h-4 rounded-lg" />
+        {/* Due Date Cell */}
+        <TableCell className="p-1 md:p-2 w-[15%] text-center sm:table-cell">
+          <div className="flex justify-center">
+            <Skeleton className="h-5 w-24 rounded-md" />
+          </div>
         </TableCell>
 
-        {/* Actions */}
-        <TableCell className="p-1 md:p-2 text-right">
-          <Skeleton className="w-8 h-8 rounded-lg ml-auto" />
+        {/* Actions Cell */}
+        <TableCell className="p-1 md:p-2 w-[50px] md:w-[80px] text-right">
+          <div className="flex justify-end">
+            <Skeleton className="h-8 w-8 rounded-md" />
+          </div>
         </TableCell>
       </TableRow>
     );
@@ -109,13 +121,13 @@ export function TaskRow({
   return (
     <>
       <TableRow
-        className={`${backgroundClasses} hover:bg-gray-200 dark:hover:bg-gray-700 hover:cursor-pointer`}
+        className={`${backgroundClasses} hover:bg-gray-200 dark:hover:bg-gray-700 hover:cursor-pointer text-center`}
         onClick={() => {
           setIsViewingDetails(true);
         }}
       >
         {/* Checkbox Column */}
-        <TableCell className="p-1 md:p-2" onClick={(e) => e.stopPropagation()}>
+        <TableCell className="w-[50px] p-1 md:p-2" onClick={(e) => e.stopPropagation()}>
           <Checkbox
             checked={task.status === "completed"}
             onCheckedChange={() => {
@@ -132,10 +144,15 @@ export function TaskRow({
         </TableCell>
 
         {/* Task Name */}
-        <TableCell className="p-1 md:p-2" title={`Task Name: ${task.name}`}>
+        <TableCell 
+          className={`p-1 md:p-2 ${
+            hideMatterColumn ? "w-[40%] md:w-[45%]" : "w-[25%] md:w-[30%]"
+          }`} 
+          title={`Task Name: ${task.name}`}
+        >
           <div className="flex flex-col">
             <h3
-              className={`font-medium text-xs sm:text-sm md:text-base truncate dark:text-white max-w-[80px] sm:max-w-[120px] md:max-w-full ${
+              className={`text-xs sm:text-sm md:text-base truncate dark:text-white max-w-[80px] sm:max-w-[120px] md:max-w-full ${
                 hideMatterColumn
                   ? "max-w-[150px] sm:max-w-[180px] md:max-w-[350px]"
                   : ""
@@ -153,7 +170,7 @@ export function TaskRow({
             title={`Matter: ${matterName}`}
           >
             {task.matter_id ? (
-              <span className="font-medium text-xs sm:text-sm md:text-base truncate dark:text-white max-w-[80px] sm:max-w-[120px] md:max-w-full">
+              <span className="text-xs sm:text-sm md:text-base truncate dark:text-white max-w-[80px] sm:max-w-[120px] md:max-w-full">
                 {matterName || "None"}
               </span>
             ) : (
@@ -165,7 +182,7 @@ export function TaskRow({
         )}
 
         {/* Status */}
-        <TableCell className="p-1 md:p-2" title={`Status: ${task.status}`}>
+        <TableCell className="p-1 md:p-2 w-[15%]" title={`Status: ${task.status}`}>
           <Badge
             variant="outline"
             className={`text-[10px] sm:text-xs w-auto inline-flex justify-center px-1 sm:px-2 ${
@@ -179,7 +196,7 @@ export function TaskRow({
         </TableCell>
 
         {/* Priority */}
-        <TableCell className="p-1 md:p-2" title={`Priority: ${task.priority}`}>
+        <TableCell className="p-1 md:p-2 w-[15%]" title={`Priority: ${task.priority}`}>
           <Badge
             variant="outline"
             className={`text-[10px] sm:text-xs w-auto inline-flex justify-center px-1 sm:px-2 ${getStatusColor(
@@ -192,11 +209,11 @@ export function TaskRow({
 
         {/* Due Date */}
         <TableCell
-          className="p-1 md:p-2"
+          className="p-1 md:p-2 w-[15%]"
           title={`Due Date: ${formatDate(task.due_date)}`}
         >
           {task.due_date ? (
-            <span className="text-xs sm:text-sm md:text-base truncate dark:text-white max-w-[80px] sm:max-w-[120px] md:max-w-full ">
+            <span className="text-xs sm:text-sm truncate dark:text-white max-w-[80px] sm:max-w-[120px] md:max-w-full">
               {formatDate(task.due_date)}
             </span>
           ) : (
@@ -208,7 +225,7 @@ export function TaskRow({
 
         {/* Actions */}
         <TableCell
-          className="p-1 md:p-2 text-right"
+          className="p-1 md:p-2 w-[50px] md:w-[80px] text-right"
           onClick={(e) => e.stopPropagation()}
         >
           <DropdownMenu>

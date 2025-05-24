@@ -249,20 +249,20 @@ export function TaskForm({
     >
       <DialogContent className="sm:max-w-[500px] w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700 p-6 scrollbar-hide">
         <DialogHeader>
-          <DialogTitle className="dark:text-gray-100 font-semibold">
+          <DialogTitle className="dark:text-gray-100 font-semibold text-base sm:text-lg">
             {task.task_id ? "Edit Task" : "Add New Task"}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs sm:text-sm">
             {task.task_id
               ? "Edit the details below to update the task."
               : "Fill in the details below to create a new task."}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 py-4">
-          {/* Form content - unchanged */}
+          {/* Form content */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="sm:col-span-2">
-              <Label htmlFor="name" className="dark:text-gray-200">
+              <Label htmlFor="name" className="dark:text-gray-200 text-xs sm:text-sm">
                 Name <sup className="text-red-500">*</sup>
               </Label>
               <Input
@@ -270,11 +270,11 @@ export function TaskForm({
                 id="name"
                 value={task.name}
                 onChange={(e) => handleChange("name", e.target.value)}
-                className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
+                className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400 text-xs sm:text-sm"
               />
             </div>
             <div>
-              <Label htmlFor="priority" className="dark:text-gray-200">
+              <Label htmlFor="priority" className="dark:text-gray-200 text-xs sm:text-sm">
                 Priority
               </Label>
               <Select
@@ -283,11 +283,11 @@ export function TaskForm({
               >
                 <SelectTrigger
                   id="priority"
-                  className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 w-full"
+                  className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 w-full text-xs sm:text-sm"
                 >
                   <SelectValue placeholder="Select priority" />
                 </SelectTrigger>
-                <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
+                <SelectContent className="dark:bg-gray-700 dark:border-gray-600 text-xs sm:text-sm">
                   <SelectItem value="low">Low</SelectItem>
                   <SelectItem value="medium">Medium</SelectItem>
                   <SelectItem value="high">High</SelectItem>
@@ -297,13 +297,13 @@ export function TaskForm({
           </div>
 
           <div>
-            <Label htmlFor="description" className="dark:text-gray-200">
+            <Label htmlFor="description" className="dark:text-gray-200 text-xs sm:text-sm">
               Description
             </Label>
             <Textarea
               placeholder="Optional"
               id="description"
-              className="mt-2 resize-none w-full dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400 "
+              className="mt-2 resize-none w-full dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400 text-xs sm:text-sm"
               rows={3}
               value={task.description || ""}
               onChange={(e) => handleChange("description", e.target.value)}
@@ -311,7 +311,7 @@ export function TaskForm({
           </div>
 
           <div>
-            <Label htmlFor="assignedMatter" className="dark:text-gray-200">
+            <Label htmlFor="assignedMatter" className="dark:text-gray-200 text-xs sm:text-sm">
               Assigned Matter
             </Label>
             <Select
@@ -319,7 +319,7 @@ export function TaskForm({
               onValueChange={(value) => handleChange("matter_id", value)}
               disabled={disableMatterSelect || !!matterId || isLoadingMatters}
             >
-              <SelectTrigger className="mt-2 w-full dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
+              <SelectTrigger className="mt-2 w-full dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 text-xs sm:text-sm">
                 <SelectValue
                   placeholder={
                     isLoadingMatters ? "Loading matters..." : "Select a matter"
@@ -327,7 +327,7 @@ export function TaskForm({
                 >
                   {selectedMatter && (
                     <span
-                      className="truncate inline-block max-w-[250px]"
+                      className="truncate inline-block max-w-[250px] text-xs sm:text-sm"
                       title={selectedMatter.name}
                     >
                       [{selectedMatter.case_number}] {selectedMatter.name}
@@ -341,14 +341,14 @@ export function TaskForm({
                     <SelectItem
                       key={matter.matter_id}
                       value={matter.matter_id}
-                      className="text-sm md:text-base"
+                      className="text-xs sm:text-sm"
                       title={matter.name}
                     >
                       <div className="flex items-center justify-between w-full gap-2">
                         <span className="ml-1 text-xs text-gray-500 whitespace-nowrap">
                           [{matter.case_number}]
                         </span>
-                        <span className="truncate inline-block max-w-[150px] xs:max-w-[180px] md:max-w-[250px]">
+                        <span className="truncate inline-block max-w-[150px] xs:max-w-[180px] sm:max-w-[250px] text-xs sm:text-sm">
                           {matter.name}
                         </span>
                       </div>
@@ -364,7 +364,7 @@ export function TaskForm({
                       size="sm"
                       onClick={goToPrevPage}
                       disabled={currentPage === 1}
-                      className="h-8 min-w-[60px] px-2 hover:cursor-pointer text-xs md:min-w-[80px] md:text-sm"
+                      className="h-8 min-w-[60px] px-2 hover:cursor-pointer text-xs"
                     >
                       <ChevronLeftIcon className="h-4 w-4 mr-1" />
                       Prev
@@ -377,7 +377,7 @@ export function TaskForm({
                       size="sm"
                       onClick={goToNextPage}
                       disabled={currentPage === totalPages}
-                      className="h-8 min-w-[60px] px-2 hover:cursor-pointer text-xs md:min-w-[80px] md:text-sm"
+                      className="h-8 min-w-[60px] px-2 hover:cursor-pointer text-xs"
                     >
                       Next
                       <ChevronRightIcon className="h-4 w-4 ml-1" />
@@ -392,13 +392,13 @@ export function TaskForm({
         {/* Due Date */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <Label htmlFor="dueDate" className="dark:text-gray-200">
+            <Label htmlFor="dueDate" className="dark:text-gray-200 text-xs sm:text-sm">
               Due Date
             </Label>
             <Input
               id="dueDate"
               type="date"
-              className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 w-full cursor-pointer dark:placeholder:text-gray-400"
+              className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 w-full cursor-pointer dark:placeholder:text-gray-400 text-xs sm:text-sm"
               value={formattedDueDate}
               min={format(new Date(), "yyyy-MM-dd")}
               onChange={(e) =>
@@ -413,7 +413,7 @@ export function TaskForm({
             />
           </div>
           <div>
-            <Label htmlFor="taskStatus" className="dark:text-gray-200">
+            <Label htmlFor="taskStatus" className="dark:text-gray-200 text-xs sm:text-sm">
               Task Status
             </Label>
             <Select
@@ -422,10 +422,10 @@ export function TaskForm({
                 handleChange("status", value)
               }
             >
-              <SelectTrigger className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 w-full">
+              <SelectTrigger className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 w-full text-xs sm:text-sm">
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
-              <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
+              <SelectContent className="dark:bg-gray-700 dark:border-gray-600 text-xs sm:text-sm">
                 <SelectItem value="in-progress">In-Progress</SelectItem>
                 <SelectItem value="completed">Completed</SelectItem>
               </SelectContent>
@@ -440,11 +440,11 @@ export function TaskForm({
               type="submit"
               onClick={() => handleSubmit(false)}
               disabled={isSubmitting}
-              className={
+              className={`text-xs sm:text-sm ${
                 isSubmitting
                   ? "opacity-70 cursor-not-allowed"
                   : "cursor-pointer"
-              }
+              }`}
             >
               {isSubmitting
                 ? "Saving..."
@@ -456,11 +456,11 @@ export function TaskForm({
               <Button
                 onClick={() => handleSubmit(true)}
                 disabled={isSubmitting}
-                className={
+                className={`text-xs sm:text-sm ${
                   isSubmitting
                     ? "opacity-70 cursor-not-allowed"
                     : "cursor-pointer"
-                }
+                }`}
               >
                 {isSubmitting ? "Saving..." : "Save and Create Another"}
               </Button>
@@ -470,7 +470,7 @@ export function TaskForm({
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isSubmitting}
-            className="cursor-pointer w-full sm:w-auto"
+            className="cursor-pointer w-full sm:w-auto text-xs sm:text-sm"
           >
             Cancel
           </Button>
