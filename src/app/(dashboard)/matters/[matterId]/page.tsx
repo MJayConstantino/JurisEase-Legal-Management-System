@@ -1,5 +1,5 @@
-// import { redirect, notFound } from "next/navigation";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
+// import { notFound } from "next/navigation";
 import { getMatterById } from "@/actions/matters";
 import { fetchUsersAction } from "@/actions/users";
 import { MatterPage } from "@/components/matters/matterPage";
@@ -43,16 +43,16 @@ export default async function MatterDetailPage({
   const { matterId } = await params;
 
   if (!UUID_REGEX.test(matterId)) {
-    // redirect("/error?message=Invalid matter ID");
-    notFound();
+    redirect("/error?message=Invalid matter ID");
+    // notFound();
   }
 
   const matter = await getMatterById(matterId);
   const users = await fetchUsersAction();
 
   if (!matter) {
-    // redirect("/error?message=Matter not found");
-    notFound();
+    redirect("/error?message=Matter not found");
+    // notFound();
   }
 
   return (
