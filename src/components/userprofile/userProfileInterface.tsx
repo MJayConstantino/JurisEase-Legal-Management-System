@@ -136,7 +136,7 @@ export default function UserProfileInterface({ user }: UserProfileProps) {
                         router.push('/login')
                       } else {
                         router.push(
-                          'error?msg=There was a session fault when attempting to delete your user data!&cause=Session Fault&code=500'
+                          '/error?msg=There was a session fault when attempting to delete your user data!&cause=Session Fault&code=500'
                         )
                       }
                     }}
