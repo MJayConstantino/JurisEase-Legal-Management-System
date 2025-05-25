@@ -62,42 +62,58 @@ export function BillingsItem({
   };
 
   const billMatter = bill.matter || matters.find((m) => m.matter_id === bill.matter_id)
-  const matterDisplay = billMatter ? `${billMatter.name} [${billMatter.case_number}]` : `Matter ID: ${bill.matter_id}`
+  const matterDisplay = billMatter ? `[${billMatter.case_number}] ${billMatter.name} ` : `Matter ID: ${bill.matter_id}`
 
   return (
-    <TableRow className="text-sm md:text-base dark:border-gray-700"  data-testid={`billing-row-${bill.bill_id}`}>
-      <TableCell className="pl-5 font-medium max-w-[200px] truncate" title={`Bill Name: ${bill.name}`}>
-        {bill.name}
+    <TableRow className="text-xs md:text-sm dark:border-gray-700" data-testid={`billing-row-${bill.bill_id}`}>
+      <TableCell className="font-medium max-w-[200px] truncate text-center w-[20%]" title={`Bill Name: ${bill.name}`}>
+        <div className="mx-auto max-w-full truncate">
+          {bill.name}
+        </div>
       </TableCell>
       {!hideMatterColumn && (
-        <TableCell className="max-w-[200px] truncate" title={`Matter Name: ${matterDisplay}`}>
-          {matterDisplay}
+        <TableCell className="max-w-[200px] truncate text-center w-[25%]" title={`Matter Name: ${matterDisplay}`}>
+          <div className="mx-auto max-w-full truncate">
+            {matterDisplay}
+          </div>
         </TableCell>
       )}
-      <TableCell title={`Amount: ${formatAmount(bill.amount)}`} className="overflow-hidden">
-        {formatAmount(bill.amount)}
+      <TableCell title={`Amount: ${formatAmount(bill.amount)}`} className="overflow-hidden text-center w-[15%]">
+        <div className="mx-auto max-w-full truncate">
+          {formatAmount(bill.amount)}
+        </div>
       </TableCell>
       <TableCell
-        className={`${hideMatterColumn ? "max-w-[250px]" : "max-w-[200px]"} truncate`}
+        className={`${hideMatterColumn ? "max-w-[250px]" : "max-w-[200px]"} truncate text-center w-[15%]`}
         title={`Remarks: ${bill.remarks || "No Remarks"}`}
       >
-        {bill.remarks ? (
-          bill.remarks
-        ) : (
-          <span className="text-gray-500">No remarks</span>
-        )}
+        <div className="mx-auto max-w-full truncate">
+          {bill.remarks ? (
+            bill.remarks
+          ) : (
+            <span className="text-gray-500">No remarks</span>
+          )}
+        </div>
       </TableCell>
-      <TableCell>
-        <span
-          className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-xs ${getStatusStyles( bill.status)}`}
-          title={`Status: ${bill.status}`}
-        >
-          {bill.status}
-        </span>
+      <TableCell className="text-center w-[10%]">
+        <div className="flex justify-center">
+          <span
+            className={`px-2 py-1 md:px-3 md:py-1 rounded-full text-xs ${getStatusStyles(bill.status)}`}
+            title={`Status: ${bill.status}`}
+          >
+            {bill.status}
+          </span>
+        </div>
       </TableCell>
-      <TableCell>{format(new Date(bill.created_at), "MMM d, yyyy")}</TableCell>
-      <TableCell className="text-right pr-5">
-        <BillingsButtons onEdit={() => setIsEditDialogOpen(true)} onDelete={() => setIsDeleteDialogOpen(true)} />
+      <TableCell className="text-center w-[10%]">
+        <div className="mx-auto max-w-full truncate">
+          {format(new Date(bill.created_at), "MMM d, yyyy")}
+        </div>
+      </TableCell>
+      <TableCell className="text-center w-[5%]">
+        <div className="flex justify-center">
+          <BillingsButtons onEdit={() => setIsEditDialogOpen(true)} onDelete={() => setIsDeleteDialogOpen(true)} />
+        </div>
 
         <BillingsEditDialog
           bill={bill}

@@ -1,25 +1,32 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react"
-import type { Bill, SortDirection, SortField } from "@/types/billing.type"
-import { BillingsItem } from "@/components/billings/billingsItem"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Matter } from "@/types/matter.type"
-import { Button } from "../ui/button"
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
+import type { Bill, SortDirection, SortField } from "@/types/billing.type";
+import { BillingsItem } from "@/components/billings/billingsItem";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Matter } from "@/types/matter.type";
+import { Button } from "../ui/button";
 
 interface BillingsListProps {
-  matters: Matter[]
-  matter?: Matter
-  bills: Bill[]
-  onUpdate: (bill: Bill) => void
-  onDelete: (id: string) => void
-  sortField: SortField | null
-  sortDirection: SortDirection
-  onSortChange: (field: SortField) => void
-  hideMatterColumn?: boolean
-  isLoading?:boolean
+  matters: Matter[];
+  matter?: Matter;
+  bills: Bill[];
+  onUpdate: (bill: Bill) => void;
+  onDelete: (id: string) => void;
+  sortField: SortField | null;
+  sortDirection: SortDirection;
+  onSortChange: (field: SortField) => void;
+  hideMatterColumn?: boolean;
+  isLoading?: boolean;
 }
 
 export function BillingsList({
@@ -31,9 +38,8 @@ export function BillingsList({
   onSortChange,
   sortDirection,
   isLoading,
-  hideMatterColumn = false
+  hideMatterColumn = false,
 }: BillingsListProps) {
-
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) {
       return <ArrowUpDown className="ml-2 h-4 w-4" />;
@@ -49,36 +55,41 @@ export function BillingsList({
     <Button
       variant="ghost"
       onClick={() => onSortChange(field)}
-      className="p-0 h-auto font-semibold flex items-center whitespace-nowrap overflow-hidden text-ellipsis"
+      className="p-0 h-auto font-semibold flex items-center justify-center w-full whitespace-nowrap overflow-hidden text-ellipsis"
     >
       {label} {getSortIcon(field)}
     </Button>
   );
 
   return (
-    <div className="overflow-x-auto overflow-y-auto w-full" data-cy="scroll-container">
+    <div
+      className="overflow-x-auto overflow-y-auto w-full"
+      data-cy="scroll-container"
+    >
       <Table className="table-auto">
         <TableHeader className="bg-gray-100 dark:bg-gray-900 sticky top-0 z-10">
-          <TableRow className="text-sm md:text-base">
-            <TableHead className="w-[20%]">
+          <TableRow className="text-sm">
+            <TableHead className="w-[20%] text-center">
               {renderSortableHeader("name", "Bill Name")}
             </TableHead>
             {!hideMatterColumn && (
-              <TableHead className="w-[25%]">
+              <TableHead className="w-[25%] text-center">
                 {renderSortableHeader("matterName", "Matter Name")}
               </TableHead>
             )}
-            <TableHead className="w-[15%]">
+            <TableHead className="w-[15%] text-center">
               {renderSortableHeader("amount", "Amount")}
             </TableHead>
-            <TableHead className={`${hideMatterColumn ? "w-[20%]" : "w-[15%]"}`}>
+            <TableHead
+              className={`${hideMatterColumn ? "w-[20%]" : "w-[15%]"} text-center`}
+            >
               {renderSortableHeader("remarks", "Remarks")}
             </TableHead>
-            <TableHead className="w-[10%]">Status</TableHead>
-            <TableHead className="w-[10%]">
+            <TableHead className="w-[10%] text-center font-medium">Status</TableHead>
+            <TableHead className="w-[10%] text-center">
               {renderSortableHeader("created_at", "Date Billed")}
             </TableHead>
-            <TableHead className="w-[5%] pr-5 text-right">Actions</TableHead>
+            <TableHead className="w-[5%] text-center">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -116,6 +127,5 @@ export function BillingsList({
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }
-
