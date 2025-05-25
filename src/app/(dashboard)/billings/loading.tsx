@@ -13,22 +13,22 @@ export function BillingsLoading() {
     <div className="flex flex-col gap-3 h-full">
       {/* Revenue Header Skeleton */}
       <div className="mt-0">
-        <div className="bg-[#1B1E4B] dark:bg-gray-800 text-white p-2 md:p-4 rounded-none md:rounded-t-md overflow-hidden">
+        <div className="bg-[#1B1E4B] dark:bg-gray-900 text-white p-2 md:p-4 rounded-none md:rounded-t-md overflow-hidden">
           <div className="flex justify-between items-center">
             <div className="flex-1">
               <div>
                 <div className="text-lg md:text-xl font-semibold mb-1">
-                  <Skeleton className="h-5 md:h-6 w-28 md:w-36 mb-1 md:mb-2 bg-indigo-300/20" />
+                  <Skeleton className="h-5 md:h-6 w-28 md:w-36 mb-1 md:mb-2 bg-indigo-200/20" />
                 </div>
                 <div className="truncate w-64">
-                  <Skeleton className="h-3 md:h-4 w-48 md:w-64 mb-1 md:mb-2 bg-indigo-300/20" />
+                  <Skeleton className="h-3 md:h-4 w-48 md:w-64 mb-1 md:mb-2 bg-indigo-200/20" />
                 </div>
-                <div className="text-base md:text-lg text-indigo-200 dark:text-indigo-100 mt-0">
-                  <Skeleton className="h-3 md:h-4 w-52 md:w-60 mb-1 md:mb-2 bg-indigo-300/20" />
+                <div className="text-base md:text-lg text-indigo-200/20 dark:text-indigo-200/20 mt-0">
+                  <Skeleton className="h-3 md:h-4 w-52 md:w-60 mb-1 md:mb-2 bg-indigo-200/20" />
                 </div>
               </div>
               <div className="flex items-baseline overflow-hidden text-xl md:text-2xl font-semibold mt-0.5 md:mt-1">
-                <Skeleton className="h-6 md:h-8 w-32 md:w-44 mt-0.5 md:mt-1 bg-indigo-300/20" />
+                <Skeleton className="h-6 md:h-8 w-32 md:w-44 mt-0.5 md:mt-1 bg-indigo-200/20" />
               </div>
             </div>
             <Skeleton className="h-7 w-7 md:h-8 md:w-8 rounded-md bg-indigo-300/20" />
