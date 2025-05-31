@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 // Named export for reuse in other components
 export function MattersLoading() {
   return (
-    <div className="border w-full container mx-auto h-full flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900 rounded-lg shadow mb-[56px] md:mb-0">
+    <div className="border border-gray-200 dark:border-gray-700 w-full container mx-auto h-auto flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900 rounded-lg shadow mb-[56px] md:mb-0">
       {/* Header Skeleton */}
       <div className="p-4 border-b bg-gray-50 dark:bg-gray-900 dark:border-gray-700 rounded-t-lg">
         {/* Mobile View */}

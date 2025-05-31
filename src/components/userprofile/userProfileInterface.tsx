@@ -1,17 +1,24 @@
-'use client';
+'use client'
 
-import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { ChangeAvatar } from '@/components/userprofile/editAvatar';
-import { EditUsername } from '@/components/userprofile/editUserNameDialog';
+import { useRouter } from 'next/navigation'
+import { ArrowLeft } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { ChangeAvatar } from '@/components/userprofile/editAvatar'
+import { EditUsername } from '@/components/userprofile/editUserNameDialog'
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { UserProfileStates } from '@/components/userprofile/userProfileStates';
-import { UserProfileActionHandlers } from '@/action-handlers/userProfile';
-import { useEffect } from 'react';
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { UserProfileStates } from '@/components/userprofile/userProfileStates'
+import { UserProfileActionHandlers } from '@/action-handlers/userProfile'
+import { useEffect } from 'react'
+import { fetchUserSession, signOutAction } from '@/actions/users'
 
 export interface UserData {
   user_id: string
@@ -22,30 +29,34 @@ export interface UserData {
 
 interface UserProfileProps {
   user: {
-    user_id: string;
-    user_name: string;
-    user_email: string;
-    avatar_url: string;
-    full_name: string;
-  };
+    user_id: string
+    user_name: string
+    user_email: string
+    avatar_url: string
+    full_name: string
+  }
 }
 
 export default function UserProfileInterface({ user }: UserProfileProps) {
   const router = useRouter()
 
-  const { setUserList, setUserEmail, setUserName,  setUserData,
-    isDeleteDialogOpen, setIsDeleteDialogOpen 
+  const {
+    setUserList,
+    setUserEmail,
+    setUserName,
+    setUserData,
+    isDeleteDialogOpen,
+    setIsDeleteDialogOpen,
   } = UserProfileStates()
 
   const { updateProfile, deleteProfile } = UserProfileActionHandlers()
 
   useEffect(() => {
-    setUserList([user]);
-    setUserData(user);
-    setUserName(user.user_name);
-    setUserEmail(user.user_email || '');
-  }, [user, setUserList, setUserData, setUserName, setUserEmail]);
-
+    setUserList([user])
+    setUserData(user)
+    setUserName(user.user_name)
+    setUserEmail(user.user_email || '')
+  }, [user, setUserList, setUserData, setUserName, setUserEmail])
 
   return (
     <div className="h-screen w-screen bg-white dark:bg-gray-800 relative">
@@ -55,7 +66,8 @@ export default function UserProfileInterface({ user }: UserProfileProps) {
             <div className="text-white opacity-10 text-6xl font-bold leading-loose rotate-[-20deg] whitespace-nowrap">
               {Array.from({ length: 8 }).map((_, index) => (
                 <p key={index}>
-                  JurisEase JurisEase JurisEase JurisEase JurisEase JurisEase JurisEase JurisEase JurisEase JurisEase 
+                  JurisEase JurisEase JurisEase JurisEase JurisEase JurisEase
+                  JurisEase JurisEase JurisEase JurisEase
                 </p>
               ))}
             </div>
@@ -117,8 +129,16 @@ export default function UserProfileInterface({ user }: UserProfileProps) {
                   <AlertDialogAction
                     className="bg-red-600"
                     onClick={async () => {
-                      await deleteProfile(user);
-                      router.push("/login")
+                      await signOutAction()
+                      await deleteProfile(user)
+                      const session = await fetchUserSession()
+                      if (!session) {
+                        router.push('/login')
+                      } else {
+                        router.push(
+                          '/error?msg=There was a session fault when attempting to delete your user data!&cause=Session Fault&code=500'
+                        )
+                      }
                     }}
                   >
                     Delete
@@ -130,5 +150,5 @@ export default function UserProfileInterface({ user }: UserProfileProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }
