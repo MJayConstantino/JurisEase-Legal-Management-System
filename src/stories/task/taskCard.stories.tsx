@@ -13,7 +13,6 @@ export default {
   },
 } as Meta;
 
-
 const matters = [mockMatter];
 
 export const Default: StoryObj<typeof TaskCard> = {

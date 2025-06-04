@@ -101,7 +101,7 @@ export const HideMatterColumn: StoryObj<typeof TaskRow> = {
   },
 };
 
-export const LoadingMatters: StoryObj<typeof TaskRow> = {
+export const LoadingRow: StoryObj<typeof TaskRow> = {
   args: {
     task: mockTasks.default,
     ...baseArgs,

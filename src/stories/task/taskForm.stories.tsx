@@ -36,7 +36,7 @@ const mockMatters: Matter[] = [
     status: "pending",
     created_at: new Date(),
     client: "Jay Jones",
-    case_number: "CV-001"
+    case_number: "CV-001",
   },
   {
     matter_id: "2",
@@ -45,7 +45,7 @@ const mockMatters: Matter[] = [
     status: "pending",
     created_at: new Date(),
     client: "John Doe",
-    case_number: "CV-002"
+    case_number: "CV-002",
   },
 ];
 
@@ -53,7 +53,7 @@ const mockTask: Task = {
   task_id: "task-1",
   name: "Draft motion to dismiss",
   description: "Prepare initial draft of the motion to dismiss",
-  due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), 
+  due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
   priority: "high",
   status: "in-progress",
   matter_id: "1",
@@ -254,7 +254,9 @@ export const EditTaskFormPlay: Story = {
 
       if (prioritySelect) {
         await userEvent.click(prioritySelect);
-        await userEvent.keyboard("{ArrowDown}{ArrowDown}{Enter}", { delay: 300 });
+        await userEvent.keyboard("{ArrowDown}{ArrowDown}{Enter}", {
+          delay: 300,
+        });
         await userEvent.tab();
       }
     });
@@ -268,7 +270,9 @@ export const EditTaskFormPlay: Story = {
 
       if (matterSelect) {
         await userEvent.click(matterSelect);
-        await userEvent.keyboard("{ArrowDown}{ArrowDown}{Enter}", { delay: 300 });
+        await userEvent.keyboard("{ArrowDown}{ArrowDown}{Enter}", {
+          delay: 300,
+        });
         await userEvent.tab();
       }
     });
@@ -282,10 +286,10 @@ export const EditTaskFormPlay: Story = {
 
       if (dueDateInput) {
         const newDate = new Date();
-        newDate.setDate(newDate.getDate() + 21); 
+        newDate.setDate(newDate.getDate() + 21);
         const dateString = newDate.toISOString().split("T")[0];
 
-        await userEvent.clear(dueDateInput); 
+        await userEvent.clear(dueDateInput);
         await userEvent.type(dueDateInput, dateString, { delay: 100 });
         await userEvent.tab();
       }
