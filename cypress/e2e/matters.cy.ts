@@ -675,13 +675,16 @@ describe("Matters E2E Interactions", () => {
           cy.wait(300);
           cy.get('[role="option"]').contains("Open").click();
           cy.get('button[type="submit"]').contains("Create Matter").click();
-          cy.wait(500);
+          cy.wait(5000);
           cy.contains("Matter To Delete").should("be.visible");
+          cy.wait(5000);
         });
 
         it("should delete a matter and show confirmation", () => {
           // Click delete button
-          cy.get("#radix-«re»").click();
+          cy.contains("tr", "Matter To Delete")
+            .find("button[data-slot='dropdown-menu-trigger']")
+            .click();
           cy.wait(300);
 
           cy.get(".text-red-600").click();
