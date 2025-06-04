@@ -35,7 +35,7 @@ export const Paid: Story = {
       <Table>
         <TableBody>
           <BillingsItem
-            bill={ mockBills[2]}
+            bill={ mockBills[3]}
             matters={mockMatters}
             onUpdate={(bill) => console.log("Bill updated:", bill)}
             onDelete={(id) => console.log("Bill deleted:", id)}
@@ -53,7 +53,7 @@ export const Unpaid: Story = {
       <Table>
         <TableBody>
           <BillingsItem
-            bill={ mockBills[3]}
+            bill={ mockBills[2]}
             matters={mockMatters}
             onUpdate={(bill) => console.log("Bill updated:", bill)}
             onDelete={(id) => console.log("Bill deleted:", id)}
