@@ -18,6 +18,37 @@ describe("Tasks E2E Interactions", () => {
       cy.wait(3000);
     });
 
+    it("should validate task name length limit", () => {
+      // Create a string that's just over 100 characters
+      const tooLongTaskName = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.".repeat(2);
+      cy.get('input[placeholder="Task name"]').type(tooLongTaskName, { delay: 0 });
+
+      // Submit the form
+      cy.get('button[type="submit"]').contains("Save Task").click();
+
+      // Verify the validation error appears
+      cy.contains("Task name must be less than 100 characters").should("exist");
+      cy.wait(3000);
+    });
+
+    it("should validate description length limit", () => {
+      // Create a valid task name
+      cy.get('input[placeholder="Task name"]').type("Test Task");
+      const tooLongDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. Fusce auctor nisi at ex.".repeat(7);
+
+      cy.get('textarea[data-slot="textarea"][id="description"]')
+        .should("have.attr", "placeholder", "Optional")
+        .type(tooLongDescription, { delay: 10 });
+
+      cy.get('button[type="submit"]').contains("Save Task").click();
+
+      // Verify the validation error appears
+      cy.contains("Description must be less than 500 characters").should(
+        "exist"
+      );
+      cy.wait(3000);
+    });
+
     it("should successfully create a task", () => {
       cy.get('input[placeholder="Task name"]').type("Test Task");
       cy.get('textarea[data-slot="textarea"][id="description"]')
@@ -25,6 +56,7 @@ describe("Tasks E2E Interactions", () => {
         .type("Test Task Description");
       cy.get('button[type="submit"]').contains("Save Task").click();
       cy.contains('Task "Test Task" created successfully').should("exist");
+      cy.wait(3000);
     });
   });
 
@@ -57,7 +89,10 @@ describe("Tasks E2E Interactions", () => {
       );
 
       // Set the due date
-      cy.get("input#dueDate").type("2025-05-10"); // Set due date to 2025-05-10
+      cy.get("input#dueDate")
+        .focus()
+        .clear()
+        .type("2025-05-10", { force: true });
       cy.get("input#dueDate").should("have.value", "2025-05-10"); // Assert the due date is set correctly
 
       // Click Save Task button
@@ -91,8 +126,11 @@ describe("Tasks E2E Interactions", () => {
       cy.get("[role='option']").first().click();
 
       // Set the due date
-      cy.get("input#dueDate").type("2025-05-15");
-      cy.get("input#dueDate").should("have.value", "2025-05-15");
+      cy.get("input#dueDate")
+        .focus()
+        .clear()
+        .type("2025-07-10", { force: true });
+      cy.get("input#dueDate").should("have.value", "2025-07-10"); // Assert the due date is set correctly
 
       // Click Save Task button
       cy.get('button[type="submit"]').contains("Save Task").click();
@@ -125,8 +163,11 @@ describe("Tasks E2E Interactions", () => {
       cy.get("[role='option']").first().click();
 
       // Set the due date
-      cy.get("input#dueDate").type("2025-05-07");
-      cy.get("input#dueDate").should("have.value", "2025-05-07");
+      cy.get("input#dueDate")
+        .focus()
+        .clear()
+        .type("2025-05-29", { force: true });
+      cy.get("input#dueDate").should("have.value", "2025-05-29"); // Assert the due date is set correctly
 
       // Click Save Task button
       cy.get('button[type="submit"]').contains("Save Task").click();
@@ -150,7 +191,11 @@ describe("Tasks E2E Interactions", () => {
         .click({ force: true }); // Open the matter dropdown
       cy.get("[role='option']").first().click(); // Select the first available matter
 
-      cy.get("input#dueDate").type("2025-05-20"); // Set due date to 2025-05-20
+      cy.get("input#dueDate")
+        .focus()
+        .clear()
+        .type("2025-06-26", { force: true });
+      cy.get("input#dueDate").should("have.value", "2025-06-26"); // Assert the due date is set correctly
 
       cy.get('button[role="combobox"]')
         .contains("In-Progress")
@@ -178,13 +223,17 @@ describe("Tasks E2E Interactions", () => {
         .click({ force: true }); // Open the matter dropdown
       cy.get("[role='option']").first().click(); // Select the first available matter
 
-      cy.get("input#dueDate").type("2025-05-20"); // Set due date to 2025-05-20
+      cy.get("input#dueDate")
+        .focus()
+        .clear()
+        .type("2025-06-20", { force: true });
+      cy.get("input#dueDate").should("have.value", "2025-06-20"); // Assert the due date is set correctly
 
       // Select status dropdown and change to Completed
       cy.get('button[role="combobox"]')
         .contains("In-Progress")
         .click({ force: true }); // Open the status dropdown
-      cy.get("[role='option']").contains("Completed").click(); // Select "In-Progress" status
+      cy.get("[role='option']").contains("Completed").click(); // Select "Completed" status
 
       cy.get('button[type="submit"]').contains("Save Task").click(); // Save the task
 
@@ -208,8 +257,6 @@ describe("Tasks E2E Interactions", () => {
         .click({ force: true });
       cy.get("[role='option']").first().click();
 
-      // Do not set a due date
-
       cy.get('button[type="submit"]').contains("Save Task").click();
       // Verify the task was created
 
@@ -227,7 +274,12 @@ describe("Tasks E2E Interactions", () => {
       cy.get("[role='option']").contains("High").click();
 
       // Do not select a matter
-      cy.get("input#dueDate").type("2025-05-25");
+      cy.get("input#dueDate")
+        .focus()
+        .clear()
+        .type("2025-07-10", { force: true });
+      cy.get("input#dueDate").should("have.value", "2025-07-10"); // Assert the due date is set correctly
+
       cy.get('button[type="submit"]').contains("Save Task").click();
 
       // Verify the task was created
@@ -340,7 +392,9 @@ describe("Tasks E2E Interactions", () => {
       cy.contains("tr", "Updated Task").within(() => {
         cy.get('button[role="checkbox"][data-slot="checkbox"]').click();
       });
+      cy.wait(3000);
       cy.contains('Task "Updated Task" marked as complete').should("exist");
+      cy.wait(3000);
     });
 
     it("should mark a task as incomplete directly from the table", () => {
@@ -359,63 +413,145 @@ describe("Tasks E2E Interactions", () => {
       cy.get('button[type="button"].bg-red-600.hover\\:bg-red-700')
         .contains("Delete Task")
         .click();
-      cy.contains('"Updated Task" has been deleted successfully.').should(
-        "exist"
-      );
+      cy.contains('"Updated Task" has been deleted successfully').should("exist");
       cy.wait(2000);
     });
   });
 
-  describe("Tasks in Matter page", () => {
-    beforeEach(() => {
+  describe("Tasks in Matter Context", () => {
+    let matterName;
+
+    before(() => {
       cy.login("test@testdomain.com", "testPassword");
       cy.wait(2000);
+
+      // Create a single test matter that we'll use for all task tests
+      cy.visit("/matters");
+      cy.wait(2000);
+
+      // Create a matter with a unique name using timestamp
+      cy.contains("Add Matter").click();
+      cy.wait(300);
+
+      // Generate a unique matter name with timestamp
+      const timestamp = new Date().getTime();
+      matterName = `Tasks Test Matter ${timestamp}`;
+
+      cy.get('input[placeholder="Case Name"]').type(matterName, { delay: 50 });
+      cy.get('input[placeholder="Case Number"]').type(`TASK-${timestamp}`, {
+        delay: 50,
+      });
+      cy.get("#client-name").type("Task Testing Client", { delay: 50 });
+      cy.get("#status").click();
+      cy.wait(300);
+      cy.get('[role="option"]').contains("Open").click();
+      cy.get('button[type="submit"]').contains("Create Matter").click();
+      cy.wait(2000);
+    });
+
+    beforeEach(() => {
+      // Navigate to the matter detail page
       cy.visit("/matters");
       cy.wait(5000);
-      cy.contains("Test Matter").click();
+      cy.contains(matterName).click();
+      cy.wait(1000);
+
+      // Navigate to the Tasks tab in the matter detail page
       cy.get('button[role="tab"][aria-controls*="content-tasks"]')
         .contains("Tasks")
         .click();
-      cy.wait(5000);
+      cy.wait(1000);
     });
 
-    it("should create a task in matter tabs page", () => {
+    it("should create a task in matter context", () => {
+      // Create a task within the matter
       cy.get('button[data-slot="button"]').contains("Add Task").click();
-      cy.get('input[placeholder="Task name"]').type("Task in Matter");
+      cy.get('input[placeholder="Task name"]').type("Matter Context Task");
       cy.get('textarea[data-slot="textarea"][id="description"]')
         .should("have.attr", "placeholder", "Optional")
-        .type("Task in Matter Description");
+        .type("This task was created within a matter context");
+
+      // Set priority to Medium
+      cy.get("button#priority").click();
+      cy.get("[role='option']").contains("Medium").click();
+
+      // Set due date using the safe approach
+      cy.get("input#dueDate")
+        .focus()
+        .clear()
+        .type("2025-06-15", { force: true });
+
+      // Save the task
       cy.get('button[type="submit"]').contains("Save Task").click();
-      cy.contains('"Task in Matter" created successfully').should("exist");
+      
+      // Verify the task was created
+      cy.contains('"Matter Context Task" created successfully').should("exist");
+      cy.contains("Matter Context Task").should("exist");
     });
 
-    it("should edit a task in matter tabs page", () => {
-      cy.contains("Task in Matter")
+    it("should edit the task in matter context", () => {
+      // Find and edit the task
+      cy.contains("Matter Context Task")
         .closest("tr")
         .find('button[data-slot="dropdown-menu-trigger"]')
         .click();
 
       cy.get('div[role="menuitem"]').contains("Edit Task").click();
 
+      // Change task details
       cy.get('input[placeholder="Task name"]')
         .clear()
-        .type("Edited Matter Task");
+        .type("Updated Matter Task");
       cy.get('textarea[data-slot="textarea"][id="description"]')
         .clear()
-        .type("This task was edited in the matter page");
+        .type("This task was updated in the matter context");
 
+      // Change priority to High
       cy.get("button#priority").click();
       cy.get("[role='option']").contains("High").click();
 
-      cy.get('button[type="submit"]').contains("Update Task").click();
-      cy.wait(2000);
+      // Update the due date
+      cy.get("input#dueDate")
+        .focus()
+        .clear()
+        .type("2025-07-10", { force: true });
 
-      cy.contains('"Edited Matter Task" updated successfully').should("exist");
+      // Save changes
+      cy.get('button[type="submit"]').contains("Update Task").click();
+      
+      // Verify the task was updated
+      cy.wait(1000);
+      cy.contains('"Updated Matter Task" updated successfully').should("exist");
+      cy.contains("Updated Matter Task").should("exist");
     });
 
-    it("should delete a task in matter tabs page", () => {
-      cy.contains("Edited Matter Task")
-        .closest("tr")
+    it("should mark the task as complete", () => {
+      // Find the task and mark it as complete using the checkbox
+      cy.contains("tr", "Updated Matter Task").within(() => {
+        cy.get('button[role="checkbox"][data-slot="checkbox"]').click();
+      });
+      cy.wait(1000);
+      cy.contains('Task "Updated Matter Task" marked as complete').should(
+        "exist"
+      );
+      cy.wait(3000);
+    });
+
+    it("should mark the task as incomplete", () => {
+      // Find the task and mark it as incomplete
+      cy.contains("tr", "Updated Matter Task").within(() => {
+        cy.get('button[role="checkbox"][data-slot="checkbox"]').click();
+      });
+      cy.wait(1000);
+      cy.contains('Task "Updated Matter Task" unmarked as complete').should(
+        "exist"
+      );
+      cy.wait(3000);
+    });
+
+    it("should delete the task", () => {
+      // Find and delete the task
+      cy.contains("tr", "Updated Matter Task")
         .find('button[data-slot="dropdown-menu-trigger"]')
         .click();
 
@@ -423,9 +559,28 @@ describe("Tasks E2E Interactions", () => {
       cy.get('button[type="button"].bg-red-600')
         .contains("Delete Task")
         .click();
-      cy.contains('"Edited Matter Task" has been deleted successfully').should(
-        "exist"
-      );
+      cy.contains('"Updated Matter Task" has been deleted successfully').should("exist");
+      cy.wait(2000);
+    });
+
+    after(() => {
+      // Clean up by deleting the test matter
+      cy.visit("/matters");
+      cy.wait(2000);
+
+      // Find and click on our test matter
+      cy.get("tbody tr")
+        .contains(matterName)
+        .closest("tr")
+        .find('button[data-slot="dropdown-menu-trigger"]')
+        .click();
+
+      cy.get('div[role="menuitem"]').contains("Delete Matter").click();
+      cy.get('button[type="button"].bg-red-600')
+        .contains("Delete Matter")
+        .click();
+
+      cy.wait(2000);
     });
   });
 
