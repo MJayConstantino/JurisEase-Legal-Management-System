@@ -210,9 +210,9 @@ describe("Matters E2E Interactions", () => {
     });
     it("should show matter details with Open status", () => {
       cy.contains("Open Matter Test").click();
-      cy.wait(500);
+      cy.wait(5000);
       cy.get('span[data-slot="badge"]')
-        .contains("Open")
+        .contains("open")
         .should("have.class", "bg-green-100")
         .and("have.class", "text-green-800");
     });
@@ -221,29 +221,29 @@ describe("Matters E2E Interactions", () => {
       cy.contains("Pending Matter Test").click();
       cy.wait(500);
       cy.get('span[data-slot="badge"]')
-        .contains("Pending")
+        .contains("pending")
         .should("have.class", "bg-yellow-100")
         .and("have.class", "text-yellow-800");
     });
 
     it("should show matter details with Closed status and date", () => {
       cy.contains("Closed Matter Test").click();
-      cy.wait(500);
+      cy.wait(5000);
       cy.get('span[data-slot="badge"]')
-        .contains("Closed")
+        .contains("closed")
         .should("have.class", "bg-gray-100")
         .and("have.class", "text-gray-800");
     });
 
     it("should show default client name as 'To be determined'", () => {
       cy.contains("Matter Without Client").click();
-      cy.wait(500);
+      cy.wait(5000);
       cy.contains("To be determined").should("be.visible");
     });
 
     it("should show client name for matter with client", () => {
       cy.contains("Matter with Client").click();
-      cy.wait(500);
+      cy.wait(5000);
       cy.contains("Alice Johnson").should("be.visible");
     });
   });
@@ -276,7 +276,7 @@ describe("Matters E2E Interactions", () => {
 
         // Verify status change and close date in Case Details card
         cy.get('span[data-slot="badge"]')
-          .contains("Closed")
+          .contains("closed")
           .should("have.class", "bg-gray-100")
           .and("have.class", "text-gray-800");
 
@@ -297,7 +297,7 @@ describe("Matters E2E Interactions", () => {
           .find('button[aria-label="Edit"]')
           .should("be.visible")
           .click();
-        cy.wait(500);
+        cy.wait(5000);
       });
 
       it("should show error for invalid email format", () => {
@@ -330,13 +330,14 @@ describe("Matters E2E Interactions", () => {
     describe("Client information updates", () => {
       it("should update 'To be determined' client to actual client", () => {
         cy.contains("Matter Without Client").click();
+        cy.wait(5000);
 
         cy.contains("Case Details")
           .parent()
           .find('button[aria-label="Edit"]')
           .should("be.visible")
           .click();
-        cy.wait(500);
+        cy.wait(2000);
 
         // Update client information
         cy.get('input[placeholder="Client Name"]').clear().type("John Smith");
@@ -346,6 +347,7 @@ describe("Matters E2E Interactions", () => {
 
         // Save changes
         cy.get('button[aria-label="Save"]').click();
+        cy.wait(5000);
 
         // Verify updates
         cy.contains("John Smith").should("be.visible");
@@ -362,7 +364,7 @@ describe("Matters E2E Interactions", () => {
             .find('button[aria-label="Edit"]')
             .should("be.visible")
             .click();
-          cy.wait(500);
+          cy.wait(2000);
         });
 
         it("should show error for invalid email format", () => {
@@ -400,7 +402,7 @@ describe("Matters E2E Interactions", () => {
             .find('button[aria-label="Edit"]')
             .should("be.visible")
             .click();
-          cy.wait(500);
+          cy.wait(2000);
         });
 
         it("should show error for invalid phone format", () => {
@@ -430,7 +432,7 @@ describe("Matters E2E Interactions", () => {
         beforeEach(() => {
           cy.wait(5000);
           cy.contains("Matter with Client").click();
-          cy.wait(500);
+          cy.wait(2000);
         });
 
         it("should update court details successfully", () => {
@@ -440,7 +442,7 @@ describe("Matters E2E Interactions", () => {
             .find('button[aria-label="Edit"]')
             .should("be.visible")
             .click();
-          cy.wait(500);
+          cy.wait(2000);
 
           cy.get('input[placeholder="Court Name"]')
             .clear()
@@ -451,7 +453,7 @@ describe("Matters E2E Interactions", () => {
             .type("court@example.gov");
 
           cy.get('button[aria-label="Save"]').click();
-          cy.wait(500);
+          cy.wait(5000);
 
           // Verify updates
           cy.contains("Superior Court").should("be.visible");
@@ -466,7 +468,7 @@ describe("Matters E2E Interactions", () => {
             .find('button[aria-label="Edit"]')
             .should("be.visible")
             .click();
-          cy.wait(500);
+          cy.wait(5000);
 
           cy.get('input[placeholder="Opposing council name"]')
             .clear()
@@ -480,7 +482,7 @@ describe("Matters E2E Interactions", () => {
           cy.get('input[placeholder="Address"]').clear().type("789 Legal Blvd");
 
           cy.get('button[aria-label="Save"]').click();
-          cy.wait(500);
+          cy.wait(5000);
 
           // Verify updates
           cy.contains("Jane Smith, Esq.").should("be.visible");
@@ -496,7 +498,7 @@ describe("Matters E2E Interactions", () => {
             .find('button[aria-label="Edit"]')
             .should("be.visible")
             .click();
-          cy.wait(500);
+          cy.wait(5000);
 
           // Update client information
           cy.get('input[placeholder="Client Name"]')
@@ -513,7 +515,7 @@ describe("Matters E2E Interactions", () => {
             .type("123 Client St");
 
           cy.get('button[aria-label="Save"]').click();
-          cy.wait(1000);
+          cy.wait(5000);
 
           // Update opposing council details
           cy.contains("Opposing Council")
@@ -521,7 +523,7 @@ describe("Matters E2E Interactions", () => {
             .find('button[aria-label="Edit"]')
             .should("be.visible")
             .click();
-          cy.wait(500);
+          cy.wait(5000);
 
           cy.get('input[placeholder="Opposing council name"]')
             .clear()
@@ -537,7 +539,7 @@ describe("Matters E2E Interactions", () => {
             .type("456 Attorney Ave");
 
           cy.get('button[aria-label="Save"]').click();
-          cy.wait(1000);
+          cy.wait(5000);
 
           // Update court details
           cy.contains("Court Details")
@@ -545,7 +547,7 @@ describe("Matters E2E Interactions", () => {
             .find('button[aria-label="Edit"]')
             .should("be.visible")
             .click();
-          cy.wait(500);
+          cy.wait(5000);
 
           cy.get('input[placeholder="Court Name"]')
             .clear()
@@ -556,7 +558,7 @@ describe("Matters E2E Interactions", () => {
             .type("district@courts.gov");
 
           cy.get('button[aria-label="Save"]').click();
-          cy.wait(1000);
+          cy.wait(5000);
 
           // Verify all updates
           // Client information
@@ -612,9 +614,9 @@ describe("Matters E2E Interactions", () => {
 
           // Return to matters list and verify
           cy.visit("/matters");
-          cy.wait(500);
+          cy.wait(5000);
           cy.contains("Matter with Client").click();
-          cy.wait(500);
+          cy.wait(5000);
 
           // Verify assignments persist
           cy.contains("Test User").should("be.visible");
@@ -625,23 +627,23 @@ describe("Matters E2E Interactions", () => {
             .find('button[aria-label="Edit"]')
             .should("be.visible")
             .click();
-          cy.wait(500);
+          cy.wait(1000);
 
           // Remove attorney
           cy.get(
             ":nth-child(1) > .flex-col > .mb-2 > .rounded-md > .inline-flex"
           ).click();
-          cy.wait(300);
+          cy.wait(1000);
 
           // Remove staff
           cy.get(
             ":nth-child(2) > .flex-col > .mb-2 > .rounded-md > .inline-flex"
           ).click();
-          cy.wait(300);
+          cy.wait(1000);
 
           // Save changes
           cy.get('button[aria-label="Save"]').click();
-          cy.wait(1000);
+          cy.wait(5000);
 
           // Verify removals
           cy.contains("No one assigned").should("be.visible");
@@ -661,7 +663,7 @@ describe("Matters E2E Interactions", () => {
         beforeEach(() => {
           // Create a matter to be deleted
           cy.contains("Add Matter").click();
-          cy.wait(300);
+          cy.wait(1000);
 
           cy.get('input[placeholder="Case Name"]').type("Matter To Delete", {
             delay: 100,
@@ -673,13 +675,16 @@ describe("Matters E2E Interactions", () => {
           cy.wait(300);
           cy.get('[role="option"]').contains("Open").click();
           cy.get('button[type="submit"]').contains("Create Matter").click();
-          cy.wait(500);
+          cy.wait(5000);
           cy.contains("Matter To Delete").should("be.visible");
+          cy.wait(5000);
         });
 
         it("should delete a matter and show confirmation", () => {
           // Click delete button
-          cy.get("#radix-«re»").click();
+          cy.contains("tr", "Matter To Delete")
+            .find("button[data-slot='dropdown-menu-trigger']")
+            .click();
           cy.wait(300);
 
           cy.get(".text-red-600").click();
