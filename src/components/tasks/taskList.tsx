@@ -21,10 +21,16 @@ export interface TaskListProps {
   initialTasks: Task[];
   matterId?: string;
   tasks?: Task[];
-  onTaskCreated?: (newTask: Task) => void; 
+  className?: string;
+  onTaskCreated?: (newTask: Task) => void;
 }
 
-export function TaskList({ initialTasks = [], matterId, tasks: externalTasks, onTaskCreated }: TaskListProps) {
+export function TaskList({
+  initialTasks = [],
+  matterId,
+  tasks: externalTasks,
+  onTaskCreated,
+}: TaskListProps) {
   const [tasks, setTasks] = useState<Task[]>(externalTasks ?? initialTasks);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [view, setView] = useState<"grid" | "table">("table");
@@ -32,9 +38,10 @@ export function TaskList({ initialTasks = [], matterId, tasks: externalTasks, on
   const [isLoadingMatters, setIsLoadingMatters] = useState(true);
   const [isLoadingTasks, setIsLoadingTasks] = useState(false);
 
-  // Improved fetch tasks with useCallback to prevent unnecessary rerenders
   const fetchTasks = useCallback(async () => {
-    if (initialTasks.length > 0) return;
+    if (initialTasks.length > 0) {
+      return;
+    }
 
     try {
       setIsLoadingTasks(true);
@@ -58,7 +65,6 @@ export function TaskList({ initialTasks = [], matterId, tasks: externalTasks, on
     }
   }, [initialTasks.length, matterId]);
 
-  // Only fetch matters once, with proper dependency tracking
   const fetchMatters = useCallback(async () => {
     try {
       setIsLoadingMatters(true);
@@ -75,6 +81,7 @@ export function TaskList({ initialTasks = [], matterId, tasks: externalTasks, on
         if (error) {
           throw new Error(error);
         }
+
         // Use Set to ensure uniqueness by matter_id
         const uniqueMatterIds = new Set();
         const uniqueMatters = matterData.filter((matter) => {
@@ -93,37 +100,43 @@ export function TaskList({ initialTasks = [], matterId, tasks: externalTasks, on
     }
   }, [matterId]);
 
-  // Load data on mount
   useEffect(() => {
     fetchTasks();
     fetchMatters();
   }, [fetchTasks, fetchMatters]);
 
-  // If externalTasks is provided, sync it to local state
   useEffect(() => {
-    if (externalTasks) setTasks(externalTasks);
+    if (externalTasks) {
+      setTasks(externalTasks);
+    }
   }, [externalTasks]);
 
-  const handleTaskCreated = useCallback((newTask: Task) => {
-    setTasks((prev) => [newTask, ...prev]);
-    if (onTaskCreated) onTaskCreated(newTask); // propagate up if needed
-  }, [onTaskCreated]);
+  const handleTaskCreated = useCallback(
+    (newTask: Task) => {
+      setTasks((prev) => [newTask, ...prev]);
+      if (onTaskCreated) {
+        onTaskCreated(newTask);
+      }
+    },
+    [onTaskCreated]
+  );
 
   const handleTaskUpdated = useCallback((updatedTask: Task) => {
-    setTasks((prev) =>
-      prev.map((task) =>
+    setTasks((prev) => {
+      return prev.map((task) =>
         task.task_id === updatedTask.task_id ? updatedTask : task
-      )
-    );
+      );
+    });
   }, []);
 
   const handleTaskDeleted = useCallback((taskId: string) => {
-    setTasks((prev) => prev.filter((t) => t.task_id !== taskId));
+    setTasks((prev) => {
+      return prev.filter((t) => t.task_id !== taskId);
+    });
   }, []);
 
-  // Use useMemo for expensive filtering operation
   const filteredTasks = useMemo(() => {
-    return tasks.filter((task) => {
+    const filtered = tasks.filter((task) => {
       if (matterId && task.matter_id !== matterId) return false;
       if (statusFilter === "all") return true;
       if (statusFilter === "overdue") {
@@ -134,10 +147,12 @@ export function TaskList({ initialTasks = [], matterId, tasks: externalTasks, on
         !isTaskOverdue(task.due_date ?? undefined, task.status)
       );
     });
+
+    return filtered;
   }, [tasks, statusFilter, matterId]);
 
   return (
-    <div className="border w-full container mx-auto h-full flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900 rounded-lg shadow">
+    <div className="border dark:border-gray-700 rounded-md shadow-sm bg-white dark:bg-gray-800 w-full h-auto flex flex-col overflow-hidden mb-0">
       <TasksHeader
         onStatusChange={setStatusFilter}
         onViewChange={setView}
@@ -147,13 +162,9 @@ export function TaskList({ initialTasks = [], matterId, tasks: externalTasks, on
         matterId={matterId}
       />
       <div className="flex-grow overflow-y-auto w-full">
-        {isLoadingTasks ? (
-          <div className="flex justify-center items-center h-64">
-            <p className="text-muted-foreground">Loading tasks...</p>
-          </div>
-        ) : filteredTasks.length === 0 ? (
-          <div className="flex justify-center items-center h-64 text-muted-foreground">
-            <p>No tasks found.</p>
+        {filteredTasks.length === 0 ? (
+          <div className="flex items-center justify-center h-auto py-10 text-gray-500 dark:text-gray-400">
+            No tasks found. Create a new task to get started.
           </div>
         ) : view === "grid" ? (
           <div className="grid grid-cols-1 p-5 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -174,6 +185,7 @@ export function TaskList({ initialTasks = [], matterId, tasks: externalTasks, on
               tasks={filteredTasks}
               matters={matters}
               isLoadingMatters={isLoadingMatters}
+              isLoading={isLoadingTasks}
               onTaskUpdated={handleTaskUpdated}
               onTaskDeleted={handleTaskDeleted}
             />

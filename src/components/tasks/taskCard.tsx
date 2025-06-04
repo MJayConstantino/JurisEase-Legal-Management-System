@@ -7,7 +7,7 @@ import type { Matter } from "@/types/matter.type";
 import { Calendar, Edit, Trash2Icon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getMattersDisplayName } from "@/utils/getMattersDisplayName";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { TaskForm } from "./taskForm";
 import { getStatusColor } from "@/utils/getStatusColor";
 import { Skeleton } from "../ui/skeleton";
@@ -43,8 +43,13 @@ export function TaskCard({
   const [task, setTask] = useState<Task>(initialTask);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
   const params = useParams();
   const matterId = params.matterId as string | undefined;
+
+  useEffect(() => {
+    setTask(initialTask);
+  }, [initialTask]);
 
   const matterName = getMattersDisplayName(task.matter_id || "", matters);
 
@@ -52,6 +57,34 @@ export function TaskCard({
     task.due_date ?? undefined,
     task.status
   );
+
+  // Modify this handler to match the behavior in taskDetails
+  const handleEditClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsEditing(true);
+  }, []);
+
+  const handleDeleteClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsDeleteDialogOpen(true);
+  }, []);
+
+  const handleCardClick = useCallback(() => {
+    setIsViewingDetails(true);
+  }, []);
+
+  const handleTaskStatusChange = useCallback(() => {
+    if (!isProcessing) {
+      handleComplete(
+        initialTask,
+        task,
+        setTask,
+        onTaskUpdated,
+        setIsProcessing,
+        isProcessing
+      );
+    }
+  }, [initialTask, isProcessing, onTaskUpdated, task]);
 
   return (
     <div className="cursor-pointer">
@@ -63,10 +96,10 @@ export function TaskCard({
             ? "border-green-500 bg-green-50 dark:bg-green-950"
             : "bg-white dark:bg-gray-800 dark:border-gray-700"
         }`}
-        onClick={() => setIsViewingDetails(true)}
+        onClick={handleCardClick}
       >
         <div
-          className="mb-2 flex justify-between items-start gap-2 "
+          className="mb-2 flex justify-between items-start gap-2"
           title={`Task Name: ${task.name}`}
         >
           <h3 className="font-medium text-sm sm:text-base line-clamp-2 dark:text-white">
@@ -87,7 +120,7 @@ export function TaskCard({
 
         {task.description && (
           <p
-            className="text-xs mb-2 h-20 sm:text-sm line-clamp-2 overflow-y-auto text-muted-foreground dark:text-gray-400"
+            className="text-xs mb-2 h-15 sm:text-sm line-clamp-2 overflow-y-auto text-muted-foreground dark:text-gray-400"
             title={`Description: ${task.description}`}
           >
             {task.description}
@@ -150,21 +183,10 @@ export function TaskCard({
               </label>
               <Checkbox
                 checked={task.status === "completed"}
-                onCheckedChange={() => {
-                  if (!isProcessing) {
-                    handleComplete(
-                      initialTask,
-                      task,
-                      setTask,
-                      onTaskUpdated,
-                      setIsProcessing,
-                      isProcessing
-                    );
-                  }
-                }}
+                onCheckedChange={handleTaskStatusChange}
                 disabled={isProcessing}
                 id={`task-complete-${initialTask.task_id}`}
-                className={`mr-1 h-9 w-9 border-2 dark:border-gray-700 rounded-md hover:cursor-pointer ${
+                className={`mr-1 h-7 w-7 md:h-9 md:w-9 border-2 hover:bg-accent dark:border-gray-700 rounded-md hover:cursor-pointer ${
                   task.status === "completed"
                     ? "dark:bg-green-700"
                     : "dark:bg-gray-800"
@@ -175,10 +197,7 @@ export function TaskCard({
               variant="outline"
               size="icon"
               className="h-7 w-7 md:h-9 md:w-9 cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsEditing(true);
-              }}
+              onClick={handleEditClick}
               disabled={isProcessing}
             >
               <Edit className="h-3 w-3 md:h-4 md:w-4" />
@@ -188,10 +207,7 @@ export function TaskCard({
               variant="outline"
               size="icon"
               className="h-7 w-7 md:h-9 md:w-9 cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsDeleteDialogOpen(true);
-              }}
+              onClick={handleDeleteClick}
               disabled={isProcessing}
             >
               <Trash2Icon className="h-3 w-3 md:h-4 md:w-4" />
@@ -201,48 +217,11 @@ export function TaskCard({
         </div>
       </div>
 
-      <TaskForm
-        open={isEditing}
-        onOpenChange={setIsEditing}
-        disableMatterSelect={!!matterId}
-        onSave={(updatedTask) =>
-          handleSaveTask(
-            initialTask,
-            updatedTask,
-            setTask,
-            onTaskUpdated,
-            setIsProcessing
-          )
-        }
-        onSaveAndCreateAnother={(updatedTask) =>
-          handleSaveTask(
-            initialTask,
-            updatedTask,
-            setTask,
-            onTaskUpdated,
-            setIsProcessing
-          )
-        }
-        initialTask={task}
-        matters={matters}
-        isLoadingMatters={isLoadingMatters}
-        getMatterNameDisplay={(matterId) =>
-          getMattersDisplayName(matterId, matters)
-        }
-      />
-
-      <TaskDeleteDialog
-        isOpen={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        task={initialTask}
-        onSuccess={() =>
-          handleDelete(initialTask.task_id, onTaskDeleted, setIsProcessing)
-        }
-      />
-
       <TaskDetails
         open={isViewingDetails}
-        onOpenChange={setIsViewingDetails}
+        onOpenChange={(open) => {
+          setIsViewingDetails(open);
+        }}
         task={task}
         matters={matters}
         isLoadingMatters={isLoadingMatters}
@@ -252,6 +231,53 @@ export function TaskCard({
         }}
         onTaskDeleted={onTaskDeleted}
       />
+
+      {isEditing && (
+        <TaskForm
+          open={isEditing}
+          onOpenChange={(open) => {
+            setIsEditing(open);
+          }}
+          disableMatterSelect={!!matterId}
+          onSave={(updatedTask) => {
+            handleSaveTask(
+              initialTask,
+              updatedTask,
+              setTask,
+              onTaskUpdated,
+              setIsProcessing
+            );
+          }}
+          onSaveAndCreateAnother={(updatedTask) => {
+            handleSaveTask(
+              initialTask,
+              updatedTask,
+              setTask,
+              onTaskUpdated,
+              setIsProcessing
+            );
+          }}
+          initialTask={task}
+          matters={matters}
+          isLoadingMatters={isLoadingMatters}
+          getMatterNameDisplay={(matterId) =>
+            getMattersDisplayName(matterId, matters)
+          }
+        />
+      )}
+
+      {isDeleteDialogOpen && (
+        <TaskDeleteDialog
+          isOpen={isDeleteDialogOpen}
+          onOpenChange={(open) => {
+            setIsDeleteDialogOpen(open);
+          }}
+          task={initialTask}
+          onSuccess={() => {
+            handleDelete(initialTask.task_id, onTaskDeleted, setIsProcessing);
+          }}
+        />
+      )}
     </div>
   );
 }

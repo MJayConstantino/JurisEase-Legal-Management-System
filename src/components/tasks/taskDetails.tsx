@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -41,7 +41,27 @@ export function TaskDetails({
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  if (!task) return null;
+  const handleEditClick = useCallback(() => {
+    onOpenChange(false); // Close task details dialog first
+    setIsEditing(true); // Then open the edit form
+  }, [onOpenChange]);
+
+  const handleDeleteClick = useCallback(() => {
+    setIsDeleteDialogOpen(true);
+  }, []);
+
+  const handleCloseClick = useCallback(() => {
+    onOpenChange(false);
+  }, [onOpenChange]);
+
+  // Get the current URL to check if we're within a matter context
+  const pathname =
+    typeof window !== "undefined" ? window.location.pathname : "";
+  const isInMatterContext = pathname.includes("/matters/") && task?.matter_id;
+
+  if (!task) {
+    return null;
+  }
 
   const isTaskOverdueFlag = isTaskOverdue(
     task.due_date ?? undefined,
@@ -52,7 +72,12 @@ export function TaskDetails({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog
+        open={open}
+        onOpenChange={(newState) => {
+          onOpenChange(newState);
+        }}
+      >
         <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold flex items-center justify-between dark:text-white">
@@ -148,10 +173,7 @@ export function TaskDetails({
             <div className="flex gap-3 w-full sm:w-auto">
               <Button
                 variant="default"
-                onClick={() => {
-                  onOpenChange(false); // Close task details dialog first
-                  setIsEditing(true); // Then open the edit form
-                }}
+                onClick={handleEditClick}
                 className="flex-1 sm:flex-none cursor-pointer"
               >
                 <Edit className="h-4 w-4 mr-2" />
@@ -159,7 +181,7 @@ export function TaskDetails({
               </Button>
               <Button
                 variant="destructive"
-                onClick={() => setIsDeleteDialogOpen(true)}
+                onClick={handleDeleteClick}
                 className="flex-1 sm:flex-none cursor-pointer"
               >
                 <Trash2Icon className="h-4 w-4 mr-2" />
@@ -168,7 +190,7 @@ export function TaskDetails({
             </div>
             <Button
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={handleCloseClick}
               className="w-full sm:w-auto cursor-pointer"
             >
               Close
@@ -177,34 +199,43 @@ export function TaskDetails({
         </DialogContent>
       </Dialog>
 
-      {/* Edit Task Form */}
-      <TaskForm
-        open={isEditing}
-        onOpenChange={setIsEditing}
-        disableMatterSelect={false}
-        onSave={(updatedTask) => {
-          onTaskUpdated(updatedTask);
-          setIsEditing(false);
-        }}
-        initialTask={task}
-        matters={matters}
-        isLoadingMatters={isLoadingMatters}
-        getMatterNameDisplay={(matterId) =>
-          getMattersDisplayName(matterId, matters)
-        }
-      />
+      {/* Only render when needed */}
+      {isEditing && (
+        <TaskForm
+          open={isEditing}
+          onOpenChange={(open) => {
+            setIsEditing(open);
+          }}
+          disableMatterSelect={!!isInMatterContext}
+          onSave={(updatedTask) => {
+            onTaskUpdated(updatedTask);
+            setIsEditing(false);
+          }}
+          initialTask={task}
+          matters={matters}
+          isLoadingMatters={isLoadingMatters}
+          getMatterNameDisplay={(matterId) =>
+            getMattersDisplayName(matterId, matters)
+          }
+          matterId={isInMatterContext ? task.matter_id : undefined}
+        />
+      )}
 
-      {/* Delete Confirmation */}
-      <TaskDeleteDialog
-        isOpen={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        task={task}
-        onSuccess={() => {
-          onTaskDeleted(task.task_id);
-          setIsDeleteDialogOpen(false);
-          onOpenChange(false);
-        }}
-      />
+      {/* Only render when needed */}
+      {isDeleteDialogOpen && (
+        <TaskDeleteDialog
+          isOpen={isDeleteDialogOpen}
+          onOpenChange={(open) => {
+            setIsDeleteDialogOpen(open);
+          }}
+          task={task}
+          onSuccess={() => {
+            onTaskDeleted(task.task_id);
+            setIsDeleteDialogOpen(false);
+            onOpenChange(false);
+          }}
+        />
+      )}
     </>
   );
 }

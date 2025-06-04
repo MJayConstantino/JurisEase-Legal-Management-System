@@ -40,7 +40,7 @@ function DesktopSearch() {
       <div className="relative w-64 md:w-80 hidden md:block">
         <Input
           placeholder="Search"
-          className="h-10 bg-white/90 dark:bg-gray-800/90 text-[#1B1E4B] dark:text-white pl-10 rounded-md cursor-pointer"
+          className="h-10 bg-white/90 dark:bg-gray-600/90 text-[#1B1E4B] dark:text-white pl-10 rounded-md cursor-text"
           onClick={handleOpenDialog}
           readOnly
           aria-label="SearchInput"

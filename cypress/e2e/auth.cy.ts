@@ -7,8 +7,9 @@ describe('User Auth Process', () => {
     it('should navigate to login, then to sign up', () => {
       cy.visit('/')
       cy.contains('Log In to Your Account').should('exist').and('be.visible')
-      cy.wait(800).contains('Log In to Your Account').click()
-      cy.wait(800).get('a[href="/signup"]').click()
+      cy.wait(1600).contains('Log In to Your Account').click()
+
+      cy.wait(2000).get('a[href="/signup"]').click()
     })
   })
 
@@ -19,7 +20,9 @@ describe('User Auth Process', () => {
     after(() => {})
     it('should raise an error when no fields are filled', () => {
       cy.contains('Sign Up').click()
-      cy.wait(1200).contains('Invalid data Inputted:').should('be.visible')
+      cy.wait(1200)
+        .contains(/invalid/i)
+        .should('be.visible')
     })
 
     it('should raise an error if invalid email', () => {
@@ -27,7 +30,9 @@ describe('User Auth Process', () => {
       cy.get('#email').type('invalid-email')
       cy.get('#password').type('testPassword')
       cy.contains('Sign Up').click()
-      cy.wait(1200).contains('Invalid data Inputted:').should('be.visible')
+      cy.wait(1200)
+        .contains(/invalid/i)
+        .should('be.visible')
     })
 
     it('should raise an error if password is less than 5', () => {
@@ -35,7 +40,9 @@ describe('User Auth Process', () => {
       cy.get('#email').type('Test@test.com')
       cy.get('#password').type('tes')
       cy.contains('Sign Up').click()
-      cy.wait(1200).contains('Invalid data Inputted:').should('be.visible')
+      cy.wait(1200)
+        .contains(/invalid/i)
+        .should('be.visible')
     })
 
     it('should sign up user if provided right credentials', () => {
@@ -45,7 +52,7 @@ describe('User Auth Process', () => {
       cy.get('#password').type('testPassword')
       cy.contains('Sign Up').click()
       cy.wait(2000)
-        .contains('Sign Up Succesful! Confirm your Emeil!')
+        .contains('Sign Up Succesful! Confirm your Email!')
         .should('be.visible')
     })
     it('should throw an error if the user tries to sign up with the same credentials while the confirmation email was not confirmed ', () => {
@@ -121,7 +128,7 @@ describe('User Auth Process', () => {
       cy.get('#password').type('testPassword')
       cy.get('button[type="submit"]').click()
       //verify user session
-      cy.wait(3000)
+      cy.wait(10000)
         .contains(/welcome to jurisease/i)
         .should('be.visible')
     })

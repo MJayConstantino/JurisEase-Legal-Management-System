@@ -15,7 +15,7 @@ export const Footer: React.FC<FooterProps> = ({ text, linkHref, linkText }) => {
         href={linkHref}
         className="font-medium text-[#2a3563] hover:underline"
       >
-        {linkText}
+        <span className="font-bold">{linkText}</span>
       </Link>
     </div>
   )

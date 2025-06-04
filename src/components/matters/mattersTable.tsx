@@ -75,7 +75,7 @@ export function MattersTable({
     <Button
       variant="ghost"
       onClick={() => onSort(field)}
-      className="p-0 h-auto font-semibold flex items-center hover:bg-transparent"
+      className="font-semibold flex w-full"
     >
       {label} {getSortIcon(field)}
     </Button>
@@ -84,8 +84,8 @@ export function MattersTable({
   return (
     <div className="overflow-x-auto">
       <Table>
-        <TableHeader className="border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-          <TableRow>
+        <TableHeader className="border-b dark:border-gray-700 bg-gray-100 dark:bg-gray-900">
+          <TableRow className="hover:bg-gray-50 dark:hover:bg-gray-900">
             <TableHead>
               {renderSortableHeader("case_number", "Case #")}
             </TableHead>
@@ -97,11 +97,11 @@ export function MattersTable({
             <TableHead>
               {renderSortableHeader("assigned_staff", "Assigned Staff")}
             </TableHead>
-            <TableHead className="font-semibold">Status</TableHead>
+            <TableHead className="font-semibold text-center">Status</TableHead>
             <TableHead>
               {renderSortableHeader("date_opened", "Date Opened")}
             </TableHead>
-            <TableHead className="text-right font-semibold">Actions</TableHead>
+            <TableHead className="text-center font-semibold">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

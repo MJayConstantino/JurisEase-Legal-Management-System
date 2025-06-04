@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from "@storybook/react";
 import AvatarDropdownMenu from "@/components/header/avatarDropdownMenu";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 
 const meta: Meta<typeof AvatarDropdownMenu> = {
   title: "Header/AvatarDropdownMenu",

@@ -30,8 +30,8 @@ export async function search(
           '*, attorney:users!assigned_attorney(user_name, user_id),staff:users!assigned_staff(user_name, user_id)'
         )
         .limit(10)
-      console.log('✅ Tasks Data:', matters)
-      console.log('❌ Tasks Error:', error)
+      // console.log('✅ Tasks Data:', matters)
+      // console.log('❌ Tasks Error:', error)
       if (error) throw new Error(error.message)
 
       searchResults.push(
@@ -62,7 +62,7 @@ export async function search(
 
     // ✅ Case-Insensitive Task Query
     if (contentTypes.includes('tasks')) {
-      console.log(attributes)
+      // console.log(attributes)
       let { data: tasks, error } = await supabase
         .rpc('search_tasks', {
           search_term: query,
@@ -77,8 +77,8 @@ export async function search(
         )
         .limit(10)
 
-      console.log('✅ Tasks Data:', tasks)
-      console.log('❌ Tasks Error:', error)
+      // console.log('✅ Tasks Data:', tasks)
+      // console.log('❌ Tasks Error:', error)
 
       if (error) throw new Error(error.message)
 
@@ -113,7 +113,7 @@ export async function search(
 
     // ✅ Case-Insensitive Billings Query
     if (contentTypes.includes('bills')) {
-      console.log(attributes)
+      // console.log(attributes)
       let { data: billings, error } = await supabase
         .rpc('search_billings', {
           search_term: query,
@@ -129,8 +129,8 @@ export async function search(
         .limit(10)
 
       // console.log('🔍 Billings Query:', billingsQuery.toString())
-      console.log('✅ Billings Data:', billings)
-      console.log('❌ Billings Error:', error)
+      // console.log('✅ Billings Data:', billings)
+      // console.log('❌ Billings Error:', error)
 
       if (error) throw new Error(error.message)
 
@@ -149,7 +149,7 @@ export async function search(
             type: 'Bill' as const,
             status: billing.status,
             title: billing.name || `Invoice #${billing.bill_id}`,
-            subtitle: `Matter: ${billing.matters.name || 'Unknown'}, Amount: $${
+            subtitle: `Matter: ${billing.matters.name || 'Unknown'}, Amount: ₱${
               billing.amount || '0.00'
             }`,
             route: `/bills/${billing.bill_id}`,

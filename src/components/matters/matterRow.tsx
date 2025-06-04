@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import type React from "react";
+import { useState } from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -20,6 +21,7 @@ import { formatDateForDisplay } from "@/utils/formatDateForDisplay";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { User } from "@/types/user.type";
 import { MatterConfirmDeletionDialog } from "./matterConfirmDeletionDialog";
+import { useRouter } from "next/navigation";
 
 interface MatterRowProps {
   matter: Matter;
@@ -37,111 +39,133 @@ export function MatterRow({
   deletingId,
   onRowClick,
 }: MatterRowProps) {
+  const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsDeleteDialogOpen(true);
   };
+
   return (
     <>
       <TableRow
         key={matter.matter_id}
-        className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+        className={`${
+          isLoading
+            ? "cursor-default hover:not-enabled"
+            : "cursor-default hover:bg-gray-200 dark:hover:bg-gray-700 hover:cursor-pointer"
+        }`}
         onClick={() => onRowClick(matter.matter_id)}
       >
-        <TableCell className="font-medium">
+        <TableCell className="font-medium w-[10%]">
           {isLoading ? (
-            <Skeleton className="w-24 h-4 items-center" />
+            <div className="pl-6">
+              <Skeleton className="w-24 h-4 rounded-lg" />
+            </div>
           ) : (
             <div
-              title={`Case#: ${matter.case_number}`}
-              className="truncate max-w-[120px]"
+              title={`Case # ${matter.case_number}`}
+              className="truncate max-w-[120px] pl-6"
             >
               {matter.case_number}
             </div>
           )}
         </TableCell>
-        <TableCell>
+        <TableCell className="w-[18%]">
           {isLoading ? (
-            <Skeleton className="w-32 h-4" />
+            <div className="pl-12">
+              <Skeleton className="w-32 h-4 rounded-lg" />
+            </div>
           ) : (
             <div
               title={`Matter Name: ${matter.name}`}
-              className="truncate max-w-[180px]"
+              className="truncate max-w-[220px] pl-12"
             >
               {matter.name}
             </div>
           )}
         </TableCell>
-        <TableCell>
+        <TableCell className="w-[18%]">
           {isLoading ? (
-            <Skeleton className="w-32 h-4" />
+            <div className="pl-12">
+              <Skeleton className="w-32 h-4 rounded-lg" />
+            </div>
           ) : (
             <div
               title={`Client: ${matter.client}`}
-              className="truncate max-w-[150px]"
+              className="truncate max-w-[220px] pl-12"
             >
               {matter.client}
             </div>
           )}
         </TableCell>
-        <TableCell>
+        <TableCell className="w-[18%]">
           {isLoading ? (
-            <Skeleton className="w-24 h-4" />
+            <div className="pl-9">
+              <Skeleton className="w-24 h-4 rounded-lg" />
+            </div>
           ) : (
             <div
-              title={`Assigend Attorney: ${getUserDisplayName(
+              title={`Assigned Attorney: ${getUserDisplayName(
                 matter.assigned_attorney!,
                 users
               )}`}
-              className="truncate max-w-[140px]"
+              className="truncate max-w-[220px] pl-9"
             >
               {getUserDisplayName(matter.assigned_attorney!, users)}
             </div>
           )}
         </TableCell>
-        <TableCell>
+        <TableCell className="w-[18%]">
           {isLoading ? (
-            <Skeleton className="w-24 h-4" />
+            <div className="pl-7">
+              <Skeleton className="w-24 h-4 rounded-lg" />
+            </div>
           ) : (
             <div
-              title={`Assigend Staff: ${getUserDisplayName(
+              title={`Assigned Staff: ${getUserDisplayName(
                 matter.assigned_staff!,
                 users
               )}`}
-              className="truncate max-w-[140px]"
+              className="truncate max-w-[220px] pl-7"
             >
               {getUserDisplayName(matter.assigned_staff!, users)}
             </div>
           )}
         </TableCell>
-        <TableCell>
+        <TableCell className="w-[8%]">
           {isLoading ? (
-            <Skeleton className="w-12 h-4" />
+            <div className="pl-8">
+              <Skeleton className="w-12 h-4 rounded-lg" />
+            </div>
           ) : (
-            <Badge
-              title={`Status: ${
-                matter.status.charAt(0).toUpperCase() + matter.status.slice(1)
-              }`}
-              className={getStatusColor(matter.status)}
-              variant="outline"
-            >
-              {matter.status.charAt(0).toUpperCase() + matter.status.slice(1)}
-            </Badge>
+            <div className="pl-8">
+              <Badge
+                title={`Status: ${matter.status}`}
+                className={getStatusColor(matter.status)}
+                variant="outline"
+              >
+                {matter.status}
+              </Badge>
+            </div>
           )}
         </TableCell>
-        <TableCell>
+        <TableCell className="w-[10%]">
           {isLoading ? (
-            <Skeleton className="w-20 h-4" />
+            <div className="pl-8">
+              <Skeleton className="w-20 h-4 rounded-lg" />
+            </div>
           ) : (
-            formatDateForDisplay(matter.date_opened)
+            <div className="pl-8">
+              {formatDateForDisplay(matter.date_opened)}
+            </div>
           )}
         </TableCell>
-        <TableCell className="text-right">
+        <TableCell className="text-center w-[2%]">
           <DropdownMenu>
             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <Button variant="ghost" className="h-8 w-8 p-0">
+              <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
                 <span className="sr-only">Open menu</span>
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
@@ -176,7 +200,7 @@ export function MatterRow({
         onOpenChange={setIsDeleteDialogOpen}
         matter={matter}
         onSuccess={() => {
-          window.location.reload();
+          router.refresh();
         }}
       />
     </>

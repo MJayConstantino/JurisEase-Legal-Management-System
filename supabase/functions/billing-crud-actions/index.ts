@@ -240,7 +240,7 @@ Deno.serve(async (req)=>{
         name: "Court appearance – Preliminary Conference",
         amount: 12000,
         created_at: "2025-01-01T00:00:00.000Z",
-        status: "active",
+        status: "unpaid",
         remarks: "3,000/hr at 4 hrs. Down payment - 6500."
       };
 

@@ -18,9 +18,25 @@ async function cleanupTestCases(affectedIds: string[], table: string) {
   }
 }
 
+async function cleanupTestMatter(matterId: string) {
+  try {
+    const { error } = await supabase
+      .from("matters")
+      .delete()
+      .eq("matter_id", matterId);
+    if (error) throw error;
+    console.log(`Successfully cleaned up test matter: ${matterId}`);
+  } catch (error: any) {
+    console.error(`Error cleaning up test matter: ${matterId}`, error.message);
+  }
+}
+
 console.log("Hello from task-table-api-tests!");
 
 Deno.serve(async (req) => {
+  const { action, data, task_id, table, matter_id } = await req
+    .json()
+    .catch(() => ({}));
   const { action, data, task_id, table, matter_id } = await req
     .json()
     .catch(() => ({}));
@@ -220,20 +236,70 @@ Deno.serve(async (req) => {
 
     // POST || CREATE
     if (action === "POST") {
+      // Create a mock matter first
+      const mockMatter = {
+        matter_id: "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d",
+        name: "Michael Drugs Case",
+        client: "Love Doe",
+        status: "open",
+        date_opened: "2025-01-02T00:00:00.000Z",
+        description: "Criminal case on an arson case.",
+        case_number: "CN-112",
+        created_at: new Date().toISOString(),
+      };
+
+      // Insert the mock matter
+      const { data: insertedMatter, error: matterError } = await supabase
+        .from("matters")
+        .insert(mockMatter)
+        .select("*");
+
+      if (matterError) {
+        console.error("Matter insert error details:", matterError);
+        throw new Error("Matter Insert Error: " + matterError.message);
+      }
+
+      // Check insertedMatter before accessing it
+      if (!insertedMatter || insertedMatter.length === 0) {
+        console.error("No matter data returned after insert");
+        // Use the mock matter object instead of failing
+        console.log("Proceeding with original mock matter data");
+      } else {
+        console.log("Inserted Matter:", insertedMatter[0]);
+      }
+
+      console.log("Mock matter created with ID:", mockMatter.matter_id);
+
+      // Modify task data to use the new matter_id
+      const taskData = {
+        ...data,
+        matter_id: mockMatter.matter_id,
+      };
+
+      // Now insert the task with the mock matter ID
       const { data: inserted, error } = await supabase
         .from(table || defaultTable)
-        .insert(data)
+        .insert(taskData)
         .select("*");
+
       if (error) throw new Error("Internal Server Error: " + error.message);
 
-      return new Response(JSON.stringify({ status: 201, data: inserted }), {
-        headers: { "Content-Type": "application/json" },
-        status: 201,
-      });
+      return new Response(
+        JSON.stringify({
+          status: 201,
+          data: inserted,
+          matter: mockMatter, // Include the matter in the response
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+          status: 201,
+        }
+      );
     }
 
     // PUT || UPDATE
     if (action === "UPDATE_ONE") {
+      // No mock matter creation, just update the task directly
       const { data: updated, error } = await supabase
         .from(table || defaultTable)
         .update(data)
@@ -248,19 +314,42 @@ Deno.serve(async (req) => {
           { headers: { "Content-Type": "application/json" }, status: 404 }
         );
       }
-      return new Response(JSON.stringify({ status: 200, data: updated }), {
-        headers: { "Content-Type": "application/json" },
-        status: 200,
-      });
+
+      return new Response(
+        JSON.stringify({
+          status: 200,
+          data: updated,
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+          status: 200,
+        }
+      );
     }
 
     // DELETE
     if (action === "DELETE_ONE") {
+      // First, get the task to find its matter_id
+      const { data: taskToDelete, error: taskFetchError } = await supabase
+        .from(table || defaultTable)
+        .select("*")
+        .eq("task_id", task_id)
+        .single();
+
+      if (taskFetchError || !taskToDelete) {
+        return new Response(
+          JSON.stringify({ status: 404, error: "Task not found" }),
+          { headers: { "Content-Type": "application/json" }, status: 404 }
+        );
+      }
+
+      // Delete the task
       const { data: deleted, error } = await supabase
         .from(table || defaultTable)
         .delete()
         .eq("task_id", task_id)
         .select("*");
+
       if (error) throw new Error("Internal Server Error: " + error.message);
 
       if (!deleted || deleted.length === 0) {
@@ -269,10 +358,29 @@ Deno.serve(async (req) => {
           { headers: { "Content-Type": "application/json" }, status: 404 }
         );
       }
-      return new Response(JSON.stringify({ status: 200, data: deleted }), {
-        headers: { "Content-Type": "application/json" },
-        status: 200,
-      });
+
+      // Delete the associated matter if it exists
+      if (taskToDelete.matter_id) {
+        try {
+          await cleanupTestMatter(taskToDelete.matter_id);
+          console.log(`Deleted associated matter: ${taskToDelete.matter_id}`);
+        } catch (matterError) {
+          console.error("Error deleting associated matter:", matterError);
+          // Continue with response even if matter deletion fails
+        }
+      }
+
+      return new Response(
+        JSON.stringify({
+          status: 200,
+          data: deleted,
+          message: "Task and associated matter deleted successfully",
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+          status: 200,
+        }
+      );
     }
 
     if (action === "RUN_TESTS") {
@@ -301,7 +409,7 @@ Deno.serve(async (req) => {
       }
 
       const mockTask = {
-        task_id: "24ebc6ee-c5e8-45d5-a8b1-02a9e2271be1",
+        task_id: crypto.randomUUID(),
         name: "Prepare Deposition",
         description: "Prepare deposition for witness",
         status: "in-progress",
@@ -330,6 +438,16 @@ Deno.serve(async (req) => {
       if (selectOneError)
         throw new Error("Select Test Error: " + selectOneError.message);
 
+      // GET_TASKS_BY_MATTER
+      const { error: selectByMatterError } = await supabase
+        .from(table || defaultTable)
+        .select("*")
+        .eq("matter_id", mockMatter.matter_id);
+      if (selectByMatterError)
+        throw new Error(
+          "Select By Matter Test Error: " + selectByMatterError.message
+        );
+
       // UPDATE_ONE
       const { error: updateError } = await supabase
         .from(table || defaultTable)
@@ -353,8 +471,20 @@ Deno.serve(async (req) => {
 
       // CLEANUP
       await cleanupTestCases(affectedIds, table || defaultTable);
+
+      // Clean up the test matter
+      await cleanupTestMatter(mockMatter.matter_id);
+
       return new Response(
-        "All test cases executed and cleaned up successfully."
+        JSON.stringify({
+          status: 200,
+          message: "All test cases executed and cleaned up successfully.",
+          details: {
+            matter_id: mockMatter.matter_id,
+            task_id: insertedId,
+          },
+        }),
+        { headers: { "Content-Type": "application/json" }, status: 200 }
       );
     }
 

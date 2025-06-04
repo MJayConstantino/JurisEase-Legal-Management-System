@@ -18,7 +18,6 @@ export const Default: Story = {
           <TableBody>
             <BillingsItem
               bill={ mockBills[4]}
-              matter={mockMatters.find((m) => m.matter_id ===  mockBills[4].matter_id)}
               matters={mockMatters}
               onUpdate={(bill) => console.log("Bill updated:", bill)}
               onDelete={(id) => console.log("Bill deleted:", id)}
@@ -30,44 +29,6 @@ export const Default: Story = {
     ),
   }
 
-export const Active: Story = {
-  render: () => (
-    <div className="p-4 w-full max-w-[1200px]">
-      <Table>
-        <TableBody>
-          <BillingsItem
-            bill={ mockBills[0]}
-            matter={mockMatters.find((m) => m.matter_id ===  mockBills[0].matter_id)}
-            matters={mockMatters}
-            onUpdate={(bill) => console.log("Bill updated:", bill)}
-            onDelete={(id) => console.log("Bill deleted:", id)}
-            index={1}
-          />
-        </TableBody>
-      </Table>
-    </div>
-  ),
-}
-
-export const Pending: Story = {
-  render: () => (
-    <div className="p-4 w-full max-w-[1200px]">
-      <Table>
-        <TableBody>
-          <BillingsItem
-            bill={ mockBills[1]}
-            matter={mockMatters.find((m) => m.matter_id ===  mockBills[1].matter_id)}
-            matters={mockMatters}
-            onUpdate={(bill) => console.log("Bill updated:", bill)}
-            onDelete={(id) => console.log("Bill deleted:", id)}
-            index={1}
-          />
-        </TableBody>
-      </Table>
-    </div>
-  ),
-}
-
 export const Paid: Story = {
   render: () => (
     <div className="p-4 w-full max-w-[1200px]">
@@ -75,7 +36,6 @@ export const Paid: Story = {
         <TableBody>
           <BillingsItem
             bill={ mockBills[2]}
-            matter={mockMatters.find((m) => m.matter_id ===  mockBills[2].matter_id)}
             matters={mockMatters}
             onUpdate={(bill) => console.log("Bill updated:", bill)}
             onDelete={(id) => console.log("Bill deleted:", id)}
@@ -87,14 +47,13 @@ export const Paid: Story = {
   ),
 }
 
-export const Overdue: Story = {
+export const Unpaid: Story = {
   render: () => (
     <div className="p-4 w-full max-w-[1200px]">
       <Table>
         <TableBody>
           <BillingsItem
             bill={ mockBills[3]}
-            matter={mockMatters.find((m) => m.matter_id ===  mockBills[3].matter_id)}
             matters={mockMatters}
             onUpdate={(bill) => console.log("Bill updated:", bill)}
             onDelete={(id) => console.log("Bill deleted:", id)}

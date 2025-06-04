@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { MattersList } from "@/components/matters/mattersList";
 import { mockMatters } from "./mockMatters";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 
 const meta: Meta<typeof MattersList> = {
   title: "Matters/MattersList",

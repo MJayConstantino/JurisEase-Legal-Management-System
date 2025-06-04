@@ -17,10 +17,15 @@ export async function GET(request: NextRequest) {
       type,
       token_hash,
     })
+
     if (!error) {
       // redirect user to specified redirect URL or root of app
       // idk where to redirect to lol
       redirect('/login')
+    } else {
+      redirect(
+        `/error?cause=${error.name}&msg=${error.message}&code=${error.code}`
+      )
     }
   }
 

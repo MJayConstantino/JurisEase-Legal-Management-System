@@ -3,7 +3,7 @@ import React from "react";
 import { MattersTable } from "@/components/matters/mattersTable";
 import { mockMatters } from "./mockMatters";
 import { action } from "@storybook/addon-actions";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 
 const meta: Meta<typeof MattersTable> = {
   title: "Matters/MattersTable",

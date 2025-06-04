@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useTransition } from 'react'
+import React, { useEffect, useRef, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 
 import { PasswordField } from './PasswordField'
@@ -11,6 +11,7 @@ import { Header } from '@/components/auth/Header'
 import { Footer } from '@/components/auth/Footer'
 
 import { handleGoogleSignIn, handleLoginSubmit } from '@/action-handlers/users'
+import { fetchUserSession } from '@/actions/users'
 
 export interface LoginPageProps {
   handleLoginSubmitfn?: (
@@ -21,6 +22,8 @@ export interface LoginPageProps {
   onGoogleLoginSuccess?: () => void
   redirectPath?: string
   isPending?: boolean
+  onError?: () => void
+  onNavigateGoogleLogin?: () => void
 }
 
 export function LoginPage({
@@ -28,16 +31,46 @@ export function LoginPage({
   handleGoogleLoginfn = handleGoogleSignIn,
   onLoginSuccess,
   onGoogleLoginSuccess,
+  onNavigateGoogleLogin,
+  onError,
   isPending = false,
 }: LoginPageProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isTransitioning, startTransition] = useTransition()
 
+  const emailRef = useRef<{
+    triggerValidation: () => boolean
+    clearErrors: () => void
+  } | null>(null)
+
+  const passwordRef = useRef<{
+    triggerValidation: () => boolean
+    clearErrors: () => void
+  } | null>(null)
+
   // Handle form submission for login
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
+
+    const isEmailValid = emailRef.current?.triggerValidation()
+    const isPasswordValid = passwordRef.current?.triggerValidation()
+
+    if (isEmailValid && isPasswordValid) {
+      console.log('Passed validation')
+      setPassword('')
+      setEmail('')
+    } else {
+      if (!isEmailValid) {
+        console.error('Invalid or empty email')
+        setEmail('')
+      }
+      if (!isPasswordValid) {
+        console.error('Invalid or empty password')
+        setPassword('')
+      }
+    }
 
     startTransition(async () => {
       try {
@@ -62,6 +95,10 @@ export function LoginPage({
   // Handle Google Login
   const handleGoogleLogin = () => {
     startTransition(async () => {
+      if (onNavigateGoogleLogin) {
+        onNavigateGoogleLogin()
+      }
+
       try {
         const { error } = await handleGoogleLoginfn()
         if (error) {
@@ -69,7 +106,6 @@ export function LoginPage({
           setEmail('')
           setPassword('')
         } else {
-          toast.success('Google Login Success')
           onGoogleLoginSuccess?.()
         }
       } catch (err) {
@@ -79,9 +115,42 @@ export function LoginPage({
     })
   }
 
+  useEffect(() => {
+    const handleAuthComplete = async (event: MessageEvent) => {
+      if (
+        event.origin === window.location.origin &&
+        event.data === 'auth_complete'
+      ) {
+        console.log('Authentication complete, refreshing session...')
+
+        // Refresh the Supabase session
+        startTransition(async () => {
+          const info = await fetchUserSession()
+          if (!info) {
+            if (onError) {
+              onError()
+            } else {
+              throw new Error('there was no user fetched')
+            }
+          }
+          if (onGoogleLoginSuccess) {
+            toast.success('Google Login Sucess!')
+            onGoogleLoginSuccess()
+          } else {
+            // force the reload
+            window.location.reload()
+          }
+        })
+      }
+    }
+
+    window.addEventListener('message', handleAuthComplete)
+    return () => window.removeEventListener('message', handleAuthComplete)
+  }, [onError, onGoogleLoginSuccess])
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white p-4">
-      <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-sm">
+      <div className="w-full max-w-md rounded-lg bg-white p-4 sm:p-6 shadow-sm">
         {/* Header Section  */}
         <Header
           title="Welcome back!"
@@ -90,11 +159,12 @@ export function LoginPage({
         />
 
         {/* Form Section */}
-        <div className="rounded-lg bg-[#e1e5f2] p-6">
+        <div className="rounded-lg bg-[#e1e5f2] p-4 sm:p-6">
           <form onSubmit={handleSubmit}>
             {/* Email FIeld  */}
             <div className="mb-4">
               <EmailField
+                ref={emailRef!}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isPending || isTransitioning}
@@ -104,9 +174,11 @@ export function LoginPage({
             {/* Password Field  */}
             <div className="mb-6">
               <PasswordField
+                ref={passwordRef!}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isPending || isTransitioning}
+                page="login"
               />
             </div>
 

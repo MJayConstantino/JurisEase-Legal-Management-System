@@ -3,7 +3,7 @@ import { Header } from "@/components/header/header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebar/appSidebar";
 import { userEvent, within } from "@storybook/testing-library";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 
 const meta: Meta<typeof Header> = {
   title: "Header/Header",

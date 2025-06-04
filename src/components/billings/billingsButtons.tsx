@@ -1,7 +1,8 @@
 "use client"
 
-import { Edit, Trash2 } from "lucide-react"
+import { Edit, MoreHorizontal, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 interface BillingsButtonsProps {
   onEdit: () => void
@@ -10,16 +11,23 @@ interface BillingsButtonsProps {
 
 export function BillingsButtons({ onEdit, onDelete }: BillingsButtonsProps) {
   return (
-    <div className="flex justify-end gap-2 md:gap-3">
-      <Button variant="outline" size="icon" className="h-7 w-7 md:h-9 md:w-9" onClick={onEdit}>
-        <Edit className="h-3 w-3 md:h-4 md:w-4" />
-        <span className="sr-only">Edit</span>
-      </Button>
-      <Button variant="outline" size="icon" className="h-7 w-7 md:h-9 md:w-9" onClick={onDelete}>
-        <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
-        <span className="sr-only">Delete</span>
-      </Button>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button data-testid="billing-options-btn" variant="ghost" size="icon" className="h-7 w-7 cursor-pointer md:h-9 md:w-9">
+          <MoreHorizontal className="h-3 w-3 md:h-4 md:w-4" />
+          <span className="sr-only">More options</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-[160px]">
+        <DropdownMenuItem onClick={onEdit} className="cursor-pointer">
+          <Edit className="h-3.5 w-3.5 mr-2" />
+          Edit
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={onDelete} className="cursor-pointer dark:text-destructive-foreground text-destructive focus:text-destructive">
+          <Trash2 className="h-3.5 w-3.5 mr-2 " />
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
-

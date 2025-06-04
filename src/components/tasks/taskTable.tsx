@@ -21,6 +21,7 @@ interface TaskTableProps {
   tasks: Task[];
   matters: Matter[];
   isLoadingMatters: boolean;
+  isLoading?: boolean; // New prop for loading state
   onTaskUpdated: (updatedTask: Task) => void;
   onTaskDeleted: (deletedTaskId: string) => void;
 }
@@ -29,6 +30,7 @@ export function TaskTable({
   tasks,
   matters,
   isLoadingMatters,
+  isLoading = false, // Default to false
   onTaskUpdated,
   onTaskDeleted,
 }: TaskTableProps) {
@@ -42,20 +44,27 @@ export function TaskTable({
   const params = useParams();
   const matterId = params.matterId as string | undefined;
 
-  const handleSort = useCallback((field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("asc");
-    }
-  }, [sortField, sortDirection]);
+  const handleSort = useCallback(
+    (field: SortField) => {
+      if (sortField === field) {
+        const newDirection = sortDirection === "asc" ? "desc" : "asc";
+        setSortDirection(newDirection);
+      } else {
+        setSortField(field);
+        setSortDirection("asc");
+      }
+    },
+    [sortField, sortDirection]
+  );
 
-  const priorityOrder = useMemo(() => ({
-    high: 3,
-    medium: 2,
-    low: 1,
-  }), []);
+  const priorityOrder = useMemo(
+    () => ({
+      high: 3,
+      medium: 2,
+      low: 1,
+    }),
+    []
+  );
 
   const sortedTasks = useMemo(() => {
     return [...tasks].sort((a, b) => {
@@ -65,42 +74,55 @@ export function TaskTable({
         case "name":
           return direction * a.name.localeCompare(b.name);
         case "matter_id":
-          const matterA = getMattersDisplayName(a.matter_id || "", matters) || "";
-          const matterB = getMattersDisplayName(b.matter_id || "", matters) || "";
+          const matterA =
+            getMattersDisplayName(a.matter_id || "", matters) || "";
+          const matterB =
+            getMattersDisplayName(b.matter_id || "", matters) || "";
           return direction * matterA.localeCompare(matterB);
         case "due_date":
           const dateA = a.due_date ? new Date(a.due_date).getTime() : 0;
           const dateB = b.due_date ? new Date(b.due_date).getTime() : 0;
           return direction * (dateA - dateB);
         case "priority":
-          const priorityA = priorityOrder[a.priority as keyof typeof priorityOrder] || 0;
-          const priorityB = priorityOrder[b.priority as keyof typeof priorityOrder] || 0;
+          const priorityA =
+            priorityOrder[a.priority as keyof typeof priorityOrder] || 0;
+          const priorityB =
+            priorityOrder[b.priority as keyof typeof priorityOrder] || 0;
           return direction * (priorityA - priorityB);
         default:
           // Default to sort by created_at
-          const createdAtA = a.created_at ? new Date(a.created_at).getTime() : 0;
-          const createdAtB = b.created_at ? new Date(b.created_at).getTime() : 0;
+          const createdAtA = a.created_at
+            ? new Date(a.created_at).getTime()
+            : 0;
+          const createdAtB = b.created_at
+            ? new Date(b.created_at).getTime()
+            : 0;
           return direction * (createdAtA - createdAtB);
       }
     });
   }, [tasks, sortField, sortDirection, matters, priorityOrder]);
 
-  const handleStatusChange = useCallback((task: Task) => {
-    if (processingTaskId !== task.task_id) {
-      setProcessingTaskId(task.task_id);
-      handleComplete(
-        task,
-        task,
-        (updatedTask) => {
-          onTaskUpdated(updatedTask);
-          setTimeout(() => setProcessingTaskId(null), 1000);
-        },
-        onTaskUpdated,
-        () => {},
-        false
-      );
-    }
-  }, [processingTaskId, onTaskUpdated]);
+  const handleStatusChange = useCallback(
+    (task: Task) => {
+      if (processingTaskId !== task.task_id) {
+        setProcessingTaskId(task.task_id);
+        handleComplete(
+          task,
+          task,
+          (updatedTask) => {
+            onTaskUpdated(updatedTask);
+            setTimeout(() => {
+              setProcessingTaskId(null);
+            }, 1000);
+          },
+          onTaskUpdated,
+          () => {},
+          false
+        );
+      }
+    },
+    [processingTaskId, onTaskUpdated]
+  );
 
   const handleEditTask = useCallback((task: Task) => {
     setEditingTask(task);
@@ -112,18 +134,30 @@ export function TaskTable({
   }, []);
 
   return (
-    <>
-      <div className="w-full dark:border-gray-700 dark:bg-gray-800 overflow-hidden">
-        <div className="relative w-full overflow-auto">
-          <Table>
-            <TaskTableHeader
-              sortField={sortField}
-              sortDirection={sortDirection}
-              onSort={handleSort}
-              hideMatterColumn={!!matterId}
-            />
-            <TableBody>
-              {sortedTasks.map((task) => (
+  <>
+    <div className="w-full dark:border-gray-700 dark:bg-gray-800 overflow-hidden">
+      <div className="relative w-full overflow-auto">
+        <Table>
+          <TaskTableHeader
+            sortField={sortField}
+            sortDirection={sortDirection}
+            onSort={handleSort}
+            hideMatterColumn={!!matterId}
+          />
+          <TableBody>
+            {isLoading ? (
+              <tr>
+                <td
+                  colSpan={!!matterId ? 6 : 7}
+                  className="p-6 text-center text-muted-foreground"
+                >
+                  <div className="flex justify-center items-center">
+                    <p>Loading tasks...</p>
+                  </div>
+                </td>
+              </tr>
+            ) : sortedTasks.length > 0 ? (
+              sortedTasks.map((task) => (
                 <TaskRow
                   key={task.task_id}
                   task={task}
@@ -140,23 +174,23 @@ export function TaskTable({
                   onTaskDeleted={onTaskDeleted}
                   hideMatterColumn={!!matterId}
                 />
-              ))}
-              {sortedTasks.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={!!matterId ? 6 : 7}
-                    className="p-6 text-center text-muted-foreground"
-                  >
-                    No tasks found.
-                  </td>
-                </tr>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={!!matterId ? 6 : 7}
+                  className="p-6 text-center text-muted-foreground text-sm"
+                >
+                  No tasks found. Create a new task to get started.
+                </td>
+              </tr>
+            )}
+          </TableBody>
+        </Table>
       </div>
+    </div>
 
-      {/* Task forms and dialogs */}
+      {/* Task forms and dialogs - only render when needed */}
       {editingTask && (
         <TaskForm
           open={!!editingTask}
@@ -193,7 +227,7 @@ export function TaskTable({
         />
       )}
 
-      {deletingTask && (
+      {isDeleteDialogOpen && deletingTask && (
         <TaskDeleteDialog
           isOpen={isDeleteDialogOpen}
           onOpenChange={setIsDeleteDialogOpen}

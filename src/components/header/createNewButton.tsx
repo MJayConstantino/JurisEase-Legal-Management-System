@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -46,7 +46,6 @@ export function CreateNewButton({
   const [isLoadingMatters, setIsLoadingMatters] = useState(false);
   const [taskMatters, setTaskMatters] = useState<Matter[]>([]);
 
-  // Load matters for billing
   useEffect(() => {
     async function loadBillingData() {
       setIsLoading(true);
@@ -63,12 +62,17 @@ export function CreateNewButton({
   }, [setIsLoading, setBillingMatters]);
 
   useEffect(() => {
+    if (!isAddTaskOpen) return;
+
+    let isMounted = true;
+
     async function loadAllMatters() {
-      if (!isAddTaskOpen) return;
       console.log("Fetching all matters for task creation");
       setIsLoadingMatters(true);
       try {
         const result = await handleFetchMatters();
+        if (!isMounted) return;
+
         if (result.error) {
           throw new Error(result.error);
         }
@@ -79,22 +83,46 @@ export function CreateNewButton({
       } catch (error) {
         console.error("Failed to load matters for task creation:", error);
       } finally {
-        setIsLoadingMatters(false);
+        if (isMounted) {
+          setIsLoadingMatters(false);
+        }
       }
     }
 
     loadAllMatters();
+
+    return () => {
+      isMounted = false;
+    };
   }, [isAddTaskOpen]);
 
-  const handleOpenAddTask = () => {
+  const handleOpenAddTask = useCallback(() => {
     setIsAddTaskOpen(true);
-  };
+  }, []);
+
+  const handleTaskCreated = useCallback(
+    (newTask: Task) => {
+      if (onTaskCreated) {
+        onTaskCreated(newTask);
+      }
+
+      setIsAddTaskOpen(false);
+    },
+    [onTaskCreated]
+  );
 
   return (
     <>
       <DropdownMenu defaultOpen={defaultOpen}>
         <DropdownMenuTrigger asChild>
-          <Button className="bg-[#1B1E4B] dark:bg-gray-700 text-white hover:bg-[#1B1E4B]/50 border-2 border-white dark:hover:bg-gray-600 gap-2 hidden md:flex">
+          <Button
+            className={
+              "bg-white text-[#181a40] hover:bg-gray-100 " +
+              "dark:bg-gray-600/90 dark:text-white dark:hover:bg-gray-800 " +
+              "border-1 border-grey-950 dark:border-grey-950 flex h-10 w-10 md:w-auto md:h-auto md:gap-2 cursor-pointer " +
+              "justify-center md:justify-start items-center shadow-sm"
+            }
+          >
             <Plus className="h-4 w-4" />
             <span className="hidden md:inline">Create New</span>
           </Button>
@@ -127,22 +155,23 @@ export function CreateNewButton({
         matterBillingMatterId={""}
       />
 
-      <TaskForm
-        open={isAddTaskOpen}
-        onOpenChange={setIsAddTaskOpen}
-        onSave={(newTask) => {
-          if (onTaskCreated) onTaskCreated(newTask);
-          setIsAddTaskOpen(false);
-        }}
-        onSaveAndCreateAnother={onTaskCreated}
-        disableMatterSelect={!!matterId}
-        matters={taskMatters}
-        isLoadingMatters={isLoadingMatters}
-        getMatterNameDisplay={(matterId) =>
-          getMattersDisplayName(matterId, taskMatters)
-        }
-        matterId={matterId}
-      />
+      {isAddTaskOpen && (
+        <TaskForm
+          open={isAddTaskOpen}
+          onOpenChange={setIsAddTaskOpen}
+          onSave={handleTaskCreated}
+          onSaveAndCreateAnother={(newTask) => {
+            if (onTaskCreated) onTaskCreated(newTask);
+          }}
+          disableMatterSelect={!!matterId}
+          matters={taskMatters}
+          isLoadingMatters={isLoadingMatters}
+          getMatterNameDisplay={(matterId) =>
+            getMattersDisplayName(matterId, taskMatters)
+          }
+          matterId={matterId}
+        />
+      )}
     </>
   );
 }

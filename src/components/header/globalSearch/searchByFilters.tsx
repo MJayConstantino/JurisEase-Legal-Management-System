@@ -48,7 +48,7 @@ export function SearchByFilters({ filters, setFilters }: SearchByFiltersProps) {
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
       {/* Collapsible header/trigger */}
-      <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium text-foreground hover:bg-muted p-2 rounded-md">
+      <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium text-foreground hover:bg-muted p-2 rounded-md cursor-pointer">
         <span>Search by</span>
         {isOpen ? (
           <ChevronDown className="h-4 w-4" />

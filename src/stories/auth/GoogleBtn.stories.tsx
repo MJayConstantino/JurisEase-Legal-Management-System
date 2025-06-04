@@ -40,7 +40,7 @@ export const Pending: StoryObj<GoogleSignInButtonProps> = {
   args: { ...Template.args, disabled: true },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const button = canvas.getByRole('button', { name: 'Sign in with Google' })
+    const button = canvas.getByRole('button', { name: 'Continue with Google' })
     await expect(button).toBeDisabled()
   },
 }
@@ -49,7 +49,7 @@ export const Clicked: StoryObj<GoogleSignInButtonProps> = {
   ...Template,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    const button = canvas.getByRole('button', { name: 'Sign in with Google' })
+    const button = canvas.getByRole('button', { name: 'Continue with Google' })
 
     await userEvent.click(button)
 

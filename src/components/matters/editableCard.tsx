@@ -4,7 +4,7 @@ import { useState } from "react";
 import type React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit, Check, X } from "lucide-react";
+import { Edit, Check, X, Loader2 } from "lucide-react";
 
 interface EditableCardProps {
   title: string;
@@ -22,52 +22,76 @@ export function EditableCard({
   editable = true,
 }: EditableCardProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const handleSaveClick = async () => {
     if (onSave) {
-      const ok = await onSave();
-      if (ok) setIsEditing(false);
+      setIsSaving(true);
+      try {
+        const ok = await onSave();
+        if (ok) setIsEditing(false);
+      } finally {
+        setIsSaving(false);
+      }
     } else {
       setIsEditing(false);
     }
   };
 
   const handleCancel = () => {
-    setIsEditing(false);
-    onCancel?.();
+    setIsCancelling(true);
+    try {
+      onCancel?.();
+      setIsEditing(false);
+    } finally {
+      setIsCancelling(false);
+    }
   };
 
   return (
-    <Card className="dark:bg-gray-800">
+    <Card className="dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-lg shadow-sm border dark:shadow-sm">
       <CardHeader className="flex items-center justify-between pb-2">
         <CardTitle>{title}</CardTitle>
         {editable && (
           <div className="flex gap-2">
             {isEditing ? (
               <>
-                {/* this button triggers saveChanges directly */}
                 <Button
                   type="button"
                   size="sm"
                   variant="ghost"
+                  className="hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
                   aria-label="Save"
                   onClick={handleSaveClick}
+                  disabled={isSaving || isCancelling}
                 >
-                  <Check className="h-4 w-4" />
+                  {isSaving ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Check className="h-4 w-4" />
+                  )}
                 </Button>
                 <Button
                   size="sm"
                   variant="ghost"
+                  className="hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer" 
                   aria-label="Cancel"
                   onClick={handleCancel}
+                  disabled={isSaving || isCancelling}
                 >
-                  <X className="h-4 w-4" />
+                  {isCancelling ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <X className="h-4 w-4" />
+                  )}
                 </Button>
               </>
             ) : (
               <Button
                 variant="ghost"
                 size="sm"
+                className="hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
                 aria-label="Edit"
                 onClick={() => setIsEditing(true)}
               >

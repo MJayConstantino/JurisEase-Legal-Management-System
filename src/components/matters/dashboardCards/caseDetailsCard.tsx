@@ -1,11 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { EditableCard } from "../editableCard";
 import type { Matter } from "@/types/matter.type";
-import { fetchUsersAction } from "@/actions/users";
 import type { User as UserType } from "@/types/user.type";
-import { CaseDetailsCardSkeleton } from "./caseDetailsCardSkeleton";
 import {
   handleSaveMatter,
   handleCancelMatter,
@@ -15,24 +13,24 @@ import { caseSchema } from "@/validation/matter";
 
 interface CaseDetailsCardProps {
   matter: Matter;
+  users: UserType[];
   onUpdate?: (matter: Matter) => void;
 }
 
-export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
+export function CaseDetailsCard({
+  matter,
+  users,
+  onUpdate,
+}: CaseDetailsCardProps) {
   const [editedMatter, setEditedMatter] = useState<Matter>({
     ...matter,
   });
 
-  const [users, setUsers] = useState<UserType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    fetchUsersAction()
-      .then((data) => setUsers(data))
-      .catch(console.error)
-      .finally(() => setIsLoading(false));
-  }, []);
+    setEditedMatter({ ...matter });
+  }, [matter]);
 
   const handleChange = (field: keyof Matter, value: any) => {
     setEditedMatter((prev) => {
@@ -47,6 +45,11 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
       }
       return { ...prev, [field]: value };
     });
+
+    // Clear error when field changes
+    if (errors[field as string]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
   };
 
   const saveChanges = async (): Promise<boolean> => {
@@ -57,6 +60,10 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
         !editedMatter.client || editedMatter.client.trim() === ""
           ? "To be determined"
           : editedMatter.client,
+      // Ensure empty strings are preserved for display
+      client_phone: editedMatter.client_phone || "",
+      client_email: editedMatter.client_email || "",
+      client_address: editedMatter.client_address || "",
     };
 
     const result = caseSchema.safeParse(matterToSave);
@@ -85,8 +92,6 @@ export function CaseDetailsCard({ matter, onUpdate }: CaseDetailsCardProps) {
     setEditedMatter(handleCancelMatter(matter).matter);
     setErrors({});
   };
-
-  if (isLoading) return <CaseDetailsCardSkeleton />;
 
   return (
     <EditableCard

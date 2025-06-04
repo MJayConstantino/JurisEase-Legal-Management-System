@@ -37,9 +37,6 @@ const Template: StoryObj<SignUpPageProps> = {
       action('signUpHandler')(formData) // Log the action
       const validation = validateSignUp(formData)
       if (!validation.success) {
-        toast.error(validation.error.errors[0].message, {
-          id: 'validation-error',
-        })
         return { error: validation.error.errors[0].message }
       }
       if (
@@ -49,7 +46,6 @@ const Template: StoryObj<SignUpPageProps> = {
         toast.success('Sign-Up Successful', { id: 'sign-up-success' })
         return { error: null }
       } else {
-        toast.error('Sign-Up Failed', { id: 'sign-up-failure' })
         return { error: 'Sign-Up Failed' }
       }
     },
@@ -120,7 +116,7 @@ export const Failed: StoryObj<SignUpPageProps> = {
     const passwordInput = canvas.getByLabelText('Password')
     const signUpButton = canvas.getByRole('button', { name: 'Sign Up' })
 
-    await userEvent.type(nameInput, 'Wrong User') // Always fill out the name
+    await userEvent.type(nameInput, 'Valid Name') // Always fill out the name
     await userEvent.type(emailInput, 'wrong@example.com')
     await userEvent.type(passwordInput, 'wrongpassword')
     await userEvent.click(signUpButton)
@@ -143,7 +139,7 @@ export const InvalidInput: StoryObj<SignUpPageProps> = {
 
     await userEvent.type(nameInput, 'Test User') // Always fill out the name
     await userEvent.type(emailInput, 'invalid-email')
-    await userEvent.type(passwordInput, '123')
+    await userEvent.type(passwordInput, '12345')
     await userEvent.click(signUpButton)
 
     // Wait for the toast notification
