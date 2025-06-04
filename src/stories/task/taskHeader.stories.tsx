@@ -17,7 +17,6 @@ export default meta;
 
 type Story = StoryObj<typeof TasksHeader>;
 
-
 export const TableActive: Story = {
   args: {
     onStatusChange: action("Status Changed"),

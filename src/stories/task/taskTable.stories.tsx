@@ -2,6 +2,7 @@ import { Meta, StoryObj } from "@storybook/react";
 import { TaskTable } from "@/components/tasks/taskTable";
 import { mockMatter } from "./mockMatter";
 import mockTasks from "./mockTask";
+import { userEvent, within } from "@storybook/testing-library";
 
 const meta: Meta<typeof TaskTable> = {
   title: "Tasks/TaskTable",
@@ -71,7 +72,7 @@ export const Default: Story = {
 };
 
 // With loading matters
-export const LoadingMatters: Story = {
+export const LoadingTable: Story = {
   args: {
     tasks: allTasks,
     matters: [],
@@ -118,34 +119,69 @@ export const NoTasks: Story = {
   name: "Empty Table",
 };
 
-// Tasks sorted by different fields initially
-export const SortedByDueDate: Story = {
+
+export const AllSortingOptions: Story = {
   args: {
-    tasks: allTasks,
+    tasks: [
+      mockTasks.default,
+      mockTasks.highPriority,
+      mockTasks.overdue,
+      mockTasks.complete,
+      mockTasks.withoutDueDate,
+      mockTasks.withoutMatter,
+    ],
     matters: matters,
     isLoadingMatters: false,
     ...mockHandlers,
   },
   parameters: {
-    // Simulate sorting by due date
-    nextRouter: {
-      query: { sort: "due_date", order: "asc" },
+    docs: {
+      description: {
+        story: "Demonstrates all sorting options by cycling through each column header.",
+      },
     },
   },
-};
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    const taskNameSortButton = canvas.getByRole("button", {
+      name: (text) => text.includes("Task Name"),
+    });
+    
+    const prioritySortButton = canvas.getByRole("button", {
+      name: (text) => text.includes("Priority"),
+    });
+    
+    const dueDateSortButton = canvas.getByRole("button", {
+      name: (text) => text.includes("Due Date"),
+    });
+    
+    const matterSortButton = canvas.getByRole("button", {
+      name: (text) => text.includes("Matter"),
+    });
+    
+    // Task Name sorting
+    await userEvent.click(taskNameSortButton);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    await userEvent.click(taskNameSortButton); // Toggle to descending order
+    
+    // Matter sorting
+    await userEvent.click(matterSortButton);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    await userEvent.click(matterSortButton); // Toggle to descending order
 
-export const SortedByPriority: Story = {
-  args: {
-    tasks: allTasks,
-    matters: matters,
-    isLoadingMatters: false,
-    ...mockHandlers,
-  },
-  parameters: {
-    // Simulate sorting by priority
-    nextRouter: {
-      query: { sort: "priority", order: "desc" },
-    },
+    // Priority sorting
+    await userEvent.click(prioritySortButton);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    await userEvent.click(prioritySortButton); // Toggle to descending order
+    
+    // Due Date sorting
+    await userEvent.click(dueDateSortButton);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    await userEvent.click(dueDateSortButton); // Toggle to descending order
+    
+    console.log("Cycled through all column sorting options");
   },
 };
-
